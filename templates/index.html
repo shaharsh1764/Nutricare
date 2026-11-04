@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutriCare — Nutrition Tracker & Personal Health Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>">
+</head>
+<body>
+<div id="app">
+  <div id="side-scrim"></div>
+  <aside id="sidebar">
+    <div class="brand">
+      <span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M12 6c3-3 8-3 8 1s-5 5-8 5M12 6C9 3 4 3 4 7s5 5 8 5"/></svg></span>
+      <div class="brand-text"><h1>NutriCare</h1><small>HEALTH &amp; NUTRITION OS</small></div>
+      <button class="icon-btn side-toggle-btn" id="side-toggle" aria-expanded="true"
+        title="Collapse sidebar" aria-label="Collapse sidebar">
+        <svg class="ico-close" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg>
+        <svg class="ico-open" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>
+      </button>
+    </div>
+    <div class="nav-label">NAVIGATION</div>
+    <nav id="nav-links"></nav>
+    <div class="side-foot">
+      <div class="goal-card" id="side-goal"></div>
+      <button class="emergency-link" id="side-emergency"><span>☎ Emergency Contact</span><span>›</span></button>
+    </div>
+  </aside>
+  <div id="main">
+    <header id="topbar">
+      <button class="btn btn-ghost btn-sm" id="menu-btn" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="crumb"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        NutriCare / <b id="crumb-page">Dashboard</b></div>
+      <div class="searchbox"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="top-search" placeholder="Search foods, symptoms… (Enter opens tracker)"></div>
+      <div class="top-right">
+        <span class="date-chip" id="top-date">📅</span>
+        <button class="user-chip" id="user-chip" title="Local profiles — switch or add (no passwords)">
+          <span class="avatar" id="avatar-initials">GU</span>
+          <div><div class="nm" id="user-name">Guest</div><div class="sub" id="user-sub">—</div></div>
+        </button>
+      </div>
+    </header>
+    <div id="demo-banner" class="sys-banner demo" hidden>
+      <b>DEMO MODE — fictional sample data.</b>
+      <span>The meals and water below are invented examples, not anyone's real intake.</span>
+      <button class="btn btn-ghost btn-sm" id="demo-clear">Clear demo data</button>
+    </div>
+    <div id="profile-banner" class="sys-banner" hidden>
+      <b>Profile incomplete — targets are off.</b>
+      <span>Add age, sex, height, weight and activity to unlock personalised (estimated) targets.
+      Food logging works right now without them.</span>
+      <a class="btn btn-soft btn-sm" href="#/profile">Complete your profile</a>
+    </div>
+    <main id="view"></main>
+  </div>
+</div>
+<div id="modal-root"></div>
+<div id="toast"></div>
+<script src="/static/js/util.js"></script>
+<script src="/static/js/charts.js"></script>
+<script src="/static/js/onboarding.js"></script>
+<script src="/static/js/views_main.js"></script>
+<script src="/static/js/views_health.js"></script>
+<script src="/static/js/views_more.js"></script>
+<script src="/static/js/views_insights.js"></script>
+<script src="/static/js/app.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("top-date").textContent = "📅 " +
+      new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+    document.getElementById("side-emergency").onclick = () => {
+      openModal(`<h3>Emergency contacts</h3>
+        <p class="small muted mt8">If you or someone nearby has emergency symptoms (chest pain, trouble
+        breathing, stroke signs, severe bleeding, suicide risk), call now:</p>
+        <div class="grid mt12" style="gap:8px">
+          <div class="selfcare-card"><b>India emergency services — 112</b></div>
+          <div class="selfcare-card"><b>India medical helpline — 108</b></div>
+          <div class="selfcare-card"><b>US / Canada — 911 · EU — 112</b></div>
+          <div class="selfcare-card"><b>Campus student health services — 555-0199 (sample)</b></div>
+        </div>
+        <div class="row mt16" style="justify-content:flex-end"><button class="btn btn-ghost" data-close>Close</button></div>`);
+    };
+  });
+</script>
+</body>
+</html>
