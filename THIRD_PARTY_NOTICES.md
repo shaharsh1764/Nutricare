@@ -74,6 +74,9 @@ The checkpoint trained on those images (`models/food_classifier.pt`) has been
 here in any form. The note is kept so the decision is auditable rather than
 silent. See `docs/LICENSING_AUDIT.md`.
 
+Two CC0 checkpoints are shipped. Both derive from the same source and carry the
+same licence.
+
 ### 3b. `models/food_classifier_cc0.pt` — 12 classes — CLEARED (default model)
 
 | | |
@@ -95,13 +98,33 @@ platforms", so chain-of-title is asserted, not proven. This is the strongest
 position available without commissioned photography, and is materially better
 than an explicitly rights-reserved source.
 
+### 3c. `models/food_classifier_cc0_7class.pt` — 7 classes — CLEARED (alternative)
+
+The first CC0 run, kept for comparison and reachable with
+`NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt`.
+
+| | |
+|---|---|
+| Source | https://github.com/Ishmam97/Bangladeshi-Food-Dataset |
+| Licence | **CC0 1.0 Universal** (public domain dedication) |
+| Classes | chicken biryani, curd/dahi, jalebi, khichdi, pakora, pani puri, paratha |
+| Images used | 2,083 from the `Train/` split, mapped to 7 NutriCare classes |
+
+Same licence, same caveat as 3b: CC0 waives only the rights the dedicator holds.
+
 ---
 
 ## 4. Nutrition data
 
 `data/foods.json` values are sourced from **IFCT 2017** (Indian Food Composition
 Tables, NIN Hyderabad) and **USDA FoodData Central**, per-row `source` and
-`source_id` fields. See `data/SOURCES.md`.
+`source_id` fields.
+
+Two rows (`Kheer, milk-rice (prepared)` id 197 and `Rasgulla / rosogolla
+(prepared)` id 198) are tagged `Recipe-derived (NutriCare)` and
+`quality: approximate`: no IFCT/USDA entry exists, so the value is computed from
+a stated home recipe. They are not laboratory measurements and are labelled as
+such in the app. See `data/SOURCES.md`.
 
 ---
 
