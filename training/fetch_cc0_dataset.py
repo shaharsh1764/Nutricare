@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Fetch the CC0-licensed food image dataset used for the redistributable model.
+"""Fetch the CC0-declared food image dataset used for the shipped models.
 
-Dataset: Ishmam97/Bangladeshi-Food-Dataset  (CC0-1.0)
+Dataset: Ishmam97/Bangladeshi-Food-Dataset  (publisher declares CC0-1.0)
 Why this one: it is the only Indian-subcontinent food image collection found in
-this environment whose **image-level** licence permits commercial use AND
-derivative works (CC0 1.0). That distinction matters:
+this environment carrying an **image-level** public-domain dedication that
+permits commercial use AND derivative works (CC0 1.0).
+
+  IMPORTANT: the CC0 is the publisher's declaration. Whether the publisher held
+  the rights to every underlying photograph has NOT been independently verified
+  (the README says images were collected partly from "online platforms"). This
+  is a documented rights grant, not a proven chain of title. See
+  docs/MODEL.md §10.6.
+
+The distinction below still matters:
 
   * CC BY-NC-ND 4.0 (Khana) forbids both commercial use and derivatives, so a
     distributed fine-tuned model would breach it.

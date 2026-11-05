@@ -540,7 +540,7 @@ def test_real_model_predicts_a_known_class_with_confidence(real_model_app):
     import torch
 
     checkpoint = torch.load(REAL_MODEL, map_location="cpu", weights_only=False)
-    # The default checkpoint is the licence-cleared one; its class count is a
+    # The default checkpoint is the CC0-declared one; its class count is a
     # property of that training run, not a constant to hard-code.
     assert len(checkpoint["classes"]) >= 2
     # Build a deterministic image (not synthetic training data — just input):
@@ -607,7 +607,7 @@ def test_classes_without_nutrition_still_render_and_ask_for_values(client, user)
 
 
 # ------------------------------------------------- default model licensing policy
-def test_the_default_checkpoint_is_the_licence_cleared_one():
+def test_the_default_checkpoint_is_the_one_with_a_documented_licence():
     """Regression guard for a licensing trap.
 
     The 20-class checkpoint had no licence for its training images, so it is not
@@ -619,6 +619,29 @@ def test_the_default_checkpoint_is_the_licence_cleared_one():
     assert vision.PREVIOUS_CC0_MODEL_PATH.name == "food_classifier_cc0_7class.pt"
 
 
+def test_docs_do_not_overstate_the_cc0_position():
+    """Licensing wording is a correctness property, not just prose.
+
+    The dataset's CC0 is a publisher declaration. Claiming the models are
+    "cleared" or "safe to redistribute" asserts a verification we never did, so
+    those phrases must not appear in the model/licensing docs.
+    """
+    docs = ["README.md", "docs/MODEL.md", "docs/DATASET.md", "docs/COVERAGE.md",
+            "docs/LICENSING_AUDIT.md", "THIRD_PARTY_NOTICES.md"]
+    banned = ["licence-cleared", "license-cleared", "licence cleared",
+              "license cleared", "Safe to redistribute | **yes**",
+              "safe to redistribute, commercially"]
+    for name in docs:
+        path = vision.PROJECT_DIR / name
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for phrase in banned:
+            assert phrase.lower() not in text.lower(), (
+                f"{name} still claims {phrase!r}; the CC0 is a publisher "
+                "declaration and has not been independently verified")
+
+
 def test_the_unlicensed_checkpoint_is_not_shipped():
     """Guards the licensing fix. If this ever fails, an unredistributable
     artifact has been reintroduced into the tree."""
@@ -627,14 +650,14 @@ def test_the_unlicensed_checkpoint_is_not_shipped():
     shipped = sorted(p.name for p in (vision.PROJECT_DIR / "models").glob("*.pt"))
     for name in shipped:
         assert "food_classifier_cc0" in name or name.startswith("selftest"), (
-            f"{name} is not a licence-cleared artifact")
+            f"{name} is not an artifact with a documented CC0 licence")
 
 
 def test_cc0_checkpoint_records_its_licence_provenance():
     """The checkpoint itself must carry the evidence needed to audit it later,
     without re-reading this repo's docs."""
     if not vision.DEFAULT_MODEL_PATH.is_file():
-        pytest.skip("licence-cleared checkpoint not present")
+        pytest.skip("CC0-declared checkpoint not present")
     torch = pytest.importorskip("torch")
     checkpoint = torch.load(vision.DEFAULT_MODEL_PATH, map_location="cpu",
                             weights_only=False)

@@ -252,10 +252,10 @@ list is `data/food_classes.json`.
 
 ### Model and training
 
-**Two real, trained models ship with this repository, both trained only on
-CC0 1.0 images.** The default is `models/food_classifier_cc0.pt` (6.0 MB),
-MobileNetV3-Small fine-tuned on 2,573 de-duplicated photographs across 12
-Indian food classes.
+**Two real, trained models ship with this repository, both trained only on a
+dataset whose publisher declares CC0 1.0.** The default is
+`models/food_classifier_cc0.pt` (6.0 MB), MobileNetV3-Small fine-tuned on 2,573
+de-duplicated photographs across 12 Indian food classes.
 
 | Measured on a held-out test split | 12-class (default) | 7-class (alternative) |
 |---|---|---|
@@ -264,7 +264,8 @@ Indian food classes.
 | Test images (never trained on) | 380 | 302 |
 | Classes | 12 | 7 |
 | Inference | CPU only, 16 ms median | CPU only, ≈35–60 ms |
-| Training-data licence | CC0 1.0 | CC0 1.0 |
+| Training-data licence | CC0 1.0, publisher-declared | CC0 1.0, publisher-declared |
+| Publisher's authority over each image | **not independently verified** | **not independently verified** |
 
 The default model supports: paratha, khichdi, chicken biryani, chole, curd/dahi,
 rasgulla, kheer, pani puri, pakora, chomchom, morog polao and jalebi. Anything
@@ -275,6 +276,23 @@ for them. Full per-class results, confusion matrix and weak spots:
 **`docs/MODEL.md`**.
 
 `NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt` selects the 7-class model.
+
+#### On the licensing of those two models — precisely
+
+The dataset they were trained on (`Ishmam97/Bangladeshi-Food-Dataset`) commits a
+CC0 1.0 Universal dedication. **What we verified is that declaration.** We did
+*not* verify that the publisher held the rights to every underlying photograph:
+its README says images were collected from "homes, restaurants, markets, and
+online platforms", and CC0 can only waive rights the dedicator actually holds.
+
+So: **the publisher declares CC0 1.0; underlying image ownership and the
+publisher's authority to dedicate those rights have not been independently
+verified.** That is a documented rights grant and a materially better position
+than an unlicensed scrape — it is not a guarantee that redistribution is lawful,
+and it does not mean legal risk is zero. Anyone redistributing these models
+commercially should treat the chain of title as unresolved and obtain their own
+assurance. Full discussion: `docs/MODEL.md` §10.6 and
+`docs/LICENSING_AUDIT.md` §5.2.
 
 **Not included: the earlier 20-class model.** It scored 81.4% but its training
 images (6,269 photographs from `dhruvk2002/food-classifier`) carry **no licence

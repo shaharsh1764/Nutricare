@@ -74,31 +74,61 @@ The checkpoint trained on those images (`models/food_classifier.pt`) has been
 here in any form. The note is kept so the decision is auditable rather than
 silent. See `docs/LICENSING_AUDIT.md`.
 
-Two CC0 checkpoints are shipped. Both derive from the same source and carry the
-same licence.
+Two checkpoints trained on a CC0-declared dataset are shipped. Both derive from
+the same source and carry the same position, which is stated precisely once here
+and applied identically below.
 
-### 3b. `models/food_classifier_cc0.pt` — 12 classes — CLEARED (default model)
+### What "CC0-declared" does and does not mean
+
+**What we verified:** the dataset repository
+(`github.com/Ishmam97/Bangladeshi-Food-Dataset`) contains a CC0 1.0 Universal
+dedication covering the dataset, and its own README describes how the images
+were collected. That is the publisher's declaration.
+
+**What we did NOT verify:** that the publisher held the rights to every
+underlying photograph. The README says images were collected from "diverse
+real-world sources (homes, restaurants, markets, and online platforms)". CC0 can
+only waive rights the dedicator actually holds, and we have no chain-of-title
+evidence for individual photographs, no contributor agreements, and no
+independent confirmation of authorship.
+
+So the accurate statement is:
+
+> The dataset publisher declares CC0 1.0. Underlying image ownership and the
+> publisher's authority to dedicate those rights have **not** been independently
+> verified.
+
+Practical consequence, stated plainly:
+
+- NutriCare holds a documented, publisher-level public-domain dedication — a
+  materially better position than an unlicensed scrape, and the strongest
+  position available without commissioning photography.
+- That is **not** a guarantee that redistribution is lawful, and **not** a
+  statement that legal risk is zero.
+- Anyone redistributing these models **commercially** should treat this as an
+  unresolved chain-of-title question and obtain their own assurance.
+
+### 3b. `models/food_classifier_cc0.pt` — 12 classes — CC0-DECLARED (default model)
 
 | | |
 |---|---|
 | Source | https://github.com/Ishmam97/Bangladeshi-Food-Dataset |
-| Licence | **CC0 1.0 Universal** (public domain dedication) |
+| Licence | **CC0 1.0 Universal — declared by the dataset publisher** (not independently verified at image level) |
 | Classes | chicken biryani, chole, chomchom, curd/dahi, jalebi, kheer, khichdi, morog polao, pakora, pani puri, paratha, rasgulla |
 | Images used | 2,573 after de-duplication, from 3,247 offered; `Train/` split, mapped to 12 NutriCare classes |
 
-CC0 waives copyright and related rights worldwide, permitting use, reproduction,
-modification and distribution — including commercially and including derivative
-works — without attribution. Attribution is given here as good practice.
+CC0 1.0 waives copyright and related rights worldwide, permitting use,
+reproduction, modification and distribution including commercially, without
+attribution. That is what the licence *says*; whether the dedicator had the
+authority to apply it to every image is the unverified part described above.
+Attribution is given here as good practice.
 
 This checkpoint is the **default** model shipped by the application.
 
-**Caveat, stated plainly:** CC0 can only waive rights the dedicator actually
-holds. The dataset README describes images "collected from ... online
-platforms", so chain-of-title is asserted, not proven. This is the strongest
-position available without commissioned photography, and is materially better
-than an explicitly rights-reserved source.
+**Caveat, stated plainly:** see "What CC0-declared does and does not mean"
+above. Chain-of-title is asserted by the publisher, not proven by us.
 
-### 3c. `models/food_classifier_cc0_7class.pt` — 7 classes — CLEARED (alternative)
+### 3c. `models/food_classifier_cc0_7class.pt` — 7 classes — CC0-DECLARED (alternative)
 
 The first CC0 run, kept for comparison and reachable with
 `NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt`.
@@ -106,11 +136,11 @@ The first CC0 run, kept for comparison and reachable with
 | | |
 |---|---|
 | Source | https://github.com/Ishmam97/Bangladeshi-Food-Dataset |
-| Licence | **CC0 1.0 Universal** (public domain dedication) |
+| Licence | **CC0 1.0 Universal — declared by the dataset publisher** (not independently verified at image level) |
 | Classes | chicken biryani, curd/dahi, jalebi, khichdi, pakora, pani puri, paratha |
 | Images used | 2,083 from the `Train/` split, mapped to 7 NutriCare classes |
 
-Same licence, same caveat as 3b: CC0 waives only the rights the dedicator holds.
+Same position as 3b, including the unverified-authority caveat.
 
 ---
 

@@ -3,8 +3,14 @@
 Scope: PR #2. This audit asks one question — **may this project lawfully ship the
 trained checkpoint?** — and answers it separately from "does the model work?".
 
-Verdicts: **PASS** = verified in writing; **FAIL** = permission absent or
-disputed; **PARTIAL** = usable under stated conditions.
+Verdicts: **PASS** = the licence/permission was verified in writing; **FAIL** =
+permission absent or disputed; **PARTIAL** = usable, but with a stated condition
+or an unverified element.
+
+A note on what **PASS** can and cannot mean: this audit verifies *documents and
+declarations*. It cannot verify that a third-party publisher actually held the
+rights they purported to grant. Where that gap exists — it does for every
+image dataset here — the verdict is **PARTIAL**, not PASS.
 
 ---
 
@@ -19,14 +25,14 @@ disputed; **PARTIAL** = usable under stated conditions.
 | Pretrained-weight licensing | **PASS** | MobileNetV3 weights repo is MIT (Duo Li, 2019) |
 | **Dataset licensing — 20-class model (now removed)** | **FAIL** | no licence anywhere in the chain; provenance is web-scraped |
 | Dataset licensing — IndFood 131-class candidate | **FAIL** | Khana is CC BY-NC-ND 4.0 (no derivatives, no commercial) |
-| Dataset licensing — CC0 7-class replacement | **PASS** | CC0 1.0, commercial + derivatives permitted |
+| Dataset licensing — CC0-declared dataset (both shipped models) | **PARTIAL** | publisher declares CC0 1.0; its authority over each underlying image is **not independently verified** |
 | CC0 model — measured & independently reproduced | **PASS** | 0.8609 (260/302) re-derived via the app's own predictor |
 | CC0 model — leakage | **PARTIAL** | 153 near-dup train/test pairs; clean subset 0.8539 (−0.007) |
 | CC0 model — class coverage | **PARTIAL** | 12 classes vs 20; real capability loss, documented in `docs/COVERAGE.md` |
 
-**Update (final revision):** the licence-cleared checkpoint has been retrained
-to **12 classes** (CC0 1.0, test accuracy 0.8947, macro F1 0.9047) and is the
-**default** model. `docs/MODEL.md` §10 and `docs/COVERAGE.md` carry the current
+**Update (final revision):** the CC0-declared checkpoint has since been retrained
+to **12 classes** (test accuracy 0.8947, macro F1 0.9047) and is the **default**
+model. `docs/MODEL.md` §10 and `docs/COVERAGE.md` carry the current
 numbers.
 
 **The 20-class checkpoint is no longer included in this repository, in any
@@ -36,10 +42,11 @@ distributed, and leaving it in the tree — even as a non-default opt-in — wou
 still be distribution. It has been removed from the working tree and from the
 branch history, so no earlier commit on this branch contains it either.
 
-**Bottom line: the 20-class model was technically sound but never cleared for
-redistribution, so it has been removed rather than shipped with a warning.** The
-CC0-licensed replacement (see §5) is the default: lawful, slightly more
-accurate, and covers 12 classes rather than 20. That coverage loss is the price
+**Bottom line: the 20-class model was technically sound but had no licence at
+all, so it has been removed rather than shipped with a warning.** The
+replacement (see §5) is the default and comes from a dataset whose publisher
+declares CC0 1.0 — a documented rights grant, not a proven chain of title. It is
+slightly more accurate and covers 12 classes rather than 20. That coverage loss is the price
 of shipping something NutriCare may actually distribute, and it is stated in
 `docs/COVERAGE.md` rather than buried. Every third-party notice, including the
 full MIT text for the backbone weights, is in `THIRD_PARTY_NOTICES.md`.
@@ -262,17 +269,24 @@ so upstream rights are unclear even before the NC/ND terms.
 | Property | Finding |
 |---|---|
 | Repo | `github.com/Ishmam97/Bangladeshi-Food-Dataset` |
-| Licence | **CC0 1.0 Universal** (full legal text committed as `LICENSE`) |
+| Licence | **CC0 1.0 Universal**, declared by the publisher (full legal text committed as `LICENSE`) |
 | Images | 10,039; 8,442 in the `Train/` split used here |
 | Classes | 44 |
 | Mapped to NutriCare | **7 classes, 2,083 images** (see below) |
 | Provenance note | README describes images "collected from diverse real-world sources (homes, restaurants, markets, and online platforms)" |
 
-**Honest limitation:** CC0 waives the *author's own* rights. If this dataset
-author did not own the images (same scraping risk as above), CC0 cannot grant
-more than he had. It is materially the strongest position available without
-in-house photography, but it is not a chain-of-title guarantee. This is stated
-rather than glossed over.
+**Honest limitation — this is the one verdict that most invites overstatement.**
+CC0 waives only the *dedicator's own* rights. If this dataset author did not own
+the images (the same scraping risk as above), CC0 cannot convey more than he
+had. We verified the licence text; we did **not** verify the chain of title.
+
+So: **the publisher declares CC0 1.0, and that declaration is documented. The
+publisher's authority over every underlying photograph is not independently
+verified.** That is materially stronger than an unlicensed scrape and the best
+position available without in-house photography — but it is not a guarantee that
+redistribution is lawful, and it does not mean legal risk is zero. Section 5.2
+of this audit therefore records **PARTIAL**, and `docs/MODEL.md` §10.6 carries
+the same wording.
 
 Only true equivalents were mapped — no stretching to inflate class count:
 
@@ -362,9 +376,11 @@ re-run of this one.
 
 Nothing local. The minimum external action, in order of cost:
 
-1. **Cheapest that works legally: use the CC0 model.** No permission needed;
-   ship `models/food_classifier_cc0.pt` as the default and keep the 20-class
-   artifact out of the repository (or mark it clearly as research-only).
+1. **Lowest-risk route: ship the CC0-declared model.** It carries a documented
+   public-domain dedication from its publisher, so no further permission is
+   *known to be* needed — with the unresolved caveat in §5.2 that the
+   publisher's authority over individual images is unverified. Keep the 20-class
+   artifact out of the repository entirely.
 2. **If the 20-class breadth matters:** obtain written permission from
    `l33tc0d3r` (Kaggle) as the curator, *and* from `dhruvk2002` for the curated
    6,269-image subset. The request must ask specifically for:

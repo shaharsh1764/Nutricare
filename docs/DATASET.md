@@ -4,7 +4,9 @@ This document records which public datasets were considered, what they contain,
 their licences, and which were actually obtained. The acquisition pipeline is
 `training/download_datasets.py`.
 
-> **Status: two real models ARE trained and shipped, both from CC0 1.0 data.**
+> **Status: two real models ARE trained and shipped, both from a dataset whose
+> publisher declares CC0 1.0.** That declaration is documented; the publisher's
+> authority over every underlying photograph is not independently verified.
 > GitHub is reachable from the build environment even though every dedicated
 > dataset host is not. See `docs/MODEL.md` for measured results and
 > `docs/COVERAGE.md` for which dishes are supported.
@@ -17,11 +19,11 @@ their licences, and which were actually obtained. The acquisition pipeline is
 
 ## 0. Datasets actually used
 
-Only one image dataset is used by the shipped models, and it is CC0:
+Only one image dataset is used by the shipped models. Its publisher declares CC0 1.0:
 
 | Dataset | Source | Images | Classes | Licence | Obtained |
 |---|---|---|---|---|---|
-| Bangladeshi Food Dataset | `github.com/Ishmam97/Bangladeshi-Food-Dataset` | 8,444 in `Train/`; 2,573 used after de-duplication | 44 → **12 mapped** | **CC0 1.0 Universal** — commercial use, derivatives and redistribution all permitted | ✅ via `training/fetch_cc0_dataset.py` |
+| Bangladeshi Food Dataset | `github.com/Ishmam97/Bangladeshi-Food-Dataset` | 8,444 in `Train/`; 2,573 used after de-duplication | 44 → **12 mapped** | **CC0 1.0 Universal, declared by the publisher.** The licence text permits commercial use, derivatives and redistribution; the publisher's authority over each underlying image is **not independently verified** | ✅ via `training/fetch_cc0_dataset.py` |
 | MobileNetV3 ImageNet weights | `github.com/d-li14/mobilenetv3.pytorch` → `mobilenetv3-small-55df8e1f.pth` | — | 1000 (ImageNet) | **MIT**, © 2019 Duo Li | ✅ `training/load_imagenet_backbone.py`, strict load verified |
 
 ### Removed: the 20-class dataset and the checkpoint trained on it
@@ -33,7 +35,10 @@ listing of "Data files © Original Authors", and published work on the same
 images stating they were *"extracted from google"*.
 
 Neither the images nor the checkpoint trained on them can be redistributed, so
-**both are absent from this repository and from the branch history**. The
+**both are absent from this repository and from the branch history**. This is a
+different situation from the CC0-declared dataset above: there the publisher made
+a public-domain dedication, here nobody did. Both carry unresolved chain-of-title
+questions, but only one of them carries *any* rights grant at all. The
 evidence is recorded in `docs/LICENSING_AUDIT.md` §2 so the decision is
 auditable, but no artifact depends on it.
 

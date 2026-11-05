@@ -9,7 +9,7 @@ Three different things get confused, so they are separated throughout:
 |---|---|
 | **In taxonomy** | The dish exists as a class `nutricare/vision.py` knows about, with a label and a nutrition link. Does **not** imply the model can recognise it. |
 | **In a shipped model** | A trained checkpoint outputs that class. |
-| **Licence-cleared** | The training images for that class have verified rights permitting both training and redistribution of the derived model. |
+| **CC0-declared** | The dataset's publisher declares CC0 1.0 for the training images. The publisher's authority over each underlying photograph has **not** been independently verified, so this is a documented rights grant, not a proven chain of title. |
 
 A class only counts as *supported* when all three are true.
 
@@ -84,8 +84,8 @@ Legend: ✅ supported (trained + licensed) · ⚠️ trained but thin · ⛔ blo
 | Kheer / payesh | 21 | `Payesh` |
 | Jalebi | 23 | `Jilapi` |
 
-**Supported Indian food classes: 12.** All 12 are licence-cleared CC0 and all 12
-are in the shipped default checkpoint:
+**Supported Indian food classes: 12.** All 12 come from a publisher-declared CC0
+dataset and all 12 are in the shipped default checkpoint:
 
 ```
 chicken biryani · chole · chomchom · curd/dahi · jalebi · kheer
@@ -158,7 +158,7 @@ Each rejection is a decision, not an oversight.
 | `prabhuomkar/Khana` | none | Images crawled from search engines and Swiggy/Zomato. No licence file. |
 | `pranavuppuluri/Cooked-Food-Recognition-and-Classification` (8,395 images, 37 Indian dishes) | MIT | The MIT text covers "the Software". The README documents 8,395 images and states **no provenance, no source, no permission** for them. Tempting and unusable — this is the trap the brief warns about. |
 | `iamsouravbanerjee/indian-food-images-dataset` (Kaggle) | unverified | Host unreachable for licence inspection; sibling Kaggle food sets are rights-reserved. |
-| `Ishmam97/Bangladeshi-Food-Dataset` (44 classes, 8,444 images) | **CC0-1.0** | ✅ **Accepted** — the only source here with an image-level licence permitting commercial use and derivatives. Caveat recorded in §5. |
+| `Ishmam97/Bangladeshi-Food-Dataset` (44 classes, 8,444 images) | **CC0-1.0, publisher-declared** | ✅ **Accepted** — the only source here with an image-level public-domain dedication permitting commercial use and derivatives. Publisher authority over individual images is unverified; caveat in §5. |
 
 ---
 
@@ -170,11 +170,16 @@ text committed in the repository.
 | Requirement | Position |
 |---|---|
 | Original source / creator | The repository owner, Ishmam; published as a Bangladeshi food image dataset |
-| Licence on the **images** | CC0 1.0 (the repo's `LICENSE` applies to the dataset itself, and CC0 is a public-domain dedication rather than a code licence) |
-| Commercial use | Permitted |
-| Derivatives / model distribution | Permitted |
+| Licence on the **images** | **CC0 1.0, declared by the publisher.** The repo commits the full CC0 legal text as its `LICENSE`, and CC0 is a public-domain dedication rather than a code licence |
+| Commercial use | Permitted *by the licence text* — subject to the publisher having authority to grant it |
+| Derivatives / model distribution | Permitted *by the licence text* — same qualification |
 | Attribution required | None (given anyway, as good practice) |
-| Redistribution of images | Permitted |
+| Redistribution of images | Permitted *by the licence text* — same qualification |
+
+**The qualification matters and is not boilerplate:** we verified the licence
+document, not the chain of title. The publisher's authority over every individual
+photograph is unverified, so none of the rows above is a guarantee that
+redistribution is lawful, and none of them means legal risk is zero.
 
 ### How much of it was actually used
 

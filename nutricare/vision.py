@@ -41,8 +41,10 @@ CLASSES_PATH = PROJECT_DIR / "data" / "food_classes.json"
 
 # Which checkpoint is installed by default.
 #
-# The default is the LICENSE-CLEARED model: `food_classifier_cc0.pt`, trained
-# only on CC0 1.0 images. The older 20-class `food_classifier.pt` is more
+# The default is `food_classifier_cc0.pt`, trained only on a dataset whose
+# publisher declares CC0 1.0. That declaration is documented; the publisher's
+# authority over every underlying photograph is NOT independently verified. See
+# docs/MODEL.md §10.6 before treating these weights as safe to redistribute. The older 20-class `food_classifier.pt` is more
 # capable but its training images carry no licence at all, so it must not be the
 # one that ships (see docs/LICENSING_AUDIT.md and docs/COVERAGE.md).
 #

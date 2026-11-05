@@ -1,8 +1,9 @@
 # AI Food Scanner — model documentation
 
 Two real, trained checkpoints are included in this repository, both trained
-only on **CC0 1.0** images. **This document covers both.** It reports what each
-actually achieves, how each was produced, and where each is weak.
+only on images from a dataset whose **publisher declares CC0 1.0**. **This
+document covers both.** It reports what each actually achieves, how each was
+produced, and where each is weak.
 
 | | **Default: 12-class model** | Alternative: 7-class model |
 |---|---|---|
@@ -10,9 +11,12 @@ actually achieves, how each was produced, and where each is weak.
 | Test accuracy | **0.8947** (n=380) | 0.8609 (n=302) |
 | Leak-free test accuracy | 0.8947 (0 leakage) | 0.8539 (after removing 35 leaked) |
 | Test macro F1 | **0.9047** | 0.8724 |
-| Training-data licence | **CC0 1.0 — cleared** | **CC0 1.0 — cleared** |
-| Safe to redistribute | **yes** | **yes** |
+| Training-data licence | **CC0 1.0 declared by the dataset publisher** | **CC0 1.0 declared by the dataset publisher** |
+| Publisher's authority over every image | **not independently verified** | **not independently verified** |
 | Details | §10 below | §10.5 below |
+
+Neither row is a statement that redistribution is guaranteed or that legal risk
+is zero. See §10.6 for exactly what was and was not checked.
 
 ### What is NOT in this repository, and why
 
@@ -44,8 +48,8 @@ remains is the machinery that produced it and still produces the shipped models:
 | `training/load_imagenet_backbone.py` | converts the MIT-licensed d-li14 MobileNetV3 weights to torchvision layout |
 | `training/train_food_classifier.py` | global de-duplication, stratified split, training, evaluation, metrics |
 
-The pipeline is unchanged and reusable. Pointing it at a licence-cleared dataset
-is the only requirement, which is exactly what §10 documents.
+The pipeline is unchanged and reusable. Pointing it at a dataset with a documented
+licence is the only requirement, which is exactly what §10 documents.
 
 ## 2. Datasets used by the shipped models
 
@@ -54,7 +58,7 @@ Only one dataset is used, and it is CC0:
 | Property | Value |
 |---|---|
 | Source | `github.com/Ishmam97/Bangladeshi-Food-Dataset` |
-| Licence | **CC0 1.0 Universal** — commercial use, derivatives and redistribution all permitted |
+| Licence | **CC0 1.0 Universal, declared by the dataset publisher** — the licence text permits commercial use, derivatives and redistribution; the publisher's authority over every underlying image is **not independently verified** |
 | Images | 8,444 in the `Train/` split, 44 classes |
 | Mapped to NutriCare | 12 classes, 3,247 images offered, 2,573 after de-duplication |
 | Caveat | CC0 waives only the rights the dedicator holds; the README says images came partly from "online platforms" |
@@ -143,7 +147,8 @@ photo recognition as unavailable — it never guesses.
 ## 10. The installed model: CC0 12-class checkpoint
 
 `models/food_classifier_cc0.pt` **is the default checkpoint**. It is trained only
-on CC0 1.0 images and is safe to redistribute.
+on images from a dataset whose publisher declares CC0 1.0 — see §10.6 for the
+limits of that claim.
 
 | | **12-class (default)** | 7-class (alternative) |
 |---|---|---|
@@ -153,7 +158,7 @@ on CC0 1.0 images and is safe to redistribute.
 | Test accuracy | **0.8947** | 0.8609 (leak-free 0.8539) |
 | Test macro F1 | **0.9047** | 0.8724 |
 | Test support | 380 | 302 |
-| Training-data licence | **CC0 1.0** ✅ | **CC0 1.0** ✅ |
+| Training-data licence | **CC0 1.0, publisher-declared** | **CC0 1.0, publisher-declared** |
 | Default | **yes** | no (`NUTRICARE_MODEL=…_7class.pt`) |
 | Size | 6.0 MB | 6.0 MB |
 | CPU inference | **16 ms median, 42 ms p95** | ~35–60 ms |
@@ -234,13 +239,54 @@ and because its numbers were measured before the global de-duplication fix:
 | Leak-free accuracy | **0.8539** (n=267, after removing 35 train-leaked images) |
 | Macro F1 | 0.8724 |
 | Input size | 160 px |
-| Licence | CC0 1.0 — cleared |
+| Licence | CC0 1.0 — publisher-declared, authority unverified |
 
 Its 0.8609 is inflated by about +0.007 by near-duplicate frames that straddled
 the split; the honest figure is 0.8539. The 12-class model replaced it and fixed
 that class of problem, so the 12-class model is the default.
 
 Select it with `NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt`.
+
+### 10.6 What the CC0 claim does and does not cover
+
+The two shipped checkpoints were trained on `Ishmam97/Bangladeshi-Food-Dataset`.
+Being precise about its status matters more than calling it "cleared":
+
+**Verified.** The repository commits a full CC0 1.0 Universal dedication, and its
+README documents how the images were gathered. CC0 1.0, as written, waives
+copyright and related rights worldwide and permits use, modification,
+distribution and commercial use without attribution — with no share-alike or
+no-derivatives restriction.
+
+**Not verified.** That the publisher held those rights for every underlying
+photograph. The README describes images "collected from diverse real-world
+sources (homes, restaurants, markets, and online platforms)". CC0 can only waive
+rights the dedicator actually holds. We did not obtain:
+
+- chain-of-title evidence for individual photographs,
+- contributor or model-release agreements from any photographer,
+- independent confirmation of authorship, or
+- any statement from the publisher warranting their authority.
+
+**Therefore the accurate wording, used throughout this repository, is:**
+
+> The dataset publisher declares CC0 1.0. Underlying image ownership and the
+> publisher's authority to dedicate those rights have not been independently
+> verified.
+
+**What that means in practice.**
+
+| Claim | True? |
+|---|---|
+| There is a documented public-domain dedication covering the dataset | yes |
+| This is a stronger position than an unlicensed scrape | yes — materially |
+| Redistribution is guaranteed to be lawful | **no** |
+| Legal risk is zero | **no** |
+| Commercial redistribution is guaranteed | **no** |
+
+Anyone redistributing these models commercially should treat the chain of title
+as unresolved and obtain their own assurance. This is the best position
+available without commissioned photography, and it is not a warranty.
 
 ## 11. Next concrete step
 
