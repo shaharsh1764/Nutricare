@@ -43,6 +43,9 @@ data/selftest/
 models/*.pt
 models/*.pth
 models/*.onnx
+!models/food_classifier_cc0.pt
+!models/food_classifier_cc0.metrics.json
+!models/food_classifier_cc0.report.txt
 !models/.gitkeep
 models/selftest*
 models/backbone_*

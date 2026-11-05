@@ -54,14 +54,15 @@ release.
 | Images | 6,271 files; **6,269 verified readable** (0 corrupt, 0 below 64px) |
 | Resolution | min 148×141, median 751×681, max 7360×7360 |
 | Classes | 20 (listed in §4) |
-| Licence | **None declared by the repository.** No `LICENSE` file. Treated as an educational/research compilation; if you intend to redistribute a derivative model commercially, verify provenance with the author first. |
+| Licence | ⛔ **None declared.** No `LICENSE` file exists; the upstream Kaggle listing says "Data files © Original Authors". **Not cleared for redistribution** — see `docs/LICENSING_AUDIT.md`. |
 | Downloaded & inspected | **Yes** — full tarball, every image opened with Pillow |
 
 ### Also evaluated, not used
 
 | Dataset | Images | Classes | Why not used |
 |---|---|---|---|
-| `soumen7saha/IndFood-Dataset` | 20,400 | 131 | **Excellent candidate** — covers most of NutriCare's Indian list (dal tadka, rajma, palak paneer, aloo gobi, poha, pongal, bhindi masala, kachori, dabeli, chole bhature, misal pav…). Download started; not trained on within this session's compute/time budget. This is the recommended next step. |
+| `soumen7saha/IndFood-Dataset` | 20,400 | 131 | ⛔ **Rejected on licensing.** Its images come from Khana, licensed **CC BY-NC-ND 4.0** (no derivatives, no commercial use). A trained model is a derivative. Coverage would have been excellent — the blocker is legal, not technical (`docs/LICENSING_AUDIT.md` §5.1). |
+| `Ishmam97/Bangladeshi-Food-Dataset` | 8,442 (Train split) | 44 → 7 mapped | ✅ **Used.** **CC0 1.0.** Trained as `models/food_classifier_cc0.pt` — the licence-clean alternative in §10. |
 | `soumen1149/RASOI` | 939 | detection dataset (YOLO labels) | Bounding-box format, too small for classification |
 | `Sarthak-1408/Indian-Food-Classification` | 23 | — | Sample images only, plus a notebook |
 | Food-101, UECFOOD-256, IFD, Indian Food 101/80 | — | — | Hosts unreachable (Kaggle / ETHZ / IITD / UEC); GitHub release assets blocked |
@@ -238,9 +239,12 @@ photo recognition as unavailable — it never guesses.
    recognition. 81% accuracy on 20 classes does not generalise to a thali.
 2. **Single-label.** One dominant dish per photo; it cannot separate rice, dal
    and sabzi on one plate. That needs object detection, not classification.
-3. **Training data is a web-scraped compilation with no declared licence.** The
-   model is fine for personal/educational use; get provenance in writing before
-   any commercial deployment.
+3. **Training data is a web-scraped compilation with no declared licence.** Do
+   *not* read this as "fine for personal/educational use" — educational use is a
+   possible defence, not a permission, and the images are very likely
+   third-party copyrighted work. The checkpoint is therefore **not cleared for
+   redistribution**. See `docs/LICENSING_AUDIT.md`; use the CC0 model below if
+   you need a checkpoint you may actually ship.
 4. **Domain shift.** Source photos are largely studio/stock-style. Real phone
    photos of a home thali under warm indoor light will score lower than 81%.
    Collect ~50 real user photos per class to measure the true field accuracy.
@@ -253,11 +257,40 @@ photo recognition as unavailable — it never guesses.
 8. **Not evaluated for safety-critical use.** This is a convenience estimate,
    not dietary or medical advice.
 
-## 10. Next concrete step
+## 10. A licence-clean alternative checkpoint
 
-The single highest-value improvement is **retraining on
-`soumen7saha/IndFood-Dataset` (20,400 images, 131 classes)**, which covers most
-of NutriCare's intended Indian list. Expect a materially better model: more
-images per class, more classes, and genuine coverage of dal tadka, rajma,
-palak paneer, aloo gobi, poha, pongal and bhindi masala. The pipeline needs no
-changes — only `--data` pointing at the new folder.
+`models/food_classifier_cc0.pt` is trained from scratch-by-fine-tuning on
+**CC0 1.0** images (`Ishmam97/Bangladeshi-Food-Dataset`), with the same
+architecture, preprocessing and MCV split logic as the main model:
+
+| | Main model | CC0 model |
+|---|---|---|
+| Classes | 20 | 7 |
+| Test accuracy | 0.8143 | **0.8609** (leak-free subset 0.8539) |
+| Test macro F1 | 0.8087 | 0.8724 |
+| Training-data licence | none declared (⛔) | **CC0 1.0** ✅ |
+| Ships in git | yes | yes |
+
+Enable it with:
+
+```bash
+NUTRICARE_MODEL=models/food_classifier_cc0.pt python app.py
+```
+
+It is not the default: 7 classes cannot serve the app's 20-class UI paths
+without regressing features, so the default is unchanged and the choice is left
+explicit. Classes: chicken biryani, curd/dahi, jalebi, khichdi, pakora,
+pani puri, paratha — all 7 have documented nutrition rows.
+
+Reproduce it with `training/fetch_cc0_dataset.py` then
+`training/train_food_classifier.py --data data/raw/cc0_food`.
+
+## 11. Next concrete step
+
+The blocker is licensing, not modelling. To reach 20+ *shippable* classes,
+obtain a dataset whose rights holder grants derivative-model distribution —
+either own photography (~60 dishes × ~120 images), a commercial licence, or
+written permission from the current 20-class dataset's curator. **Do not
+retrain on `soumen7saha/IndFood-Dataset` or Khana:** both derive from
+CC BY-NC-ND 4.0 material, which forbids derivative works and commercial use
+(`docs/LICENSING_AUDIT.md` §5.1).
