@@ -14,6 +14,7 @@ const LS_SIDE = "nutricare_side";
 const ROUTES = {
   dashboard: { title: "Dashboard", render: renderDashboard },
   tracker: { title: "Nutrition Tracker", render: renderTracker },
+  scanner: { title: "AI Food Scanner", render: renderScanner },
   profile: { title: "My Profile", render: renderProfile },
   assistant: { title: "Health Assistant", render: renderAssistant },
   reports: { title: "Reports", render: renderReports },

@@ -1,0 +1,13 @@
+# Optional ML extras for the AI Food Scanner. The web app runs WITHOUT these:
+# without them the scanner reports "recognition switched off" instead of guessing.
+# Install only when you have a trained checkpoint and want to run inference,
+# or when you are training a new model.
+#
+# CPU wheels (default, ~200 MB):
+#   pip install -r requirements-ml.txt
+torch>=2.0,<3
+torchvision>=0.15,<1
+Pillow>=10,<14
+
+# Training-only (dataset download + parquet mirror):
+#   pip install -r requirements-ml.txt datasets

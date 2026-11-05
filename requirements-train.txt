@@ -1,0 +1,5 @@
+# Extra dependencies needed ONLY for training a new checkpoint.
+# The runtime app needs requirements.txt (and optionally requirements-ml.txt).
+-r requirements-ml.txt
+datasets>=2.19
+numpy>=1.24

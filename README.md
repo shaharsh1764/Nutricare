@@ -7,7 +7,7 @@ Reports, Settings).
 * **Backend:** Python + Flask (a small, beginner-friendly web framework)
 * **Database:** SQLite — a single file, no server to install
 * **Frontend:** plain HTML/CSS/JavaScript served by Flask (no build step, no node needed)
-* **Tests:** `pytest` (98 tests: 68 original + 30 Smart Nutrition Insights) + a Node UI smoke harness (55 checks: A–K)
+* **Tests:** `pytest` (179 tests: 125 baseline + 54 AI Food Scanner) + a Node UI smoke harness (80 checks: A–L)
 
 ---
 
@@ -67,7 +67,13 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 | `nutricare/assistant.py` | Health Assistant rule engine + emergency red-flag screen |
 | `nutricare/db.py` | SQLite schema, seeding, purge |
 | `static/`, `templates/` | frontend (CSS design system, JS views, SVG charts) |
-| `data/foods.json` | sample food dataset (42 foods, per-100 g values) |
+| `data/foods.json` | food dataset (196 foods, per-100 g values) |
+| `data/food_classes.json` | AI Food Scanner class taxonomy (59 classes → dataset rows) |
+| `nutricare/vision.py` | image validation + trained-model loading/inference |
+| `nutricare/food_recognition.py` | class → nutrition mapping and portion scaling |
+| `nutricare/vision_api.py` | `/api/vision/*` blueprint (status, predict, estimate, log) |
+| `training/` | dataset acquisition + reproducible training/evaluation scripts |
+| `docs/DATASET.md`, `docs/MODEL.md` | dataset licences, model card, training guide |
 | `data/SOURCES.md` | **documented sources** (USDA FoodData Central, IFCT 2017) + caveats |
 | `instance/nutricare.db` | **the database** (created on first run; delete to reset) |
 | `tests/` | pytest suite + Node UI smoke harness |
@@ -179,3 +185,96 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
 * Navigation: the sidebar collapses to an icon rail on desktop (choice remembered)
   and becomes a ☰ drawer under ~860px; symptom severity uses exact radio numbers
   1–10 — no slider is used for any health input.
+* **AI Food Scanner:** photo recognition requires a trained checkpoint, which is
+  not bundled (see §10 and `docs/MODEL.md`) — until one is installed the scanner
+  states that plainly and offers manual entry. It recognises one dominant dish
+  per photo, cannot measure weight from an image, and 23 of its 59 foods have no
+  documented nutrition entry, so those ask you for values instead of guessing.
+
+## 10. AI Food Scanner (photo → nutrition → diary)
+
+Photograph a meal and NutriCare identifies it, estimates its nutrition, lets you
+adjust the portion, and logs it to your diary — reusing the existing food
+dataset, nutrition maths and `meal_entries` table.
+
+### Using it
+
+1. Sidebar → **AI Food Scanner** (also on the dashboard: *Scan a meal*).
+2. **Take Photo** (device camera, rear camera preferred) or **Upload Image**
+   (JPG/PNG/WebP, ≤ 8 MB). The chosen photo is previewed first.
+3. **Analyze meal** → ranked predictions with confidence scores.
+4. Pick the right dish if the top guess is wrong; adjust grams with −/+ or by typing.
+5. **Add to meal log** → choose **Breakfast, Lunch, Snacks or Dinner**.
+6. It appears immediately in the tracker and dashboard totals.
+
+Camera handling: permission denial, no camera, and unsupported browsers each get
+a specific message and a working fallback to upload. The rear camera is requested
+via `facingMode: environment`; capture is `playsinline` for iOS.
+
+### What it refuses to do
+
+* **No fake predictions.** If no trained checkpoint is installed, the scanner says
+  recognition is switched off and offers manual logging. `POST /api/vision/predict`
+  returns **503** — never an invented food name, never a "demo" guess.
+* **No invented nutrition.** 36 of the 59 supported foods have documented dataset
+  entries. The other 23 are marked unavailable and you enter your own values.
+* **No fake portion accuracy.** A photo cannot reveal weight; the default serving
+  comes from the dataset and you adjust it. The UI says so next to the field.
+* **No single-label overreach.** The model identifies one dominant dish, not a
+  whole thali. The API returns `single_label: true` and the UI explains it.
+* **No photo retention.** Uploads are validated from magic bytes, held in memory
+  for one request, never written to disk, never sent to a third party.
+
+### Supported foods
+
+59 classes across Indian staples (roti/chapati, paratha, naan, rice, pulao,
+khichdi), Indian breakfast (idli, dosa, masala dosa, uttapam, poha, upma, vada,
+chole bhature), Indian curries (dal, dal tadka, rajma, chole, paneer dishes,
+aloo gobi, sambar, rasam, kadhi), Indian rice dishes (biryani, curd/lemon/tomato/
+fried rice), Indian snacks (samosa, pakora, dhokla, kachori, vada pav, pani puri,
+bhel puri) and international favourites (pizza, burger, sandwich, pasta, noodles,
+fries, fried chicken, momos, spring rolls, pancakes, salad). The full, editable
+list is `data/food_classes.json`.
+
+### Endpoints
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/vision/status` | Is a checkpoint installed? Honest detail message. |
+| GET | `/api/vision/classes` | 59 classes + whether nutrition is available. |
+| POST | `/api/vision/predict` | Multipart/raw image → ranked predictions + estimates. 503 if no model. |
+| POST | `/api/vision/estimate` | `{slug, grams}` → nutrients, range, source. |
+| POST | `/api/vision/log` | `{slug, grams, meal}` → writes to the existing diary. |
+
+### Model and training
+
+The architecture is MobileNetV3-Small with an ImageNet-pretrained backbone
+(CPU inference, ≈6 MB checkpoint). **No trained checkpoint ships with this
+repository** — the sandbox that built this feature had no access to any dataset
+host or weights host, so training could not be performed and no accuracy is
+claimed anywhere.
+
+The complete, reproducible pipeline is included and self-tested end to end:
+
+```bash
+python training/download_datasets.py --probe          # connectivity check
+python training/download_datasets.py --out data/raw   # dataset acquisition
+python training/train_food_classifier.py --self-test  # prove the pipeline (≈15 s)
+python training/train_food_classifier.py --data data/raw --epochs 15
+pip install -r requirements-ml.txt                    # enable inference
+```
+
+Datasets, licences and the acquisition policy: **`docs/DATASET.md`**.
+Architecture, training config, evaluation method, installation and limitations:
+**`docs/MODEL.md`**.
+
+### Privacy and safety notes
+
+* Photos are processed locally in the Flask process. Nothing is uploaded anywhere.
+* Server-side validation: magic-byte type check, 8 MB ceiling, dimension bounds,
+  truncated/corrupt header rejection. Filenames are never trusted.
+* Client-supplied nutrition is ignored on save — the diary value is recomputed
+  from the dataset and the portion you asked for.
+* Scanned meals obey the same dietary/allergy guard as manually logged meals.
+* The feature adds no authentication claims: it inherits NutriCare's local-profile
+  model unchanged.

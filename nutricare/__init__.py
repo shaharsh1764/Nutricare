@@ -9,6 +9,7 @@ from flask import Flask, render_template
 
 from . import db
 from .api import api
+from .vision_api import vision_api
 
 
 def create_app(test_config: dict | None = None) -> Flask:
@@ -25,6 +26,12 @@ def create_app(test_config: dict | None = None) -> Flask:
         app.config.update(test_config)
 
     app.register_blueprint(api)
+    # AI Food Scanner endpoints live in their own blueprint (/api/vision) so the
+    # existing /api surface is untouched. The recognition model itself is lazily
+    # loaded on the first prediction, so startup never depends on the ML stack.
+    app.register_blueprint(vision_api)
+    # 8 MB image uploads by default; nginx/proxy limits should match.
+    app.config.setdefault("MAX_CONTENT_LENGTH", 12 * 1024 * 1024)
     app.teardown_appcontext(db.close_db)
 
     @app.get("/")

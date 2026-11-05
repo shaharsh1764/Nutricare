@@ -26,3 +26,24 @@ __pycache__/
 
 # Node modules
 node_modules/
+# ---------------- AI Food Scanner artefacts ----------------
+# Large image datasets are never committed: re-fetch with training/download_datasets.py
+data/raw/
+data/selftest/
+*.jpg
+*.jpeg
+*.png
+*.webp
+
+# Model checkpoints are build artefacts, not source. Exceptions below keep
+# anything small and intentional (e.g. a documented tiny fixture) committable.
+models/*.pt
+models/*.pth
+models/*.onnx
+models/*.metrics.json
+models/*.report.txt
+!models/.gitkeep
+
+# Keep repo icons/lockfiles working even though *.png is ignored above
+!static/**/*.png
+!templates/**/*.png

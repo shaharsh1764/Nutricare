@@ -12,7 +12,8 @@ const vm = require("vm");
 const BASE = process.argv[2] || "http://127.0.0.1:5000";
 const JS_DIR = path.join(__dirname, "..", "static", "js");
 const FILES = ["util.js", "charts.js", "onboarding.js", "views_main.js",
-  "views_health.js", "views_more.js", "views_insights.js", "app.js"];
+  "views_health.js", "views_more.js", "views_insights.js", "views_scanner.js",
+  "app.js"];
 
 /* ---------------- minimal DOM stub ---------------- */
 const registry = new Map();
@@ -282,6 +283,92 @@ const DRIVER = `
   await boot(); location.hash = "#/dashboard"; await refreshView(); await sleep(700);
   assert(el("#insights-root").innerHTML.includes("Smart Nutrition Insights"), "K3 insights survive refresh");
   assert(el("#insights-root").innerHTML.length > 100, "K4 insights content populated");
+
+  /* ---- L: AI Food Scanner (camera, upload, prediction, portion, log) ----
+     The ML checkpoint is absent in CI by design, so this workflow asserts the
+     HONEST path: a clear "recognition off" state and zero invented food names.
+     Behaviour with a real checkpoint is covered by tests/test_vision_inference.py. */
+  console.log("L: AI Food Scanner view…");
+  cookieJar.clear(); storage.delete("nutricare_uid");
+  await boot();
+  if (!S.boot.user) { await click("#ob-skip-all"); await sleep(400); }
+  location.hash = "#/scanner"; await refreshView(); await sleep(400);
+
+  assert(el("#nav-links").innerHTML.includes('data-route="scanner"'),
+    "L1 AI Food Scanner appears in the sidebar");
+  assert(view().includes("AI Food Scanner"), "L2 scanner view renders");
+  assert(view().includes("Take Photo"), "L3 camera capture option present");
+  assert(view().includes("Upload Image"), "L4 upload option present");
+  assert(!!el("#scan-file")
+    && view().includes('accept="image/jpeg,image/png,image/webp"'),
+    "L5 file input accepts JPG/PNG/WebP");
+  assert(view().includes("never stored") || view().includes("not stored"),
+    "L6 privacy statement about photos present");
+  assert(typeof el("#scan-camera").onclick === "function", "L7 camera button bound");
+  assert(typeof el("#scan-upload").onclick === "function", "L8 upload button bound");
+
+  const visionStatus = await (await fetch("BASE" + "/api/vision/status")).json();
+  const modelReady = !!(visionStatus.model && visionStatus.model.model_present);
+  if (modelReady) {
+    assert(!view().includes("Photo recognition is switched off"),
+      "L9 model installed -> no 'switched off' warning");
+  } else {
+    assert(view().includes("Photo recognition is switched off"),
+      "L9 no checkpoint -> UI states recognition is off (no fake AI)");
+    /* a genuinely valid 16x16 PNG, so validation passes and the model check runs */
+    const VALID_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR4nGM4UWFDEmIY1TCqYfhqAACRKnwQyeK93QAAAABJRU5ErkJggg==", "base64");
+    const pred = await fetch("BASE" + "/api/vision/predict", {
+      method: "POST", headers: { "Content-Type": "application/octet-stream" },
+      body: VALID_PNG });
+    assert(pred.status === 503, "L10 predict honestly returns 503 when no model exists");
+    const body = await pred.json();
+    assert(body.model_unavailable === true && !body.predictions,
+      "L11 no predictions are fabricated without a trained model");
+  }
+
+  /* portion adjustment + nutrition come from the documented dataset */
+  const dosa = await (await fetch("BASE" + "/api/vision/estimate", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug: "masala_dosa", grams: 150 }) })).json();
+  assert(dosa.nutrients && dosa.nutrients.kcal > 0, "L12 nutrition resolved from dataset");
+  const bigger = await (await fetch("BASE" + "/api/vision/estimate", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug: "masala_dosa", grams: 300 }) })).json();
+  assert(Math.abs(bigger.nutrients.kcal - 2 * dosa.nutrients.kcal) < 0.6,
+    "L13 nutrients scale proportionally with portion size");
+  assert(!!dosa.range && dosa.range.kcal_low < dosa.nutrients.kcal,
+    "L14 uncertainty band shown, not hidden");
+
+  /* meal-category selection for all four categories + real persistence */
+  const beforeCount = (await (await fetch("BASE" + "/api/meals")).json()).logged_count;
+  for (const meal of ["breakfast", "lunch", "snacks", "dinner"]) {
+    const res = await fetch("BASE" + "/api/vision/log", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug: "roti", grams: 40, meal }) });
+    assert(res.status === 201, "L15 " + meal + " logged via the scanner endpoint");
+  }
+  const after = await (await fetch("BASE" + "/api/meals")).json();
+  assert(after.logged_count === beforeCount + 4, "L16 scanned meals persisted to the diary");
+  assert(["breakfast", "lunch", "snacks", "dinner"].every((m) =>
+    after.meals[m].some((e) => e.display_name.includes("Roti"))),
+    "L17 all four meal categories accepted and grouped correctly");
+
+  const summaryAfter = await (await fetch("BASE" + "/api/summary")).json();
+  assert(summaryAfter.totals.kcal >= dosa.nutrients.kcal,
+    "L18 existing dashboard totals reflect scanned meals");
+
+  await boot(); location.hash = "#/tracker"; await refreshView(); await sleep(400);
+  assert(view().includes("Roti"), "L19 scanned meal visible in the tracker log");
+
+  /* missing meal category is refused */
+  const noMeal = await fetch("BASE" + "/api/vision/log", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug: "roti", grams: 40 }) });
+  assert(noMeal.status === 400, "L20 meal category is required before saving");
+
+  location.hash = "#/dashboard"; await refreshView(); await sleep(600);
+  assert(typeof el("#quick-scan").onclick === "function",
+    "L21 dashboard exposes the scanner entry point");
 
   console.log("ALL UI SMOKE CHECKS PASSED");
 })().catch((e) => { console.error("UI SMOKE FAILURE:", e.message); process.exit(1); });
