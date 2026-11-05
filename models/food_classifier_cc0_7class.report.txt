@@ -1,0 +1,39 @@
+NutriCare food classifier — evaluation report
+generated : 2026-11-05T11:47:18+00:00
+model     : models/food_classifier_cc0.pt (5.9 MB)
+architecture: mobilenet_v3_small @ 160px on cpu
+classes   : 7
+split     : train 1405 / val 302 / test 302
+
+TEST accuracy    : 0.8609  (n=302)
+TEST macro F1    : 0.8724
+TEST weighted F1 : 0.8595
+
+Per-class (sorted by F1, worst first — poor classes are NOT hidden):
+  pakora                       F1 0.759  P 0.957  R 0.629  n=35
+  chicken_biryani              F1 0.787  P 0.755  R 0.822  n=45
+  pani_puri                    F1 0.857  P 0.848  R 0.867  n=45
+  khichdi                      F1 0.870  P 0.864  R 0.877  n=65
+  paratha_plain                F1 0.881  P 0.829  R 0.940  n=67
+  curd_dahi                    F1 0.952  P 1.000  R 0.909  n=33
+  jalebi                       F1 1.000  P 1.000  R 1.000  n=12
+
+Most confused pairs (actual -> predicted):
+  pani_puri -> chicken_biryani: 6
+  pakora -> paratha_plain: 6
+  pakora -> khichdi: 4
+  khichdi -> chicken_biryani: 4
+  chicken_biryani -> khichdi: 4
+  pakora -> pani_puri: 3
+  chicken_biryani -> paratha_plain: 3
+  paratha_plain -> chicken_biryani: 2
+
+Confusion matrix (rows = actual, cols = predicted):
+  labels: chicken_biryani, curd_dahi, jalebi, khichdi, pakora, pani_puri, paratha_plain
+  chicken_biryani                 37     0     0     4     0     1     3
+  curd_dahi                        0    30     0     0     0     1     2
+  jalebi                           0     0    12     0     0     0     0
+  khichdi                          4     0     0    57     0     2     2
+  pakora                           0     0     0     4    22     3     6
+  pani_puri                        6     0     0     0     0    39     0
+  paratha_plain                    2     0     0     1     1     0    63

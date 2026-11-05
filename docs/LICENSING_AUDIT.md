@@ -24,6 +24,13 @@ disputed; **PARTIAL** = usable under stated conditions.
 | CC0 model — leakage | **PARTIAL** | 153 near-dup train/test pairs; clean subset 0.8539 (−0.007) |
 | CC0 model — class coverage | **PARTIAL** | 7 classes vs 20; not a drop-in replacement |
 
+**Update (later revision):** the licence-cleared checkpoint has since been
+retrained to **12 classes** (CC0 1.0, test accuracy 0.8947, macro F1 0.9047) and
+is now the **default** model. `docs/MODEL.md` §10 and `docs/COVERAGE.md` carry
+the current numbers. The verdicts in §2–§4 below still apply unchanged to the
+20-class checkpoint, which remains in the repository as an opt-in artifact and
+is still **not cleared for redistribution**.
+
 **Bottom line: the existing 20-class model is technically sound but NOT cleared
 for redistribution.** A CC0-licensed replacement is included (see §5) — it is
 lawful and slightly more accurate, but covers 7 classes rather than 20, so it is

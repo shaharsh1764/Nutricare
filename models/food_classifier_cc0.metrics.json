@@ -1,17 +1,25 @@
 {
-  "generated_at": "2026-11-05T11:47:18+00:00",
+  "generated_at": "2026-11-05T13:57:38+00:00",
   "architecture": "mobilenet_v3_small",
-  "image_size": 160,
-  "epochs": 16,
+  "image_size": 224,
+  "epochs": 22,
   "device": "cpu",
-  "train_seconds": 435.5,
-  "classes": 7,
+  "train_seconds": 1043.3,
+  "classes": 12,
   "dataset": {
-    "mapped_classes": 7,
+    "mapped_classes": 12,
     "unmapped_folders": {},
     "classes": {
       "chicken_biryani": {
         "images": 298,
+        "kept": true
+      },
+      "chole": {
+        "images": 99,
+        "kept": true
+      },
+      "chomchom": {
+        "images": 383,
         "kept": true
       },
       "curd_dahi": {
@@ -22,8 +30,16 @@
         "images": 82,
         "kept": true
       },
+      "kheer": {
+        "images": 93,
+        "kept": true
+      },
       "khichdi": {
         "images": 439,
+        "kept": true
+      },
+      "morog_polao": {
+        "images": 128,
         "kept": true
       },
       "pakora": {
@@ -37,343 +53,573 @@
       "paratha_plain": {
         "images": 451,
         "kept": true
+      },
+      "rasgulla": {
+        "images": 461,
+        "kept": true
       }
     },
-    "kept_classes": 7,
-    "total_images": 2083
+    "kept_classes": 12,
+    "total_images": 2573
+  },
+  "dedupe": {
+    "method": "md5 exact + dHash64 hamming<=2, global before split",
+    "threshold": 2,
+    "kept": 2573,
+    "dropped_exact": 170,
+    "dropped_near": 504,
+    "dropped_unreadable": 0,
+    "dropped_cross_class": 2,
+    "per_class_kept": {
+      "chicken_biryani": 290,
+      "chole": 99,
+      "chomchom": 65,
+      "curd_dahi": 160,
+      "jalebi": 23,
+      "kheer": 21,
+      "khichdi": 398,
+      "morog_polao": 128,
+      "pakora": 222,
+      "pani_puri": 282,
+      "paratha_plain": 441,
+      "rasgulla": 444
+    }
   },
   "split": {
-    "train": 1405,
-    "val": 302,
-    "test": 302
+    "train": 1778,
+    "val": 380,
+    "test": 380
   },
   "history": [
     {
       "epoch": 1,
-      "train_loss": 1.8728,
-      "val_loss": 1.8033,
-      "val_accuracy": 0.3576
+      "train_loss": 2.3163,
+      "val_loss": 2.1696,
+      "val_accuracy": 0.3605
     },
     {
       "epoch": 2,
-      "train_loss": 1.5987,
-      "val_loss": 1.3245,
-      "val_accuracy": 0.606
+      "train_loss": 1.8716,
+      "val_loss": 1.5337,
+      "val_accuracy": 0.6237
     },
     {
       "epoch": 3,
-      "train_loss": 1.1353,
-      "val_loss": 0.9443,
-      "val_accuracy": 0.8013
+      "train_loss": 1.4026,
+      "val_loss": 1.227,
+      "val_accuracy": 0.7263
     },
     {
       "epoch": 4,
-      "train_loss": 0.9051,
-      "val_loss": 0.8584,
-      "val_accuracy": 0.8444
+      "train_loss": 1.1575,
+      "val_loss": 1.083,
+      "val_accuracy": 0.7579
     },
     {
       "epoch": 5,
-      "train_loss": 0.8087,
-      "val_loss": 0.7929,
-      "val_accuracy": 0.851
+      "train_loss": 1.0246,
+      "val_loss": 1.0093,
+      "val_accuracy": 0.8053
     },
     {
       "epoch": 6,
-      "train_loss": 0.7693,
-      "val_loss": 0.7716,
-      "val_accuracy": 0.8642
+      "train_loss": 0.9446,
+      "val_loss": 0.963,
+      "val_accuracy": 0.8237
     },
     {
       "epoch": 7,
-      "train_loss": 0.7449,
-      "val_loss": 0.7533,
-      "val_accuracy": 0.8675
+      "train_loss": 0.873,
+      "val_loss": 0.931,
+      "val_accuracy": 0.8316
     },
     {
       "epoch": 8,
-      "train_loss": 0.7172,
-      "val_loss": 0.7408,
-      "val_accuracy": 0.8808
+      "train_loss": 0.8474,
+      "val_loss": 0.9332,
+      "val_accuracy": 0.8237
     },
     {
       "epoch": 9,
-      "train_loss": 0.6921,
-      "val_loss": 0.7335,
-      "val_accuracy": 0.8742
+      "train_loss": 0.8397,
+      "val_loss": 0.9168,
+      "val_accuracy": 0.8395
     },
     {
       "epoch": 10,
-      "train_loss": 0.6852,
-      "val_loss": 0.7323,
-      "val_accuracy": 0.8907
+      "train_loss": 0.8003,
+      "val_loss": 0.9114,
+      "val_accuracy": 0.8289
     },
     {
       "epoch": 11,
-      "train_loss": 0.6792,
-      "val_loss": 0.7237,
-      "val_accuracy": 0.894
+      "train_loss": 0.7784,
+      "val_loss": 0.9163,
+      "val_accuracy": 0.8316
     },
     {
       "epoch": 12,
-      "train_loss": 0.6574,
-      "val_loss": 0.7257,
-      "val_accuracy": 0.8808
+      "train_loss": 0.7711,
+      "val_loss": 0.9081,
+      "val_accuracy": 0.8395
     },
     {
       "epoch": 13,
-      "train_loss": 0.6495,
-      "val_loss": 0.7246,
-      "val_accuracy": 0.8874
+      "train_loss": 0.7515,
+      "val_loss": 0.9224,
+      "val_accuracy": 0.8368
     },
     {
       "epoch": 14,
-      "train_loss": 0.6579,
-      "val_loss": 0.7238,
-      "val_accuracy": 0.8907
+      "train_loss": 0.7452,
+      "val_loss": 0.9155,
+      "val_accuracy": 0.8421
     },
     {
       "epoch": 15,
-      "train_loss": 0.6568,
-      "val_loss": 0.7241,
-      "val_accuracy": 0.8907
+      "train_loss": 0.7366,
+      "val_loss": 0.9081,
+      "val_accuracy": 0.8474
     },
     {
       "epoch": 16,
-      "train_loss": 0.6567,
-      "val_loss": 0.7237,
-      "val_accuracy": 0.8907
+      "train_loss": 0.7248,
+      "val_loss": 0.9024,
+      "val_accuracy": 0.8447
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.7197,
+      "val_loss": 0.8978,
+      "val_accuracy": 0.8526
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.7385,
+      "val_loss": 0.8967,
+      "val_accuracy": 0.85
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.7261,
+      "val_loss": 0.8979,
+      "val_accuracy": 0.85
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.7171,
+      "val_loss": 0.8989,
+      "val_accuracy": 0.85
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.7144,
+      "val_loss": 0.8982,
+      "val_accuracy": 0.85
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.7126,
+      "val_loss": 0.8983,
+      "val_accuracy": 0.8474
     }
   ],
-  "test_loss": 0.7625,
+  "test_loss": 0.7779,
   "test_metrics": {
-    "accuracy": 0.8609,
-    "macro_f1": 0.8724,
-    "weighted_f1": 0.8595,
-    "support": 302,
+    "accuracy": 0.8947,
+    "macro_f1": 0.9047,
+    "weighted_f1": 0.8937,
+    "support": 380,
     "per_class": {
       "chicken_biryani": {
-        "precision": 0.7551,
-        "recall": 0.8222,
-        "f1": 0.7872,
-        "support": 45
+        "precision": 0.7451,
+        "recall": 0.8636,
+        "f1": 0.8,
+        "support": 44
+      },
+      "chole": {
+        "precision": 0.8667,
+        "recall": 0.8667,
+        "f1": 0.8667,
+        "support": 15
+      },
+      "chomchom": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 4
       },
       "curd_dahi": {
         "precision": 1.0,
-        "recall": 0.9091,
-        "f1": 0.9524,
-        "support": 33
+        "recall": 0.7917,
+        "f1": 0.8837,
+        "support": 24
       },
       "jalebi": {
         "precision": 1.0,
         "recall": 1.0,
         "f1": 1.0,
-        "support": 12
+        "support": 3
+      },
+      "kheer": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 3
       },
       "khichdi": {
-        "precision": 0.8636,
-        "recall": 0.8769,
-        "f1": 0.8702,
-        "support": 65
+        "precision": 0.8772,
+        "recall": 0.8333,
+        "f1": 0.8547,
+        "support": 60
+      },
+      "morog_polao": {
+        "precision": 0.8571,
+        "recall": 0.6316,
+        "f1": 0.7273,
+        "support": 19
       },
       "pakora": {
-        "precision": 0.9565,
-        "recall": 0.6286,
-        "f1": 0.7586,
-        "support": 35
+        "precision": 0.8889,
+        "recall": 0.9697,
+        "f1": 0.9275,
+        "support": 33
       },
       "pani_puri": {
-        "precision": 0.8478,
-        "recall": 0.8667,
-        "f1": 0.8571,
-        "support": 45
+        "precision": 0.9,
+        "recall": 0.8571,
+        "f1": 0.878,
+        "support": 42
       },
       "paratha_plain": {
-        "precision": 0.8289,
-        "recall": 0.9403,
-        "f1": 0.8811,
+        "precision": 0.9412,
+        "recall": 0.9697,
+        "f1": 0.9552,
+        "support": 66
+      },
+      "rasgulla": {
+        "precision": 0.9429,
+        "recall": 0.9851,
+        "f1": 0.9635,
         "support": 67
       }
     },
     "confusion_matrix": [
       [
-        37,
+        38,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        13,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
         0,
         0,
         4,
         0,
-        1,
-        3
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
       ],
       [
         0,
-        30,
+        0,
+        0,
+        19,
         0,
         0,
         0,
-        1,
+        0,
+        0,
+        0,
+        3,
         2
       ],
       [
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        5,
+        2,
+        0,
+        0,
+        0,
+        0,
+        50,
+        2,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        5,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         12,
         0,
-        0,
+        2,
         0,
         0
       ],
       [
-        4,
         0,
         0,
-        57,
         0,
-        2,
-        2
+        0,
+        0,
+        0,
+        0,
+        0,
+        32,
+        0,
+        1,
+        0
       ],
       [
-        0,
-        0,
-        0,
-        4,
-        22,
         3,
-        6
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        36,
+        0,
+        1
       ],
       [
-        6,
         0,
         0,
         0,
         0,
-        39,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        64,
         0
       ],
       [
-        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         1,
-        1,
         0,
-        63
+        66
       ]
     ],
     "labels": [
       "chicken_biryani",
+      "chole",
+      "chomchom",
       "curd_dahi",
       "jalebi",
+      "kheer",
       "khichdi",
+      "morog_polao",
       "pakora",
       "pani_puri",
-      "paratha_plain"
+      "paratha_plain",
+      "rasgulla"
     ]
   },
   "hardest_confusions": [
     {
-      "count": 6,
-      "actual": "pani_puri",
+      "count": 5,
+      "actual": "morog_polao",
       "predicted_as": "chicken_biryani"
     },
     {
-      "count": 6,
-      "actual": "pakora",
-      "predicted_as": "paratha_plain"
-    },
-    {
-      "count": 4,
-      "actual": "pakora",
-      "predicted_as": "khichdi"
-    },
-    {
-      "count": 4,
+      "count": 5,
       "actual": "khichdi",
       "predicted_as": "chicken_biryani"
     },
     {
-      "count": 4,
+      "count": 5,
       "actual": "chicken_biryani",
       "predicted_as": "khichdi"
     },
     {
       "count": 3,
-      "actual": "pakora",
-      "predicted_as": "pani_puri"
+      "actual": "pani_puri",
+      "predicted_as": "chicken_biryani"
     },
     {
       "count": 3,
-      "actual": "chicken_biryani",
+      "actual": "curd_dahi",
       "predicted_as": "paratha_plain"
     },
     {
       "count": 2,
-      "actual": "paratha_plain",
-      "predicted_as": "chicken_biryani"
+      "actual": "pani_puri",
+      "predicted_as": "pakora"
+    },
+    {
+      "count": 2,
+      "actual": "morog_polao",
+      "predicted_as": "pani_puri"
+    },
+    {
+      "count": 2,
+      "actual": "khichdi",
+      "predicted_as": "morog_polao"
     }
   ],
   "worst_classes": [
     [
-      "pakora",
+      "morog_polao",
       {
-        "precision": 0.9565,
-        "recall": 0.6286,
-        "f1": 0.7586,
-        "support": 35
+        "precision": 0.8571,
+        "recall": 0.6316,
+        "f1": 0.7273,
+        "support": 19
       }
     ],
     [
       "chicken_biryani",
       {
-        "precision": 0.7551,
-        "recall": 0.8222,
-        "f1": 0.7872,
-        "support": 45
-      }
-    ],
-    [
-      "pani_puri",
-      {
-        "precision": 0.8478,
-        "recall": 0.8667,
-        "f1": 0.8571,
-        "support": 45
+        "precision": 0.7451,
+        "recall": 0.8636,
+        "f1": 0.8,
+        "support": 44
       }
     ],
     [
       "khichdi",
       {
-        "precision": 0.8636,
-        "recall": 0.8769,
-        "f1": 0.8702,
-        "support": 65
+        "precision": 0.8772,
+        "recall": 0.8333,
+        "f1": 0.8547,
+        "support": 60
+      }
+    ],
+    [
+      "chole",
+      {
+        "precision": 0.8667,
+        "recall": 0.8667,
+        "f1": 0.8667,
+        "support": 15
+      }
+    ],
+    [
+      "pani_puri",
+      {
+        "precision": 0.9,
+        "recall": 0.8571,
+        "f1": 0.878,
+        "support": 42
+      }
+    ],
+    [
+      "curd_dahi",
+      {
+        "precision": 1.0,
+        "recall": 0.7917,
+        "f1": 0.8837,
+        "support": 24
+      }
+    ],
+    [
+      "pakora",
+      {
+        "precision": 0.8889,
+        "recall": 0.9697,
+        "f1": 0.9275,
+        "support": 33
       }
     ],
     [
       "paratha_plain",
       {
-        "precision": 0.8289,
-        "recall": 0.9403,
-        "f1": 0.8811,
+        "precision": 0.9412,
+        "recall": 0.9697,
+        "f1": 0.9552,
+        "support": 66
+      }
+    ],
+    [
+      "rasgulla",
+      {
+        "precision": 0.9429,
+        "recall": 0.9851,
+        "f1": 0.9635,
         "support": 67
       }
     ],
     [
-      "curd_dahi",
-      {
-        "precision": 1.0,
-        "recall": 0.9091,
-        "f1": 0.9524,
-        "support": 33
-      }
-    ],
-    [
-      "jalebi",
+      "chomchom",
       {
         "precision": 1.0,
         "recall": 1.0,
         "f1": 1.0,
-        "support": 12
+        "support": 4
       }
     ]
   ]

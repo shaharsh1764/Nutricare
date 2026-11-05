@@ -1,10 +1,26 @@
 # AI Food Scanner — model documentation
 
-A **real, trained food-recognition model is included** in this repository:
-`models/food_classifier.pt` (6.0 MB). This document reports what it actually
-achieves, how it was produced, and where it is weak.
+Two real, trained checkpoints are included in this repository. **This document
+covers both.** It reports what each actually achieves, how each was produced,
+and where each is weak.
 
-## 1. Headline results (measured, not estimated)
+| | **Default: 12-class CC0 model** | Opt-in: 20-class model |
+|---|---|---|
+| File | `models/food_classifier_cc0.pt` | `models/food_classifier.pt` |
+| Test accuracy | **0.8947** (n=380) | 0.8143 (n=926) |
+| Test macro F1 | **0.9047** | 0.8087 |
+| Training-data licence | **CC0 1.0 — cleared** | none declared — **not cleared** |
+| Safe to redistribute | **yes** | **no** |
+| Details | §10 below | §1–§7 below |
+
+Why the default is *not* the higher-capability legacy model: the 20-class
+checkpoint was trained on images with no licence anywhere in the chain. Shipping
+it as the product would present an unredistributable artifact as NutriCare. The
+licence-cleared model is also the more accurate one, which makes the choice easy
+rather than a compromise. `docs/COVERAGE.md` tracks which dishes are supported
+and which are blocked, with reasons.
+
+## 1. Headline results — 20-class model (opt-in, licensing unresolved)
 
 | Metric | Value |
 |---|---|
@@ -18,11 +34,10 @@ achieves, how it was produced, and where it is weak.
 | Checkpoint size | 6.0 MB fp32 |
 
 Trained 2026-11-05T10:58:21+00:00. Split: **train 4332 / val 926 / test 926**,
-stratified per class, with byte-identical and same-stem duplicates removed
-*before* splitting so the test set cannot leak into training.
-
-The test set was evaluated exactly once, after model selection on the
-validation split. No test images were used for training or tuning.
+stratified per class. This run removed only byte-identical and same-stem
+duplicates — it predates the global perceptual de-duplication now in the
+trainer, and a later audit found 1 train→test and 2 train→val near-duplicate
+pairs (impact −0.0002). See `docs/LICENSING_AUDIT.md` §4.5.
 
 ## 2. Before/after: what changed
 
@@ -235,55 +250,119 @@ photo recognition as unavailable — it never guesses.
 
 ## 9. Honest limitations
 
-1. **20 classes, not 65.** Everything outside §4 is unsupported for photo
-   recognition. 81% accuracy on 20 classes does not generalise to a thali.
+1. **12 classes, not 65, and not the 27 requested Indian dishes.** Everything
+   outside §10 is unsupported for photo recognition. `docs/COVERAGE.md` maps
+   every requested dish to *supported / blocked* with the reason.
 2. **Single-label.** One dominant dish per photo; it cannot separate rice, dal
    and sabzi on one plate. That needs object detection, not classification.
-3. **Training data is a web-scraped compilation with no declared licence.** Do
-   *not* read this as "fine for personal/educational use" — educational use is a
-   possible defence, not a permission, and the images are very likely
-   third-party copyrighted work. The checkpoint is therefore **not cleared for
-   redistribution**. See `docs/LICENSING_AUDIT.md`; use the CC0 model below if
-   you need a checkpoint you may actually ship.
-4. **Domain shift.** Source photos are largely studio/stock-style. Real phone
-   photos of a home thali under warm indoor light will score lower than 81%.
-   Collect ~50 real user photos per class to measure the true field accuracy.
-5. **13 of 20 classes have no documented nutrition**, so the scanner asks for
-   values rather than inventing them.
-6. **Class imbalance** (130–413 images per class) makes the smallest classes
-   (`pani_puri`) the least reliable.
-7. **No portion estimation from pixels.** Weight is always the user's adjustment
+3. **The default model is licence-cleared; the 20-class one is not.** The 20-class
+   checkpoint was trained on a web-scraped compilation with no declared licence
+   at all. Do *not* read that as "fine for personal/educational use" —
+   educational use is a possible defence, not a permission. It is opt-in and
+   must not be redistributed. See `docs/LICENSING_AUDIT.md`.
+4. **CC0 is a dedication by the publisher, not a chain-of-title guarantee.** The
+   source README says images came partly from "online platforms". It is far
+   stronger than an unlicensed scrape and it is still not a warranty.
+5. **Domain shift.** Source photos are largely studio-style. Real phone photos of
+   a home thali under warm indoor light will score lower than 89%. Collect ~50
+   real photos per class to measure true field accuracy.
+6. **Weakest classes are reported.** `morog_polao` F1 0.727 and
+   `chicken_biryani` 0.800 sit next to each other in the confusion matrix; rice
+   dishes are the known weak spot. Three classes (chomchom, jalebi, kheer) have
+   only 3–4 test images — do not read their 1.000 as real.
+7. **5 of the 12 classes have no documented nutrition**, so the scanner asks the
+   user for values rather than inventing them. Two rows added with this model
+   (kheer, rasgulla) are flagged `approximate` and recipe-derived.
+8. **Class imbalance** (21–444 images per class) makes the thinnest classes the
+   least reliable.
+9. **No portion estimation from pixels.** Weight is always the user's adjustment
    of a dataset default serving.
-8. **Not evaluated for safety-critical use.** This is a convenience estimate,
-   not dietary or medical advice.
+10. **Not evaluated for safety-critical use.** This is a convenience estimate,
+    not dietary or medical advice.
 
-## 10. A licence-clean alternative checkpoint
+## 10. The installed model: CC0 12-class checkpoint
 
-`models/food_classifier_cc0.pt` is trained from scratch-by-fine-tuning on
-**CC0 1.0** images (`Ishmam97/Bangladeshi-Food-Dataset`), with the same
-architecture, preprocessing and MCV split logic as the main model:
+`models/food_classifier_cc0.pt` **is the default checkpoint**. It is trained only
+on CC0 1.0 images and is safe to redistribute. The older 20-class model is more
+capable but its images carry no licence, so it is no longer the default — it
+remains in the repository, reachable but opt-in.
 
-| | Main model | CC0 model |
+| | 20-class (opt-in) | **12-class (default)** |
 |---|---|---|
-| Classes | 20 | 7 |
-| Test accuracy | 0.8143 | **0.8609** (leak-free subset 0.8539) |
-| Test macro F1 | 0.8087 | 0.8724 |
-| Training-data licence | none declared (⛔) | **CC0 1.0** ✅ |
-| Ships in git | yes | yes |
+| Checkpoint | `models/food_classifier.pt` | `models/food_classifier_cc0.pt` |
+| Classes | 20 | **12** |
+| Input size | 160 px | 224 px |
+| Test accuracy | 0.8143 | **0.8947** |
+| Test macro F1 | 0.8087 | **0.9047** |
+| Test support | 926 | 380 |
+| Training-data licence | none declared ⛔ | **CC0 1.0** ✅ |
+| Default | no (`NUTRICARE_MODEL=models/food_classifier.pt`) | **yes** |
+| Size | 6.0 MB | 6.0 MB |
+| CPU inference | ~35–60 ms | **16 ms median, 42 ms p95** |
 
-Enable it with:
+### 10.1 Training data and de-duplication
 
-```bash
-NUTRICARE_MODEL=models/food_classifier_cc0.pt python app.py
+Source: `Ishmam97/Bangladeshi-Food-Dataset` (CC0 1.0), `Train/` split only,
+8,444 images across 44 classes, mapped to 12 NutriCare classes.
+
+```
+images offered       3,247   (12 mapped classes)
+after de-duplication 2,573   dropped 170 exact + 504 near-duplicate
+split                train 1,778 · val 380 · test 380
 ```
 
-It is not the default: 7 classes cannot serve the app's 20-class UI paths
-without regressing features, so the default is unchanged and the choice is left
-explicit. Classes: chicken biryani, curd/dahi, jalebi, khichdi, pakora,
-pani puri, paratha — all 7 have documented nutrition rows.
+De-duplication runs **globally, before the split**: MD5 for exact copies, 64-bit
+dHash with Hamming ≤ 2 for re-encoded near-duplicates. It removed **21%** of the
+offered images. An earlier bucketed implementation missed 48 pairs; the current
+version is an exact all-pairs scan, and §10.3 confirms it now finds none.
 
-Reproduce it with `training/fetch_cc0_dataset.py` then
-`training/train_food_classifier.py --data data/raw/cc0_food`.
+### 10.2 Per-class results (test split)
+
+| Class | Precision | Recall | F1 | n |
+|---|---|---|---|---|
+| morog_polao | 0.857 | 0.632 | **0.727** | 19 |
+| chicken_biryani | 0.745 | 0.864 | **0.800** | 44 |
+| khichdi | 0.877 | 0.833 | 0.855 | 60 |
+| chole | 0.867 | 0.867 | 0.867 | 15 |
+| pani_puri | 0.900 | 0.857 | 0.878 | 42 |
+| curd_dahi | 1.000 | 0.792 | 0.884 | 24 |
+| pakora | 0.889 | 0.970 | 0.927 | 33 |
+| paratha_plain | 0.941 | 0.970 | 0.955 | 66 |
+| rasgulla | 0.943 | 0.985 | 0.964 | 67 |
+| chomchom | 1.000 | 1.000 | 1.000 | **4** |
+| jalebi | 1.000 | 1.000 | 1.000 | **3** |
+| kheer | 1.000 | 1.000 | 1.000 | **3** |
+
+**Read the last three rows with suspicion.** 4, 3 and 3 test images cannot
+support a 1.000. Those classes are kept because they are recognisable, but no
+claim of perfect accuracy is made — the sample is simply too small.
+
+Dominant confusion: `morog_polao ↔ chicken_biryani` and `khichdi ↔
+chicken_biryani`. All three are rice dishes on a plate and the model separates
+them poorly. This is the weakest area, reported rather than removed.
+
+### 10.3 Leakage audit (post-fix)
+
+The same perceptual scan that originally found 153 cross-split pairs now reports:
+
+```
+train <-> test : exact md5 collisions = 0, near-duplicate (dHash<=2) = 0
+train <-> val  : exact md5 collisions = 0, near-duplicate (dHash<=2) = 0
+```
+
+### 10.4 Independent reproduction
+
+Re-derived through the application's own `nutricare.vision.Predictor`, not the
+trainer's evaluator:
+
+```
+reported  : 0.8947 (380 test images)
+re-derived: 0.8945 (339/379) — one image excluded, see below
+```
+
+The excluded image is a 9 MP photo that NutriCare's own upload guard rejects
+(maximum 8,000 px). That is correct product behaviour, reported rather than
+quietly skipped.
 
 ## 11. Next concrete step
 

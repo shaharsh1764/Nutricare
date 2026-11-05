@@ -13,10 +13,11 @@
       "iron_mg": "milligrams"
     },
     "version": "2.0 — expanded Indian coverage",
-    "total_foods": 196,
+    "total_foods": 198,
     "sources": [
       "IFCT 2017 (NIN Hyderabad)",
-      "USDA FoodData Central (SR Legacy/Foundation)"
+      "USDA FoodData Central (SR Legacy/Foundation)",
+      "Recipe-derived (NutriCare) — flagged quality='approximate'; added for dishes with no IFCT/USDA entry. Not a laboratory measurement."
     ],
     "fields": [
       "id",
@@ -5666,6 +5667,66 @@
         "non_vegetarian": false
       },
       "allergens": []
+    },
+    {
+      "id": 197,
+      "name": "Kheer, milk-rice (prepared)",
+      "grp": "Indian Prepared",
+      "serving_desc": "1 katori (150 g)",
+      "serving_g": 150,
+      "kcal": 180,
+      "protein_g": 4.2,
+      "carbs_g": 25.0,
+      "fat_g": 7.0,
+      "fiber_g": 0.3,
+      "sodium_mg": 55,
+      "potassium_mg": 160,
+      "calcium_mg": 120,
+      "iron_mg": 0.4,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "cooked",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived: milk 3.5% fat + rice + 8% sugar, simmered to 150 g serving",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": 198,
+      "name": "Rasgulla / rosogolla (prepared)",
+      "grp": "Indian Prepared",
+      "serving_desc": "2 pieces (60 g)",
+      "serving_g": 60,
+      "kcal": 186,
+      "protein_g": 3.0,
+      "carbs_g": 36.0,
+      "fat_g": 3.6,
+      "fiber_g": 0.0,
+      "sodium_mg": 20,
+      "potassium_mg": 45,
+      "calcium_mg": 90,
+      "iron_mg": 0.1,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "prepared",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived: chhena + sugar syrup (~50% sugar), drained weight basis",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "milk"
+      ]
     }
   ]
 }

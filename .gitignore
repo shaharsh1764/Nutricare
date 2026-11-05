@@ -46,6 +46,9 @@ models/*.onnx
 !models/food_classifier_cc0.pt
 !models/food_classifier_cc0.metrics.json
 !models/food_classifier_cc0.report.txt
+!models/food_classifier_cc0_7class.pt
+!models/food_classifier_cc0_7class.metrics.json
+!models/food_classifier_cc0_7class.report.txt
 !models/.gitkeep
 models/selftest*
 models/backbone_*

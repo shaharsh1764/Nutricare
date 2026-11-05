@@ -1,0 +1,380 @@
+{
+  "generated_at": "2026-11-05T11:47:18+00:00",
+  "architecture": "mobilenet_v3_small",
+  "image_size": 160,
+  "epochs": 16,
+  "device": "cpu",
+  "train_seconds": 435.5,
+  "classes": 7,
+  "dataset": {
+    "mapped_classes": 7,
+    "unmapped_folders": {},
+    "classes": {
+      "chicken_biryani": {
+        "images": 298,
+        "kept": true
+      },
+      "curd_dahi": {
+        "images": 276,
+        "kept": true
+      },
+      "jalebi": {
+        "images": 82,
+        "kept": true
+      },
+      "khichdi": {
+        "images": 439,
+        "kept": true
+      },
+      "pakora": {
+        "images": 235,
+        "kept": true
+      },
+      "pani_puri": {
+        "images": 302,
+        "kept": true
+      },
+      "paratha_plain": {
+        "images": 451,
+        "kept": true
+      }
+    },
+    "kept_classes": 7,
+    "total_images": 2083
+  },
+  "split": {
+    "train": 1405,
+    "val": 302,
+    "test": 302
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.8728,
+      "val_loss": 1.8033,
+      "val_accuracy": 0.3576
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.5987,
+      "val_loss": 1.3245,
+      "val_accuracy": 0.606
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.1353,
+      "val_loss": 0.9443,
+      "val_accuracy": 0.8013
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.9051,
+      "val_loss": 0.8584,
+      "val_accuracy": 0.8444
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.8087,
+      "val_loss": 0.7929,
+      "val_accuracy": 0.851
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.7693,
+      "val_loss": 0.7716,
+      "val_accuracy": 0.8642
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.7449,
+      "val_loss": 0.7533,
+      "val_accuracy": 0.8675
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.7172,
+      "val_loss": 0.7408,
+      "val_accuracy": 0.8808
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.6921,
+      "val_loss": 0.7335,
+      "val_accuracy": 0.8742
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.6852,
+      "val_loss": 0.7323,
+      "val_accuracy": 0.8907
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.6792,
+      "val_loss": 0.7237,
+      "val_accuracy": 0.894
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.6574,
+      "val_loss": 0.7257,
+      "val_accuracy": 0.8808
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.6495,
+      "val_loss": 0.7246,
+      "val_accuracy": 0.8874
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.6579,
+      "val_loss": 0.7238,
+      "val_accuracy": 0.8907
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.6568,
+      "val_loss": 0.7241,
+      "val_accuracy": 0.8907
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.6567,
+      "val_loss": 0.7237,
+      "val_accuracy": 0.8907
+    }
+  ],
+  "test_loss": 0.7625,
+  "test_metrics": {
+    "accuracy": 0.8609,
+    "macro_f1": 0.8724,
+    "weighted_f1": 0.8595,
+    "support": 302,
+    "per_class": {
+      "chicken_biryani": {
+        "precision": 0.7551,
+        "recall": 0.8222,
+        "f1": 0.7872,
+        "support": 45
+      },
+      "curd_dahi": {
+        "precision": 1.0,
+        "recall": 0.9091,
+        "f1": 0.9524,
+        "support": 33
+      },
+      "jalebi": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "khichdi": {
+        "precision": 0.8636,
+        "recall": 0.8769,
+        "f1": 0.8702,
+        "support": 65
+      },
+      "pakora": {
+        "precision": 0.9565,
+        "recall": 0.6286,
+        "f1": 0.7586,
+        "support": 35
+      },
+      "pani_puri": {
+        "precision": 0.8478,
+        "recall": 0.8667,
+        "f1": 0.8571,
+        "support": 45
+      },
+      "paratha_plain": {
+        "precision": 0.8289,
+        "recall": 0.9403,
+        "f1": 0.8811,
+        "support": 67
+      }
+    },
+    "confusion_matrix": [
+      [
+        37,
+        0,
+        0,
+        4,
+        0,
+        1,
+        3
+      ],
+      [
+        0,
+        30,
+        0,
+        0,
+        0,
+        1,
+        2
+      ],
+      [
+        0,
+        0,
+        12,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0,
+        57,
+        0,
+        2,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        4,
+        22,
+        3,
+        6
+      ],
+      [
+        6,
+        0,
+        0,
+        0,
+        0,
+        39,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        1,
+        1,
+        0,
+        63
+      ]
+    ],
+    "labels": [
+      "chicken_biryani",
+      "curd_dahi",
+      "jalebi",
+      "khichdi",
+      "pakora",
+      "pani_puri",
+      "paratha_plain"
+    ]
+  },
+  "hardest_confusions": [
+    {
+      "count": 6,
+      "actual": "pani_puri",
+      "predicted_as": "chicken_biryani"
+    },
+    {
+      "count": 6,
+      "actual": "pakora",
+      "predicted_as": "paratha_plain"
+    },
+    {
+      "count": 4,
+      "actual": "pakora",
+      "predicted_as": "khichdi"
+    },
+    {
+      "count": 4,
+      "actual": "khichdi",
+      "predicted_as": "chicken_biryani"
+    },
+    {
+      "count": 4,
+      "actual": "chicken_biryani",
+      "predicted_as": "khichdi"
+    },
+    {
+      "count": 3,
+      "actual": "pakora",
+      "predicted_as": "pani_puri"
+    },
+    {
+      "count": 3,
+      "actual": "chicken_biryani",
+      "predicted_as": "paratha_plain"
+    },
+    {
+      "count": 2,
+      "actual": "paratha_plain",
+      "predicted_as": "chicken_biryani"
+    }
+  ],
+  "worst_classes": [
+    [
+      "pakora",
+      {
+        "precision": 0.9565,
+        "recall": 0.6286,
+        "f1": 0.7586,
+        "support": 35
+      }
+    ],
+    [
+      "chicken_biryani",
+      {
+        "precision": 0.7551,
+        "recall": 0.8222,
+        "f1": 0.7872,
+        "support": 45
+      }
+    ],
+    [
+      "pani_puri",
+      {
+        "precision": 0.8478,
+        "recall": 0.8667,
+        "f1": 0.8571,
+        "support": 45
+      }
+    ],
+    [
+      "khichdi",
+      {
+        "precision": 0.8636,
+        "recall": 0.8769,
+        "f1": 0.8702,
+        "support": 65
+      }
+    ],
+    [
+      "paratha_plain",
+      {
+        "precision": 0.8289,
+        "recall": 0.9403,
+        "f1": 0.8811,
+        "support": 67
+      }
+    ],
+    [
+      "curd_dahi",
+      {
+        "precision": 1.0,
+        "recall": 0.9091,
+        "f1": 0.9524,
+        "support": 33
+      }
+    ],
+    [
+      "jalebi",
+      {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 12
+      }
+    ]
+  ]
+}

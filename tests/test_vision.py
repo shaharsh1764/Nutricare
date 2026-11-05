@@ -516,11 +516,12 @@ def test_trained_flag_reflects_the_installed_checkpoint(real_model_app):
     with real_model_app.test_client() as client:
         payload = client.get("/api/vision/classes").get_json()
     assert payload["model_installed"] is True
-    assert payload["trained_count"] == 20
+    assert payload["trained_count"] > 0
     trained = {c["slug"] for c in payload["classes"] if c["trained"]}
     checkpoint = __import__("torch").load(REAL_MODEL, map_location="cpu",
                                           weights_only=False)
     assert trained == set(checkpoint["classes"])
+    assert len(trained) == payload["trained_count"]
     # taxonomy entries without a trained class must not claim recognition
     assert "biryani" not in trained or "chicken_biryani" in trained
 
@@ -539,7 +540,9 @@ def test_real_model_predicts_a_known_class_with_confidence(real_model_app):
     import torch
 
     checkpoint = torch.load(REAL_MODEL, map_location="cpu", weights_only=False)
-    assert len(checkpoint["classes"]) == 20
+    # The default checkpoint is the licence-cleared one; its class count is a
+    # property of that training run, not a constant to hard-code.
+    assert len(checkpoint["classes"]) >= 2
     # Build a deterministic image (not synthetic training data — just input):
     # what matters is that the real network runs and returns calibrated output.
     buffer = _io.BytesIO()
@@ -570,3 +573,65 @@ def test_convert_refuses_to_guess_a_mismatched_backbone():
     fake = {f"layer{i}": torch.zeros(1) for i in range(5)}
     with pytest.raises(ValueError, match="tensor count mismatch"):
         backbone.convert(fake, "mobilenet_v3_small")
+
+
+# ------------------------------------------------- added with the CC0 12-class model
+def test_new_cc0_classes_follow_the_nutrition_honesty_rule():
+    """Classes added alongside the CC0 checkpoint must obey the same contract as
+    the originals: either a real documented food row, or an explicit 'ask the
+    user' entry. No third option, and never a fabricated figure."""
+    by_slug = vision.class_by_slug()
+    for slug in ("kheer", "rasgulla", "chomchom", "morog_polao", "luchi"):
+        assert slug in by_slug, f"{slug} missing from the taxonomy"
+        entry = by_slug[slug]
+        if entry["nutrition_source"] == "unavailable":
+            assert entry["food"] is None, (
+                f"{slug} claims no nutrition but points at a food row")
+        else:
+            assert entry["food"], f"{slug} must name a documented food row"
+            assert entry["default_grams"] > 0
+
+
+def test_classes_without_nutrition_still_render_and_ask_for_values(client, user):
+    """A recognised dish with no documented row must produce an explicit,
+    numberless estimate — not a guess."""
+    response = client.post("/api/vision/estimate",
+                           json={"slug": "chomchom", "grams": 50})
+    assert response.status_code == 200, response.get_data(as_text=True)
+    payload = response.get_json()
+    if payload.get("nutrition_available") is False:
+        assert payload["nutrients"] is None
+        assert "unavailable_reason" in payload
+    else:                                   # a row exists: then it must be real
+        assert payload["nutrients"]["kcal"] > 0
+
+
+# ------------------------------------------------- default model licensing policy
+def test_the_default_checkpoint_is_the_licence_cleared_one():
+    """Regression guard for a licensing trap.
+
+    The 20-class checkpoint scores better but was trained on images with no
+    licence whatsoever. Shipping it as the default would present an
+    unredistributable artifact as the product. The default must stay the model
+    trained only on CC0 images; the older checkpoint stays in the repo,
+    reachable but opt-in.
+    """
+    assert vision.DEFAULT_MODEL_PATH.name == "food_classifier_cc0.pt"
+    assert vision.UNLICENSED_MODEL_PATH.name == "food_classifier.pt"
+    assert vision.DEFAULT_MODEL_PATH != vision.UNLICENSED_MODEL_PATH
+
+
+def test_cc0_checkpoint_records_its_licence_provenance():
+    """The checkpoint itself must carry the evidence needed to audit it later,
+    without re-reading this repo's docs."""
+    if not vision.DEFAULT_MODEL_PATH.is_file():
+        pytest.skip("licence-cleared checkpoint not present")
+    torch = pytest.importorskip("torch")
+    checkpoint = torch.load(vision.DEFAULT_MODEL_PATH, map_location="cpu",
+                            weights_only=False)
+    report = checkpoint["dataset_report"]
+    assert report["kept_classes"] == len(checkpoint["classes"])
+    dedupe = checkpoint["dedupe"]
+    assert "hamming" in dedupe["method"]          # pre-split perceptual dedupe ran
+    assert dedupe["threshold"] <= 2
+    assert dedupe["kept"] > 0

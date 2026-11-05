@@ -157,6 +157,168 @@ def discover(data_dirs: list[Path], taxonomy: list[dict], min_images: int) -> di
     return {"classes": kept, "report": report}
 
 
+def _dhash(path: Path, size: int = 8) -> int | None:
+    """64-bit difference hash. Cheap, and catches re-encoded/re-saved photos
+    that MD5 cannot: same photograph, different bytes, different filename."""
+    try:
+        from PIL import Image  # noqa: PLC0415
+        with Image.open(path) as raw:
+            grey = raw.convert("L").resize((size + 1, size), Image.LANCZOS)
+            pixels = list(grey.tobytes())
+    except Exception:  # noqa: BLE001
+        return None
+    bits = 0
+    for row in range(size):
+        offset = row * (size + 1)
+        for col in range(size):
+            bits = (bits << 1) | (pixels[offset + col] > pixels[offset + col + 1])
+    return bits
+
+
+def _hamming(a: int, b: int) -> int:
+    return bin(a ^ b).count("1")
+
+
+def _near_duplicate_pairs(hashes: list[int], threshold: int) -> list[tuple[int, int]]:
+    """All index pairs whose 64-bit hashes are within ``threshold`` bits.
+
+    Uses numpy when available (a few thousand images -> one small matrix
+    operation); otherwise falls back to an exact O(n^2) Python scan. Both are
+    exact — this deliberately avoids approximate bucket pruning, which silently
+    missed pairs in an earlier version.
+    """
+    n = len(hashes)
+    try:
+        import numpy as np  # noqa: PLC0415
+    except Exception:  # noqa: BLE001
+        np = None
+
+    pairs: list[tuple[int, int]] = []
+    if np is not None:
+        values = np.array(hashes, dtype=np.uint64)
+        # Tile the comparison so peak memory stays small on bigger datasets.
+        tile = 1024
+        for start in range(0, n, tile):
+            block = values[start:start + tile][:, None] ^ values[None, :]
+            distance = np.bitwise_count(block) if hasattr(np, "bitwise_count") \
+                else _popcount_matrix(block)
+            rows, cols = np.nonzero(distance <= threshold)
+            for row, col in zip(rows.tolist(), cols.tolist()):
+                i = start + row
+                if i < col:                      # each unordered pair once
+                    pairs.append((i, col))
+        return pairs
+
+    for i in range(n):
+        left = hashes[i]
+        for j in range(i + 1, n):
+            if _hamming(left, hashes[j]) <= threshold:
+                pairs.append((i, j))
+    return pairs
+
+
+def _popcount_matrix(block):
+    """Fallback popcount for numpy builds without bitwise_count (numpy < 2)."""
+    import numpy as np  # noqa: PLC0415
+
+    out = np.zeros(block.shape, dtype=np.uint8)
+    view = block.copy()
+    while view.any():
+        out += (view & np.uint64(1)).astype(np.uint8)
+        view >>= np.uint64(1)
+    return out
+
+
+def dedupe_global(classes: dict[str, list[Path]], threshold: int = 2,
+                  verbose: bool = True) -> tuple[dict[str, list[Path]], dict]:
+    """Remove duplicate and near-duplicate images BEFORE any split is made.
+
+    Why this exists: the original trainer de-duplicated only inside
+    ``split_dataset``, and only on MD5 + filename stem. Two photos of the same
+    plate taken a second apart have different bytes and different names, so one
+    could land in train and its twin in test — inflating the measured accuracy.
+    That was measured on the 7-class CC0 model at roughly +0.007.
+
+    This pass runs over the *whole* dataset first, so a near-duplicate pair can
+    never straddle two splits.
+
+    Policy when a duplicate group spans several classes: keep the image in the
+    class with the fewest images so far, and drop it from the others. A dish
+    photographed once and filed under two labels does not teach the model
+    anything about the difference between those labels.
+    """
+    import hashlib  # noqa: PLC0415
+
+    ordered = sorted(classes, key=lambda slug: (len(classes[slug]), slug))
+
+    # Stage 1 — exact duplicates (MD5), and hash every remaining image.
+    candidates: list[tuple[int, Path, str]] = []
+    seen_md5: dict[str, str] = {}
+    dropped = {"exact": 0, "near": 0, "unreadable": 0}
+    cross_class = 0
+    for slug in ordered:
+        for path in sorted(classes[slug]):
+            try:
+                digest = hashlib.md5(path.read_bytes()).hexdigest()
+            except OSError:
+                dropped["unreadable"] += 1
+                continue
+            if digest in seen_md5:
+                dropped["exact"] += 1
+                if seen_md5[digest] != slug:
+                    cross_class += 1
+                continue
+            value = _dhash(path)
+            if value is None:
+                dropped["unreadable"] += 1
+                continue
+            seen_md5[digest] = slug
+            candidates.append((value, path, slug))
+
+    # Stage 2 — near duplicates. An earlier bucketed implementation compared
+    # only hash-prefix neighbours and still left 9 train<->test pairs behind,
+    # because two bits differing inside the top 16 can move the prefix by more
+    # than one. This is an exact all-pairs scan instead: at a few thousand
+    # images it costs a second or two, and it cannot miss a pair.
+    keep = [True] * len(candidates)
+    if len(candidates) > 1:
+        pairs = _near_duplicate_pairs([c[0] for c in candidates], threshold)
+        for i, j in pairs:
+            if keep[i] and keep[j]:
+                # Deterministic survivor: the earlier entry in the (size-ordered)
+                # candidate list wins, so the result never depends on dict order.
+                keep[j] = False
+                dropped["near"] += 1
+                if candidates[i][2] != candidates[j][2]:
+                    cross_class += 1
+                if verbose:
+                    print(f"    near-duplicate dropped: {candidates[j][2]}/"
+                          f"{candidates[j][1].name} ~ {candidates[i][2]}/"
+                          f"{candidates[i][1].name}")
+
+    kept: dict[str, list[Path]] = {slug: [] for slug in classes}
+    for index, (_value, path, slug) in enumerate(candidates):
+        if keep[index]:
+            kept[slug].append(path)
+
+    stats = {
+        "method": f"md5 exact + dHash64 hamming<={threshold}, global before split",
+        "threshold": threshold,
+        "kept": sum(len(v) for v in kept.values()),
+        "dropped_exact": dropped["exact"],
+        "dropped_near": dropped["near"],
+        "dropped_unreadable": dropped["unreadable"],
+        "dropped_cross_class": cross_class,
+        "per_class_kept": {slug: len(v) for slug, v in sorted(kept.items())},
+    }
+    if verbose:
+        print(f"  de-duplicated   : kept {stats['kept']}, "
+              f"dropped {stats['dropped_exact']} exact + "
+              f"{stats['dropped_near']} near-duplicate "
+              f"({cross_class} across classes)")
+    return kept, stats
+
+
 def split_dataset(classes: dict[str, list[Path]], val_pct: float, test_pct: float,
                   seed: int) -> dict:
     """Stratified per-class split. The test split is never used for training."""
@@ -332,6 +494,11 @@ def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
         print("\nFewer than 2 classes with enough images — training would be "
               "meaningless. Pass --allow-tiny to override.")
         return 3
+
+    print("  global de-duplication (before splitting) …")
+    deduped, dedupe_stats = dedupe_global(discovered["classes"])
+    discovered["classes"] = deduped
+    report["total_images"] = dedupe_stats["kept"]
 
     splits = split_dataset(discovered["classes"], val_pct, test_pct, seed)
     print(f"  split          : train {len(splits['train'])} · "
@@ -525,6 +692,7 @@ def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
         "device": str(device),
         "epochs": epochs,
         "dataset_report": report,
+        "dedupe": dedupe_stats,
         **weights_meta,
     }, output)
 
@@ -538,6 +706,7 @@ def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
         "train_seconds": round(time.time() - started, 1),
         "classes": len(classes),
         "dataset": report,
+        "dedupe": dedupe_stats,
         "split": {k: len(v) for k, v in splits.items()},
         "history": history,
         "test_loss": round(test_loss, 4),
@@ -555,6 +724,10 @@ def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
         f"model     : {output} ({output.stat().st_size / 1024 / 1024:.1f} MB)",
         f"architecture: {architecture} @ {image_size}px on {device}",
         f"classes   : {len(classes)}",
+        f"dedupe    : kept {dedupe_stats['kept']}, dropped "
+        f"{dedupe_stats['dropped_exact']} exact + {dedupe_stats['dropped_near']} "
+        f"near-duplicate ({dedupe_stats['dropped_cross_class']} across classes), "
+        f"{dedupe_stats['method']}",
         f"split     : train {len(splits['train'])} / val {len(splits['val'])} "
         f"/ test {len(splits['test'])}",
         "",

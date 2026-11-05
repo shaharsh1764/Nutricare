@@ -72,17 +72,20 @@ train, redistribute, or distribute a derivative model has been established.
 **Do not redistribute this checkpoint commercially.** It is retained only as a
 research artifact and for comparison. See `docs/LICENSING_AUDIT.md`.
 
-### 3b. `models/food_classifier_cc0.pt` — 7 classes — CLEARED
+### 3b. `models/food_classifier_cc0.pt` — 12 classes — CLEARED (default model)
 
 | | |
 |---|---|
 | Source | https://github.com/Ishmam97/Bangladeshi-Food-Dataset |
 | Licence | **CC0 1.0 Universal** (public domain dedication) |
-| Images used | 2,083 from the `Train/` split, mapped to 7 NutriCare classes |
+| Classes | chicken biryani, chole, chomchom, curd/dahi, jalebi, kheer, khichdi, morog polao, pakora, pani puri, paratha, rasgulla |
+| Images used | 2,573 after de-duplication, from 3,247 offered; `Train/` split, mapped to 12 NutriCare classes |
 
 CC0 waives copyright and related rights worldwide, permitting use, reproduction,
 modification and distribution — including commercially and including derivative
 works — without attribution. Attribution is given here as good practice.
+
+This checkpoint is the **default** model shipped by the application.
 
 **Caveat, stated plainly:** CC0 can only waive rights the dedicator actually
 holds. The dataset README describes images "collected from ... online

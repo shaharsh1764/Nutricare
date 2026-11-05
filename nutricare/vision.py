@@ -38,7 +38,22 @@ PACKAGE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = PACKAGE_DIR.parent
 
 CLASSES_PATH = PROJECT_DIR / "data" / "food_classes.json"
-DEFAULT_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier.pt"
+
+# Which checkpoint is installed by default.
+#
+# The default is the LICENSE-CLEARED model: `food_classifier_cc0.pt`, trained
+# only on CC0 1.0 images. The older 20-class `food_classifier.pt` is more
+# capable but its training images carry no licence at all, so it must not be the
+# one that ships (see docs/LICENSING_AUDIT.md and docs/COVERAGE.md).
+#
+# Nothing is deleted: the 20-class checkpoint is still in the repository and is
+# reachable with NUTRICARE_MODEL=models/food_classifier.pt.
+DEFAULT_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier_cc0.pt"
+
+# Kept for reference and for tests that exercise these checkpoints explicitly.
+# Neither is ever the default.
+UNLICENSED_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier.pt"      # 20 classes, licensing unresolved
+PREVIOUS_CC0_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier_cc0_7class.pt"  # first CC0 run, 7 classes
 
 # Uploads: generous enough for a phone photo, small enough to stay safe.
 MAX_UPLOAD_BYTES = int(os.environ.get("NUTRICARE_MAX_UPLOAD_BYTES", 8 * 1024 * 1024))
