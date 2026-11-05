@@ -84,6 +84,16 @@ EXTRA_ALIASES = {
     "spring rolls": "spring_rolls", "spring roll": "spring_rolls",
     "pancakes": "pancakes", "pancake": "pancakes", "salad": "salad",
     "thepla": "thepla",
+    # classes present in the dhruvk2002/food-classifier dataset
+    "jalebi": "jalebi", "jilebi": "jalebi",
+    "kulfi": "kulfi", "matka kulfi": "kulfi",
+    "kaathi rolls": "kaathi_rolls", "kathi roll": "kaathi_rolls",
+    "kathi rolls": "kaathi_rolls", "frankie": "kaathi_rolls",
+    "chai": "chai", "masala chai": "chai", "tea": "chai",
+    "dal makhani": "dal_makhani", "dal makhni": "dal_makhani",
+    "kadai paneer": "kadai_paneer", "karahi paneer": "kadai_paneer",
+    "butter naan": "naan", "paani puri": "pani_puri", "pani puri": "pani_puri",
+    "pakode": "pakora", "pakora": "pakora", "momos": "momos", "momo": "momos",
 }
 
 
@@ -153,14 +163,24 @@ def split_dataset(classes: dict[str, list[Path]], val_pct: float, test_pct: floa
     rng = random.Random(seed)
     out = {"train": [], "val": [], "test": []}
     for slug in sorted(classes):
-        # De-duplicate identical byte sizes+names first: cheap leakage guard for
-        # datasets that ship the same photo twice under different names.
-        seen, unique = set(), []
-        for path in classes[slug]:
-            signature = (path.name.split(".")[0], path.stat().st_size)
-            if signature in seen:
+        # De-duplicate before splitting. Two guards:
+        #   1. byte-identical files (same size + content hash prefix)
+        #   2. the same photo re-saved at a different quality (same size, or
+        #      same filename stem), which is the usual train/test leak.
+        # Without this, a near-duplicate in the test split inflates accuracy.
+        seen_hashes, seen_stems, unique = set(), set(), []
+        for path in sorted(classes[slug]):
+            stem = path.name.split(".")[0].lstrip("0") or "0"
+            try:
+                import hashlib
+                with path.open("rb") as handle:
+                    digest = hashlib.md5(handle.read()).hexdigest()
+            except OSError:
                 continue
-            seen.add(signature)
+            if digest in seen_hashes or stem in seen_stems:
+                continue
+            seen_hashes.add(digest)
+            seen_stems.add(stem)
             unique.append(path)
         rng.shuffle(unique)
         count = len(unique)
@@ -267,7 +287,8 @@ def self_test() -> int:
 def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
         architecture: str, image_size: int, workers: int, output: Path,
         seed: int, min_images: int, val_pct: float, test_pct: float,
-        freeze_epochs: int, allow_tiny: bool, pretrained: bool = True) -> int:
+        freeze_epochs: int, allow_tiny: bool, pretrained: bool = True,
+        backbone: str | None = None, backbone_source: str | None = None) -> int:
     try:
         import numpy as np
         import torch
@@ -368,21 +389,54 @@ def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
     # Pretrained ImageNet weights: required for transfer learning. If they cannot
     # be fetched we stop rather than silently training from scratch, which would
     # produce a model too weak to be honest about.
+    weights_meta = {}
     if not pretrained:
         # Only the --self-test path sets this. Random init on noise still proves
         # checkpoint/state_dict/metrics plumbing, and the output says so.
         print("\nNOTE: pretrained=False — this model is randomly initialised and "
               "carries NO transfer-learned knowledge.")
         model = vision.build_model(architecture, len(classes), pretrained=False)
-    try:
-        model = (model if not pretrained
-                 else vision.build_model(architecture, len(classes), pretrained=True))
-    except Exception as exc:  # noqa: BLE001
-        print(f"\nCould not load ImageNet-pretrained weights: {exc}")
-        print("Transfer learning needs download.pytorch.org to be reachable.")
-        print("Re-run where that host is allowed, or pre-populate "
-              "~/.cache/torch/hub/checkpoints with the weights file.")
-        return 4
+        weights_meta = {"initialisation": "random (pipeline self-test)"}
+    elif backbone:
+        # Offline route: a torchvision-format ImageNet state_dict obtained from
+        # a GitHub-hosted checkpoint (see training/fetch_training_assets.sh).
+        print(f"\nLoading ImageNet backbone from {backbone}")
+        model = vision.build_model(architecture, len(classes), pretrained=False)
+        state = torch.load(backbone, map_location="cpu", weights_only=False)
+        state = state.get("state_dict", state)
+        # Drop the ImageNet 1000-class head: our head has num_classes outputs
+        # and is freshly initialised on purpose.
+        state = {k: v for k, v in state.items() if not k.startswith("classifier")}
+        missing, unexpected = model.load_state_dict(state, strict=False)
+        # The classification head is intentionally different: we replaced it.
+        head_missing = [k for k in missing if k.startswith("classifier")]
+        other_missing = [k for k in missing if not k.startswith("classifier")]
+        if other_missing:
+            print(f"  backbone incomplete — unmapped keys: {other_missing[:5]}")
+            print("  refusing to train from partial weights.")
+            return 4
+        print(f"  loaded {len(state) - len(unexpected)} backbone tensors "
+              f"({len(head_missing)} head tensors freshly initialised)")
+        weights_meta = {"initialisation": "ImageNet-pretrained (offline state_dict)",
+                        "backbone_file": Path(backbone).name,
+                        "backbone_source": backbone_source or "unspecified"}
+    else:
+        try:
+            model = vision.build_model(architecture, len(classes), pretrained=True)
+            weights_meta = {"initialisation": "ImageNet-pretrained (torchvision download)"}
+        except Exception as exc:  # noqa: BLE001
+            print(f"\nCould not load ImageNet-pretrained weights: {exc}")
+            print("Options:")
+            print("  1. Run where download.pytorch.org is reachable, or")
+            print("  2. Supply an offline backbone:")
+            print("     curl -sSL https://codeload.github.com/d-li14/mobilenetv3.pytorch/"
+                  "tar.gz/refs/heads/master | tar xz")
+            print("     python training/load_imagenet_backbone.py \\")
+            print("       --checkpoint pretrained/mobilenetv3-small-55df8e1f.pth \\")
+            print("       --out models/backbone_mobilenet_v3_small.pth")
+            print("     python training/train_food_classifier.py --backbone "
+                  "models/backbone_mobilenet_v3_small.pth ...")
+            return 4
 
     if freeze_epochs > 0:
         for parameter in model.parameters():
@@ -471,6 +525,7 @@ def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
         "device": str(device),
         "epochs": epochs,
         "dataset_report": report,
+        **weights_meta,
     }, output)
 
     metrics_path = output.with_suffix(".metrics.json")
@@ -556,6 +611,12 @@ def main() -> int:
                         help="epochs to train the head only before fine-tuning")
     parser.add_argument("--allow-tiny", action="store_true",
                         help="permit <2 classes (pipeline checks only)")
+    parser.add_argument("--backbone", default=None,
+                        help="torchvision-format state_dict (e.g. produced by "
+                             "training/load_imagenet_backbone.py) used instead of "
+                             "downloading ImageNet weights")
+    parser.add_argument("--backbone-source", default=None,
+                        help="provenance note recorded in the checkpoint metadata")
     parser.add_argument("--self-test", action="store_true",
                         help="synthetic end-to-end pipeline check (no dataset needed)")
     args = parser.parse_args()
@@ -569,7 +630,8 @@ def main() -> int:
                image_size=args.image_size, workers=args.workers,
                output=Path(args.output), seed=args.seed, min_images=args.min_images,
                val_pct=args.val_pct, test_pct=args.test_pct,
-               freeze_epochs=args.freeze_epochs, allow_tiny=args.allow_tiny)
+               freeze_epochs=args.freeze_epochs, allow_tiny=args.allow_tiny,
+               backbone=args.backbone, backbone_source=args.backbone_source)
 
 
 if __name__ == "__main__":

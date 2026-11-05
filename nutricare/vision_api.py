@@ -256,7 +256,6 @@ def log_meal():
     # Mirror the existing /api/meals dietary + allergy guard so a scanned meal
     # obeys exactly the same preferences as a manually logged one.
     if food_id is not None:
-        from .api import current_uid  # noqa: F401  (documentation of shared behaviour)
         from . import insights
         row = conn.execute("SELECT * FROM foods WHERE id = ?", (food_id,)).fetchone()
         if row is None:

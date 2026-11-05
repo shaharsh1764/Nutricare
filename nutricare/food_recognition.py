@@ -128,9 +128,31 @@ def predictions_with_nutrition(conn: sqlite3.Connection, result: dict,
     return out
 
 
+def trained_slugs() -> set[str] | None:
+    """Classes the installed checkpoint can actually predict.
+
+    Returns None when no checkpoint is installed (the taxonomy is then only a
+    plan, not a claim). Never invents coverage.
+    """
+    predictor = vision.get_predictor()
+    if not predictor.available_path:
+        return None
+    try:
+        predictor._load()  # noqa: SLF001 - same package, intentional
+    except vision.ModelUnavailable:
+        return None
+    return {c["slug"] for c in predictor._classes}  # noqa: SLF001
+
+
 def available_classes(conn: sqlite3.Connection) -> dict:
-    """Class list annotated with whether nutrition can be resolved from the DB."""
+    """Class list annotated with whether nutrition can be resolved from the DB.
+
+    ``trained`` marks classes the installed checkpoint genuinely recognises.
+    When no model is installed every class is reported as untrained, because
+    a taxonomy entry is not evidence that a model can predict it.
+    """
     dataset_names = {r["name"] for r in conn.execute("SELECT name FROM foods")}
+    trained = trained_slugs()
     out = []
     for entry in vision.class_list():
         name = entry.get("food")
@@ -143,11 +165,14 @@ def available_classes(conn: sqlite3.Connection) -> dict:
             "nutrition_available": bool(name and name in dataset_names),
             "dataset_food": name if name in dataset_names else None,
             "approx_note": entry.get("approx_note"),
+            "trained": bool(trained and entry["slug"] in trained),
         })
     return {
         "classes": out,
         "count": len(out),
         "with_nutrition": sum(1 for c in out if c["nutrition_available"]),
+        "trained_count": sum(1 for c in out if c["trained"]),
+        "model_installed": trained is not None,
         "single_label": True,
         "note": vision.SINGLE_LABEL_NOTE,
     }

@@ -40,6 +40,61 @@ UA = "NutriCare-research/1.0 (educational, non-commercial)"
 # Registry. `access` documents honestly how each dataset can be obtained.
 # ---------------------------------------------------------------------------
 DATASETS = {
+    # ------------------------------------------------------------------
+    # GitHub-committed datasets. These are the ones that WORK in restricted
+    # environments: codeload.github.com is often reachable even when Kaggle,
+    # Hugging Face and download.pytorch.org are not.
+    # ------------------------------------------------------------------
+    "indian_food_20": {
+        "name": "Food Classification — 20 Indian classes (GitHub, committed)",
+        "classes": 20,
+        "images": 6_269,
+        "indian_coverage": "high — chapati, naan, idli, masala dosa, pav bhaji, "
+                           "chole bhature, dal makhani, kadai paneer, dhokla, "
+                           "pakora, pani puri, fried rice, momos, chai, jalebi, "
+                           "kulfi, kathi roll, samosa + pizza, burger",
+        "licence": "No LICENSE file in the source repository. Educational/"
+                   "research use; verify provenance before commercial use.",
+        "access": "auto",
+        "how": "codeload.github.com tarball (committed to the repo, not a release asset)",
+        "repo": "dhruvk2002/food-classifier",
+        "branch": "main",
+        "images_subdir": "Food Classification",
+        "use_for": "the shipped model (81.4% test accuracy, 20 classes)",
+        "citation": "github.com/dhruvk2002/food-classifier",
+        "status": "USED — this is what models/food_classifier.pt was trained on",
+    },
+    "indfood_131": {
+        "name": "IndFood-Dataset — 131 Indian classes (GitHub, committed)",
+        "classes": 131,
+        "images": 20_400,
+        "indian_coverage": "very high — dal tadka, rajma chawal, palak paneer, "
+                           "aloo gobi, poha, pongal, bhindi masala, kachori, "
+                           "dabeli, misal pav, butter chicken, gulab jamun …",
+        "licence": "Per source repository; verify before redistribution",
+        "access": "auto",
+        "how": "codeload.github.com tarball (~1.1 GB)",
+        "repo": "soumen7saha/IndFood-Dataset",
+        "branch": "main",
+        "use_for": "RECOMMENDED next training run: far better Indian coverage",
+        "citation": "github.com/soumen7saha/IndFood-Dataset",
+        "status": "evaluated, not yet trained on (see docs/MODEL.md §10)",
+    },
+    "imagenet_mobilenetv3": {
+        "name": "MobileNetV3 ImageNet weights (GitHub, committed)",
+        "classes": 1000,
+        "images": 0,
+        "indian_coverage": "n/a (ImageNet backbone for transfer learning)",
+        "licence": "Per source repository",
+        "access": "auto",
+        "how": "codeload.github.com tarball, then convert with "
+               "training/load_imagenet_backbone.py",
+        "repo": "d-li14/mobilenetv3.pytorch",
+        "branch": "master",
+        "use_for": "pretrained backbone when download.pytorch.org is blocked",
+        "citation": "github.com/d-li14/mobilenetv3.pytorch",
+        "status": "USED — backbone for models/food_classifier.pt",
+    },
     "food101_mini": {
         "name": "Food-101 (Hugging Face parquet mirror)",
         "classes": 101,
@@ -144,6 +199,8 @@ def cmd_list() -> int:
         print(f"   Access          : {info['access']}  ({info.get('how', '—')})")
         print(f"   Used for        : {info['use_for']}")
         print(f"   Citation        : {info['citation']}")
+        if info.get("status"):
+            print(f"   Status          : {info['status']}")
     return 0
 
 
@@ -200,6 +257,57 @@ def download_food101(out: Path) -> Path:
         if index % 2000 == 0:
             print(f"    {index}/{len(ds)}")
     print(f"  wrote {len(ds)} images to {target}")
+    return target
+
+
+def download_github_repo(info: dict, out: Path, key: str) -> Path:
+    """Fetch a dataset that is committed into a GitHub repository.
+
+    This is the transport that works when dataset hosts are blocked:
+    codeload.github.com serves repository tarballs, whereas release assets
+    redirect to release-assets.githubusercontent.com (often blocked).
+    """
+    import tarfile
+
+    repo, branch = info["repo"], info.get("branch", "main")
+    target = out / key
+    wanted = info.get("images_subdir")
+    if target.is_dir() and any(target.rglob("*.jpg")):
+        print(f"  already present: {target}")
+        return target
+
+    archive = out / f"{key}.tar.gz"
+    url = f"https://codeload.github.com/{repo}/tar.gz/refs/heads/{branch}"
+    print(f"  downloading {url}")
+    ok, detail = ping("https://codeload.github.com")
+    if not ok:
+        print(f"  BLOCKED: codeload.github.com unreachable ({detail})")
+        raise SystemExit(2)
+    request = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(request, timeout=600) as response, \
+            archive.open("wb") as handle:
+        shutil.copyfileobj(response, handle, length=1 << 20)
+    size_mb = archive.stat().st_size / 1e6
+    print(f"  downloaded {size_mb:.0f} MB, extracting …")
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(archive) as tar:
+        members = tar.getmembers()
+        for member in members:
+            if not member.isfile():
+                continue
+            name = member.name
+            if wanted and f"/{wanted}/" not in name:
+                continue
+            relative = name.split(f"/{wanted}/", 1)[1] if wanted else name
+            destination = target / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            extracted = tar.extractfile(member)
+            if extracted:
+                destination.write_bytes(extracted.read())
+    archive.unlink()
+    count = sum(1 for _ in target.rglob("*.jpg"))
+    print(f"  extracted {count} jpgs to {target}")
     return target
 
 
@@ -271,7 +379,7 @@ def main() -> int:
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    wanted = args.dataset or ["food101_mini"]
+    wanted = args.dataset or ["indian_food_20", "imagenet_mobilenetv3"]
 
     failures = []
     print(f"Downloading into {out}\n" + "=" * 78)
@@ -282,7 +390,9 @@ def main() -> int:
         info = DATASETS[key]
         print(f"\n[{key}] {info['name']}")
         try:
-            if key in ("food101_mini", "food101_tar"):
+            if info.get("repo"):
+                download_github_repo(info, out, key)
+            elif key in ("food101_mini", "food101_tar"):
                 download_food101(out)
             elif key == "indian_food_101":
                 download_kaggle(args.kaggle_slug, out, key)

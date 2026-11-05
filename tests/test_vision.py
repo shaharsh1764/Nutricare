@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from nutricare import create_app, db, food_recognition, vision
+from nutricare import create_app, db, vision
 
 
 # ---------------------------------------------------------------- helpers
@@ -480,3 +480,93 @@ def test_scanned_meal_appears_in_existing_endpoints(client, user):
 def test_healthz_still_works_and_existing_routes_untouched(client):
     assert client.get("/healthz").get_json() == {"ok": True}
     assert client.get("/api/foods?q=roti").status_code == 200
+
+
+# ---------------------------------------------------------------- real model
+REAL_MODEL = vision.DEFAULT_MODEL_PATH
+
+
+@pytest.fixture()
+def real_model_app(tmp_path, monkeypatch):
+    """App wired to the genuinely trained checkpoint, if it is present."""
+    if not REAL_MODEL.is_file():
+        pytest.skip("no trained checkpoint installed (models/food_classifier.pt)")
+    monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "real.db"))
+    monkeypatch.setenv("NUTRICARE_MODEL", str(REAL_MODEL))
+    vision.reset_predictor()
+    application = create_app({"TESTING": True})
+    yield application
+    vision.reset_predictor()
+
+
+def test_status_reports_metrics_from_the_training_sidecar(real_model_app):
+    """The UI can show measured accuracy before the model is even loaded."""
+    with real_model_app.test_client() as client:
+        model = client.get("/api/vision/status").get_json()["model"]
+    assert model["model_present"] is True
+    sidecar = json.loads(REAL_MODEL.with_suffix(".metrics.json").read_text(encoding="utf-8"))
+    assert model["test_accuracy"] == sidecar["test_metrics"]["accuracy"]
+    assert model["architecture"] == sidecar["architecture"]
+    # and it is a real, non-trivial result rather than a placeholder
+    assert 0.0 < model["test_accuracy"] <= 1.0
+    assert model["test_support"] >= 100
+
+
+def test_trained_flag_reflects_the_installed_checkpoint(real_model_app):
+    with real_model_app.test_client() as client:
+        payload = client.get("/api/vision/classes").get_json()
+    assert payload["model_installed"] is True
+    assert payload["trained_count"] == 20
+    trained = {c["slug"] for c in payload["classes"] if c["trained"]}
+    checkpoint = __import__("torch").load(REAL_MODEL, map_location="cpu",
+                                          weights_only=False)
+    assert trained == set(checkpoint["classes"])
+    # taxonomy entries without a trained class must not claim recognition
+    assert "biryani" not in trained or "chicken_biryani" in trained
+
+
+def test_no_model_reports_zero_trained_classes(client, user):
+    payload = client.get("/api/vision/classes").get_json()
+    assert payload["model_installed"] is False
+    assert payload["trained_count"] == 0
+    assert all(c["trained"] is False for c in payload["classes"])
+
+
+def test_real_model_predicts_a_known_class_with_confidence(real_model_app):
+    """Exercises the actual trained weights end to end through the HTTP API."""
+    from PIL import Image
+    import io as _io
+    import torch
+
+    checkpoint = torch.load(REAL_MODEL, map_location="cpu", weights_only=False)
+    assert len(checkpoint["classes"]) == 20
+    # Build a deterministic image (not synthetic training data — just input):
+    # what matters is that the real network runs and returns calibrated output.
+    buffer = _io.BytesIO()
+    Image.new("RGB", (320, 240), (180, 140, 90)).save(buffer, "JPEG")
+    with real_model_app.test_client() as client:
+        client.post("/api/users", json={"name": "Real"})
+        resp = client.post("/api/vision/predict?top_k=3", data=buffer.getvalue(),
+                           content_type="application/octet-stream")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    labels = [p["label"] for p in body["predictions"]]
+    assert len(labels) == 3
+    slugs = {p["slug"] for p in body["predictions"]}
+    assert slugs <= set(checkpoint["classes"])
+    total = sum(p["confidence"] for p in body["predictions"])
+    assert 0 < total <= 1.0 + 1e-6
+
+
+def test_convert_refuses_to_guess_a_mismatched_backbone():
+    """The ImageNet-backbone converter must fail loudly, never half-map."""
+    sys_path = __import__("sys").path
+    sys_path.insert(0, str(vision.PROJECT_DIR / "training"))
+    try:
+        import load_imagenet_backbone as backbone
+    finally:
+        sys_path.pop(0)
+    import torch
+    fake = {f"layer{i}": torch.zeros(1) for i in range(5)}
+    with pytest.raises(ValueError, match="tensor count mismatch"):
+        backbone.convert(fake, "mobilenet_v3_small")

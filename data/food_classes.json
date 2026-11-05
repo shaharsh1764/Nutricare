@@ -33,7 +33,33 @@
         ],
         "why": "Lentil curries look alike; per-lentil distinction is not reliably learnable."
       }
-    ]
+    ],
+    "trained_model_coverage": {
+      "note": "Classes the shipped checkpoint can actually predict. Keep this in sync with models/food_classifier.pt via its 'classes' field.",
+      "source_dataset": "dhruvk2002/food-classifier (20 Indian-majority classes)",
+      "classes": [
+        "roti",
+        "naan",
+        "idli",
+        "masala_dosa",
+        "pav_bhaji",
+        "chole_bhature",
+        "dal_makhani",
+        "kadai_paneer",
+        "dhokla",
+        "samosa",
+        "pakora",
+        "pani_puri",
+        "fried_rice",
+        "pizza",
+        "burger",
+        "momos",
+        "chai",
+        "jalebi",
+        "kulfi",
+        "kaathi_rolls"
+      ]
+    }
   },
   "classes": [
     {
@@ -833,6 +859,89 @@
       "default_grams": 150,
       "nutrition_source": "unavailable",
       "approx_note": null
+    },
+    {
+      "slug": "dal_makhani",
+      "label": "Dal Makhani",
+      "group": "indian_curry",
+      "aliases": [
+        "dal makhani",
+        "dal makhni",
+        "makhani dal"
+      ],
+      "food": null,
+      "default_grams": 180,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "kadai_paneer",
+      "label": "Kadai Paneer",
+      "group": "indian_curry",
+      "aliases": [
+        "kadai paneer",
+        "karahi paneer",
+        "kadhai paneer"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "chai",
+      "label": "Chai / Masala Chai",
+      "group": "indian_snack",
+      "aliases": [
+        "chai",
+        "masala chai",
+        "tea"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "jalebi",
+      "label": "Jalebi",
+      "group": "indian_snack",
+      "aliases": [
+        "jalebi",
+        "jilebi"
+      ],
+      "food": null,
+      "default_grams": 60,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "kulfi",
+      "label": "Kulfi",
+      "group": "indian_snack",
+      "aliases": [
+        "kulfi",
+        "matka kulfi"
+      ],
+      "food": null,
+      "default_grams": 80,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "kaathi_rolls",
+      "label": "Kathi Roll / Frankie",
+      "group": "indian_snack",
+      "aliases": [
+        "kathi roll",
+        "kaathi rolls",
+        "frankie",
+        "egg roll"
+      ],
+      "food": null,
+      "default_grams": 180,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
     }
   ]
 }

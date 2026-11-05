@@ -24,6 +24,7 @@ const SCAN = {
   stream: null,
   candidates: [],
   manualValues: {},
+  coverage: {},
 };
 
 const SCAN_GROUPS = {
@@ -380,8 +381,11 @@ function bindStepper() {
 /* Pick a different food from the full class list (the "model was wrong" path). */
 function openVisionPicker() {
   const groups = {};
-  SCAN.candidates.length = SCAN.candidates.length;  // keep predictions intact
-  const all = (SCAN.allClasses || []);
+  const modelInstalled = !!SCAN.coverage.model_installed;
+  /* Only offer foods the model can actually recognise. Showing all 65 taxonomy
+     entries would imply support the checkpoint does not have. Without a model,
+     everything is a manual entry and the full list is legitimate. */
+  const all = (SCAN.allClasses || []).filter((c) => !modelInstalled || c.trained);
   all.forEach((c) => { (groups[c.group] = groups[c.group] || []).push(c); });
   openModal(`
     <h3>Which food is this?</h3>
@@ -502,11 +506,19 @@ async function renderScanner() {
   try { status = await api("/vision/status"); } catch { /* offline */ }
   const modelReady = !!(status && status.model && status.model.model_present);
   if (!SCAN.allClasses) {
-    try { SCAN.allClasses = (await api("/vision/classes")).classes; } catch { SCAN.allClasses = []; }
+    try {
+      const coverage = await api("/vision/classes");
+      SCAN.allClasses = coverage.classes;
+      SCAN.coverage = coverage;
+    } catch { SCAN.allClasses = []; SCAN.coverage = {}; }
   }
   if (!SCAN.meal) SCAN.meal = "breakfast";
 
+  const modelInstalled = !!SCAN.coverage.model_installed;
+  const trainedCount = SCAN.coverage.trained_count || 0;
   const classesWithNutrition = (SCAN.allClasses || []).filter((c) => c.nutrition_available).length;
+  const trainedWithNutrition = (SCAN.allClasses || [])
+    .filter((c) => c.trained && c.nutrition_available).length;
 
   $("#view").innerHTML = `
   <div class="page-head">
@@ -565,10 +577,12 @@ async function renderScanner() {
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">Coverage</span>
-          <span class="pill pill-slate">${(SCAN.allClasses || []).length} foods</span></div>
-        <p class="small muted">${classesWithNutrition} of ${(SCAN.allClasses || []).length}
-        recognised foods have documented nutrition in NutriCare's dataset. The rest can
-        still be logged, but you enter their values yourself.</p>
+          <span class="pill pill-slate">${modelInstalled
+            ? trainedCount + " recognisable"
+            : (SCAN.allClasses || []).length + " foods"}</span></div>
+        <p class="small muted">${modelInstalled
+          ? `The installed model recognises <b>${trainedCount}</b> foods; nutrition is documented for ${trainedWithNutrition} of them, and for the rest you enter values yourself.`
+          : `${classesWithNutrition} of ${(SCAN.allClasses || []).length} foods in the taxonomy have documented nutrition. No model is installed, so nothing is auto-recognised.`}</p>
         <p class="tiny faint mt8">${esc((status && status.single_label_note) || "")}</p>
       </div>
     </div>

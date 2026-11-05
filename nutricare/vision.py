@@ -224,6 +224,32 @@ class Predictor:
     def available_path(self) -> bool:
         return self.model_path.is_file()
 
+    def _read_sidecar(self) -> dict:
+        """Training metadata next to the checkpoint, without importing torch.
+
+        The trainer writes <name>.metrics.json beside <name>.pt, so the UI can
+        report the model's REAL measured accuracy before the first prediction
+        (and even on a machine with no ML stack installed).
+        """
+        sidecar = self.model_path.with_suffix(".metrics.json")
+        if not sidecar.is_file():
+            return {}
+        try:
+            meta = json.loads(sidecar.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+        test = meta.get("test_metrics") or {}
+        return {
+            "architecture": meta.get("architecture"),
+            "input_size": meta.get("image_size"),
+            "trained_at": meta.get("generated_at"),
+            "test_accuracy": test.get("accuracy"),
+            "test_macro_f1": test.get("macro_f1"),
+            "test_support": test.get("support"),
+            "classes": meta.get("classes"),
+            "trained_on": (meta.get("dataset") or {}).get("sources"),
+        }
+
     def status(self) -> dict:
         """Non-throwing description used by /api/vision/status and the UI."""
         info = {
@@ -236,9 +262,11 @@ class Predictor:
             "single_label": True,
             "note": SINGLE_LABEL_NOTE,
         }
+        meta = dict(self._read_sidecar())
         if self._meta:
-            info.update({k: self._meta.get(k) for k in
-                         ("architecture", "trained_at", "input_size", "test_accuracy")})
+            meta.update({k: v for k, v in self._meta.items() if v is not None})
+        if meta:
+            info.update({k: v for k, v in meta.items() if v is not None})
         if self.available_path and not self._model and not self._attempted:
             info["detail"] = "Checkpoint found but not loaded yet; it loads on first use."
         if self._load_error:

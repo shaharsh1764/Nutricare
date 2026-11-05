@@ -1,14 +1,40 @@
 # Food image datasets — evaluation and acquisition
 
 This document records which public datasets were considered, what they contain,
-their licences, and exactly what could and could not be obtained in this
-environment. The acquisition pipeline is `training/download_datasets.py`.
+their licences, and which were actually obtained. The acquisition pipeline is
+`training/download_datasets.py`.
 
-> **Status: no dataset could be downloaded in the environment where this feature
-> was built.** Every dataset host was unreachable (see
-> [Environment limitation](#environment-limitation)). The code path that fetches,
-> verifies and reports them is complete and re-runnable; the images themselves
-> are the missing input. Nothing in this repository pretends otherwise.
+> **Status: a real model HAS been trained and is shipped.**
+> GitHub is reachable from the build environment even though every dedicated
+> dataset host is not, and two GitHub repositories carried everything needed:
+> 6,269 real Indian food photographs and a genuine ImageNet MobileNetV3
+> checkpoint. See `docs/MODEL.md` for the measured results.
+>
+> **What changed from the first investigation:** Kaggle, Hugging Face,
+> `download.pytorch.org`, Zenodo, archive.org and their mirrors remain blocked,
+> and **GitHub release assets** are blocked too (they redirect to
+> `release-assets.githubusercontent.com`). What *works* is `codeload.github.com`
+> tarballs and the REST API — anything committed **into** a repository. That
+> distinction is what unblocked the project.
+
+## 0. Datasets actually used
+
+| Dataset | Source | Images | Classes | Licence | Obtained |
+|---|---|---|---|---|---|
+| Food Classification (20 Indian classes) | `github.com/dhruvk2002/food-classifier` | 6,269 readable (of 6,271) | 20 | **None declared** — no LICENSE file; educational/research use assumed, verify before commercial redistribution | ✅ full tarball, every image inspected with Pillow |
+| MobileNetV3 ImageNet weights | `github.com/d-li14/mobilenetv3.pytorch` → `mobilenetv3-small-55df8e1f.pth` | — | 1000 (ImageNet) | Repository's own terms; converted to torchvision layout | ✅ `training/load_imagenet_backbone.py`, strict load verified |
+
+## 0b. Evaluated but not used (and why)
+
+| Dataset | Images | Classes | Reason |
+|---|---|---|---|
+| `soumen7saha/IndFood-Dataset` | 20,400 | 131 | **Best next candidate.** Covers most of NutriCare's Indian list (dal tadka, rajma, palak paneer, aloo gobi, poha, pongal, bhindi masala, kachori, dabeli…). Not trained on within this session's time budget. |
+| `soumen1149/RASOI` | 939 | — | YOLO bounding-box detection format; too small for classification |
+| `Sarthak-1408/Indian-Food-Classification` | 23 | — | Sample images + notebook only |
+| Food-101 (ETHZ / HF) | 101,000 | 101 | Hosts unreachable |
+| Indian Food 101 / 80 (Kaggle) | ~9,000 | 101 / 80 | Kaggle unreachable, requires account token |
+| IFD (IIT Delhi) | ~1,000 | 15 | Host DNS does not resolve |
+| UEC FOOD-256 | ~31,000 | 256 | Application form; host unreachable |
 
 ## 1. Datasets evaluated
 
@@ -80,33 +106,30 @@ data/raw/
 Both are passed to the trainer with a repeated `--data` flag if they live in
 separate roots.
 
-## 4. Environment limitation
+## 4. Environment limitation — corrected
 
-Measured inside the build sandbox with `--probe`, every host was unreachable:
+Measured in the build sandbox:
 
 ```
-BLOCKED huggingface.co                      TLS connection closed
-BLOCKED download.pytorch.org                 TLS connection closed
-BLOCKED data.vision.ee.ethz.ch               remote closed connection
-BLOCKED www.kaggle.com                       TLS connection closed
-BLOCKED data.ciiper.iitd.ac.in               DNS: name not known
-BLOCKED zenodo.org                           TLS connection closed
-0/6 hosts reachable
+BLOCKED  huggingface.co, download.pytorch.org, www.kaggle.com, zenodo.org,
+         archive.org, data.vision.ee.ethz.ch, s3.amazonaws.com, gitee.com,
+         modelscope.cn, hf-mirror.com, mirrors.* (aliyun/tuna/sjtu)
+BLOCKED  raw.githubusercontent.com, objects.githubusercontent.com,
+         media.githubusercontent.com, release-assets.githubusercontent.com
+WORKS    codeload.github.com   (repository tarballs)
+WORKS    api.github.com        (metadata, trees, contents)
+WORKS    pypi.org / files.pythonhosted.org
 ```
 
-`*.pypi.org` and `files.pythonhosted.org` are the only reachable hosts (they
-serve Python packages, not images or ImageNet weights). `huggingface-hub`,
-`kaggle`, `timm` and `torchvision` all install fine — but each fetches its
-actual images/weights at runtime from the hosts above.
+The first investigation concluded "no data is obtainable". That was wrong in an
+important way: **repository tarballs are a different transport from release
+assets and raw content**, and they work. A dataset or checkpoint committed into
+a repo is reachable; the same file attached to a *release* is not.
 
-**Consequence:** in that sandbox, no dataset could be downloaded and no
-pretrained weights could be fetched, so transfer learning — the only sound
-approach for this class count — could not be performed. Training was therefore
-not attempted rather than attempted badly, and **no accuracy figure is claimed
-anywhere in this repository**.
-
-Run `--probe` on your own machine or CI runner before training; it takes ten
-seconds and tells you immediately whether the pipeline can proceed.
+Practical consequence for anyone re-running this: when a dataset or weight file
+is only available as a release asset or `raw.githubusercontent.com` link, it
+cannot be fetched here. Look for repos that commit the files directly and pull
+them with `codeload.github.com/<owner>/<repo>/tar.gz/refs/heads/<branch>`.
 
 ## 5. Licence notes and obligations
 

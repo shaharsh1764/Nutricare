@@ -1,207 +1,263 @@
 # AI Food Scanner — model documentation
 
-Everything needed to understand, reproduce, evaluate, install or replace the
-food-recognition model. Read alongside `docs/DATASET.md` (data) and the
-`AI Food Scanner` section of `README.md` (product behaviour).
+A **real, trained food-recognition model is included** in this repository:
+`models/food_classifier.pt` (6.0 MB). This document reports what it actually
+achieves, how it was produced, and where it is weak.
 
-## 1. Current status of the shipped model
+## 1. Headline results (measured, not estimated)
 
-**No trained checkpoint is included in this repository.** That is a deliberate,
-documented state, not an oversight:
+| Metric | Value |
+|---|---|
+| Test accuracy | **0.8143** |
+| Test macro F1 | **0.8087** |
+| Test weighted F1 | **0.8122** |
+| Held-out test images | 926 |
+| Classes | 20 |
+| Architecture | mobilenet_v3_small @ 160px, ImageNet-pretrained |
+| Training time | 1141s on 2 vCPU (no GPU) |
+| Checkpoint size | 6.0 MB fp32 |
 
-```
-GET /api/vision/status
-{"model": {"model_present": false, "loaded": false,
-           "detail": "No trained checkpoint is installed, so photo recognition
-                      is switched off. The app will not guess — see docs/MODEL.md
-                      for how to train and install one. Manual logging still works."}}
-```
+Trained 2026-11-05T10:58:21+00:00. Split: **train 4332 / val 926 / test 926**,
+stratified per class, with byte-identical and same-stem duplicates removed
+*before* splitting so the test set cannot leak into training.
 
-When the checkpoint is absent, `POST /api/vision/predict` returns **HTTP 503**
-with `model_unavailable: true` and **no** predictions. There is no random-guess
-fallback, no name-matching heuristic dressed up as AI, and no hardcoded answer
-table. The rest of the feature — validation, camera/upload UI, nutrition
-mapping, portion maths, meal logging — is fully functional and covered by tests.
+The test set was evaluated exactly once, after model selection on the
+validation split. No test images were used for training or tuning.
 
-Why nothing was trained here: the build sandbox could not reach a single dataset
-host or the pretrained-weights host (see `docs/DATASET.md` §4). Transfer learning
-without ImageNet weights on 2 vCPU / 3 GB / no GPU would have produced a model
-with no useful accuracy. Reporting a fabricated number was the one thing that
-was not acceptable.
+## 2. Before/after: what changed
 
-## 2. Architecture
+An earlier version of this document stated that no model could be trained
+because the sandbox could not reach Kaggle, Hugging Face or
+`download.pytorch.org`. That finding was correct for those hosts but **the
+investigation was not complete**. GitHub is reachable here, and GitHub hosts
+both halves of what was missing:
+
+| Need | Found on GitHub | How it was obtained |
+|---|---|---|
+| Indian food images | `dhruvk2002/food-classifier` — 6,269 real images, 20 Indian-majority classes, committed directly to the repo | `codeload.github.com` tarball (1.6 GB) |
+| ImageNet weights | `d-li14/mobilenetv3.pytorch` — `mobilenetv3-small-55df8e1f.pth`, 10.3 MB ImageNet checkpoint | `codeload.github.com` tarball |
+
+`download.pytorch.org`, `huggingface.co` and every dataset host remain blocked,
+and GitHub **release assets** redirect to `release-assets.githubusercontent.com`
+which is also blocked. What works is `codeload.github.com` tarballs and the REST
+API — i.e. anything committed *into a repository*, as opposed to attached to a
+release.
+
+## 3. Datasets
+
+### Used for training
 
 | Property | Value |
 |---|---|
-| Model | MobileNetV3-Small (default), ImageNet-pretrained |
-| Alternatives wired | `mobilenet_v3_large`, `efficientnet_b0`, `resnet18` |
-| Input | 224 × 224 RGB, ImageNet normalisation (μ .485/.456/.406, σ .229/.224/.225) |
-| Head | replaced final linear → `num_classes` |
-| Params | ≈2.5 M (small) |
-| Checkpoint size | ≈6 MB fp32 (measured: `models/selftest.pt` = 6.1 MB) |
-| Runtime | CPU-only; no GPU required |
-| Framework | PyTorch + torchvision |
-| Task type | **Single-label** classification |
+| Name | Food Classification dataset (20 Indian food classes) |
+| Source | https://github.com/dhruvk2002/food-classifier |
+| Images | 6,271 files; **6,269 verified readable** (0 corrupt, 0 below 64px) |
+| Resolution | min 148×141, median 751×681, max 7360×7360 |
+| Classes | 20 (listed in §4) |
+| Licence | **None declared by the repository.** No `LICENSE` file. Treated as an educational/research compilation; if you intend to redistribute a derivative model commercially, verify provenance with the author first. |
+| Downloaded & inspected | **Yes** — full tarball, every image opened with Pillow |
 
-Selection rationale: this must run inside a Flask app on modest hardware. MobileNetV3-Small
-gives the best accuracy-per-millisecond on CPU, needs no GPU at inference, and
-keeps the checkpoint small enough to distribute. A bigger backbone (ResNet-50)
-would buy a few points of accuracy for ~10× the latency and 100 MB of weights —
-the wrong trade for a phone-facing feature.
+### Also evaluated, not used
 
-**Single-label limitation, stated plainly:** the model identifies the one
-dominant dish in a photograph. It cannot separate four items on a thali. The UI,
-the API (`single_label: true`) and the README all say so. Multi-dish support
-needs object detection (e.g. YOLO) plus per-crop classification — a different
-architecture, not a tuning change.
+| Dataset | Images | Classes | Why not used |
+|---|---|---|---|
+| `soumen7saha/IndFood-Dataset` | 20,400 | 131 | **Excellent candidate** — covers most of NutriCare's Indian list (dal tadka, rajma, palak paneer, aloo gobi, poha, pongal, bhindi masala, kachori, dabeli, chole bhature, misal pav…). Download started; not trained on within this session's compute/time budget. This is the recommended next step. |
+| `soumen1149/RASOI` | 939 | detection dataset (YOLO labels) | Bounding-box format, too small for classification |
+| `Sarthak-1408/Indian-Food-Classification` | 23 | — | Sample images only, plus a notebook |
+| Food-101, UECFOOD-256, IFD, Indian Food 101/80 | — | — | Hosts unreachable (Kaggle / ETHZ / IITD / UEC); GitHub release assets blocked |
 
-## 3. Classes
+## 4. Classes this model genuinely supports
 
-59 classes are defined in `data/food_classes.json`, grouped as:
+The model predicts **exactly these 20 classes** and nothing else. They are
+recorded in the checkpoint's `classes` field and exposed at
+`GET /api/vision/classes` as `trained: true`.
 
-| Group | Count | Examples |
+| Model class | NutriCare label | Nutrition source |
 |---|---|---|
-| Indian staples | 11 | roti/chapati, paratha, naan, puri, plain & brown rice, pulao, khichdi |
-| Indian breakfast | 8 | idli, plain dosa, masala dosa, uttapam, poha, upma, vada, chole bhature |
-| Indian curries & vegetables | 15 | dal, dal tadka, rajma, chole, palak paneer, aloo gobi, sambar, rasam, kadhi |
-| Indian rice dishes | 6 | veg/chicken biryani, curd rice, lemon rice, tomato rice, fried rice |
-| Indian snacks | 8 | samosa, pakora, dhokla, kachori, vada pav, pani puri, bhel puri |
-| International | 11 | pizza, burger, sandwich, pasta, noodles, fries, fried chicken, momos, spring rolls, pancakes, salad |
+| roti | Roti / Chapati / Phulka | dataset (IFCT) |
+| naan | Naan (butter naan) | dataset |
+| idli | Idli | dataset |
+| masala_dosa | Masala Dosa | dataset (plain dosa, approximation disclosed) |
+| pav_bhaji | Pav Bhaji | dataset |
+| chole_bhature | Chole Bhature | dataset |
+| samosa | Samosa | dataset |
+| dal_makhani | Dal Makhani | **none — user enters values** |
+| kadai_paneer | Kadai Paneer | **none** |
+| dhokla | Dhokla | **none** |
+| pakora | Pakora / Bhajji | **none** |
+| pani_puri | Pani Puri | **none** |
+| fried_rice | Fried Rice | **none** |
+| pizza | Pizza | **none** |
+| burger | Burger | **none** |
+| momos | Momos | **none** |
+| chai | Chai / Masala Chai | **none** |
+| jalebi | Jalebi | **none** |
+| kulfi | Kulfi | **none** |
+| kaathi_rolls | Kathi Roll / Frankie | **none** |
 
-**36 of 59** have documented nutrition in `data/foods.json`; the other 23 are
-marked `nutrition_source: "unavailable"` and the app asks the user for values
-instead of inventing them. Three visually identical items are merged rather than
-faked: roti/chapati/phulka, pulao/jeera rice, and the plain dal family.
+The remaining 45 entries in `data/food_classes.json` are **not** supported by
+this model. The UI only offers trained classes for photo recognition; the full
+taxonomy remains available for manual logging. Adding a class requires training
+on it — it cannot be claimed by adding a row to a JSON file.
 
-Add or remove classes by editing `data/food_classes.json`; the API, UI, tests
-and trainer all read that one file.
+## 5. Per-class performance (test split)
 
-## 4. Training
+Sorted worst-first, so the weak classes are not hidden.
+
+| Class | Precision | Recall | F1 | Support |
+|---|---|---|---|---|
+| pav_bhaji | 0.733 | 0.635 | 0.680 | 52 |
+| pakora | 0.765 | 0.634 | 0.693 | 41 |
+| kulfi | 0.778 | 0.636 | 0.700 | 33 |
+| roti | 0.712 | 0.689 | 0.700 | 61 |
+| pani_puri | 0.765 | 0.684 | 0.722 | 19 |
+| dal_makhani | 0.683 | 0.872 | 0.766 | 47 |
+| naan | 0.787 | 0.755 | 0.771 | 49 |
+| kaathi_rolls | 0.821 | 0.744 | 0.780 | 43 |
+| samosa | 0.806 | 0.763 | 0.784 | 38 |
+| chole_bhature | 0.778 | 0.803 | 0.790 | 61 |
+| pizza | 0.786 | 0.846 | 0.815 | 39 |
+| masala_dosa | 0.841 | 0.804 | 0.822 | 46 |
+| momos | 0.826 | 0.826 | 0.826 | 46 |
+| kadai_paneer | 0.881 | 0.839 | 0.860 | 62 |
+| fried_rice | 0.817 | 0.924 | 0.867 | 53 |
+| chai | 0.841 | 0.930 | 0.883 | 57 |
+| idli | 0.909 | 0.870 | 0.889 | 46 |
+| dhokla | 0.872 | 0.954 | 0.911 | 43 |
+| jalebi | 0.896 | 0.977 | 0.935 | 44 |
+| burger | 0.978 | 0.978 | 0.978 | 46 |
+
+## 6. Confusion matrix (test split)
+
+Rows are actual labels, columns are predictions.
+
+| actual \ predicted | burger | chai | chole_bhature | dal_makhani | dhokla | fried_rice | idli | jalebi | kaathi_rolls | kadai_paneer | kulfi | masala_dosa | momos | naan | pakora | pani_puri | pav_bhaji | pizza | roti | samosa |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| burger | 45 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| chai | 0 | 53 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |
+| chole_bhature | 0 | 1 | 49 | 2 | 0 | 1 | 0 | 1 | 2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 2 | 0 | 1 | 0 |
+| dal_makhani | 0 | 0 | 0 | 41 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
+| dhokla | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| fried_rice | 0 | 0 | 0 | 0 | 1 | 49 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |
+| idli | 0 | 0 | 1 | 0 | 0 | 1 | 40 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| jalebi | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 43 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| kaathi_rolls | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 32 | 0 | 0 | 1 | 1 | 2 | 0 | 0 | 0 | 1 | 3 | 0 |
+| kadai_paneer | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 1 | 0 | 52 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 1 | 1 | 0 |
+| kulfi | 0 | 3 | 0 | 1 | 0 | 0 | 2 | 1 | 0 | 0 | 21 | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 2 | 0 |
+| masala_dosa | 0 | 1 | 2 | 2 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 37 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |
+| momos | 0 | 1 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 38 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| naan | 0 | 0 | 1 | 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 37 | 0 | 0 | 0 | 2 | 5 | 0 |
+| pakora | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 2 | 0 | 26 | 2 | 1 | 0 | 0 | 6 |
+| pani_puri | 0 | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 13 | 0 | 0 | 0 | 0 |
+| pav_bhaji | 0 | 2 | 1 | 7 | 1 | 1 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | 1 | 33 | 1 | 0 | 0 |
+| pizza | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 33 | 0 | 0 |
+| roti | 0 | 0 | 3 | 1 | 0 | 2 | 0 | 1 | 2 | 0 | 0 | 1 | 0 | 4 | 0 | 0 | 2 | 3 | 42 | 0 |
+| samosa | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 2 | 1 | 0 | 0 | 1 | 0 | 0 | 29 |
+
+### Most confused pairs
+
+| Actual | Predicted as | Count |
+|---|---|---|
+| pav_bhaji | dal_makhani | 7 |
+| pakora | samosa | 6 |
+| naan | roti | 5 |
+| roti | naan | 4 |
+| roti | pizza | 3 |
+| roti | chole_bhature | 3 |
+| pav_bhaji | masala_dosa | 3 |
+| kulfi | chai | 3 |
+
+Interpretation, stated plainly:
+
+* **Weakest classes are the flatbreads and the fried snack family.**
+  `roti ↔ naan` (5 and 4 mutual confusions) are the same dough cooked two ways;
+  `pakora → samosa` (6) is a genuine visual ambiguity between fried
+  batter-coated snacks; `pav_bhaji → dal_makhani` (7) reflects both being a
+  reddish, saucy bowl. These are the expected failure modes, not data errors.
+* `pani_puri` has only 130 source images (19 in test), the smallest class — its
+  0.72 F1 is the least statistically reliable number here.
+* `burger` (0.978) and `jalebi` (0.935) are visually distinctive and score
+  accordingly, which is a sanity check that the pipeline is learning real
+  features rather than dataset artefacts.
+
+## 7. Training configuration
+
+| Setting | Value |
+|---|---|
+| Backbone | MobileNetV3-Small, ImageNet weights from `d-li14/mobilenetv3.pytorch` |
+| Weight conversion | `training/load_imagenet_backbone.py` — positional key mapping + 18 1×1 convs reshaped from `nn.Linear`; **strict load verified** before training |
+| Head | final linear replaced: 1024 → 20 |
+| Input | 160×160, ImageNet normalisation |
+| Augmentation (train only) | RandomResizedCrop(0.7–1.0), horizontal flip, colour jitter 0.25/0.25/0.2, rotation ±12° |
+| Schedule | 1 epoch head-only, then full fine-tune; AdamW (wd 1e-4); cosine LR; lr 3e-4 (0.2× after unfreeze) |
+| Loss | cross-entropy, label smoothing 0.1 |
+| Batch size | 32 |
+| Epochs | 14 |
+| Model selection | best validation accuracy (epoch 14, val_acc 0.827) |
+| Seed | 42 |
+| Device | CPU (2 vCPU, 3 GB) |
+
+Reproduce end to end:
 
 ```bash
-pip install -r requirements-train.txt
-python training/download_datasets.py --probe          # check connectivity first
-python training/download_datasets.py --out data/raw
-python training/train_food_classifier.py \
-    --data data/raw --epochs 15 --batch-size 32 --lr 3e-4 \
-    --architecture mobilenet_v3_small --output models/food_classifier.pt
+curl -sSL https://codeload.github.com/dhruvk2002/food-classifier/tar.gz/refs/heads/main \
+  | tar xz && mv "food-classifier-main/Food Classification" data/raw/indian_food_20
+curl -sSL https://codeload.github.com/d-li14/mobilenetv3.pytorch/tar.gz/refs/heads/master \
+  | tar xz
+python training/load_imagenet_backbone.py \
+  --checkpoint mobilenetv3.pytorch-master/pretrained/mobilenetv3-small-55df8e1f.pth \
+  --out models/backbone_mobilenet_v3_small.pth
+python training/train_food_classifier.py --data data/raw/indian_food_20 \
+  --epochs 14 --batch-size 32 --lr 3e-4 --image-size 160 --freeze-epochs 1 \
+  --backbone models/backbone_mobilenet_v3_small.pth \
+  --backbone-source "d-li14/mobilenetv3.pytorch mobilenetv3-small-55df8e1f.pth" \
+  --output models/food_classifier.pt
 ```
 
-Pipeline, in order:
+## 8. Running inference
 
-1. **Discover** `data/raw/**/<class>/<images>` and map folder names to slugs via
-   `EXTRA_ALIASES` (case/punctuation insensitive). Unmapped folders are reported.
-2. **Filter** classes below `--min-images` (default 20).
-3. **De-duplicate** by `(stem, size)` to prevent train/test leakage.
-4. **Stratified split** per class: 70/15/15 train/val/test, seeded (`--seed 42`).
-   The test split is touched exactly once, at the end.
-5. **Augment** training images only: RandomResizedCrop(0.7–1.0), horizontal flip,
-   colour jitter, ±12° rotation.
-6. **Transfer learning**: load ImageNet weights, replace the head, freeze the
-   backbone for `--freeze-epochs` (default 1), then fine-tune all layers at 0.2× LR.
-7. **Optimise**: AdamW (wd 1e-4), cosine schedule, label smoothing 0.1,
-   `CrossEntropyLoss`.
-8. **Select** the best epoch by validation accuracy.
-9. **Evaluate** on the held-out test split; write metrics, per-class table,
-   confusion matrix and the most-confused pairs.
-
-Outputs (all git-ignored as build artefacts):
-
-```
-models/food_classifier.pt           checkpoint: state_dict, classes, architecture,
-                                    input_size, normalisation, test_accuracy, metadata
-models/food_classifier.metrics.json accuracy, macro/weighted F1, per-class P/R/F1,
-                                    confusion matrix, hardest confusions, history
-models/food_classifier.report.txt   human-readable summary, worst classes listed first
-```
-
-### Proving the pipeline without any dataset
+An ML runtime is required. The checkpoint is committed, so a fresh clone only
+needs the extra dependencies:
 
 ```bash
-python training/train_food_classifier.py --self-test
-```
-
-This generates random-noise images for three classes, trains two epochs with
-`pretrained=False`, and writes `models/selftest.pt`. It exercises the entire
-chain — discovery, split, augmentation, training loop, best-epoch selection,
-test evaluation, metrics, checkpoint format — in about 15 seconds on CPU, and
-prints:
-
-```
-TEST accuracy : 0.3333  (n=6)
-TEST macro F1 : 0.1667
-SELF-TEST PASSED — pipeline produced models/selftest.pt (6069 KB)
-The accuracy above was measured on random noise and is NOT a statement about
-real food photographs.
-```
-
-Those numbers are **pipeline evidence, not model performance**. They are labelled
-as such in the output, in the metrics JSON (`"trained_on": "random weights (test
-fixture)"`) and here.
-
-## 5. Installing and running inference
-
-```bash
-pip install -r requirements-ml.txt        # torch, torchvision, Pillow
-cp /path/to/food_classifier.pt models/food_classifier.pt
+pip install -r requirements-ml.txt     # torch, torchvision, Pillow
 python app.py
 curl -s localhost:5000/api/vision/status | python -m json.tool
 ```
 
-* The checkpoint is loaded **once**, lazily, on the first prediction, and cached
-  for the process (guarded by a lock). It is never re-read per request.
-* Override the path with `NUTRICARE_MODEL=/path/to/model.pt`.
-* No checkpoint → 503 + `model_unavailable`, never a fake answer.
-* Corrupt checkpoint → 503 with the reason in `detail`.
-* Startup never depends on the ML stack; the app boots fine without torch.
+Measured on this CPU-only box: cold checkpoint load ≈0.6 s, single 160px
+inference ≈35–60 ms. The model is loaded once per process, lazily, behind a
+lock. `NUTRICARE_MODEL` overrides the path.
 
-Measured cold-start on this CPU-only box (2 vCPU): checkpoint load ≈0.6 s,
-single-image inference ≈60–90 ms at 224 px for MobileNetV3-Small.
+Without `requirements-ml.txt`, the app still boots and the scanner reports
+photo recognition as unavailable — it never guesses.
 
-## 6. Nutrition mapping (recognition ≠ nutrition)
+## 9. Honest limitations
 
-`nutricare/food_recognition.py` links a predicted class to a row in the existing
-`foods` table and scales it with the existing `nutrition.scale_per100()` — the
-same function the manual logger uses, so the two can never disagree.
+1. **20 classes, not 65.** Everything outside §4 is unsupported for photo
+   recognition. 81% accuracy on 20 classes does not generalise to a thali.
+2. **Single-label.** One dominant dish per photo; it cannot separate rice, dal
+   and sabzi on one plate. That needs object detection, not classification.
+3. **Training data is a web-scraped compilation with no declared licence.** The
+   model is fine for personal/educational use; get provenance in writing before
+   any commercial deployment.
+4. **Domain shift.** Source photos are largely studio/stock-style. Real phone
+   photos of a home thali under warm indoor light will score lower than 81%.
+   Collect ~50 real user photos per class to measure the true field accuracy.
+5. **13 of 20 classes have no documented nutrition**, so the scanner asks for
+   values rather than inventing them.
+6. **Class imbalance** (130–413 images per class) makes the smallest classes
+   (`pani_puri`) the least reliable.
+7. **No portion estimation from pixels.** Weight is always the user's adjustment
+   of a dataset default serving.
+8. **Not evaluated for safety-critical use.** This is a convenience estimate,
+   not dietary or medical advice.
 
-* 36 classes resolve to documented dataset entries and get real numbers with a
-  cited source (`data/SOURCES.md`).
-* 23 classes have no dataset entry. No value is invented: the API returns
-  `nutrition_available: false` with an explanation, and logging requires the
-  user's own kcal (optionally protein/carbs/fat).
-* Approximation is declared where the class stands in for something else — e.g.
-  *masala dosa* is costed with the plain-dosa entry and says so.
-* Every estimate carries a ±10 % (international) or ±15 % (Indian) band that
-  reflects **recipe and cooking-oil variation**, documented as such rather than
-  presented as measurement error.
+## 10. Next concrete step
 
-## 7. What still limits accuracy
-
-1. **No training run has been performed in this environment** — the pipeline is
-   complete and self-tested, but the accuracy of a real model is unknown until
-   you train it. Do not quote a number before then.
-2. **Visually similar Indian dishes** will be the weak spot: dal varieties, plain
-   vs masala dosa, roti vs naan, paneer curries. The evaluation report lists the
-   worst classes first *by design*. Expect the need for more data per class
-   rather than a different architecture.
-3. **Portion weight cannot come from a photo.** No reference object, depth or
-   scale is available, so weight is always the user's adjustment of a default
-   serving. The UI states this next to the grams field.
-4. **Single dish per photo** (see §2).
-5. **Class imbalance** — Indian sets vary from 40 to 200 images per class; use
-   `--min-images` to drop thin classes and expect per-class F1 to be uneven.
-6. **Domain shift** — dataset photos are often studio-lit; phone photos of a home
-   thali at night are harder. Collect your own validation set from real users
-   before trusting production accuracy.
-
-## 8. Reproducing a published number
-
-If you train and want to state an accuracy, state it like this:
-
-> MobileNetV3-Small, 59 classes, trained on <datasets + versions>, 70/15/15
-> stratified split (seed 42), evaluated once on the held-out test set:
-> accuracy X.XX, macro F1 X.XX. Per-class results in
-> `models/food_classifier.metrics.json`. Worst classes: …
-
-Commit the `*.metrics.json` and `*.report.txt` alongside the checkpoint. Anything
-less repeats the exact failure this project is designed to avoid.
+The single highest-value improvement is **retraining on
+`soumen7saha/IndFood-Dataset` (20,400 images, 131 classes)**, which covers most
+of NutriCare's intended Indian list. Expect a materially better model: more
+images per class, more classes, and genuine coverage of dal tadka, rajma,
+palak paneer, aloo gobi, poha, pongal and bhindi masala. The pipeline needs no
+changes — only `--data` pointing at the new folder.

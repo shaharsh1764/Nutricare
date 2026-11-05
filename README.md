@@ -7,7 +7,7 @@ Reports, Settings).
 * **Backend:** Python + Flask (a small, beginner-friendly web framework)
 * **Database:** SQLite — a single file, no server to install
 * **Frontend:** plain HTML/CSS/JavaScript served by Flask (no build step, no node needed)
-* **Tests:** `pytest` (179 tests: 125 baseline + 54 AI Food Scanner) + a Node UI smoke harness (80 checks: A–L)
+* **Tests:** `pytest` (184 tests: 125 baseline + 59 AI Food Scanner) + a Node UI smoke harness (78–80 checks: A–L)
 
 ---
 
@@ -73,6 +73,7 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 | `nutricare/food_recognition.py` | class → nutrition mapping and portion scaling |
 | `nutricare/vision_api.py` | `/api/vision/*` blueprint (status, predict, estimate, log) |
 | `training/` | dataset acquisition + reproducible training/evaluation scripts |
+| `models/food_classifier.pt` | **the trained checkpoint** (6 MB, committed) + metrics + report |
 | `docs/DATASET.md`, `docs/MODEL.md` | dataset licences, model card, training guide |
 | `data/SOURCES.md` | **documented sources** (USDA FoodData Central, IFCT 2017) + caveats |
 | `instance/nutricare.db` | **the database** (created on first run; delete to reset) |
@@ -185,11 +186,13 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
 * Navigation: the sidebar collapses to an icon rail on desktop (choice remembered)
   and becomes a ☰ drawer under ~860px; symptom severity uses exact radio numbers
   1–10 — no slider is used for any health input.
-* **AI Food Scanner:** photo recognition requires a trained checkpoint, which is
-  not bundled (see §10 and `docs/MODEL.md`) — until one is installed the scanner
-  states that plainly and offers manual entry. It recognises one dominant dish
-  per photo, cannot measure weight from an image, and 23 of its 59 foods have no
-  documented nutrition entry, so those ask you for values instead of guessing.
+* **AI Food Scanner:** the bundled model recognises **20 foods** at **81.4%**
+  test accuracy — not the 65 in the taxonomy, so the scanner only offers trained
+  classes. It identifies one dominant dish per photo, cannot measure weight from
+  an image, and 13 of its 20 classes have no documented nutrition entry, so those
+  ask you for values instead of guessing. Accuracy on real phone photos of home
+  cooking will be lower than the test set, which is largely stock photography.
+  See `docs/MODEL.md` §9.
 
 ## 10. AI Food Scanner (photo → nutrition → diary)
 
@@ -248,11 +251,38 @@ list is `data/food_classes.json`.
 
 ### Model and training
 
-The architecture is MobileNetV3-Small with an ImageNet-pretrained backbone
-(CPU inference, ≈6 MB checkpoint). **No trained checkpoint ships with this
-repository** — the sandbox that built this feature had no access to any dataset
-host or weights host, so training could not be performed and no accuracy is
-claimed anywhere.
+**A real, trained model ships with this repository: `models/food_classifier.pt`
+(6.0 MB).** MobileNetV3-Small fine-tuned on 6,269 real Indian food photographs
+across 20 classes.
+
+| Measured on a held-out test split | Value |
+|---|---|
+| Test accuracy | **81.4%** |
+| Test macro F1 | **0.809** |
+| Test images (never trained on) | 926 |
+| Classes | 20 |
+| Inference | CPU only, ≈35–60 ms per photo |
+
+Split was stratified 4,332 / 926 / 926 with duplicate-image removal *before*
+splitting. Per-class precision/recall/F1, the full confusion matrix and the
+weakest classes (`pav_bhaji`, `pakora`, `kulfi`, `roti`) are published in
+**`docs/MODEL.md`** and `models/food_classifier.report.txt`.
+
+**Recognised classes (20):** roti/chapati, naan, idli, masala dosa, pav bhaji,
+chole bhature, dal makhani, kadai paneer, dhokla, pakora, pani puri, fried rice,
+pizza, burger, momos, chai, jalebi, kulfi, kathi roll, samosa. Anything else in
+the 65-class taxonomy is **not** recognised by photo — it can still be logged
+manually, and the UI only offers trained classes in the scanner.
+
+Inference needs the optional ML dependencies:
+
+```bash
+pip install -r requirements-ml.txt     # torch, torchvision, Pillow
+python app.py
+```
+
+Without them the app still boots and the scanner honestly reports that photo
+recognition is unavailable.
 
 The complete, reproducible pipeline is included and self-tested end to end:
 

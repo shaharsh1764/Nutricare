@@ -35,14 +35,19 @@ data/selftest/
 *.png
 *.webp
 
-# Model checkpoints are build artefacts, not source. Exceptions below keep
-# anything small and intentional (e.g. a documented tiny fixture) committable.
+# Model checkpoints are normally build artefacts. EXCEPTION: the shipped
+# food-recognition checkpoint (6 MB) IS committed, because a real trained model
+# is far more useful to a clone than a training instruction. Its metrics and
+# evaluation report are committed beside it so the published numbers can be
+# verified without re-training.
 models/*.pt
 models/*.pth
 models/*.onnx
-models/*.metrics.json
-models/*.report.txt
 !models/.gitkeep
+models/selftest*
+models/backbone_*
+/tmp/
+data/raw/
 
 # Keep repo icons/lockfiles working even though *.png is ignored above
 !static/**/*.png
