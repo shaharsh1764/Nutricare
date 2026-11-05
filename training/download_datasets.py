@@ -60,9 +60,9 @@ DATASETS = {
         "repo": "dhruvk2002/food-classifier",
         "branch": "main",
         "images_subdir": "Food Classification",
-        "use_for": "the shipped model (81.4% test accuracy, 20 classes)",
+        "use_for": "NOT USED — no licence for the images; the checkpoint trained on it was removed from the repository",
         "citation": "github.com/dhruvk2002/food-classifier",
-        "status": "USED — this is what models/food_classifier.pt was trained on",
+        "status": "REJECTED ON LICENSING — no LICENSE file, upstream '© Original Authors', images 'extracted from google'. See docs/LICENSING_AUDIT.md",
     },
     "indfood_131": {
         "name": "IndFood-Dataset — 131 Indian classes (GitHub, committed)",
@@ -93,7 +93,7 @@ DATASETS = {
         "branch": "master",
         "use_for": "pretrained backbone when download.pytorch.org is blocked",
         "citation": "github.com/d-li14/mobilenetv3.pytorch",
-        "status": "USED — backbone for models/food_classifier.pt",
+        "status": "USED — MIT-licensed ImageNet backbone for the shipped CC0 model",
     },
     "food101_mini": {
         "name": "Food-101 (Hugging Face parquet mirror)",

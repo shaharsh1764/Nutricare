@@ -45,7 +45,7 @@ Legend: ✅ supported (trained + licensed) · ⚠️ trained but thin · ⛔ blo
 
 | Requested dish | Class status | Evidence |
 |---|---|---|
-| **Roti / chapati / phulka** | ⛔ blocked | Taxonomy has `roti`. The 20-class model knows it, but that model's images are unlicensed. No CC0 source for roti. |
+| **Roti / chapati / phulka** | ⛔ blocked | Taxonomy has `roti`. The former 20-class model could recognise it, but that model's images had no licence and it has been removed. No CC0 source for roti. |
 | **Naan** | ⛔ blocked | Taxonomy has `naan`; no licensed images obtained. |
 | **Paratha** | ✅ supported | 441 licensed images (CC0 `Porota`). |
 | **Rice** | ⛔ blocked | Taxonomy has `rice_white` / `rice_brown`; no licensed images. |
@@ -153,7 +153,7 @@ Each rejection is a decision, not an oversight.
 
 | Dataset | Declared licence | Why rejected |
 |---|---|---|
-| `dhruvk2002/food-classifier` (20-class, in the current default model) | **none** | No LICENSE file. Upstream Kaggle listing says "Data files © Original Authors"; published work on the same set says images were "extracted from google". Unresolved — see `LICENSING_AUDIT.md`. |
+| `dhruvk2002/food-classifier` (20-class, former default model — **removed**) | **none** | No LICENSE file. Upstream Kaggle listing says "Data files © Original Authors"; published work on the same set says images were "extracted from google". Unresolved — see `LICENSING_AUDIT.md`. |
 | `soumen7saha/IndFood-Dataset` (131 classes) | GPL-3.0 on repo | Images derive from Khana, which is **CC BY-NC-ND 4.0** — forbids derivatives and commercial use. A repo-level GPL cannot license third-party photos. |
 | `prabhuomkar/Khana` | none | Images crawled from search engines and Swiggy/Zomato. No licence file. |
 | `pranavuppuluri/Cooked-Food-Recognition-and-Classification` (8,395 images, 37 Indian dishes) | MIT | The MIT text covers "the Software". The README documents 8,395 images and states **no provenance, no source, no permission** for them. Tempting and unusable — this is the trap the brief warns about. |
@@ -204,9 +204,12 @@ nobody's promise at all.
 
 The first CC0 model (`models/food_classifier_cc0_7class.pt`) is retained for
 comparison: 7 classes, 0.8609 test accuracy, 0.8539 on its leak-free subset,
-160 px input. It was superseded by the 12-class model and is **not** the default,
-but nothing was deleted — reproduce or compare it with
-`NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt`.
+160 px input. It was superseded by the 12-class model and is **not** the default.
+Compare it with `NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt`.
+
+The earlier **20-class** model is *not* retained. It was trained on images with
+no licence, so it was removed from the repository and from the branch history
+(see the "Removed" note in §4).
 
 ## 7. Nutrition coverage for the supported classes
 

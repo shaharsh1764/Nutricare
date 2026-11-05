@@ -5,10 +5,10 @@ Fine-tunes a lightweight ImageNet-pretrained CNN on a food image dataset laid
 out in ``data/raw/<dataset>/<class_name>/`` folders (standard imagefolder), maps
 those folders onto NutriCare's canonical class taxonomy, and writes:
 
-    models/food_classifier.pt          checkpoint consumed by nutricare/vision.py
-    models/food_classifier.metrics.json accuracy / precision / recall / F1,
+    models/food_classifier_cc0.pt          checkpoint consumed by nutricare/vision.py
+    models/food_classifier_cc0.metrics.json accuracy / precision / recall / F1,
                                        per-class report and confusion matrix
-    models/food_classifier.report.txt   human-readable summary
+    models/food_classifier_cc0.report.txt   human-readable summary
 
 The output contract is fixed: ``vision.Predictor`` reads exactly these keys, so
 a model trained by this script drops straight into the running app.
@@ -755,8 +755,9 @@ def run(data_dirs: list[Path], epochs: int, batch_size: int, lr: float,
                       for k, v in metrics_payload["worst_classes"][:5])
     print(f"worst classes : {worst}")
     print(f"\nSaved:\n  {output}\n  {metrics_path}\n  {report_path}")
-    print("\nInstall into the app:  the path models/food_classifier.pt is the default, "
-          "so just restart the server.")
+    print(f"\nInstall into the app:  the default path is "
+          f"{vision.DEFAULT_MODEL_PATH.name} — restart the server after replacing "
+          f"it, or point NUTRICARE_MODEL at {output}.")
     return 0
 
 

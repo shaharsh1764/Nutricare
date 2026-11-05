@@ -73,7 +73,8 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 | `nutricare/food_recognition.py` | class → nutrition mapping and portion scaling |
 | `nutricare/vision_api.py` | `/api/vision/*` blueprint (status, predict, estimate, log) |
 | `training/` | dataset acquisition + reproducible training/evaluation scripts |
-| `models/food_classifier.pt` | **the trained checkpoint** (6 MB, committed) + metrics + report |
+| `models/food_classifier_cc0.pt` | **the default trained checkpoint** (6 MB, CC0-trained) + metrics + report |
+| `models/food_classifier_cc0_7class.pt` | alternative 7-class checkpoint, kept for comparison |
 | `docs/DATASET.md`, `docs/MODEL.md` | dataset licences, model card, training guide |
 | `data/SOURCES.md` | **documented sources** (USDA FoodData Central, IFCT 2017) + caveats |
 | `instance/nutricare.db` | **the database** (created on first run; delete to reset) |
@@ -251,28 +252,38 @@ list is `data/food_classes.json`.
 
 ### Model and training
 
-**A real, trained model ships with this repository: `models/food_classifier.pt`
-(6.0 MB).** MobileNetV3-Small fine-tuned on 6,269 real Indian food photographs
-across 20 classes.
+**Two real, trained models ship with this repository, both trained only on
+CC0 1.0 images.** The default is `models/food_classifier_cc0.pt` (6.0 MB),
+MobileNetV3-Small fine-tuned on 2,573 de-duplicated photographs across 12
+Indian food classes.
 
-| Measured on a held-out test split | Value |
-|---|---|
-| Test accuracy | **81.4%** |
-| Test macro F1 | **0.809** |
-| Test images (never trained on) | 926 |
-| Classes | 20 |
-| Inference | CPU only, ≈35–60 ms per photo |
+| Measured on a held-out test split | 12-class (default) | 7-class (alternative) |
+|---|---|---|
+| Test accuracy | **89.5%** | 86.1% (leak-free 85.4%) |
+| Test macro F1 | **0.905** | 0.872 |
+| Test images (never trained on) | 380 | 302 |
+| Classes | 12 | 7 |
+| Inference | CPU only, 16 ms median | CPU only, ≈35–60 ms |
+| Training-data licence | CC0 1.0 | CC0 1.0 |
 
-Split was stratified 4,332 / 926 / 926 with duplicate-image removal *before*
-splitting. Per-class precision/recall/F1, the full confusion matrix and the
-weakest classes (`pav_bhaji`, `pakora`, `kulfi`, `roti`) are published in
-**`docs/MODEL.md`** and `models/food_classifier.report.txt`.
+The default model supports: paratha, khichdi, chicken biryani, chole, curd/dahi,
+rasgulla, kheer, pani puri, pakora, chomchom, morog polao and jalebi. Anything
+else in the taxonomy is **not** recognised by photo — it can still be logged
+manually, and the UI only offers trained classes in the scanner. Three classes
+(chomchom, jalebi, kheer) have only 3–4 test images, so no accuracy claim is made
+for them. Full per-class results, confusion matrix and weak spots:
+**`docs/MODEL.md`**.
 
-**Recognised classes (20):** roti/chapati, naan, idli, masala dosa, pav bhaji,
-chole bhature, dal makhani, kadai paneer, dhokla, pakora, pani puri, fried rice,
-pizza, burger, momos, chai, jalebi, kulfi, kathi roll, samosa. Anything else in
-the 65-class taxonomy is **not** recognised by photo — it can still be logged
-manually, and the UI only offers trained classes in the scanner.
+`NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt` selects the 7-class model.
+
+**Not included: the earlier 20-class model.** It scored 81.4% but its training
+images (6,269 photographs from `dhruvk2002/food-classifier`) carry **no licence
+at all**, so it cannot be redistributed. It has been removed from this
+repository and from the branch history rather than shipped with a caveat. See
+`docs/LICENSING_AUDIT.md`.
+
+Which dishes can and cannot be recognised, and what would unblock the rest:
+**`docs/COVERAGE.md`**.
 
 Inference needs the optional ML dependencies:
 
@@ -287,10 +298,10 @@ recognition is unavailable.
 The complete, reproducible pipeline is included and self-tested end to end:
 
 ```bash
-python training/download_datasets.py --probe          # connectivity check
-python training/download_datasets.py --out data/raw   # dataset acquisition
+python training/fetch_cc0_dataset.py                  # CC0 images (the shipped models)
 python training/train_food_classifier.py --self-test  # prove the pipeline (≈15 s)
-python training/train_food_classifier.py --data data/raw --epochs 15
+python training/train_food_classifier.py --data data/raw/cc0_food --epochs 22 \
+    --output models/food_classifier_cc0.pt
 pip install -r requirements-ml.txt                    # enable inference
 ```
 

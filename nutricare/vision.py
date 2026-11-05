@@ -46,14 +46,20 @@ CLASSES_PATH = PROJECT_DIR / "data" / "food_classes.json"
 # capable but its training images carry no licence at all, so it must not be the
 # one that ships (see docs/LICENSING_AUDIT.md and docs/COVERAGE.md).
 #
-# Nothing is deleted: the 20-class checkpoint is still in the repository and is
-# reachable with NUTRICARE_MODEL=models/food_classifier.pt.
+# The 20-class checkpoint is deliberately NOT in this repository: its training
+# data has no licence, so it cannot be distributed. See docs/LICENSING_AUDIT.md.
+# To use it locally you must obtain it yourself and point NUTRICARE_MODEL at it.
 DEFAULT_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier_cc0.pt"
 
-# Kept for reference and for tests that exercise these checkpoints explicitly.
-# Neither is ever the default.
-UNLICENSED_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier.pt"      # 20 classes, licensing unresolved
-PREVIOUS_CC0_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier_cc0_7class.pt"  # first CC0 run, 7 classes
+# The first CC0 run (7 classes), kept for comparison. Not the default.
+PREVIOUS_CC0_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier_cc0_7class.pt"
+
+# The legacy 20-class checkpoint is NOT shipped. Its training images have no
+# licence anywhere in the chain (see docs/LICENSING_AUDIT.md), so it was removed
+# from this repository and from its git history rather than merely being made
+# opt-in. This path is retained only so old local deployments fail loudly and
+# explain themselves instead of silently loading a file that is no longer here.
+REMOVED_UNLICENSED_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier.pt"
 
 # Uploads: generous enough for a phone photo, small enough to stay safe.
 MAX_UPLOAD_BYTES = int(os.environ.get("NUTRICARE_MAX_UPLOAD_BYTES", 8 * 1024 * 1024))

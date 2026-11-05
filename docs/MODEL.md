@@ -1,234 +1,92 @@
 # AI Food Scanner — model documentation
 
-Two real, trained checkpoints are included in this repository. **This document
-covers both.** It reports what each actually achieves, how each was produced,
-and where each is weak.
+Two real, trained checkpoints are included in this repository, both trained
+only on **CC0 1.0** images. **This document covers both.** It reports what each
+actually achieves, how each was produced, and where each is weak.
 
-| | **Default: 12-class CC0 model** | Opt-in: 20-class model |
+| | **Default: 12-class model** | Alternative: 7-class model |
 |---|---|---|
-| File | `models/food_classifier_cc0.pt` | `models/food_classifier.pt` |
-| Test accuracy | **0.8947** (n=380) | 0.8143 (n=926) |
-| Test macro F1 | **0.9047** | 0.8087 |
-| Training-data licence | **CC0 1.0 — cleared** | none declared — **not cleared** |
-| Safe to redistribute | **yes** | **no** |
-| Details | §10 below | §1–§7 below |
+| File | `models/food_classifier_cc0.pt` | `models/food_classifier_cc0_7class.pt` |
+| Test accuracy | **0.8947** (n=380) | 0.8609 (n=302) |
+| Leak-free test accuracy | 0.8947 (0 leakage) | 0.8539 (after removing 35 leaked) |
+| Test macro F1 | **0.9047** | 0.8724 |
+| Training-data licence | **CC0 1.0 — cleared** | **CC0 1.0 — cleared** |
+| Safe to redistribute | **yes** | **yes** |
+| Details | §10 below | §10.5 below |
 
-Why the default is *not* the higher-capability legacy model: the 20-class
-checkpoint was trained on images with no licence anywhere in the chain. Shipping
-it as the product would present an unredistributable artifact as NutriCare. The
-licence-cleared model is also the more accurate one, which makes the choice easy
-rather than a compromise. `docs/COVERAGE.md` tracks which dishes are supported
-and which are blocked, with reasons.
+### What is NOT in this repository, and why
 
-## 1. Headline results — 20-class model (opt-in, licensing unresolved)
+An earlier commit on this branch shipped a **20-class** checkpoint
+(`models/food_classifier.pt`, 81.43% test accuracy) trained on 6,269 images from
+`dhruvk2002/food-classifier`. That dataset declares **no licence at all** — no
+`LICENSE` file, an upstream Kaggle listing of "Data files © Original Authors",
+and published work on the same images stating they were *"extracted from
+google"*. Nothing in that chain can grant redistribution rights.
 
-| Metric | Value |
+It has therefore been **removed from the repository and from this branch's git
+history**, not merely demoted: leaving it in any commit would mean distributing
+an artifact that cannot lawfully be redistributed. Its metrics are not published
+any more either, since they describe a model nobody can obtain from here.
+
+The audit that reached this conclusion is `docs/LICENSING_AUDIT.md` §1–§4; the
+full evidence chain and what would be needed to clear such a dataset are in §2
+and §6 there.
+
+## 1. Why the training pipeline exists
+
+The 20-class model that once occupied these sections is gone (§ above). What
+remains is the machinery that produced it and still produces the shipped models:
+
+| Component | Role |
 |---|---|
-| Test accuracy | **0.8143** |
-| Test macro F1 | **0.8087** |
-| Test weighted F1 | **0.8122** |
-| Held-out test images | 926 |
-| Classes | 20 |
-| Architecture | mobilenet_v3_small @ 160px, ImageNet-pretrained |
-| Training time | 1141s on 2 vCPU (no GPU) |
-| Checkpoint size | 6.0 MB fp32 |
+| `training/download_datasets.py` | dataset registry, including licence and status for each candidate |
+| `training/fetch_cc0_dataset.py` | fetches the CC0 source, maps folders to NutriCare classes, records exclusions |
+| `training/load_imagenet_backbone.py` | converts the MIT-licensed d-li14 MobileNetV3 weights to torchvision layout |
+| `training/train_food_classifier.py` | global de-duplication, stratified split, training, evaluation, metrics |
 
-Trained 2026-11-05T10:58:21+00:00. Split: **train 4332 / val 926 / test 926**,
-stratified per class. This run removed only byte-identical and same-stem
-duplicates — it predates the global perceptual de-duplication now in the
-trainer, and a later audit found 1 train→test and 2 train→val near-duplicate
-pairs (impact −0.0002). See `docs/LICENSING_AUDIT.md` §4.5.
+The pipeline is unchanged and reusable. Pointing it at a licence-cleared dataset
+is the only requirement, which is exactly what §10 documents.
 
-## 2. Before/after: what changed
+## 2. Datasets used by the shipped models
 
-An earlier version of this document stated that no model could be trained
-because the sandbox could not reach Kaggle, Hugging Face or
-`download.pytorch.org`. That finding was correct for those hosts but **the
-investigation was not complete**. GitHub is reachable here, and GitHub hosts
-both halves of what was missing:
-
-| Need | Found on GitHub | How it was obtained |
-|---|---|---|
-| Indian food images | `dhruvk2002/food-classifier` — 6,269 real images, 20 Indian-majority classes, committed directly to the repo | `codeload.github.com` tarball (1.6 GB) |
-| ImageNet weights | `d-li14/mobilenetv3.pytorch` — `mobilenetv3-small-55df8e1f.pth`, 10.3 MB ImageNet checkpoint | `codeload.github.com` tarball |
-
-`download.pytorch.org`, `huggingface.co` and every dataset host remain blocked,
-and GitHub **release assets** redirect to `release-assets.githubusercontent.com`
-which is also blocked. What works is `codeload.github.com` tarballs and the REST
-API — i.e. anything committed *into a repository*, as opposed to attached to a
-release.
-
-## 3. Datasets
-
-### Used for training
+Only one dataset is used, and it is CC0:
 
 | Property | Value |
 |---|---|
-| Name | Food Classification dataset (20 Indian food classes) |
-| Source | https://github.com/dhruvk2002/food-classifier |
-| Images | 6,271 files; **6,269 verified readable** (0 corrupt, 0 below 64px) |
-| Resolution | min 148×141, median 751×681, max 7360×7360 |
-| Classes | 20 (listed in §4) |
-| Licence | ⛔ **None declared.** No `LICENSE` file exists; the upstream Kaggle listing says "Data files © Original Authors". **Not cleared for redistribution** — see `docs/LICENSING_AUDIT.md`. |
-| Downloaded & inspected | **Yes** — full tarball, every image opened with Pillow |
+| Source | `github.com/Ishmam97/Bangladeshi-Food-Dataset` |
+| Licence | **CC0 1.0 Universal** — commercial use, derivatives and redistribution all permitted |
+| Images | 8,444 in the `Train/` split, 44 classes |
+| Mapped to NutriCare | 12 classes, 3,247 images offered, 2,573 after de-duplication |
+| Caveat | CC0 waives only the rights the dedicator holds; the README says images came partly from "online platforms" |
 
-### Also evaluated, not used
+`docs/COVERAGE.md` §4 lists every dataset investigated and rejected, including
+the two that looked permissive but were not.
 
-| Dataset | Images | Classes | Why not used |
-|---|---|---|---|
-| `soumen7saha/IndFood-Dataset` | 20,400 | 131 | ⛔ **Rejected on licensing.** Its images come from Khana, licensed **CC BY-NC-ND 4.0** (no derivatives, no commercial use). A trained model is a derivative. Coverage would have been excellent — the blocker is legal, not technical (`docs/LICENSING_AUDIT.md` §5.1). |
-| `Ishmam97/Bangladeshi-Food-Dataset` | 8,442 (Train split) | 44 → 7 mapped | ✅ **Used.** **CC0 1.0.** Trained as `models/food_classifier_cc0.pt` — the licence-clean alternative in §10. |
-| `soumen1149/RASOI` | 939 | detection dataset (YOLO labels) | Bounding-box format, too small for classification |
-| `Sarthak-1408/Indian-Food-Classification` | 23 | — | Sample images only, plus a notebook |
-| Food-101, UECFOOD-256, IFD, Indian Food 101/80 | — | — | Hosts unreachable (Kaggle / ETHZ / IITD / UEC); GitHub release assets blocked |
+## 3. Classes the shipped model genuinely supports
 
-## 4. Classes this model genuinely supports
-
-The model predicts **exactly these 20 classes** and nothing else. They are
-recorded in the checkpoint's `classes` field and exposed at
+The default model predicts **exactly these 12 classes** and nothing else. They
+are recorded in the checkpoint's `classes` field and exposed at
 `GET /api/vision/classes` as `trained: true`.
 
-| Model class | NutriCare label | Nutrition source |
+| Model class | NutriCare label | Nutrition |
 |---|---|---|
-| roti | Roti / Chapati / Phulka | dataset (IFCT) |
-| naan | Naan (butter naan) | dataset |
-| idli | Idli | dataset |
-| masala_dosa | Masala Dosa | dataset (plain dosa, approximation disclosed) |
-| pav_bhaji | Pav Bhaji | dataset |
-| chole_bhature | Chole Bhature | dataset |
-| samosa | Samosa | dataset |
-| dal_makhani | Dal Makhani | **none — user enters values** |
-| kadai_paneer | Kadai Paneer | **none** |
-| dhokla | Dhokla | **none** |
-| pakora | Pakora / Bhajji | **none** |
-| pani_puri | Pani Puri | **none** |
-| fried_rice | Fried Rice | **none** |
-| pizza | Pizza | **none** |
-| burger | Burger | **none** |
-| momos | Momos | **none** |
-| chai | Chai / Masala Chai | **none** |
-| jalebi | Jalebi | **none** |
-| kulfi | Kulfi | **none** |
-| kaathi_rolls | Kathi Roll / Frankie | **none** |
+| paratha_plain | Paratha (plain) | dataset (IFCT) |
+| khichdi | Khichdi | dataset (IFCT) |
+| chicken_biryani | Chicken Biryani | dataset (IFCT) |
+| chole | Chole / Chana Masala | dataset (IFCT) |
+| curd_dahi | Curd / Dahi | dataset (IFCT) |
+| rasgulla | Rasgulla / Rosogolla | **approximate**, recipe-derived |
+| kheer | Kheer / Payesh | **approximate**, recipe-derived |
+| pani_puri | Pani Puri | **none — user enters values** |
+| pakora | Pakora / Bhajji | **none — user enters values** |
+| chomchom | Chomchom | **none — user enters values** |
+| morog_polao | Morog Polao | **none — user enters values** |
+| jalebi | Jalebi | **none — user enters values** |
 
-The remaining 45 entries in `data/food_classes.json` are **not** supported by
-this model. The UI only offers trained classes for photo recognition; the full
+The remaining entries in `data/food_classes.json` are **not** supported by this
+model. The UI only offers trained classes for photo recognition; the full
 taxonomy remains available for manual logging. Adding a class requires training
 on it — it cannot be claimed by adding a row to a JSON file.
-
-## 5. Per-class performance (test split)
-
-Sorted worst-first, so the weak classes are not hidden.
-
-| Class | Precision | Recall | F1 | Support |
-|---|---|---|---|---|
-| pav_bhaji | 0.733 | 0.635 | 0.680 | 52 |
-| pakora | 0.765 | 0.634 | 0.693 | 41 |
-| kulfi | 0.778 | 0.636 | 0.700 | 33 |
-| roti | 0.712 | 0.689 | 0.700 | 61 |
-| pani_puri | 0.765 | 0.684 | 0.722 | 19 |
-| dal_makhani | 0.683 | 0.872 | 0.766 | 47 |
-| naan | 0.787 | 0.755 | 0.771 | 49 |
-| kaathi_rolls | 0.821 | 0.744 | 0.780 | 43 |
-| samosa | 0.806 | 0.763 | 0.784 | 38 |
-| chole_bhature | 0.778 | 0.803 | 0.790 | 61 |
-| pizza | 0.786 | 0.846 | 0.815 | 39 |
-| masala_dosa | 0.841 | 0.804 | 0.822 | 46 |
-| momos | 0.826 | 0.826 | 0.826 | 46 |
-| kadai_paneer | 0.881 | 0.839 | 0.860 | 62 |
-| fried_rice | 0.817 | 0.924 | 0.867 | 53 |
-| chai | 0.841 | 0.930 | 0.883 | 57 |
-| idli | 0.909 | 0.870 | 0.889 | 46 |
-| dhokla | 0.872 | 0.954 | 0.911 | 43 |
-| jalebi | 0.896 | 0.977 | 0.935 | 44 |
-| burger | 0.978 | 0.978 | 0.978 | 46 |
-
-## 6. Confusion matrix (test split)
-
-Rows are actual labels, columns are predictions.
-
-| actual \ predicted | burger | chai | chole_bhature | dal_makhani | dhokla | fried_rice | idli | jalebi | kaathi_rolls | kadai_paneer | kulfi | masala_dosa | momos | naan | pakora | pani_puri | pav_bhaji | pizza | roti | samosa |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| burger | 45 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| chai | 0 | 53 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |
-| chole_bhature | 0 | 1 | 49 | 2 | 0 | 1 | 0 | 1 | 2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 2 | 0 | 1 | 0 |
-| dal_makhani | 0 | 0 | 0 | 41 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
-| dhokla | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
-| fried_rice | 0 | 0 | 0 | 0 | 1 | 49 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |
-| idli | 0 | 0 | 1 | 0 | 0 | 1 | 40 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
-| jalebi | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 43 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
-| kaathi_rolls | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 32 | 0 | 0 | 1 | 1 | 2 | 0 | 0 | 0 | 1 | 3 | 0 |
-| kadai_paneer | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 1 | 0 | 52 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 1 | 1 | 0 |
-| kulfi | 0 | 3 | 0 | 1 | 0 | 0 | 2 | 1 | 0 | 0 | 21 | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 2 | 0 |
-| masala_dosa | 0 | 1 | 2 | 2 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 37 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |
-| momos | 0 | 1 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 38 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
-| naan | 0 | 0 | 1 | 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 37 | 0 | 0 | 0 | 2 | 5 | 0 |
-| pakora | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 2 | 0 | 26 | 2 | 1 | 0 | 0 | 6 |
-| pani_puri | 0 | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 13 | 0 | 0 | 0 | 0 |
-| pav_bhaji | 0 | 2 | 1 | 7 | 1 | 1 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | 1 | 33 | 1 | 0 | 0 |
-| pizza | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 33 | 0 | 0 |
-| roti | 0 | 0 | 3 | 1 | 0 | 2 | 0 | 1 | 2 | 0 | 0 | 1 | 0 | 4 | 0 | 0 | 2 | 3 | 42 | 0 |
-| samosa | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 2 | 1 | 0 | 0 | 1 | 0 | 0 | 29 |
-
-### Most confused pairs
-
-| Actual | Predicted as | Count |
-|---|---|---|
-| pav_bhaji | dal_makhani | 7 |
-| pakora | samosa | 6 |
-| naan | roti | 5 |
-| roti | naan | 4 |
-| roti | pizza | 3 |
-| roti | chole_bhature | 3 |
-| pav_bhaji | masala_dosa | 3 |
-| kulfi | chai | 3 |
-
-Interpretation, stated plainly:
-
-* **Weakest classes are the flatbreads and the fried snack family.**
-  `roti ↔ naan` (5 and 4 mutual confusions) are the same dough cooked two ways;
-  `pakora → samosa` (6) is a genuine visual ambiguity between fried
-  batter-coated snacks; `pav_bhaji → dal_makhani` (7) reflects both being a
-  reddish, saucy bowl. These are the expected failure modes, not data errors.
-* `pani_puri` has only 130 source images (19 in test), the smallest class — its
-  0.72 F1 is the least statistically reliable number here.
-* `burger` (0.978) and `jalebi` (0.935) are visually distinctive and score
-  accordingly, which is a sanity check that the pipeline is learning real
-  features rather than dataset artefacts.
-
-## 7. Training configuration
-
-| Setting | Value |
-|---|---|
-| Backbone | MobileNetV3-Small, ImageNet weights from `d-li14/mobilenetv3.pytorch` |
-| Weight conversion | `training/load_imagenet_backbone.py` — positional key mapping + 18 1×1 convs reshaped from `nn.Linear`; **strict load verified** before training |
-| Head | final linear replaced: 1024 → 20 |
-| Input | 160×160, ImageNet normalisation |
-| Augmentation (train only) | RandomResizedCrop(0.7–1.0), horizontal flip, colour jitter 0.25/0.25/0.2, rotation ±12° |
-| Schedule | 1 epoch head-only, then full fine-tune; AdamW (wd 1e-4); cosine LR; lr 3e-4 (0.2× after unfreeze) |
-| Loss | cross-entropy, label smoothing 0.1 |
-| Batch size | 32 |
-| Epochs | 14 |
-| Model selection | best validation accuracy (epoch 14, val_acc 0.827) |
-| Seed | 42 |
-| Device | CPU (2 vCPU, 3 GB) |
-
-Reproduce end to end:
-
-```bash
-curl -sSL https://codeload.github.com/dhruvk2002/food-classifier/tar.gz/refs/heads/main \
-  | tar xz && mv "food-classifier-main/Food Classification" data/raw/indian_food_20
-curl -sSL https://codeload.github.com/d-li14/mobilenetv3.pytorch/tar.gz/refs/heads/master \
-  | tar xz
-python training/load_imagenet_backbone.py \
-  --checkpoint mobilenetv3.pytorch-master/pretrained/mobilenetv3-small-55df8e1f.pth \
-  --out models/backbone_mobilenet_v3_small.pth
-python training/train_food_classifier.py --data data/raw/indian_food_20 \
-  --epochs 14 --batch-size 32 --lr 3e-4 --image-size 160 --freeze-epochs 1 \
-  --backbone models/backbone_mobilenet_v3_small.pth \
-  --backbone-source "d-li14/mobilenetv3.pytorch mobilenetv3-small-55df8e1f.pth" \
-  --output models/food_classifier.pt
-```
 
 ## 8. Running inference
 
@@ -241,9 +99,10 @@ python app.py
 curl -s localhost:5000/api/vision/status | python -m json.tool
 ```
 
-Measured on this CPU-only box: cold checkpoint load ≈0.6 s, single 160px
-inference ≈35–60 ms. The model is loaded once per process, lazily, behind a
-lock. `NUTRICARE_MODEL` overrides the path.
+Measured on this CPU-only box: cold checkpoint load ≈2.0 s, single 224px
+inference ≈16 ms median (42 ms p95). The model is loaded once per process,
+lazily, behind a lock. `NUTRICARE_MODEL` overrides the path — use that to select
+the 7-class checkpoint, or to point at a checkpoint you obtained yourself.
 
 Without `requirements-ml.txt`, the app still boots and the scanner reports
 photo recognition as unavailable — it never guesses.
@@ -255,11 +114,12 @@ photo recognition as unavailable — it never guesses.
    every requested dish to *supported / blocked* with the reason.
 2. **Single-label.** One dominant dish per photo; it cannot separate rice, dal
    and sabzi on one plate. That needs object detection, not classification.
-3. **The default model is licence-cleared; the 20-class one is not.** The 20-class
-   checkpoint was trained on a web-scraped compilation with no declared licence
-   at all. Do *not* read that as "fine for personal/educational use" —
-   educational use is a possible defence, not a permission. It is opt-in and
-   must not be redistributed. See `docs/LICENSING_AUDIT.md`.
+3. **The unlicensed 20-class checkpoint has been removed from the repository and
+   from this branch's history.** It was trained on a web-scraped compilation
+   with no declared licence at all. Do *not* read that as "fine for
+   personal/educational use" — educational use is a possible defence, not a
+   permission. If you have a local copy, it is not covered by this project's
+   licensing. See `docs/LICENSING_AUDIT.md`.
 4. **CC0 is a dedication by the publisher, not a chain-of-title guarantee.** The
    source README says images came partly from "online platforms". It is far
    stronger than an unlicensed scrape and it is still not a warranty.
@@ -283,22 +143,20 @@ photo recognition as unavailable — it never guesses.
 ## 10. The installed model: CC0 12-class checkpoint
 
 `models/food_classifier_cc0.pt` **is the default checkpoint**. It is trained only
-on CC0 1.0 images and is safe to redistribute. The older 20-class model is more
-capable but its images carry no licence, so it is no longer the default — it
-remains in the repository, reachable but opt-in.
+on CC0 1.0 images and is safe to redistribute.
 
-| | 20-class (opt-in) | **12-class (default)** |
+| | **12-class (default)** | 7-class (alternative) |
 |---|---|---|
-| Checkpoint | `models/food_classifier.pt` | `models/food_classifier_cc0.pt` |
-| Classes | 20 | **12** |
-| Input size | 160 px | 224 px |
-| Test accuracy | 0.8143 | **0.8947** |
-| Test macro F1 | 0.8087 | **0.9047** |
-| Test support | 926 | 380 |
-| Training-data licence | none declared ⛔ | **CC0 1.0** ✅ |
-| Default | no (`NUTRICARE_MODEL=models/food_classifier.pt`) | **yes** |
+| Checkpoint | `models/food_classifier_cc0.pt` | `models/food_classifier_cc0_7class.pt` |
+| Classes | **12** | 7 |
+| Input size | 224 px | 160 px |
+| Test accuracy | **0.8947** | 0.8609 (leak-free 0.8539) |
+| Test macro F1 | **0.9047** | 0.8724 |
+| Test support | 380 | 302 |
+| Training-data licence | **CC0 1.0** ✅ | **CC0 1.0** ✅ |
+| Default | **yes** | no (`NUTRICARE_MODEL=…_7class.pt`) |
 | Size | 6.0 MB | 6.0 MB |
-| CPU inference | ~35–60 ms | **16 ms median, 42 ms p95** |
+| CPU inference | **16 ms median, 42 ms p95** | ~35–60 ms |
 
 ### 10.1 Training data and de-duplication
 
@@ -363,6 +221,26 @@ re-derived: 0.8945 (339/379) — one image excluded, see below
 The excluded image is a 9 MP photo that NutriCare's own upload guard rejects
 (maximum 8,000 px). That is correct product behaviour, reported rather than
 quietly skipped.
+
+### 10.5 The 7-class checkpoint (alternative)
+
+`models/food_classifier_cc0_7class.pt` is the first CC0 run, kept for comparison
+and because its numbers were measured before the global de-duplication fix:
+
+| Metric | Value |
+|---|---|
+| Classes | 7 (chicken biryani, curd/dahi, jalebi, khichdi, pakora, pani puri, paratha) |
+| Test accuracy as reported | 0.8609 (n=302) |
+| Leak-free accuracy | **0.8539** (n=267, after removing 35 train-leaked images) |
+| Macro F1 | 0.8724 |
+| Input size | 160 px |
+| Licence | CC0 1.0 — cleared |
+
+Its 0.8609 is inflated by about +0.007 by near-duplicate frames that straddled
+the split; the honest figure is 0.8539. The 12-class model replaced it and fixed
+that class of problem, so the 12-class model is the default.
+
+Select it with `NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt`.
 
 ## 11. Next concrete step
 

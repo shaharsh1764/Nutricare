@@ -17,26 +17,32 @@ disputed; **PARTIAL** = usable under stated conditions.
 | Reported metrics reproducibility | **PASS** | 0.8143 / 0.8087 / 0.8122 reproduced exactly |
 | Duplicate / near-duplicate leakage | **PASS (minor)** | 1 test + 2 val near-dupes; headline unaffected (−0.0002) |
 | Pretrained-weight licensing | **PASS** | MobileNetV3 weights repo is MIT (Duo Li, 2019) |
-| **Dataset licensing — current 20-class model** | **FAIL** | no licence anywhere in the chain; provenance is web-scraped |
+| **Dataset licensing — 20-class model (now removed)** | **FAIL** | no licence anywhere in the chain; provenance is web-scraped |
 | Dataset licensing — IndFood 131-class candidate | **FAIL** | Khana is CC BY-NC-ND 4.0 (no derivatives, no commercial) |
 | Dataset licensing — CC0 7-class replacement | **PASS** | CC0 1.0, commercial + derivatives permitted |
 | CC0 model — measured & independently reproduced | **PASS** | 0.8609 (260/302) re-derived via the app's own predictor |
 | CC0 model — leakage | **PARTIAL** | 153 near-dup train/test pairs; clean subset 0.8539 (−0.007) |
-| CC0 model — class coverage | **PARTIAL** | 7 classes vs 20; not a drop-in replacement |
+| CC0 model — class coverage | **PARTIAL** | 12 classes vs 20; real capability loss, documented in `docs/COVERAGE.md` |
 
-**Update (later revision):** the licence-cleared checkpoint has since been
-retrained to **12 classes** (CC0 1.0, test accuracy 0.8947, macro F1 0.9047) and
-is now the **default** model. `docs/MODEL.md` §10 and `docs/COVERAGE.md` carry
-the current numbers. The verdicts in §2–§4 below still apply unchanged to the
-20-class checkpoint, which remains in the repository as an opt-in artifact and
-is still **not cleared for redistribution**.
+**Update (final revision):** the licence-cleared checkpoint has been retrained
+to **12 classes** (CC0 1.0, test accuracy 0.8947, macro F1 0.9047) and is the
+**default** model. `docs/MODEL.md` §10 and `docs/COVERAGE.md` carry the current
+numbers.
 
-**Bottom line: the existing 20-class model is technically sound but NOT cleared
-for redistribution.** A CC0-licensed replacement is included (see §5) — it is
-lawful and slightly more accurate, but covers 7 classes rather than 20, so it is
-offered as a selectable alternative rather than a silent swap. Every third-party
-notice, including the full MIT text for the backbone weights, is in
-`THIRD_PARTY_NOTICES.md`.
+**The 20-class checkpoint is no longer included in this repository, in any
+commit.** The verdicts in §2–§4 below are the evidence that forced that
+decision: with no licence anywhere in the chain, the artifact cannot be
+distributed, and leaving it in the tree — even as a non-default opt-in — would
+still be distribution. It has been removed from the working tree and from the
+branch history, so no earlier commit on this branch contains it either.
+
+**Bottom line: the 20-class model was technically sound but never cleared for
+redistribution, so it has been removed rather than shipped with a warning.** The
+CC0-licensed replacement (see §5) is the default: lawful, slightly more
+accurate, and covers 12 classes rather than 20. That coverage loss is the price
+of shipping something NutriCare may actually distribute, and it is stated in
+`docs/COVERAGE.md` rather than buried. Every third-party notice, including the
+full MIT text for the backbone weights, is in `THIRD_PARTY_NOTICES.md`.
 
 ---
 
@@ -137,6 +143,11 @@ Performed on a fresh `git clone --depth 1` of
 ```
 sha256(models/food_classifier.pt) = 3fefbd0ffdffb75682d3ac155901b71b67be39d9d5ca5d3ae1fcda2a15d2dd99
 identical in the clean clone and the working tree
+
+NOTE: this checkpoint has since been REMOVED from the repository and from the
+branch history on licensing grounds (see §1 and §2). The hash is retained here
+only so the artifact this audit examined can still be identified. It is no
+longer distributed in any commit of this branch.
 ```
 
 ### 4.2 Class ordering and output mapping
@@ -332,13 +343,15 @@ pakora 98.5 %, pani_puri 74.5 %, paratha_plain 94.3 % — **7/7 correct**.
 
 #### 5.2.2 Scope trade-off — state this plainly
 
-The compliant model has **7 classes**; the tainted one has **20**. Accuracy
-(0.854 clean vs 0.814) is not the issue — coverage is. Several NutriCare UI
-paths, and 13 of the 20 current classes, depend on labels the CC0 model cannot
-produce. This audit therefore does **not** swap the default model out from under
-a working app: `models/food_classifier.pt` remains the default so nothing
-regresses, and the CC0 checkpoint is shipped alongside as the licensed
-alternative, selectable with `NUTRICARE_MODEL=models/food_classifier_cc0.pt`.
+The compliant model has **7 classes**; the tainted one had **20**. Accuracy
+(0.854 clean vs 0.814) was not the issue — coverage was, and that trade-off is
+now settled the other way: **coverage was given up rather than shipping an
+artifact that cannot lawfully be redistributed.** The CC0 model became the
+default, and the 20-class checkpoint was removed entirely (§1).
+
+That is a real capability regression, recorded here rather than glossed: photo
+recognition covers 12 dishes instead of 20, and 21 of the 27 dishes the project
+was asked to support remain unsupported (`docs/COVERAGE.md`).
 
 Reaching 20+ compliant classes needs a larger CC0/own-rights source, not a
 re-run of this one.

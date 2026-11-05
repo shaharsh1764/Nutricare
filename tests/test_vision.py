@@ -490,7 +490,7 @@ REAL_MODEL = vision.DEFAULT_MODEL_PATH
 def real_model_app(tmp_path, monkeypatch):
     """App wired to the genuinely trained checkpoint, if it is present."""
     if not REAL_MODEL.is_file():
-        pytest.skip("no trained checkpoint installed (models/food_classifier.pt)")
+        pytest.skip(f"no trained checkpoint installed ({REAL_MODEL.name})")
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "real.db"))
     monkeypatch.setenv("NUTRICARE_MODEL", str(REAL_MODEL))
     vision.reset_predictor()
@@ -610,15 +610,24 @@ def test_classes_without_nutrition_still_render_and_ask_for_values(client, user)
 def test_the_default_checkpoint_is_the_licence_cleared_one():
     """Regression guard for a licensing trap.
 
-    The 20-class checkpoint scores better but was trained on images with no
-    licence whatsoever. Shipping it as the default would present an
-    unredistributable artifact as the product. The default must stay the model
-    trained only on CC0 images; the older checkpoint stays in the repo,
-    reachable but opt-in.
+    The 20-class checkpoint had no licence for its training images, so it is not
+    merely demoted — it is absent from this repository and from its history.
+    Shipping it at all, even as a non-default, would distribute an artifact that
+    cannot lawfully be redistributed.
     """
     assert vision.DEFAULT_MODEL_PATH.name == "food_classifier_cc0.pt"
-    assert vision.UNLICENSED_MODEL_PATH.name == "food_classifier.pt"
-    assert vision.DEFAULT_MODEL_PATH != vision.UNLICENSED_MODEL_PATH
+    assert vision.PREVIOUS_CC0_MODEL_PATH.name == "food_classifier_cc0_7class.pt"
+
+
+def test_the_unlicensed_checkpoint_is_not_shipped():
+    """Guards the licensing fix. If this ever fails, an unredistributable
+    artifact has been reintroduced into the tree."""
+    assert not vision.REMOVED_UNLICENSED_MODEL_PATH.exists(), (
+        "the 20-class checkpoint has no dataset licence and must not be present")
+    shipped = sorted(p.name for p in (vision.PROJECT_DIR / "models").glob("*.pt"))
+    for name in shipped:
+        assert "food_classifier_cc0" in name or name.startswith("selftest"), (
+            f"{name} is not a licence-cleared artifact")
 
 
 def test_cc0_checkpoint_records_its_licence_provenance():

@@ -4,25 +4,38 @@ This document records which public datasets were considered, what they contain,
 their licences, and which were actually obtained. The acquisition pipeline is
 `training/download_datasets.py`.
 
-> **Status: a real model HAS been trained and is shipped.**
+> **Status: two real models ARE trained and shipped, both from CC0 1.0 data.**
 > GitHub is reachable from the build environment even though every dedicated
-> dataset host is not, and two GitHub repositories carried everything needed:
-> 6,269 real Indian food photographs and a genuine ImageNet MobileNetV3
-> checkpoint. See `docs/MODEL.md` for the measured results.
+> dataset host is not. See `docs/MODEL.md` for measured results and
+> `docs/COVERAGE.md` for which dishes are supported.
 >
 > **What changed from the first investigation:** Kaggle, Hugging Face,
 > `download.pytorch.org`, Zenodo, archive.org and their mirrors remain blocked,
 > and **GitHub release assets** are blocked too (they redirect to
 > `release-assets.githubusercontent.com`). What *works* is `codeload.github.com`
-> tarballs and the REST API — anything committed **into** a repository. That
-> distinction is what unblocked the project.
+> tarballs and the REST API — anything committed **into** a repository.
 
 ## 0. Datasets actually used
 
+Only one image dataset is used by the shipped models, and it is CC0:
+
 | Dataset | Source | Images | Classes | Licence | Obtained |
 |---|---|---|---|---|---|
-| Food Classification (20 Indian classes) | `github.com/dhruvk2002/food-classifier` | 6,269 readable (of 6,271) | 20 | **None declared** — no LICENSE file; educational/research use assumed, verify before commercial redistribution | ✅ full tarball, every image inspected with Pillow |
-| MobileNetV3 ImageNet weights | `github.com/d-li14/mobilenetv3.pytorch` → `mobilenetv3-small-55df8e1f.pth` | — | 1000 (ImageNet) | Repository's own terms; converted to torchvision layout | ✅ `training/load_imagenet_backbone.py`, strict load verified |
+| Bangladeshi Food Dataset | `github.com/Ishmam97/Bangladeshi-Food-Dataset` | 8,444 in `Train/`; 2,573 used after de-duplication | 44 → **12 mapped** | **CC0 1.0 Universal** — commercial use, derivatives and redistribution all permitted | ✅ via `training/fetch_cc0_dataset.py` |
+| MobileNetV3 ImageNet weights | `github.com/d-li14/mobilenetv3.pytorch` → `mobilenetv3-small-55df8e1f.pth` | — | 1000 (ImageNet) | **MIT**, © 2019 Duo Li | ✅ `training/load_imagenet_backbone.py`, strict load verified |
+
+### Removed: the 20-class dataset and the checkpoint trained on it
+
+`github.com/dhruvk2002/food-classifier` supplied 6,269 Indian food photographs
+across 20 classes, and the first model on this branch was trained on them. That
+dataset declares **no licence at all**: no `LICENSE` file, an upstream Kaggle
+listing of "Data files © Original Authors", and published work on the same
+images stating they were *"extracted from google"*.
+
+Neither the images nor the checkpoint trained on them can be redistributed, so
+**both are absent from this repository and from the branch history**. The
+evidence is recorded in `docs/LICENSING_AUDIT.md` §2 so the decision is
+auditable, but no artifact depends on it.
 
 ## 0b. Evaluated but not used (and why)
 

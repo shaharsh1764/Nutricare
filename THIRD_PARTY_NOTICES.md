@@ -59,7 +59,7 @@ Not vendored into this repository.
 
 ## 3. Training image datasets
 
-### 3a. `models/food_classifier.pt` — 20 Indian classes — ⚠️ NOT CLEARED
+### 3a. 20-class model — REMOVED, not distributed
 
 Source: https://github.com/dhruvk2002/food-classifier, which in turn names the
 Kaggle "Indian Food Classification" dataset (`l33tc0d3r`).
@@ -69,8 +69,10 @@ Kaggle listing says "Data files © Original Authors", and published work using
 the same set states the images were extracted from Google. No permission to
 train, redistribute, or distribute a derivative model has been established.
 
-**Do not redistribute this checkpoint commercially.** It is retained only as a
-research artifact and for comparison. See `docs/LICENSING_AUDIT.md`.
+The checkpoint trained on those images (`models/food_classifier.pt`) has been
+**removed from this repository and from its git history**. It is not distributed
+here in any form. The note is kept so the decision is auditable rather than
+silent. See `docs/LICENSING_AUDIT.md`.
 
 ### 3b. `models/food_classifier_cc0.pt` — 12 classes — CLEARED (default model)
 
