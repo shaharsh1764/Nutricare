@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # NutriCare — Nutrition Tracker & Personal Health Assistant
 
 A working full-stack web app built from the Google Stitch designs in `uploads/`
@@ -180,6 +179,3 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
 * Navigation: the sidebar collapses to an icon rail on desktop (choice remembered)
   and becomes a ☰ drawer under ~860px; symptom severity uses exact radio numbers
   1–10 — no slider is used for any health input.
-=======
-# Nutricare
->>>>>>> 55d5fc968aac941744a24677abbd56d0edf8471b
