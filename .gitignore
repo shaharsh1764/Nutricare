@@ -26,3 +26,35 @@ __pycache__/
 
 # Node modules
 node_modules/
+# ---------------- AI Food Scanner artefacts ----------------
+# Large image datasets are never committed: re-fetch with training/download_datasets.py
+data/raw/
+data/selftest/
+*.jpg
+*.jpeg
+*.png
+*.webp
+
+# Model checkpoints are normally build artefacts. EXCEPTION: the shipped
+# food-recognition checkpoint (6 MB) IS committed, because a real trained model
+# is far more useful to a clone than a training instruction. Its metrics and
+# evaluation report are committed beside it so the published numbers can be
+# verified without re-training.
+models/*.pt
+models/*.pth
+models/*.onnx
+!models/food_classifier_cc0.pt
+!models/food_classifier_cc0.metrics.json
+!models/food_classifier_cc0.report.txt
+!models/food_classifier_cc0_7class.pt
+!models/food_classifier_cc0_7class.metrics.json
+!models/food_classifier_cc0_7class.report.txt
+!models/.gitkeep
+models/selftest*
+models/backbone_*
+/tmp/
+data/raw/
+
+# Keep repo icons/lockfiles working even though *.png is ignored above
+!static/**/*.png
+!templates/**/*.png

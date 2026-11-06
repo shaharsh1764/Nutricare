@@ -12,11 +12,12 @@
       "calcium_mg": "milligrams",
       "iron_mg": "milligrams"
     },
-    "version": "2.0 — expanded Indian coverage",
-    "total_foods": 196,
+    "version": "2.2 — recipe-derived rows for the CC0 model's classes",
+    "total_foods": 203,
     "sources": [
       "IFCT 2017 (NIN Hyderabad)",
-      "USDA FoodData Central (SR Legacy/Foundation)"
+      "USDA FoodData Central (SR Legacy/Foundation)",
+      "Recipe-derived (NutriCare) — flagged quality='approximate'; added for dishes with no IFCT/USDA entry. Not a laboratory measurement."
     ],
     "fields": [
       "id",
@@ -5666,6 +5667,217 @@
         "non_vegetarian": false
       },
       "allergens": []
+    },
+    {
+      "id": 197,
+      "name": "Kheer, milk-rice (prepared)",
+      "grp": "Indian Prepared",
+      "serving_desc": "1 katori (150 g)",
+      "serving_g": 150,
+      "kcal": 180,
+      "protein_g": 4.2,
+      "carbs_g": 25.0,
+      "fat_g": 7.0,
+      "fiber_g": 0.3,
+      "sodium_mg": 55,
+      "potassium_mg": 160,
+      "calcium_mg": 120,
+      "iron_mg": 0.4,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "cooked",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived: milk 3.5% fat + rice + 8% sugar, simmered to 150 g serving",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": 198,
+      "name": "Rasgulla / rosogolla (prepared)",
+      "grp": "Indian Prepared",
+      "serving_desc": "2 pieces (60 g)",
+      "serving_g": 60,
+      "kcal": 186,
+      "protein_g": 3.0,
+      "carbs_g": 36.0,
+      "fat_g": 3.6,
+      "fiber_g": 0.0,
+      "sodium_mg": 20,
+      "potassium_mg": 45,
+      "calcium_mg": 90,
+      "iron_mg": 0.1,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "prepared",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived: chhena + sugar syrup (~50% sugar), drained weight basis",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": 199,
+      "name": "Pakora / bhajji (mixed vegetable, fried)",
+      "grp": "Indian Prepared",
+      "serving_desc": "4 pieces (80 g)",
+      "serving_g": 80,
+      "kcal": 294.4,
+      "protein_g": 7.4,
+      "carbs_g": 23.4,
+      "fat_g": 18.8,
+      "fiber_g": 4.2,
+      "sodium_mg": 22,
+      "potassium_mg": 364,
+      "calcium_mg": 22,
+      "iron_mg": 1.62,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "prepared",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived from IFCT 2017 / USDA FDC ingredient rows held in this dataset; NOT a direct table entry for the finished dish. Recipe: 100 g besan + 100 g onion + 50 g potato + ~55 g absorbed sunflower oil, fried; 325 g finished",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "wheat"
+      ]
+    },
+    {
+      "id": 200,
+      "name": "Pani puri (assembled, with filling and water)",
+      "grp": "Indian Prepared",
+      "serving_desc": "6 puris (120 g)",
+      "serving_g": 120,
+      "kcal": 308.9,
+      "protein_g": 7.9,
+      "carbs_g": 46.0,
+      "fat_g": 10.2,
+      "fiber_g": 3.8,
+      "sodium_mg": 4,
+      "potassium_mg": 273,
+      "calcium_mg": 24,
+      "iron_mg": 1.4,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "prepared",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived from IFCT 2017 / USDA FDC ingredient rows held in this dataset; NOT a direct table entry for the finished dish. Recipe: 100 g suji puris fried in 20 g oil, 60 g potato + 30 g cooked chana filling, tamarind-mint water; per 100 g assembled",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "wheat"
+      ]
+    },
+    {
+      "id": 201,
+      "name": "Jalebi (fried, syrup-soaked)",
+      "grp": "Indian Prepared",
+      "serving_desc": "2 pieces (60 g)",
+      "serving_g": 60,
+      "kcal": 408.7,
+      "protein_g": 5.3,
+      "carbs_g": 62.4,
+      "fat_g": 15.2,
+      "fiber_g": 1.3,
+      "sodium_mg": 14,
+      "potassium_mg": 104,
+      "calcium_mg": 44,
+      "iron_mg": 0.77,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "prepared",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived from IFCT 2017 / USDA FDC ingredient rows held in this dataset; NOT a direct table entry for the finished dish. Recipe: 100 g maida + 25 g curd batter fried (30 g ghee absorbed), soaked in syrup from ~55 g absorbed sugar; 210 g finished",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "wheat",
+        "milk"
+      ]
+    },
+    {
+      "id": 202,
+      "name": "Morog polao (Bengali chicken pilaf, prepared)",
+      "grp": "Indian Prepared",
+      "serving_desc": "1 plate (200 g)",
+      "serving_g": 200,
+      "kcal": 162.7,
+      "protein_g": 9.8,
+      "carbs_g": 14.5,
+      "fat_g": 6.9,
+      "fiber_g": 0.3,
+      "sodium_mg": 28,
+      "potassium_mg": 123,
+      "calcium_mg": 20,
+      "iron_mg": 0.39,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "cooked",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived from IFCT 2017 / USDA FDC ingredient rows held in this dataset; NOT a direct table entry for the finished dish. Recipe: 700 g cooked rice + 500 g chicken + 60 g ghee + onion/curd/milk; ~1460 g finished pilaf",
+      "dietary": {
+        "lacto_vegetarian": false,
+        "ovo_vegetarian": false,
+        "lacto_ovo_vegetarian": false,
+        "vegan": false,
+        "non_vegetarian": true
+      },
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": 203,
+      "name": "Chomchom (chhena sweet, prepared)",
+      "grp": "Indian Prepared",
+      "serving_desc": "1 piece (50 g)",
+      "serving_g": 50,
+      "kcal": 271.2,
+      "protein_g": 8.3,
+      "carbs_g": 41.9,
+      "fat_g": 8.1,
+      "fiber_g": 0.0,
+      "sodium_mg": 101,
+      "potassium_mg": 107,
+      "calcium_mg": 249,
+      "iron_mg": 0.59,
+      "source": "Recipe-derived (NutriCare)",
+      "state": "prepared",
+      "quality": "approximate",
+      "source_id": "NutriCare recipe-derived from IFCT 2017 / USDA FDC ingredient rows held in this dataset; NOT a direct table entry for the finished dish. Recipe: ~45 g chhena solids + 40 g sugar per 100 g finished, drained weight",
+      "dietary": {
+        "lacto_vegetarian": true,
+        "ovo_vegetarian": true,
+        "lacto_ovo_vegetarian": true,
+        "vegan": false,
+        "non_vegetarian": false
+      },
+      "allergens": [
+        "milk"
+      ]
     }
   ]
 }

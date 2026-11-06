@@ -1,0 +1,1032 @@
+{
+  "_meta": {
+    "version": 1,
+    "description": "Canonical class taxonomy for the NutriCare AI Food Scanner. One entry per model output class.",
+    "mapping_rule": "'food' names an entry that MUST exist in data/foods.json. 'nutrition_source':'unavailable' means no documented dataset entry exists, so the app must ask the user for values instead of inventing them.",
+    "single_label": true,
+    "multi_food_note": "The classifier is single-label: it reports the single dominant dish in a photograph. It does not segment or separate multiple dishes on one plate.",
+    "merged_classes": [
+      {
+        "slug": "roti",
+        "merged": [
+          "roti",
+          "chapati",
+          "phulka"
+        ],
+        "why": "Identical flatbread, visually indistinguishable."
+      },
+      {
+        "slug": "pulao",
+        "merged": [
+          "pulao",
+          "jeera rice",
+          "veg pulao"
+        ],
+        "why": "Same rice preparation with minor tempering differences."
+      },
+      {
+        "slug": "dal_plain",
+        "merged": [
+          "toor dal",
+          "moong dal",
+          "masoor dal"
+        ],
+        "why": "Lentil curries look alike; per-lentil distinction is not reliably learnable."
+      }
+    ],
+    "trained_model_coverage": {
+      "note": "Classes the shipped checkpoint can actually predict. Keep this in sync with models/food_classifier.pt via its 'classes' field.",
+      "source_dataset": "dhruvk2002/food-classifier (20 Indian-majority classes)",
+      "classes": [
+        "roti",
+        "naan",
+        "idli",
+        "masala_dosa",
+        "pav_bhaji",
+        "chole_bhature",
+        "dal_makhani",
+        "kadai_paneer",
+        "dhokla",
+        "samosa",
+        "pakora",
+        "pani_puri",
+        "fried_rice",
+        "pizza",
+        "burger",
+        "momos",
+        "chai",
+        "jalebi",
+        "kulfi",
+        "kaathi_rolls"
+      ]
+    },
+    "provenance_notes": {
+      "cc0_12_class": "Classes added alongside models/food_classifier_cc0.pt (CC0 1.0 source). 'unavailable' nutrition_source rows exist on purpose: the classifier recognises the dish, but NutriCare has no documented nutrition entry, so the app asks the user instead of fabricating a figure."
+    }
+  },
+  "classes": [
+    {
+      "slug": "roti",
+      "label": "Roti / Chapati / Phulka",
+      "group": "indian_staple",
+      "aliases": [
+        "roti",
+        "chapati",
+        "phulka",
+        "chapatti"
+      ],
+      "food": "Roti, whole wheat (cooked)",
+      "default_grams": 40,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "paratha_plain",
+      "label": "Paratha (plain)",
+      "group": "indian_staple",
+      "aliases": [
+        "paratha",
+        "parantha"
+      ],
+      "food": "Paratha, plain (cooked)",
+      "default_grams": 60,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "aloo_paratha",
+      "label": "Aloo Paratha",
+      "group": "indian_staple",
+      "aliases": [
+        "aloo paratha",
+        "potato paratha"
+      ],
+      "food": "Aloo paratha (cooked)",
+      "default_grams": 80,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "thepla",
+      "label": "Thepla",
+      "group": "indian_staple",
+      "aliases": [
+        "thepla",
+        "methi thepla"
+      ],
+      "food": "Thepla, methi (cooked)",
+      "default_grams": 60,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "naan",
+      "label": "Naan",
+      "group": "indian_staple",
+      "aliases": [
+        "naan",
+        "nan"
+      ],
+      "food": "Naan, plain (cooked)",
+      "default_grams": 90,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "puri",
+      "label": "Puri",
+      "group": "indian_staple",
+      "aliases": [
+        "puri",
+        "poori"
+      ],
+      "food": "Puri (fried)",
+      "default_grams": 50,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "bhatura",
+      "label": "Bhatura",
+      "group": "indian_staple",
+      "aliases": [
+        "bhatura",
+        "bhature",
+        "bhatoora"
+      ],
+      "food": "Bhatura (fried)",
+      "default_grams": 80,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "rice_white",
+      "label": "Rice (white, plain)",
+      "group": "indian_staple",
+      "aliases": [
+        "rice",
+        "white rice",
+        "steamed rice",
+        "chawal"
+      ],
+      "food": "Rice, white (cooked)",
+      "default_grams": 158,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "rice_brown",
+      "label": "Rice (brown)",
+      "group": "indian_staple",
+      "aliases": [
+        "brown rice"
+      ],
+      "food": "Rice, brown (cooked)",
+      "default_grams": 195,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "pulao",
+      "label": "Pulao / Jeera Rice",
+      "group": "indian_staple",
+      "aliases": [
+        "pulao",
+        "pilaf",
+        "jeera rice",
+        "veg pulao"
+      ],
+      "food": "Pulao, vegetable (cooked)",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "khichdi",
+      "label": "Khichdi",
+      "group": "indian_staple",
+      "aliases": [
+        "khichdi",
+        "khichri"
+      ],
+      "food": "Khichdi (cooked)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "idli",
+      "label": "Idli",
+      "group": "indian_breakfast",
+      "aliases": [
+        "idli",
+        "idly"
+      ],
+      "food": "Idli (steamed, plain)",
+      "default_grams": 40,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "dosa_plain",
+      "label": "Dosa (plain)",
+      "group": "indian_breakfast",
+      "aliases": [
+        "dosa",
+        "plain dosa",
+        "sada dosa"
+      ],
+      "food": "Dosa (plain, tawa)",
+      "default_grams": 60,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "masala_dosa",
+      "label": "Masala Dosa",
+      "group": "indian_breakfast",
+      "aliases": [
+        "masala dosa",
+        "mysore masala dosa"
+      ],
+      "food": "Dosa (plain, tawa)",
+      "default_grams": 60,
+      "nutrition_source": "dataset",
+      "approx_note": "Nutrition uses the plain-dosa entry from the dataset. Masala dosa adds a potato filling and is typically higher in carbohydrate and fat; treat this estimate as a lower bound."
+    },
+    {
+      "slug": "uttapam",
+      "label": "Uttapam",
+      "group": "indian_breakfast",
+      "aliases": [
+        "uttapam",
+        "uttapa",
+        "uthappam"
+      ],
+      "food": "Uttapam (cooked)",
+      "default_grams": 80,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "poha",
+      "label": "Poha",
+      "group": "indian_breakfast",
+      "aliases": [
+        "poha",
+        "pohaa",
+        "aval"
+      ],
+      "food": "Poha, cooked (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "upma",
+      "label": "Upma",
+      "group": "indian_breakfast",
+      "aliases": [
+        "upma",
+        "uppuma"
+      ],
+      "food": "Upma (cooked)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "vada",
+      "label": "Vada (medu vada)",
+      "group": "indian_breakfast",
+      "aliases": [
+        "vada",
+        "medu vada",
+        "urad vada"
+      ],
+      "food": "Medu vada (fried)",
+      "default_grams": 60,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "chole_bhature",
+      "label": "Chole Bhature",
+      "group": "indian_breakfast",
+      "aliases": [
+        "chole bhature",
+        "chana bhatura"
+      ],
+      "food": "Chole bhature (set)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "dal_plain",
+      "label": "Dal (plain)",
+      "group": "indian_curry",
+      "aliases": [
+        "dal",
+        "daal",
+        "toor dal",
+        "moong dal",
+        "masoor dal"
+      ],
+      "food": "Dal, toor/arhar (cooked, no added salt)",
+      "default_grams": 198,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "dal_tadka",
+      "label": "Dal Tadka",
+      "group": "indian_curry",
+      "aliases": [
+        "dal tadka",
+        "dal fry",
+        "tadka dal"
+      ],
+      "food": "Dal tadka (prepared)",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "rajma",
+      "label": "Rajma",
+      "group": "indian_curry",
+      "aliases": [
+        "rajma",
+        "kidney bean curry"
+      ],
+      "food": "Rajma (kidney beans), cooked",
+      "default_grams": 177,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "rajma_chawal",
+      "label": "Rajma Chawal",
+      "group": "indian_curry",
+      "aliases": [
+        "rajma chawal",
+        "rajma rice"
+      ],
+      "food": "Rajma chawal (prepared)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "chole",
+      "label": "Chole / Chana Masala",
+      "group": "indian_curry",
+      "aliases": [
+        "chole",
+        "chana masala",
+        "chickpea curry"
+      ],
+      "food": "Chole / chana masala (prepared)",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "palak_paneer",
+      "label": "Palak Paneer",
+      "group": "indian_curry",
+      "aliases": [
+        "palak paneer",
+        "spinach paneer"
+      ],
+      "food": "Palak paneer (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "mattar_paneer",
+      "label": "Mattar Paneer",
+      "group": "indian_curry",
+      "aliases": [
+        "mattar paneer",
+        "matar paneer",
+        "peas paneer"
+      ],
+      "food": "Mattar paneer (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "aloo_gobi",
+      "label": "Aloo Gobi",
+      "group": "indian_curry",
+      "aliases": [
+        "aloo gobi",
+        "aloo gobhi"
+      ],
+      "food": "Aloo gobi (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "mixed_veg_sabzi",
+      "label": "Mixed Vegetable Sabzi",
+      "group": "indian_curry",
+      "aliases": [
+        "mixed veg",
+        "sabzi",
+        "sabji",
+        "vegetable curry"
+      ],
+      "food": "Vegetable curry, mixed (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "sambar",
+      "label": "Sambar",
+      "group": "indian_curry",
+      "aliases": [
+        "sambar",
+        "sambhar"
+      ],
+      "food": "Sambar (prepared)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "rasam",
+      "label": "Rasam",
+      "group": "indian_curry",
+      "aliases": [
+        "rasam"
+      ],
+      "food": "Rasam (prepared)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "kadhi",
+      "label": "Kadhi Pakora",
+      "group": "indian_curry",
+      "aliases": [
+        "kadhi",
+        "karhi",
+        "kadhi pakora"
+      ],
+      "food": "Kadhi pakora (prepared)",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "paneer_butter_masala",
+      "label": "Paneer Butter Masala",
+      "group": "indian_curry",
+      "aliases": [
+        "paneer butter masala",
+        "pbm",
+        "butter paneer"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "bhindi_masala",
+      "label": "Bhindi Masala",
+      "group": "indian_curry",
+      "aliases": [
+        "bhindi",
+        "okra masala",
+        "ladyfinger masala"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "curd_dahi",
+      "label": "Curd / Dahi",
+      "group": "indian_curry",
+      "aliases": [
+        "curd",
+        "dahi",
+        "yogurt",
+        "yoghurt"
+      ],
+      "food": "Curd / dahi (plain, whole milk)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "veg_biryani",
+      "label": "Vegetable Biryani",
+      "group": "indian_rice",
+      "aliases": [
+        "veg biryani",
+        "vegetable biryani"
+      ],
+      "food": "Pulao, vegetable (cooked)",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": "The dataset has no separate vegetable-biryani entry. Vegetable pulao is used as the closest documented preparation; biryani usually has more oil and is often higher in energy."
+    },
+    {
+      "slug": "chicken_biryani",
+      "label": "Chicken Biryani",
+      "group": "indian_rice",
+      "aliases": [
+        "chicken biryani",
+        "biryani"
+      ],
+      "food": "Chicken biryani",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "curd_rice",
+      "label": "Curd Rice",
+      "group": "indian_rice",
+      "aliases": [
+        "curd rice",
+        "thayir sadam"
+      ],
+      "food": null,
+      "default_grams": 200,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "lemon_rice",
+      "label": "Lemon Rice",
+      "group": "indian_rice",
+      "aliases": [
+        "lemon rice",
+        "chitranna"
+      ],
+      "food": null,
+      "default_grams": 180,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "tomato_rice",
+      "label": "Tomato Rice",
+      "group": "indian_rice",
+      "aliases": [
+        "tomato rice",
+        "thakkali sadam"
+      ],
+      "food": null,
+      "default_grams": 180,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "fried_rice",
+      "label": "Fried Rice",
+      "group": "indian_rice",
+      "aliases": [
+        "fried rice",
+        "veg fried rice"
+      ],
+      "food": null,
+      "default_grams": 180,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "samosa",
+      "label": "Samosa",
+      "group": "indian_snack",
+      "aliases": [
+        "samosa",
+        "samoosa"
+      ],
+      "food": "Samosa (vegetable, fried)",
+      "default_grams": 100,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "pav_bhaji",
+      "label": "Pav Bhaji",
+      "group": "indian_snack",
+      "aliases": [
+        "pav bhaji",
+        "bhaji pav"
+      ],
+      "food": "Pav bhaji (prepared)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": null
+    },
+    {
+      "slug": "pakora",
+      "label": "Pakora / Bhajji",
+      "group": "indian_snack",
+      "aliases": [
+        "pakora",
+        "pakoda",
+        "bhajji",
+        "bhaji",
+        "fritters"
+      ],
+      "food": "Pakora / bhajji (mixed vegetable, fried)",
+      "default_grams": 80,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): besan + mixed vegetables deep-fried. Oil absorption and vegetable mix vary widely; treat as an estimate.",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate (see approx_note), not an IFCT/USDA entry for the dish."
+    },
+    {
+      "slug": "dhokla",
+      "label": "Dhokla",
+      "group": "indian_snack",
+      "aliases": [
+        "dhokla"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "kachori",
+      "label": "Kachori",
+      "group": "indian_snack",
+      "aliases": [
+        "kachori",
+        "katchori"
+      ],
+      "food": null,
+      "default_grams": 80,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "vada_pav",
+      "label": "Vada Pav",
+      "group": "indian_snack",
+      "aliases": [
+        "vada pav",
+        "wada pav"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "pani_puri",
+      "label": "Pani Puri",
+      "group": "indian_snack",
+      "aliases": [
+        "pani puri",
+        "golgappa",
+        "puchka"
+      ],
+      "food": "Pani puri (assembled, with filling and water)",
+      "default_grams": 120,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): fried semolina puris + potato/chana filling + tamarind-mint water. Values cover the assembled snack, not the puris alone.",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate for the assembled snack (see approx_note)."
+    },
+    {
+      "slug": "bhel_puri",
+      "label": "Bhel Puri",
+      "group": "indian_snack",
+      "aliases": [
+        "bhel puri",
+        "bhel"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "pizza",
+      "label": "Pizza",
+      "group": "international",
+      "aliases": [
+        "pizza",
+        "margherita",
+        "cheese pizza"
+      ],
+      "food": null,
+      "default_grams": 120,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "burger",
+      "label": "Burger",
+      "group": "international",
+      "aliases": [
+        "burger",
+        "hamburger"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "sandwich",
+      "label": "Sandwich",
+      "group": "international",
+      "aliases": [
+        "sandwich"
+      ],
+      "food": null,
+      "default_grams": 120,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "pasta",
+      "label": "Pasta",
+      "group": "international",
+      "aliases": [
+        "pasta",
+        "penne",
+        "macaroni"
+      ],
+      "food": null,
+      "default_grams": 200,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "noodles",
+      "label": "Noodles",
+      "group": "international",
+      "aliases": [
+        "noodles",
+        "chowmein",
+        "chow mein",
+        "hakka noodles"
+      ],
+      "food": null,
+      "default_grams": 200,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "french_fries",
+      "label": "French Fries",
+      "group": "international",
+      "aliases": [
+        "french fries",
+        "fries",
+        "chips"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "fried_chicken",
+      "label": "Fried Chicken",
+      "group": "international",
+      "aliases": [
+        "fried chicken",
+        "kfc"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "momos",
+      "label": "Momos",
+      "group": "international",
+      "aliases": [
+        "momos",
+        "momo",
+        "dumplings"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "spring_rolls",
+      "label": "Spring Rolls",
+      "group": "international",
+      "aliases": [
+        "spring roll",
+        "spring rolls"
+      ],
+      "food": null,
+      "default_grams": 120,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "pancakes",
+      "label": "Pancakes",
+      "group": "international",
+      "aliases": [
+        "pancake",
+        "pancakes",
+        "pancake stack"
+      ],
+      "food": null,
+      "default_grams": 120,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "salad",
+      "label": "Salad",
+      "group": "international",
+      "aliases": [
+        "salad",
+        "green salad"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "nutrition_source": "unavailable",
+      "approx_note": null
+    },
+    {
+      "slug": "dal_makhani",
+      "label": "Dal Makhani",
+      "group": "indian_curry",
+      "aliases": [
+        "dal makhani",
+        "dal makhni",
+        "makhani dal"
+      ],
+      "food": null,
+      "default_grams": 180,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "kadai_paneer",
+      "label": "Kadai Paneer",
+      "group": "indian_curry",
+      "aliases": [
+        "kadai paneer",
+        "karahi paneer",
+        "kadhai paneer"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "chai",
+      "label": "Chai / Masala Chai",
+      "group": "indian_snack",
+      "aliases": [
+        "chai",
+        "masala chai",
+        "tea"
+      ],
+      "food": null,
+      "default_grams": 150,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "jalebi",
+      "label": "Jalebi",
+      "group": "indian_snack",
+      "aliases": [
+        "jalebi",
+        "jilebi"
+      ],
+      "food": "Jalebi (fried, syrup-soaked)",
+      "default_grams": 60,
+      "approx_note": "Recipe-derived (approximate): maida batter fried in ghee and soaked in sugar syrup. Syrup absorption varies a lot between shops.",
+      "nutrition_source": "dataset",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate (see approx_note); sugar and ghee uptake vary widely."
+    },
+    {
+      "slug": "kulfi",
+      "label": "Kulfi",
+      "group": "indian_snack",
+      "aliases": [
+        "kulfi",
+        "matka kulfi"
+      ],
+      "food": null,
+      "default_grams": 80,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "kaathi_rolls",
+      "label": "Kathi Roll / Frankie",
+      "group": "indian_snack",
+      "aliases": [
+        "kathi roll",
+        "kaathi rolls",
+        "frankie",
+        "egg roll"
+      ],
+      "food": null,
+      "default_grams": 180,
+      "approx_note": null,
+      "nutrition_source": "unavailable"
+    },
+    {
+      "slug": "kheer",
+      "label": "Kheer / Payesh (rice pudding)",
+      "group": "indian_snack",
+      "aliases": [
+        "kheer",
+        "payesh",
+        "payasam",
+        "rice pudding",
+        "firni"
+      ],
+      "food": "Kheer, milk-rice (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null,
+      "notes": "Added with the CC0 12-class model. Row is flagged 'approximate': Indian kheer varies widely in sugar and milk fat."
+    },
+    {
+      "slug": "rasgulla",
+      "label": "Rasgulla / Rosogolla",
+      "group": "indian_snack",
+      "aliases": [
+        "rasgulla",
+        "rosogolla",
+        "rosogulla",
+        "rasgulla sweet"
+      ],
+      "food": "Rasgulla / rosogolla (prepared)",
+      "default_grams": 60,
+      "nutrition_source": "dataset",
+      "approx_note": null,
+      "notes": "Added with the CC0 12-class model. Row flagged 'approximate'; based on typical values, not a lab measurement."
+    },
+    {
+      "slug": "chomchom",
+      "label": "Chomchom (chhena sweet)",
+      "group": "indian_snack",
+      "aliases": [
+        "chomchom",
+        "cham cham",
+        "chom chom"
+      ],
+      "food": "Chomchom (chhena sweet, prepared)",
+      "default_grams": 50,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): chhena + sugar syrup. Sugar content varies by shop and soak time.",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate (see approx_note), not an IFCT/USDA entry for the sweet."
+    },
+    {
+      "slug": "morog_polao",
+      "label": "Morog Polao (Bengali chicken pilaf)",
+      "group": "indian_rice",
+      "aliases": [
+        "morog polao",
+        "morog polau",
+        "chicken pilaf",
+        "chicken pulao"
+      ],
+      "food": "Morog polao (Bengali chicken pilaf, prepared)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): rice + chicken + ghee. Deliberately NOT mapped to 'Pulao, vegetable', which is a different dish.",
+      "notes": "Recognised by the CC0 model. Deliberately NOT mapped to 'Pulao, vegetable' (a different dish) — nutrition is a recipe-derived estimate of this pilaf (see approx_note)."
+    },
+    {
+      "slug": "luchi",
+      "label": "Luchi (deep-fried bread)",
+      "group": "indian_staple",
+      "aliases": [
+        "luchi",
+        "loochi",
+        "luchi puri"
+      ],
+      "food": "Puri (fried)",
+      "default_grams": 40,
+      "nutrition_source": "dataset",
+      "approx_note": "Closest documented item: luchi and puri are both deep-fried maida/atta breads. Values differ by flour and oil uptake.",
+      "notes": "Not part of the CC0 12-class model (no Luchi folder in the source dataset); taxonomy entry only."
+    }
+  ]
+}

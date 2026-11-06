@@ -64,6 +64,7 @@ async function renderDashboard() {
       <div class="row wrap">
         <button class="btn btn-ghost" id="quick-water">${ICONS.drop} Quick Water (+250ml)</button>
         <button class="btn btn-ghost" id="quick-symptoms">🩺 Check Symptoms</button>
+        <button class="btn btn-ghost" id="quick-scan">${ICONS.scanner} Scan a meal</button>
         <button class="btn btn-deep" id="quick-log">${ICONS.plus} ${hasLogs ? "Log Food" : "Log your first meal"}</button>
       </div>
     </div>
@@ -154,6 +155,8 @@ async function renderDashboard() {
   };
   $("#quick-symptoms").onclick = () => location.hash = "#/assistant";
   $("#quick-log").onclick = () => location.hash = "#/tracker";
+  const quickScan = $("#quick-scan");
+  if (quickScan) quickScan.onclick = () => location.hash = "#/scanner";
   $("#goto-tracker").onclick = () => location.hash = "#/tracker";
   const emptyCta = $("#empty-log-cta");
   if (emptyCta) emptyCta.onclick = () => location.hash = "#/tracker";
@@ -273,6 +276,7 @@ async function renderTracker() {
         database or add a custom item to start tracking this day.</p>
         <div class="row mt12" style="justify-content:center">
           <button class="btn btn-deep btn-sm" id="empty-add-food">${ICONS.plus} Log your first meal</button>
+          <button class="btn btn-ghost btn-sm" id="empty-add-scan">${ICONS.scanner} Scan a photo</button>
           <button class="btn btn-ghost btn-sm" id="empty-add-custom">Add custom item</button>
         </div></div>` : ""}
       <div class="mt16" id="meal-sections">
@@ -305,6 +309,7 @@ async function renderTracker() {
   $("#add-custom").onclick = () => openCustomModal();
   const eaf = $("#empty-add-food"); if (eaf) eaf.onclick = () => openFoodSearchModal("breakfast");
   const eac = $("#empty-add-custom"); if (eac) eac.onclick = () => openCustomModal();
+  const eas = $("#empty-add-scan"); if (eas) eas.onclick = () => location.hash = "#/scanner";
   bindMealRowButtons();
   $$("#meal-sections [data-add-meal]").forEach((b) => b.onclick = () => openFoodSearchModal(b.dataset.addMeal));
 

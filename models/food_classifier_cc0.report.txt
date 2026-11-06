@@ -1,0 +1,50 @@
+NutriCare food classifier — evaluation report
+generated : 2026-11-05T13:57:38+00:00
+model     : models/food_classifier_cc0.pt (6.0 MB)
+architecture: mobilenet_v3_small @ 224px on cpu
+classes   : 12
+dedupe    : kept 2573, dropped 170 exact + 504 near-duplicate (2 across classes), md5 exact + dHash64 hamming<=2, global before split
+split     : train 1778 / val 380 / test 380
+
+TEST accuracy    : 0.8947  (n=380)
+TEST macro F1    : 0.9047
+TEST weighted F1 : 0.8937
+
+Per-class (sorted by F1, worst first — poor classes are NOT hidden):
+  morog_polao                  F1 0.727  P 0.857  R 0.632  n=19
+  chicken_biryani              F1 0.800  P 0.745  R 0.864  n=44
+  khichdi                      F1 0.855  P 0.877  R 0.833  n=60
+  chole                        F1 0.867  P 0.867  R 0.867  n=15
+  pani_puri                    F1 0.878  P 0.900  R 0.857  n=42
+  curd_dahi                    F1 0.884  P 1.000  R 0.792  n=24
+  pakora                       F1 0.927  P 0.889  R 0.970  n=33
+  paratha_plain                F1 0.955  P 0.941  R 0.970  n=66
+  rasgulla                     F1 0.964  P 0.943  R 0.985  n=67
+  chomchom                     F1 1.000  P 1.000  R 1.000  n=4
+  jalebi                       F1 1.000  P 1.000  R 1.000  n=3
+  kheer                        F1 1.000  P 1.000  R 1.000  n=3
+
+Most confused pairs (actual -> predicted):
+  morog_polao -> chicken_biryani: 5
+  khichdi -> chicken_biryani: 5
+  chicken_biryani -> khichdi: 5
+  pani_puri -> chicken_biryani: 3
+  curd_dahi -> paratha_plain: 3
+  pani_puri -> pakora: 2
+  morog_polao -> pani_puri: 2
+  khichdi -> morog_polao: 2
+
+Confusion matrix (rows = actual, cols = predicted):
+  labels: chicken_biryani, chole, chomchom, curd_dahi, jalebi, kheer, khichdi, morog_polao, pakora, pani_puri, paratha_plain, rasgulla
+  chicken_biryani                 38     0     0     0     0     0     5     0     1     0     0     0
+  chole                            0    13     0     0     0     0     1     0     0     0     0     1
+  chomchom                         0     0     4     0     0     0     0     0     0     0     0     0
+  curd_dahi                        0     0     0    19     0     0     0     0     0     0     3     2
+  jalebi                           0     0     0     0     3     0     0     0     0     0     0     0
+  kheer                            0     0     0     0     0     3     0     0     0     0     0     0
+  khichdi                          5     2     0     0     0     0    50     2     1     0     0     0
+  morog_polao                      5     0     0     0     0     0     0    12     0     2     0     0
+  pakora                           0     0     0     0     0     0     0     0    32     0     1     0
+  pani_puri                        3     0     0     0     0     0     0     0     2    36     0     1
+  paratha_plain                    0     0     0     0     0     0     1     0     0     1    64     0
+  rasgulla                         0     0     0     0     0     0     0     0     0     1     0    66

@@ -14,6 +14,10 @@ const LS_SIDE = "nutricare_side";
 const ROUTES = {
   dashboard: { title: "Dashboard", render: renderDashboard },
   tracker: { title: "Nutrition Tracker", render: renderTracker },
+  /* The scanner is reachable from the Dashboard ("Scan a Meal"), not from the
+     sidebar. `nav: false` keeps the route (so #/scanner still works) while
+     omitting it from the navigation list. */
+  scanner: { title: "AI Food Scanner", render: renderScanner, nav: false },
   profile: { title: "My Profile", render: renderProfile },
   assistant: { title: "Health Assistant", render: renderAssistant },
   reports: { title: "Reports", render: renderReports },
@@ -70,7 +74,8 @@ async function refreshSideGoal() {
 function ensureShell() {
   if (S.shellBuilt) return;
   S.shellBuilt = true;
-  $("#nav-links").innerHTML = Object.entries(ROUTES).map(([key, r]) => `
+  $("#nav-links").innerHTML = Object.entries(ROUTES)
+    .filter(([, r]) => r.nav !== false).map(([key, r]) => `
     <button class="nav-item" data-route="${key}" aria-label="${r.title}">
       ${ICONS[key]}<span class="nav-text">${r.title}</span></button>`).join("");
   $$(".nav-item").forEach((b) => b.onclick = () => {
