@@ -294,8 +294,12 @@ const DRIVER = `
   if (!S.boot.user) { await click("#ob-skip-all"); await sleep(400); }
   location.hash = "#/scanner"; await refreshView(); await sleep(400);
 
-  assert(el("#nav-links").innerHTML.includes('data-route="scanner"'),
-    "L1 AI Food Scanner appears in the sidebar");
+  /* The scanner is reached from the Dashboard ("Scan a Meal"), not the sidebar.
+     The route must still work when navigated to directly. */
+  assert(!el("#nav-links").innerHTML.includes('data-route="scanner"'),
+    "L1 AI Food Scanner is NOT in the sidebar");
+  assert(el("#nav-links").innerHTML.includes('data-route="tracker"'),
+    "L1b other sidebar items are untouched");
   assert(view().includes("AI Food Scanner"), "L2 scanner view renders");
   assert(view().includes("Take Photo"), "L3 camera capture option present");
   assert(view().includes("Upload Image"), "L4 upload option present");
@@ -369,6 +373,50 @@ const DRIVER = `
   location.hash = "#/dashboard"; await refreshView(); await sleep(600);
   assert(typeof el("#quick-scan").onclick === "function",
     "L21 dashboard exposes the scanner entry point");
+  /* the dashboard button must actually open the scanner route */
+  el("#quick-scan").onclick();
+  await sleep(50);
+  assert(location.hash === "#/scanner", "L22 Scan a Meal opens the scanner route");
+  await refreshView(); await sleep(400);
+  assert(view().includes("AI Food Scanner"),
+    "L23 scanner renders when opened from the dashboard");
+  assert(typeof el("#scan-camera").onclick === "function",
+    "L24 camera capture still bound after the sidebar change");
+  assert(typeof el("#scan-upload").onclick === "function",
+    "L25 upload still bound after the sidebar change");
+
+  /* ---- N: missing nutrition must never render as 0 kcal ---- */
+  const altNoData = scanAltNutrition({ label: "Paneer Butter Masala",
+    confidence: 0.31, nutrition: { nutrition_available: false, nutrients: null } });
+  assert(altNoData.includes("no documented nutrition"),
+    "N1 alternative prediction with no data says so instead of showing a number");
+  assert(!/\b0\s*kcal/.test(altNoData),
+    "N2 missing nutrition never renders as 0 kcal");
+  assert(!/\d\s*kcal/.test(altNoData),
+    "N3 no calorie figure at all when nutrition is unavailable");
+
+  const altPartial = scanAltNutrition({ label: "Mystery", confidence: 0.2,
+    nutrition: { nutrients: null } });
+  assert(!/\bkcal/.test(altPartial),
+    "N4 estimate object without nutrients also avoids a false 0 kcal");
+
+  const altReal = scanAltNutrition({ label: "Pakora", confidence: 0.8,
+    nutrition: { grams: 80, nutrition_available: true,
+      nutrients: { kcal: 235.5, protein_g: 5.9 } } });
+  assert(/236 kcal at 80 g/.test(altReal),
+    "N5 documented nutrition still shows the real scaled figure");
+
+  const altNoEstimate = scanAltNutrition({ label: "Blank", confidence: 0.1 });
+  assert(!/\bkcal/.test(altNoEstimate),
+    "N6 candidate with no nutrition object avoids a false 0 kcal");
+
+  /* a genuine zero in another nutrient is still shown as 0 — only missing data
+     is withheld, so the two cases stay distinguishable */
+  const altZeroFat = scanAltNutrition({ label: "Zero fat", confidence: 0.9,
+    nutrition: { grams: 100, nutrition_available: true,
+      nutrients: { kcal: 0, fat_g: 0 } } });
+  assert(/0 kcal/.test(altZeroFat),
+    "N7 a genuine zero kcal is still displayed as 0, not hidden");
 
   console.log("ALL UI SMOKE CHECKS PASSED");
 })().catch((e) => { console.error("UI SMOKE FAILURE:", e.message); process.exit(1); });

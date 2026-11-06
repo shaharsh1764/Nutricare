@@ -150,11 +150,28 @@ Same position as 3b, including the unverified-authority caveat.
 Tables, NIN Hyderabad) and **USDA FoodData Central**, per-row `source` and
 `source_id` fields.
 
-Two rows (`Kheer, milk-rice (prepared)` id 197 and `Rasgulla / rosogolla
-(prepared)` id 198) are tagged `Recipe-derived (NutriCare)` and
-`quality: approximate`: no IFCT/USDA entry exists, so the value is computed from
-a stated home recipe. They are not laboratory measurements and are labelled as
-such in the app. See `data/SOURCES.md`.
+Seven rows are tagged `Recipe-derived (NutriCare)` and `quality: approximate`.
+For these dishes **no IFCT/USDA entry for the finished dish exists**, so the
+value is computed from a stated home recipe using the IFCT/USDA-cited ingredient
+rows already in this dataset. The full recipe and the arithmetic are recorded in
+each row's `source_id`, and the app shows an "Approximation" notice with an
+`approx_note`.
+
+| id | Row | kcal / 100 g | Reference serving |
+|---|---|---|---|
+| 197 | Kheer, milk-rice (prepared) | 180 | 1 bowl (150 g) |
+| 198 | Rasgulla / rosogolla (prepared) | 186 | 2 pieces (100 g) |
+| 199 | Pakora / bhajji (mixed vegetable, fried) | 294.4 | 4 pieces (80 g) |
+| 200 | Pani puri (assembled, with filling and water) | 308.9 | 6 puris (120 g) |
+| 201 | Jalebi (fried, syrup-soaked) | 408.7 | 2 pieces (60 g) |
+| 202 | Morog polao (Bengali chicken pilaf, prepared) | 162.7 | 1 plate (200 g) |
+| 203 | Chomchom (chhena sweet, prepared) | 271.2 | 1 piece (50 g) |
+
+These are **estimates, not measurements of the dish as served**. Oil absorption,
+portioning and shop-to-shop recipe variation are large; a real plate can differ
+substantially. No claim is made that IFCT or USDA published these figures — they
+published the *ingredient* values the estimates are built from. See
+`data/SOURCES.md` for the per-row derivation.
 
 ---
 

@@ -224,6 +224,21 @@ function scanConfidencePill(confidence, low) {
   return `<span class="pill pill-amber">${pct}% confident</span>`;
 }
 
+/* Nutrition line for an alternative prediction.
+   A missing dataset entry must NEVER render as "0 kcal" — that reads as a real
+   measurement of zero energy. Genuine zeros (e.g. fat in jalebi's flour) are
+   shown as 0; absent data is named as absent. */
+function scanAltNutrition(c) {
+  const est = c && c.nutrition;
+  if (!est || est.nutrition_available === false || !est.nutrients) {
+    return `${esc(c.label)} — no documented nutrition; you enter values yourself`;
+  }
+  // `grams` is top-level on the estimate payload; fall back through the
+  // candidate itself for the alternatives list.
+  const grams = (est.grams != null) ? est.grams : c.grams;
+  return `${fmt(est.nutrients.kcal)} kcal at ${fmt(grams)} g`;
+}
+
 function scanShowResult() {
   const box = $("#scan-drop");
   const result = SCAN.result;
@@ -233,8 +248,7 @@ function scanShowResult() {
   const alternatives = SCAN.candidates.slice(1).map((c) => `
     <button class="result-row" data-alt="${c.slug}" style="width:100%;text-align:left">
       <span style="flex:1"><b class="small">${esc(c.label)}</b>
-        <div class="tiny muted">${fmt(c.nutrition && c.nutrition.nutrients
-          ? c.nutrition.nutrients.kcal : 0)} kcal at ${fmt(c.nutrition ? c.nutrition.grams : 0)} g</div></span>
+        <div class="tiny muted">${scanAltNutrition(c)}</div></span>
       <span class="pill pill-slate">${Math.round(c.confidence * 100)}%</span>
     </button>`).join("");
 

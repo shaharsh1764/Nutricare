@@ -644,10 +644,11 @@
         "bhaji",
         "fritters"
       ],
-      "food": null,
+      "food": "Pakora / bhajji (mixed vegetable, fried)",
       "default_grams": 80,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): besan + mixed vegetables deep-fried. Oil absorption and vegetable mix vary widely; treat as an estimate.",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate (see approx_note), not an IFCT/USDA entry for the dish."
     },
     {
       "slug": "dhokla",
@@ -696,10 +697,11 @@
         "golgappa",
         "puchka"
       ],
-      "food": null,
+      "food": "Pani puri (assembled, with filling and water)",
       "default_grams": 120,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): fried semolina puris + potato/chana filling + tamarind-mint water. Values cover the assembled snack, not the puris alone.",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate for the assembled snack (see approx_note)."
     },
     {
       "slug": "bhel_puri",
@@ -913,10 +915,11 @@
         "jalebi",
         "jilebi"
       ],
-      "food": null,
+      "food": "Jalebi (fried, syrup-soaked)",
       "default_grams": 60,
-      "approx_note": null,
-      "nutrition_source": "unavailable"
+      "approx_note": "Recipe-derived (approximate): maida batter fried in ghee and soaked in sugar syrup. Syrup absorption varies a lot between shops.",
+      "nutrition_source": "dataset",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate (see approx_note); sugar and ghee uptake vary widely."
     },
     {
       "slug": "kulfi",
@@ -988,11 +991,11 @@
         "cham cham",
         "chom chom"
       ],
-      "food": null,
+      "food": "Chomchom (chhena sweet, prepared)",
       "default_grams": 50,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the CC0 model, but has NO documented nutrition entry. The app must ask the user for values rather than invent them."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): chhena + sugar syrup. Sugar content varies by shop and soak time.",
+      "notes": "Recognised by the CC0 model. Nutrition is a recipe-derived estimate (see approx_note), not an IFCT/USDA entry for the sweet."
     },
     {
       "slug": "morog_polao",
@@ -1004,11 +1007,11 @@
         "chicken pilaf",
         "chicken pulao"
       ],
-      "food": null,
+      "food": "Morog polao (Bengali chicken pilaf, prepared)",
       "default_grams": 200,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the CC0 model. Deliberately NOT mapped to 'Pulao, vegetable' (wrong dish) — so nutrition is user-supplied."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived (approximate): rice + chicken + ghee. Deliberately NOT mapped to 'Pulao, vegetable', which is a different dish.",
+      "notes": "Recognised by the CC0 model. Deliberately NOT mapped to 'Pulao, vegetable' (a different dish) — nutrition is a recipe-derived estimate of this pilaf (see approx_note)."
     },
     {
       "slug": "luchi",
