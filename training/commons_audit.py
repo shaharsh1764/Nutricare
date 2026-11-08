@@ -80,6 +80,32 @@ DEFAULT_PAGE_SIZE = 500
 
 IIPROP = "url|size|mime|mediatype|sha1|extmetadata|canonicaltitle"
 
+#: extmetadata keys the pipeline actually consumes.
+#:
+#: Sent to the API as ``iiextmetadatafilter`` so that the request and the code
+#: cannot drift apart. Only keys listed here are fetched, which keeps responses
+#: small and makes metadata collection auditable: anything not in this tuple is
+#: genuinely absent from a record rather than silently discarded downstream.
+#:
+#: ``Credit`` and ``Permission`` are included deliberately. ``Credit`` is
+#: frequently just the photo description on Flickr imports, and ``Permission``
+#: is often absent even when a Commons review template exists on the file page,
+#: so neither is evidence of authorship or permission. They feed provenance
+#: *signalling* only.
+EXTMETADATA_KEYS = (
+    "LicenseShortName",
+    "LicenseUrl",
+    "UsageTerms",
+    "License",
+    "Artist",
+    "Credit",
+    "Permission",
+    "AttributionRequired",
+    "Restrictions",
+    "Copyrighted",
+)
+IIEXTMETADATAFILTER = "|".join(EXTMETADATA_KEYS)
+
 # ---------------------------------------------------------------------------
 # Licence classification
 # ---------------------------------------------------------------------------
@@ -115,9 +141,24 @@ _TAG_RE = re.compile(r"<[^>]+>")
 _WS_RE = re.compile(r"\s+")
 
 
+#: Types that can legitimately reach strip_markup. Anything else is a malformed
+#: record and must not be stringified into text that could be mistaken for an
+#: attribution (a list would otherwise become "['A', 'B']").
+_TEXT_TYPES = (str, int, float)
+
+
 def strip_markup(value: Optional[str]) -> str:
-    """Flatten an extmetadata HTML fragment to plain text."""
-    if not value:
+    """Flatten an extmetadata HTML fragment to plain text.
+
+    Non-scalar values return ``""``. Coercing a list or dict with ``str()``
+    would produce a printable blob that reads like attribution while being
+    meaningless, so malformed values are rejected rather than rendered.
+    """
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return ""
+    if not isinstance(value, _TEXT_TYPES):
         return ""
     return _WS_RE.sub(" ", html.unescape(_TAG_RE.sub(" ", str(value)))).strip()
 
@@ -131,7 +172,10 @@ def em(extmetadata: Optional[Dict[str, Any]], key: str) -> str:
         return strip_markup(entry.get("value"))
     if entry is None:
         return ""
-    return strip_markup(str(entry))
+    # Do not str() an arbitrary object: only scalar values are meaningful.
+    if isinstance(entry, (str, int, float)) and not isinstance(entry, bool):
+        return strip_markup(entry)
+    return ""
 
 
 def classify_licence(extmetadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:
@@ -186,7 +230,7 @@ def classify_licence(extmetadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:
             f"Commons Restrictions field present: {restrictions}"
         )
 
-    return {
+    result = {
         "declared_class": declared,
         "short_name": short,
         "licence_url": licence_url,
@@ -199,6 +243,13 @@ def classify_licence(extmetadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         "share_alike": declared == CC_BY_SA,
         "review_reason": review_reason,
     }
+    # Carried verbatim so downstream policy can act on it, but only when the
+    # field is actually present. Emitting an empty key would rewrite every
+    # existing manifest (including the Biryani pilot) for no gain, since an
+    # absent field and an empty one both mean "no restriction recorded".
+    if restrictions:
+        result["restrictions"] = restrictions
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -402,23 +453,32 @@ class CommonsClient:
                     }
         return info
 
-    def file_info(self, titles: Sequence[str]) -> Dict[str, Dict[str, Any]]:
+    def file_info(
+        self,
+        titles: Sequence[str],
+        *,
+        extmetadata_filter: Optional[str] = IIEXTMETADATAFILTER,
+    ) -> Dict[str, Dict[str, Any]]:
         """Per-file metadata for up to 50 titles per request.
 
         Returns ``{requested_title: page_dict}``. Titles that do not resolve are
         returned with a ``missing`` marker rather than dropped, so callers can
         record the gap.
+
+        ``extmetadata_filter`` is sent as ``iiextmetadatafilter``. Pass ``None``
+        to request every extmetadata key the API offers.
         """
         result: Dict[str, Dict[str, Any]] = {}
         for batch in _batched(list(titles), MAX_TITLES_PER_REQUEST):
-            response = self.query(
-                {
-                    "action": "query",
-                    "prop": "imageinfo",
-                    "iiprop": IIPROP,
-                    "titles": "|".join(batch),
-                }
-            )
+            params: Dict[str, Any] = {
+                "action": "query",
+                "prop": "imageinfo",
+                "iiprop": IIPROP,
+                "titles": "|".join(batch),
+            }
+            if extmetadata_filter:
+                params["iiextmetadatafilter"] = extmetadata_filter
+            response = self.query(params)
             query = response.get("query", {})
             normalized = _normalization_map(query)
             by_title = {

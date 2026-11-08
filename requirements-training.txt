@@ -1,0 +1,16 @@
+# Training-only dependencies for the V2 experimental pipeline.
+#
+# Deliberately SEPARATE from requirements.txt: the NutriCare app and its test
+# suite must keep working on a machine that has no ML stack installed. The app
+# runtime does not import any of this.
+#
+# Install (CPU-only is enough for V2 at this scale):
+#     pip install -r requirements-training.txt
+#
+# The V2 dataset is small, so CPU training is practical. Nothing here is needed
+# to serve the 12-class production model, which stays untouched.
+
+torch>=2.2,<3.0
+torchvision>=0.17,<1.0
+Pillow>=10.0
+numpy>=1.24

@@ -1,0 +1,1228 @@
+{
+ "schema_version": "4.0",
+ "generated_utc": "2026-11-08T14:43:52Z",
+ "inputs": {
+  "classes": 2,
+  "review_decisions": 28,
+  "images_dir": null,
+  "include_cc_by_sa": false
+ },
+ "engine": {
+  "seed": 42,
+  "val_pct": 0.15,
+  "test_pct": 0.15,
+  "min_edge": 300,
+  "split_unit": "duplicate group, never a single image"
+ },
+ "classes": [
+  {
+   "class": "roti",
+   "canonical": "Roti",
+   "counts": {
+    "1_discovered": 14,
+    "2_metadata_retrieved": 14,
+    "3_rights_supported": 2,
+    "4_reviewed": 14,
+    "5_approved": 7,
+    "6_training_usable": 0
+   },
+   "splits": {
+    "train": 0,
+    "val": 0,
+    "test": 0
+   },
+   "rights_breakdown": {
+    "REVIEW_REQUIRED": 12,
+    "TRAINING_APPROVED": 2
+   },
+   "exclusion_breakdown": {
+    "bytes_missing": 14,
+    "cc_by_sa_held_out": 12,
+    "review:uncertain": 7
+   },
+   "ready_for_training": false,
+   "training_ready_note": "needs >=2 usable images in each of train/val/test after rights, review, technical and duplicate filtering"
+  },
+  {
+   "class": "idli",
+   "canonical": "Idli",
+   "counts": {
+    "1_discovered": 14,
+    "2_metadata_retrieved": 14,
+    "3_rights_supported": 1,
+    "4_reviewed": 14,
+    "5_approved": 7,
+    "6_training_usable": 0
+   },
+   "splits": {
+    "train": 0,
+    "val": 0,
+    "test": 0
+   },
+   "rights_breakdown": {
+    "REVIEW_REQUIRED": 13,
+    "TRAINING_APPROVED": 1
+   },
+   "exclusion_breakdown": {
+    "bytes_missing": 14,
+    "cc_by_sa_held_out": 13,
+    "review:uncertain": 7
+   },
+   "ready_for_training": false,
+   "training_ready_note": "needs >=2 usable images in each of train/val/test after rights, review, technical and duplicate filtering"
+  }
+ ],
+ "totals": {
+  "classes_prepared": 2,
+  "classes_ready_for_training": 0,
+  "usable_images": 0,
+  "splits": {}
+ },
+ "leakage": {
+  "leak_free": false,
+  "sha1_spanning_splits": {},
+  "group_spanning_splits": {}
+ },
+ "cross_class_duplicates": [],
+ "duplicate_pairs": [],
+ "near_duplicate_pairs": [],
+ "caveats": [
+  "training_usable requires local image bytes, a passing decode check and a human approval; without --images every count 6 is zero by design",
+  "exact duplicates are detected from page id, SHA1 and normalised title; near duplicates additionally need decoded pixels",
+  "cross-class duplicates are a label conflict for a human to resolve, not something this tool resolves silently",
+  "no rights conclusion is drawn: tiers reflect the declared licence only"
+ ],
+ "images": [
+  {
+   "pageid": 4649402,
+   "title": "File:Chicken Balti Bhuna.jpg",
+   "sha1": "9ae5a0c6e6d05f5ef69b794e7dc1789d56376a86",
+   "class": "roti",
+   "declared_class": "CC_BY",
+   "rights_tier": "TRAINING_APPROVED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 4649402,
+    "title": "File:Chicken Balti Bhuna.jpg",
+    "sha1": "9ae5a0c6e6d05f5ef69b794e7dc1789d56376a86",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Chicken_Balti_Bhuna.jpg",
+    "author": "Edinburgh Blog",
+    "licence_short": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00000",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 6914617,
+   "title": "File:Butterroti.jpg",
+   "sha1": "f314ae98e3b514034fc4f5aa9e808707d32b905a",
+   "class": "roti",
+   "declared_class": "CC_BY",
+   "rights_tier": "TRAINING_APPROVED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 6914617,
+    "title": "File:Butterroti.jpg",
+    "sha1": "f314ae98e3b514034fc4f5aa9e808707d32b905a",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Butterroti.jpg",
+    "author": "Diabolic Preacher",
+    "licence_short": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00001",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 8818770,
+   "title": "File:Flickr - cyclonebill - Lamb Korma, raita, Masoor Dal, gulerødder og chapati.jpg",
+   "sha1": "6df9bf0b8f28ae9b5ce5d05d701308b1ea217976",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 8818770,
+    "title": "File:Flickr - cyclonebill - Lamb Korma, raita, Masoor Dal, gulerødder og chapati.jpg",
+    "sha1": "6df9bf0b8f28ae9b5ce5d05d701308b1ea217976",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Flickr_-_cyclonebill_-_Lamb_Korma,_raita,_Masoor_Dal,_gulerødder_og_chapati.jpg",
+    "author": "cyclonebill",
+    "licence_short": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00002",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 20671398,
+   "title": "File:Dhalpurie Roti, Pumpkin, Channa and Potato, Curry Goat, Trinidad and Tobago.JPG",
+   "sha1": "178c2dfec9728df5ef62e720b1cca63b42b896a5",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 20671398,
+    "title": "File:Dhalpurie Roti, Pumpkin, Channa and Potato, Curry Goat, Trinidad and Tobago.JPG",
+    "sha1": "178c2dfec9728df5ef62e720b1cca63b42b896a5",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Dhalpurie_Roti,_Pumpkin,_Channa_and_Potato,_Curry_Goat,_Trinidad_and_Tobago.JPG",
+    "author": "Kalamazadkhan",
+    "licence_short": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00003",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 20671399,
+   "title": "File:Dhalpurie Roti, Channa and Potato, Curry Shrimp, Trinidad and Tobago.JPG",
+   "sha1": "ad00317831a686bde96da55aa88bb4b57f108723",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 20671399,
+    "title": "File:Dhalpurie Roti, Channa and Potato, Curry Shrimp, Trinidad and Tobago.JPG",
+    "sha1": "ad00317831a686bde96da55aa88bb4b57f108723",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Dhalpurie_Roti,_Channa_and_Potato,_Curry_Shrimp,_Trinidad_and_Tobago.JPG",
+    "author": "Kalamazadkhan",
+    "licence_short": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00004",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 29697575,
+   "title": "File:A thali with daal roti bhindi ki sabzi and mango pickle.jpg",
+   "sha1": "d0e1e64bde8f2f2cb3b5483ca4d1236afd3ed8bd",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 29697575,
+    "title": "File:A thali with daal roti bhindi ki sabzi and mango pickle.jpg",
+    "sha1": "d0e1e64bde8f2f2cb3b5483ca4d1236afd3ed8bd",
+    "source_url": "https://commons.wikimedia.org/wiki/File:A_thali_with_daal_roti_bhindi_ki_sabzi_and_mango_pickle.jpg",
+    "author": "Devika",
+    "licence_short": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00005",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 39778982,
+   "title": "File:Fulka Roti.jpg",
+   "sha1": "7f17b15ec512d8b6708bb0f1156bb473d64f30eb",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 39778982,
+    "title": "File:Fulka Roti.jpg",
+    "sha1": "7f17b15ec512d8b6708bb0f1156bb473d64f30eb",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Fulka_Roti.jpg",
+    "author": "Dkgohil",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00006",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 39779792,
+   "title": "File:Complete served Lunch.jpg",
+   "sha1": "e69fced3d1cb0e0add434736645799770369eb24",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 39779792,
+    "title": "File:Complete served Lunch.jpg",
+    "sha1": "e69fced3d1cb0e0add434736645799770369eb24",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Complete_served_Lunch.jpg",
+    "author": "Dkgohil",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00007",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40582960,
+   "title": "File:Dal Makhani in North east.jpg",
+   "sha1": "c382c72940b8df8fa7e9ae50d3d5f47fabad1260",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40582960,
+    "title": "File:Dal Makhani in North east.jpg",
+    "sha1": "c382c72940b8df8fa7e9ae50d3d5f47fabad1260",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Dal_Makhani_in_North_east.jpg",
+    "author": "Arun Sekhar",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00008",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40622336,
+   "title": "File:Art of cooking roti.JPG",
+   "sha1": "d182c0c8ba57a5b7ca523995f18675855aace446",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40622336,
+    "title": "File:Art of cooking roti.JPG",
+    "sha1": "d182c0c8ba57a5b7ca523995f18675855aace446",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Art_of_cooking_roti.JPG",
+    "author": "Aman22jan",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00009",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40676425,
+   "title": "File:Do june ki roti.jpg",
+   "sha1": "cde5c2fb7d6f9db4fe3e131f9188d3a437fbf063",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40676425,
+    "title": "File:Do june ki roti.jpg",
+    "sha1": "cde5c2fb7d6f9db4fe3e131f9188d3a437fbf063",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Do_june_ki_roti.jpg",
+    "author": "Tilak rathore",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00010",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40680718,
+   "title": "File:Besan Bhakar.jpg",
+   "sha1": "3f5dcaab217c2f2a2bfc2c2a674d2d9568007f26",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40680718,
+    "title": "File:Besan Bhakar.jpg",
+    "sha1": "3f5dcaab217c2f2a2bfc2c2a674d2d9568007f26",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Besan_Bhakar.jpg",
+    "author": "Rambhade",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00011",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40681709,
+   "title": "File:Besani Roti With Urad Dal.jpg",
+   "sha1": "d4006265cf49fa98a395bbb86bed2c372e00d550",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40681709,
+    "title": "File:Besani Roti With Urad Dal.jpg",
+    "sha1": "d4006265cf49fa98a395bbb86bed2c372e00d550",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Besani_Roti_With_Urad_Dal.jpg",
+    "author": "Anubhav Jain",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00012",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40717405,
+   "title": "File:Back to basics.JPG",
+   "sha1": "b28d73a564b1f41e811f3eff2389547ecb54fbb4",
+   "class": "roti",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40717405,
+    "title": "File:Back to basics.JPG",
+    "sha1": "b28d73a564b1f41e811f3eff2389547ecb54fbb4",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Back_to_basics.JPG",
+    "author": "Subhajit",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00013",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 10522071,
+   "title": "File:Button idli.JPG",
+   "sha1": "65b08faa6bbbcb13a171c254e84d3e0487a44c6d",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 10522071,
+    "title": "File:Button idli.JPG",
+    "sha1": "65b08faa6bbbcb13a171c254e84d3e0487a44c6d",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Button_idli.JPG",
+    "author": "Randhirreddy at English Wikipedia",
+    "licence_short": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00000",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 17718265,
+   "title": "File:A plate of Idly and Vadai.JPG",
+   "sha1": "50e370c803ebfc81b460a6f4271a7ecfe87293c6",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 17718265,
+    "title": "File:A plate of Idly and Vadai.JPG",
+    "sha1": "50e370c803ebfc81b460a6f4271a7ecfe87293c6",
+    "source_url": "https://commons.wikimedia.org/wiki/File:A_plate_of_Idly_and_Vadai.JPG",
+    "author": "Thamizhpparithi Maari",
+    "licence_short": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00001",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 28225558,
+   "title": "File:Breakfast (6090558570).jpg",
+   "sha1": "0c13fcf8aecc21035c7f10de07a8610811c69baa",
+   "class": "idli",
+   "declared_class": "CC_BY",
+   "rights_tier": "TRAINING_APPROVED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 28225558,
+    "title": "File:Breakfast (6090558570).jpg",
+    "sha1": "0c13fcf8aecc21035c7f10de07a8610811c69baa",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Breakfast_(6090558570).jpg",
+    "author": "Prateek Rungta from Delhi, India",
+    "licence_short": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00002",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 28526839,
+   "title": "File:Breakfast South India.jpg",
+   "sha1": "1be6ff8a362074c85dfa9e2d7ec7deea9483befe",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 28526839,
+    "title": "File:Breakfast South India.jpg",
+    "sha1": "1be6ff8a362074c85dfa9e2d7ec7deea9483befe",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Breakfast_South_India.jpg",
+    "author": "Harsha K R from Bangalore, India",
+    "licence_short": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00003",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 31761141,
+   "title": "File:Breakfast in India is the best.jpg",
+   "sha1": "7a7f8df702a5061a413ae2160dfd9d9fbaf37c35",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 31761141,
+    "title": "File:Breakfast in India is the best.jpg",
+    "sha1": "7a7f8df702a5061a413ae2160dfd9d9fbaf37c35",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Breakfast_in_India_is_the_best.jpg",
+    "author": "vincelaconte from Chicago, Illinois, USA",
+    "licence_short": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00004",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 39605894,
+   "title": "File:\"Idly\".jpg",
+   "sha1": "77b1b697b9060d2073bd23260e76fff82edf1646",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 39605894,
+    "title": "File:\"Idly\".jpg",
+    "sha1": "77b1b697b9060d2073bd23260e76fff82edf1646",
+    "source_url": "https://commons.wikimedia.org/wiki/File:\"Idly\".jpg",
+    "author": "Thamizhpparithi Maari",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00005",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 39984677,
+   "title": "File:A flour for idly making.jpg",
+   "sha1": "abbcdb9d219e6ea8000bd64d398ab1122770e917",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 39984677,
+    "title": "File:A flour for idly making.jpg",
+    "sha1": "abbcdb9d219e6ea8000bd64d398ab1122770e917",
+    "source_url": "https://commons.wikimedia.org/wiki/File:A_flour_for_idly_making.jpg",
+    "author": "Thamizhpparithi Maari",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00006",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 39984679,
+   "title": "File:An idly show.jpg",
+   "sha1": "da7a8906d4afc3875943ffb8122a8af5dba0a60e",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 39984679,
+    "title": "File:An idly show.jpg",
+    "sha1": "da7a8906d4afc3875943ffb8122a8af5dba0a60e",
+    "source_url": "https://commons.wikimedia.org/wiki/File:An_idly_show.jpg",
+    "author": "Thamizhpparithi Maari",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00007",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40049744,
+   "title": "File:A view of mini idlies.jpg",
+   "sha1": "d753d36045fc4bc0fdc89256eaa170287773b223",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40049744,
+    "title": "File:A view of mini idlies.jpg",
+    "sha1": "d753d36045fc4bc0fdc89256eaa170287773b223",
+    "source_url": "https://commons.wikimedia.org/wiki/File:A_view_of_mini_idlies.jpg",
+    "author": "Thamizhpparithi Maari",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00008",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40671678,
+   "title": "File:Breakfast platter.jpg",
+   "sha1": "b571e473c4f40685a7aeb75e2ceccac82bfd9dcc",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40671678,
+    "title": "File:Breakfast platter.jpg",
+    "sha1": "b571e473c4f40685a7aeb75e2ceccac82bfd9dcc",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Breakfast_platter.jpg",
+    "author": "SHARATH1712",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00009",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40942303,
+   "title": "File:Carrot Peas Idli.JPG",
+   "sha1": "a0df389912127f0c785385b23dcf06ca65c3b301",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40942303,
+    "title": "File:Carrot Peas Idli.JPG",
+    "sha1": "a0df389912127f0c785385b23dcf06ca65c3b301",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Carrot_Peas_Idli.JPG",
+    "author": "Kurinjikathambam",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00010",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40976295,
+   "title": "File:CameraZOOM-20150614100720279.jpg",
+   "sha1": "63727c3a3634b92db8ca4d822a60e993b3fd2b46",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40976295,
+    "title": "File:CameraZOOM-20150614100720279.jpg",
+    "sha1": "63727c3a3634b92db8ca4d822a60e993b3fd2b46",
+    "source_url": "https://commons.wikimedia.org/wiki/File:CameraZOOM-20150614100720279.jpg",
+    "author": "Pratik2001",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00011",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40983743,
+   "title": "File:Bullet Idli by Malhar Clicks.jpg",
+   "sha1": "9392af908001c86d822cc1ca510eb0f07f1efcf1",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40983743,
+    "title": "File:Bullet Idli by Malhar Clicks.jpg",
+    "sha1": "9392af908001c86d822cc1ca510eb0f07f1efcf1",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Bullet_Idli_by_Malhar_Clicks.jpg",
+    "author": "malhar bhatt",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "approved",
+    "approved": true,
+    "drop_from_class": false,
+    "reason": "reviewed relevant, quality acceptable, no flags"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00012",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  },
+  {
+   "pageid": 40985930,
+   "title": "File:A Handful of Southern India Cusine.jpg",
+   "sha1": "62cf9c050cf6beb399e73c9b6e1bf674aa4ffdec",
+   "class": "idli",
+   "declared_class": "CC_BY_SA",
+   "rights_tier": "REVIEW_REQUIRED",
+   "technical_flags": [],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "attribution": {
+    "pageid": 40985930,
+    "title": "File:A Handful of Southern India Cusine.jpg",
+    "sha1": "62cf9c050cf6beb399e73c9b6e1bf674aa4ffdec",
+    "source_url": "https://commons.wikimedia.org/wiki/File:A_Handful_of_Southern_India_Cusine.jpg",
+    "author": "AhonaMukherjee",
+    "licence_short": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": true
+   },
+   "review": {
+    "state": "uncertain",
+    "approved": false,
+    "drop_from_class": false,
+    "reason": "reviewer was 'uncertain'; only 'relevant' can be approved"
+   },
+   "reviewed": true,
+   "local": null,
+   "training_usable": false,
+   "exclusion_reasons": [
+    "cc_by_sa_held_out",
+    "review:uncertain",
+    "bytes_missing"
+   ],
+   "duplicate_group": "g00013",
+   "duplicate_group_size": 1,
+   "split": null,
+   "cross_class_conflict": false
+  }
+ ]
+}
