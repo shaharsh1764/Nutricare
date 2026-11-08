@@ -1331,3 +1331,247 @@ class TestC1ResidueRule:
     def test_connective_padding_does_not_trigger_the_residue_rule(self, fillers):
         kind = classify_restrictions(f"Trademarked{fillers}")["kind"]
         assert kind == "other", fillers
+
+
+# ---------------------------------------------------------------------------
+# Round 5 findings (C-1a Unicode/digit/symbol residue, C-1b negation filler)
+# ---------------------------------------------------------------------------
+
+
+class TestC1aUnicodeResidue:
+    """Residue detection must not silently discard non-ASCII content.
+
+    ``_clause_residue`` used an ASCII-only ``[a-z]+`` tokeniser, so every CJK,
+    Cyrillic or accented-Latin word vanished. A clause containing only a
+    recognised caveat plus unreadable foreign text was therefore classified
+    ``other`` — the one approving non-empty kind.
+    """
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        [
+            "Trademarked 禁止商用",              # no commercial use
+            "Trademarked 使用制限",              # usage restrictions
+            "Trademarked © 保留所有权利",         # all rights reserved
+            "Trademarked 12345",                 # digits are content
+            "Trademarked ⛔",                     # symbol prohibition
+            "Trademarked Запрещено",             # Cyrillic: prohibited
+            "Trademarked Запрещено коммерческое использование",
+            "Trademarked prohibido el uso comercial",
+            "Trademarked ñandú",
+            "Trademarked 転載禁止",
+        ],
+    )
+    def test_non_ascii_content_is_held(self, restrictions):
+        assert classify_restrictions(restrictions)["kind"] == "text", restrictions
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        [
+            "Trademarked 禁止商用",
+            "Trademarked 使用制限",
+            "Trademarked © 保留所有权利",
+            "Trademarked 12345",
+            "Trademarked ⛔",
+            "Trademarked Запрещено",
+            "Trademarked prohibido el uso comercial",
+        ],
+    )
+    def test_non_ascii_content_never_approved_end_to_end(self, restrictions):
+        page = {
+            "pageid": 31, "title": "File:U.jpg",
+            "imageinfo": [{
+                "sha1": "s31", "width": 1200, "height": 900,
+                "mime": "image/jpeg", "url": "u", "descriptionurl": "d",
+                "extmetadata": {
+                    "LicenseShortName": {"value": "CC0"},
+                    "Restrictions": {"value": restrictions},
+                },
+            }],
+        }
+        record = enrich(build_file_record("File:U.jpg", page, [], []))
+        assert record["rights"]["rights_tier"] != TRAINING_APPROVED, restrictions
+        assert record["rights"]["rights_tier"] == REVIEW_REQUIRED
+
+    def test_tokeniser_sees_every_script(self):
+        from training.licence_policy import _tokenize_restriction
+
+        tokens = _tokenize_restriction("Trademarked 禁止商用 Запрещено ñandú 12345 ⛔")
+        assert "禁止商用" in tokens
+        assert "Запрещено" in tokens
+        assert "ñandú" in tokens
+        assert "12345" in tokens
+        assert "⛔" in tokens
+
+    def test_tokeniser_ignores_punctuation_and_whitespace(self):
+        from training.licence_policy import _tokenize_restriction
+
+        assert _tokenize_restriction("  ,;.  ") == []
+        assert _tokenize_restriction("") == []
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        ["Trademarked", "trademarked", "Trademarks apply", "Personality rights",
+         "Privacy", "Moral rights", "Trademarked noted", "Trademarked as above"],
+    )
+    def test_harmless_caveats_still_approve(self, restrictions):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": restrictions}
+        )
+        assert out["restrictions_kind"] == "other", restrictions
+        assert out["rights_tier"] == TRAINING_APPROVED, restrictions
+
+
+class TestC1bNegationIsNotFiller:
+    """Negation and prohibition words must never be filtered away.
+
+    They were listed in ``_RESTRICTION_FILLER``, so the words expressing the
+    restriction were exactly the words removed before residue analysis.
+    """
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        [
+            "Trademarked no use",
+            "Trademarked not permitted",
+            "Trademarked use prohibited",
+            "Trademarked forbidden",
+            "Trademarked cannot be used",
+            "Trademarked no commercial use",
+            "Trademarked not for redistribution",
+            "Trademarked use is forbidden",
+            "Trademarked must not be used",
+            "Trademarked do not use",
+            "Trademarked never allowed",
+        ],
+    )
+    def test_prohibition_is_never_filler(self, restrictions):
+        kind = classify_restrictions(restrictions)["kind"]
+        assert kind in {"text", "licence"}, restrictions
+        assert kind != "other", restrictions
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        [
+            "Trademarked no use",
+            "Trademarked not permitted",
+            "Trademarked use prohibited",
+            "Trademarked forbidden",
+            "Trademarked cannot be used",
+            "Trademarked not for redistribution",
+            "Trademarked use is forbidden",
+        ],
+    )
+    def test_prohibition_never_approved_end_to_end(self, restrictions):
+        page = {
+            "pageid": 32, "title": "File:N.jpg",
+            "imageinfo": [{
+                "sha1": "s32", "width": 1200, "height": 900,
+                "mime": "image/jpeg", "url": "u", "descriptionurl": "d",
+                "extmetadata": {
+                    "LicenseShortName": {"value": "CC0"},
+                    "Restrictions": {"value": restrictions},
+                },
+            }],
+        }
+        record = enrich(build_file_record("File:N.jpg", page, [], []))
+        assert record["rights"]["rights_tier"] != TRAINING_APPROVED, restrictions
+
+    @pytest.mark.parametrize(
+        "word", ["no", "not", "nor", "never", "prohibited", "forbidden", "cannot", "without"]
+    )
+    def test_negation_words_are_not_in_the_filler_set(self, word):
+        from training.licence_policy import _RESTRICTION_FILLER
+
+        assert word not in _RESTRICTION_FILLER, word
+
+    def test_negation_guard_is_independent_of_filler(self):
+        """A prohibition holds even if the concern is otherwise fully explained."""
+        from training.licence_policy import _RESTRICTION_NEGATION
+
+        assert _RESTRICTION_NEGATION.search("Trademarked use prohibited")
+        assert _RESTRICTION_NEGATION.search("Trademarked not permitted")
+        assert not _RESTRICTION_NEGATION.search("Trademarked")
+
+
+class TestC1RegressionSurfaces:
+    """Clause splitting, severity ordering and the surrounding pipeline."""
+
+    @pytest.mark.parametrize(
+        "restrictions,expected",
+        [
+            ("Trademarked; no commercial use", "licence"),
+            ("Trademarked, see below", "text"),
+            ("Some restriction we never assessed, plus another one", "text"),
+            ("Restrictions apply, ask the uploader", "text"),
+            ("Personality rights, trademarked", "other"),
+            ("Trademarked and no commercial use", "licence"),
+            ("Trademarked-no commercial use", "licence"),
+            ("Trademarked&no commercial use", "licence"),
+            ("Trademarked", "other"),
+        ],
+    )
+    def test_severity_and_splitting_unchanged(self, restrictions, expected):
+        assert classify_restrictions(restrictions)["kind"] == expected, restrictions
+
+    @pytest.mark.parametrize(
+        "separator", [",", ";", " / ", " and ", " & ", "|", " - ", " plus ", "/"]
+    )
+    def test_no_separator_bypass(self, separator):
+        text = f"Trademarked{separator}no commercial use"
+        assert classify_restrictions(text)["kind"] == "licence", text
+
+    def test_cc0_and_cc_by_behaviour_retained(self):
+        assert classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0"}
+        )["rights_tier"] == TRAINING_APPROVED
+        assert classify_rights(
+            {"declared_class": "CC_BY", "short_name": "CC BY 4.0"}, artist="A Person"
+        )["rights_tier"] == TRAINING_APPROVED
+        assert classify_rights(
+            {"declared_class": "CC_BY", "short_name": "CC BY 4.0"}, artist="N/A"
+        )["rights_tier"] == EXCLUDED
+
+    def test_cc_by_sa_behaviour_retained(self):
+        out = classify_rights(
+            {"declared_class": "CC_BY_SA", "short_name": "CC BY-SA 4.0"}, artist="A Person"
+        )
+        assert out["rights_tier"] == REVIEW_REQUIRED
+
+    def test_human_review_gate_still_mandatory(self):
+        """A held restriction must not slip in even if everything else is clean."""
+        rec = {
+            "pageid": 41, "title": "File:R.jpg", "sha1": "s41",
+            "width": 1200, "height": 900, "mime": "image/jpeg",
+            "attribution": {"artist_raw": "", "attribution_required": False},
+            "technical_flags": [], "metadata_gaps": [],
+            "rights": {"rights_tier": REVIEW_REQUIRED, "attribution_sufficient": True,
+                       "restrictions_kind": "text"},
+        }
+        report = prepare([{"class": "x", "counts": {}, "files": [rec]}],
+                         reviews={}, images_dir=None)
+        assert report["totals"]["usable_images"] == 0
+        assert report["rows"][0]["training_usable"] is False
+
+    def test_negation_guard_vocabulary(self):
+        """The negation pattern recognises prohibition vocabulary.
+
+        NOTE: this asserts on the pattern only. The guard is defence in depth and
+        is behaviourally redundant while the negation words stay out of
+        ``_RESTRICTION_FILLER`` — deleting it would not fail any behavioural
+        test. The mutation report records that honestly rather than implying
+        coverage that does not exist.
+        """
+        from training.licence_policy import _RESTRICTION_NEGATION
+
+        prohibited = ["no", "not", "never", "cannot", "without", "prohibited",
+                      "forbidden", "unlawful", "illegal", "unauthorised", "strictly"]
+        for word in prohibited:
+            assert _RESTRICTION_NEGATION.search(f"trademarked {word} used"), word
+
+    def test_concern_alone_carries_no_negation(self):
+        from training.licence_policy import _RESTRICTION_NEGATION
+
+        for text in ["Trademarked", "personality rights", "privacy", "moral rights"]:
+            assert not _RESTRICTION_NEGATION.search(text), text

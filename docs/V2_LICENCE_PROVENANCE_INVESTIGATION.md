@@ -929,3 +929,51 @@ prepared directory was accepted. `_resolve_row_path` now calls `resolve()` for
 absolute paths too, collapsing symlinks, and the containment check runs for both
 spellings. A symlink inside the tree pointing outside it is caught by the same
 check.
+
+---
+
+# Post-review corrections (C-1a, C-1b — fourth round)
+
+## C-1a — residue detection was ASCII-only
+
+`_clause_residue` tokenised with `re.findall(r"[a-z]+")`, so every CJK, Cyrillic
+and accented-Latin word vanished. A clause holding a recognised caveat plus
+unreadable foreign text was therefore classified `other` — the one approving
+non-empty kind.
+
+| `Restrictions` | Before | Now |
+|---|---|---|
+| `Trademarked no commercial use` | `EXCLUDED` | `EXCLUDED` |
+| `Trademarked 禁止商用` | **`TRAINING_APPROVED`** | `REVIEW_REQUIRED` |
+| `Trademarked 12345` | **`TRAINING_APPROVED`** | `REVIEW_REQUIRED` |
+| `Trademarked ⛔` | **`TRAINING_APPROVED`** | `REVIEW_REQUIRED` |
+
+The tokeniser is now script-agnostic: a token is a maximal run of characters that
+are neither whitespace nor punctuation (`_tokenize_restriction`). Digits are
+tokens, because "2030" in a restriction is a date. Symbols such as `©`, `⛔` and
+`✖` are content rather than punctuation, so they are not stripped — on a licence
+field they signal a reserved right or a prohibition.
+
+Silence is never consent: anything the parser cannot account for is residue, and
+residue forces `text` / `REVIEW_REQUIRED`.
+
+## C-1b — negation words were filler
+
+`_RESTRICTION_FILLER` contained `no`, `not`, `prohibited` and `forbidden`, so the
+words expressing the restriction were exactly the words removed before residue
+analysis.
+
+| `Restrictions` | Before | Now |
+|---|---|---|
+| `Trademarked no use` | **`TRAINING_APPROVED`** | `REVIEW_REQUIRED` |
+| `Trademarked use prohibited` | **`TRAINING_APPROVED`** | `REVIEW_REQUIRED` |
+
+Negation and prohibition vocabulary is removed from the filler set, so those
+words survive as residue. `_RESTRICTION_NEGATION` is a second, independent layer:
+a clause carrying a named caveat *and* a prohibition is held rather than inferred
+harmless from the caveat.
+
+Note on coverage: that second layer is currently redundant by construction —
+every word it matches is also residue, so no behavioural test can distinguish its
+presence. It survives mutation testing by design and is documented as defence in
+depth rather than counted as covered.

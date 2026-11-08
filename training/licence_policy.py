@@ -708,12 +708,18 @@ _RESTRICTION_SEVERITY = {"none": 0, "other": 1, "text": 2, "licence": 3}
 #: such as "defamatory or otherwise unlawful use prohibited" (the concern was
 #: matched, but most of the clause was connective prose) and so could not tell
 #: harmless padding from a hidden second condition.
+#: Negation and prohibition words are deliberately ABSENT from the filler set.
+#:
+#: They were previously listed here, which made "Trademarked no use" and
+#: "Trademarked use prohibited" classify as a harmless caveat: the words that
+#: express the restriction were the exact words being filtered out. A word that
+#: flips the polarity of a clause is never padding.
 _RESTRICTION_FILLER = frozenset(
     """
-    a an the this that these those it its of in on at to for from by with without
-    and or nor not no any all some other otherwise else plus including also
+    a an the this that these those it its of in on at to for from by with
+    and or any all some other otherwise else plus including also
     is are was were be been being may might must should can could will would
-    apply applies applied use used using usage permitted prohibited forbidden
+    apply applies applied use used using usage permitted
     allowed requires require required restriction restrictions restricted
     image images file files work works content media material see below above
     note notes respect respects regarding concerning per under terms condition
@@ -722,31 +728,102 @@ _RESTRICTION_FILLER = frozenset(
     """.split()
 )
 
+#: Explicit prohibition or negation language.
+#:
+#: Removing these words from the filler set is what actually fixes the bypass:
+#: they now survive as residue, which forces ``text``. This pattern is a second,
+#: intentional layer so that a future edit to ``_RESTRICTION_FILLER`` cannot
+#: silently reopen the hole by re-absorbing a negation word.
+#:
+#: It is currently redundant by construction — every word it matches is also
+#: residue, so no test can distinguish its presence behaviourally. That is
+#: recorded here rather than dressed up as covered: it is defence in depth, and
+#: a reviewer seeing zero mutation coverage for it should read this note.
+_RESTRICTION_NEGATION = re.compile(
+    r"(\bnot\b|\bno\b|\bnor\b|\bnever\b|\bcannot\b|\bcan\s?not\b"
+    r"|\bwithout\b|\bprohibit\w*|\bforbid\w*|\bbann?ed\b|\bunlawful\b"
+    r"|\billegal\b|\bunauthori[sz]ed\b|\bstrictly\b|\bonly\b"
+    r"|\bmust\s+not\b|\bdo\s+not\b|\bdon't\b|\bnot\s+for\b)",
+    re.IGNORECASE,
+)
+
+
+#: Punctuation and whitespace that may be ignored when looking for content.
+#:
+#: Deliberately narrow: only characters that carry no meaning on their own are
+#: dropped. Symbols such as ``©``, ``⛔`` and ``✖`` are content, not punctuation,
+#: because on a licence field they signal a reserved right or a prohibition.
+_RESTRICTION_PUNCTUATION = frozenset(" \t\r\n.,;:!?()[]{}\"'`<>/\\|-–—_+=*&^%$#@~")
+
+#: Words the recognised-concern matcher is allowed to explain away. Removed
+#: before residue extraction so that "trademarked" does not count as content.
+_CONCERN_VOCABULARY = re.compile(
+    r"\b(trademark\w*|personality|privacy|moral|insult\w*|defam\w*"
+    r"|libel\w*|slander\w*|rights?)\b",
+    re.IGNORECASE,
+)
+
+
+def _tokenize_restriction(text: str) -> List[str]:
+    """Split restriction text into tokens without discarding any language.
+
+    A token is a maximal run of characters that are neither whitespace nor
+    punctuation. This is script-agnostic on purpose: an earlier ASCII-only
+    ``[a-z]+`` tokeniser made every non-Latin word invisible, so
+    ``"Trademarked 禁止商用"`` (no commercial use) was approved while its English
+    equivalent was excluded. Digits are tokens too — "2030" in a restriction is
+    a date, not padding.
+    """
+    tokens: List[str] = []
+    current: List[str] = []
+    for char in text:
+        if char.isspace() or char in _RESTRICTION_PUNCTUATION:
+            if current:
+                tokens.append("".join(current))
+                current = []
+        else:
+            current.append(char)
+    if current:
+        tokens.append("".join(current))
+    return tokens
+
 
 def _clause_residue(clause: str) -> List[str]:
-    """Content words in ``clause`` not explained by a recognised concern."""
-    text = clause.lower()
-    # Remove the concern vocabulary first, so inflections are covered, then any
-    # matched phrase that remains.
-    text = re.sub(
-        r"\b(trademark\w*|personality|privacy|moral|insult\w*|defam\w*"
-        r"|libel\w*|slander\w*|rights?)\b",
-        " ",
-        text,
-    )
+    """Content tokens in ``clause`` not explained by a recognised concern.
+
+    Anything the parser cannot account for is residue, and residue forces the
+    clause to ``text`` (held for review). Silence is never treated as consent:
+    a token in an unfamiliar script, a number, or a symbol all count.
+    """
+    text = _coerce_text(clause)
+    # Remove the concern vocabulary so "trademarked" is not itself content.
+    text = _CONCERN_VOCABULARY.sub(" ", text)
     for match in _RESTRICTION_OTHER.finditer(text):
         text = text.replace(match.group(0), " ")
-    words = re.findall(r"[a-z]+", text)
-    return [w for w in words if w not in _RESTRICTION_FILLER]
+
+    residue: List[str] = []
+    for token in _tokenize_restriction(text):
+        lowered = token.lower()
+        if lowered in _RESTRICTION_FILLER:
+            continue
+        residue.append(token)
+    return residue
 
 
 def _classify_restriction_clause(clause: str) -> str:
-    """Classify a single restriction clause as ``licence``, ``other`` or ``text``."""
+    """Classify a single restriction clause as ``licence``, ``other`` or ``text``.
+
+    ``other`` is the only non-empty kind that leaves a file eligible, so it is
+    reserved for clauses the parser fully understands: a named non-copyright
+    concern, no prohibition, and no unaccounted-for content.
+    """
     if _RESTRICTION_LICENCE.search(clause):
         return "licence"
     if _RESTRICTION_OTHER.search(clause):
-        # A named concern only makes the clause a caveat if nothing unassessed
-        # is hiding alongside it.
+        # A named concern never makes a prohibition harmless, and never excuses
+        # content the parser cannot read.
+        if _RESTRICTION_NEGATION.search(clause):
+            return "text"
         return "other" if not _clause_residue(clause) else "text"
     return "text"
 
