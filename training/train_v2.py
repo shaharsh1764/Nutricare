@@ -246,6 +246,28 @@ def train(
     device_preference: str = "auto",
     bn_cumulative: bool = True,
 ) -> int:
+    out_dir = Path(out_dir)
+    # Refuse to write anywhere that could clobber the 12-class production model.
+    #
+    # The previous form of this guard tested ``out_dir == models/`` AND the
+    # production file already existing, which never corresponded to the real
+    # risk: the checkpoint is written under a *different* filename, so the guard
+    # could not fire for the overwrite it claimed to prevent, and a ``--out``
+    # pointing at the production path itself was not checked at all. The
+    # protection that actually matters is that no artefact may land in
+    # ``models/`` — everything experimental belongs under ``models/v2/``.
+    protected_path = PROTECTED_MODEL.resolve()
+    if out_dir.resolve() == PROTECTED_MODEL.parent.resolve():
+        print(
+            "refusing to write into models/: the 12-class production model "
+            f"({PROTECTED_MODEL.name}) lives there. Use models/v2/ instead.",
+            file=sys.stderr,
+        )
+        return 2
+    if out_dir.resolve() == protected_path:
+        print("refusing: --out names the production model file itself", file=sys.stderr)
+        return 2
+
     try:
         import numpy as np
         import torch
@@ -259,10 +281,6 @@ def train(
     from nutricare import vision
     from train_food_classifier import hardest_pairs, metrics_from_confusion
 
-    out_dir = Path(out_dir)
-    if out_dir.resolve() == PROTECTED_MODEL.parent.resolve() and (out_dir / PROTECTED_MODEL.name).exists():
-        print("refusing to overwrite the 12-class production model", file=sys.stderr)
-        return 2
     out_dir.mkdir(parents=True, exist_ok=True)
 
     audit = check_dataset(dataset_dir)

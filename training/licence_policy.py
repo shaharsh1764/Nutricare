@@ -186,12 +186,29 @@ _SCRAPE_WORD = re.compile(
 _COPY_VERB = re.compile(
     r"(\b(taken|grabbed|pulled|lifted|leached|copied|ripped|downloaded|saved"
     r"|sourced|obtained|retrieved|hotlinked|re-?uploaded)\b\s+(from|off|via)"
-    r"|\bscreenshot(s|ed)?\b\s*(from|of)?"
+    # A screenshot is an image *type*. Capturing a user interface ("Screenshot of
+    # a website", "Screenshot of the app", "Screenshot of the menu") is a
+    # legitimate way to depict a screen, so the bare noun and UI objects are
+    # descriptive and must NOT be treated as evidence of unauthorised copying.
+    # Capturing a *media work* (film, broadcast, video, stream) is evidence, and
+    # so is an explicit capture verb.
+    r"|\bscreenshot\b\s*(from|of)\s+(a\s+|the\s+)?"
+    r"(film|movie|video|tv|television|youtube|stream|episode|documentary)"
+    r"|\bscreenshot(s|ed)?\s+(taken|grabbed|captured)\s+(from|of)"
     r"|\bscreen\s?grab\b"
     r"|\bcaptured\s+from\s+(a\s+)?(video|film|movie|tv|youtube|stream)"
     r"|\bimage\s+search\b|\breverse\s+image\s+search\b"
-    r"|\bfound\s+(on|via)\s+the\s+(web|internet|internet)\b"
-    r"|\bfrom\s+the\s+(web|internet)\b)",
+    r"|\bfound\s+(on|via)\s+the\s+(web|internet)\b"
+    r"|\bfrom\s+the\s+(web|internet)\b"
+    # Hosting verbs name a destination, which is evidence of re-upload only when
+    # the destination is an anonymous image dump. "Uploaded to Commons" is
+    # legitimate, and Flickr is deliberately absent: Commons' Flickr review bot
+    # imports under exactly the credit line "uploaded to Flickr by <author>", so
+    # flagging that phrasing would reject a large, licensed, legitimately-sourced
+    # slice of the corpus. Imgur/Photobucket have no such attribution route.
+    r"|\b(hosted|uploaded|posted|published)\s+(on|to)\s+"
+    r"(imgur|photobucket|tinypic|postimg|imgbb|a\s+blog|the\s+web|the\s+internet"
+    r"|a\s+(website|forum|blog)))",
     re.IGNORECASE,
 )
 #: Explicitly unknown provenance.
@@ -279,6 +296,131 @@ _SCRAPE_RISK = _SCRAPE_WORD
 # Accepted: a bare CC0 dedication. CC0 waives attribution, so an author name is
 # not a condition of use, and anonymous CC0 material is legitimately usable.
 _CC0_SHORT = re.compile(r"^\s*(cc0|cc[\s-]?zero)\b", re.IGNORECASE)
+
+#: Words that contradict, restrict or qualify a CC0 dedication.
+#:
+#: A CC0 label is only an unconditional dedication when nothing else in the
+#: string attaches conditions to it. Community relabelling such as
+#: ``"CC0 but no commercial use"`` or ``"CC0 with restrictions"`` claims CC0
+#: while imposing extra terms the licence does not contain, which is a
+#: self-contradiction rather than a dedication we can rely on. Such a string must
+#: never be auto-approved, and it must not be deferred to review either (that
+#: would let a later reviewer wave it through): it is excluded.
+_RESTRICTIVE_MODIFIER = re.compile(
+    r"(\bnc\b|non[-\s]?commercial"
+    r"|\bnd\b|no[-\s]?deriv|noderivs|no derivatives"
+    r"|\bsa\b|share[-\s]?alike|sharealike"
+    r"|restrict|additional (condition|term|restriction)|extra (condition|term)"
+    r"|but not|except|no (commercial|derivative|modif|redistribut)"
+    r"|not for (commercial|profit|resale)|non[-\s]?free"
+    r"|permission (required|needed)|used with permission"
+    r"|all rights reserved)",
+    re.IGNORECASE,
+)
+
+#: Trailing content that disqualifies a bare CC0 dedication.
+#:
+#: A genuine dedication is the label alone, optionally with a version and a
+#: jurisdiction qualifier (``"CC0 1.0 Universal"``, ``"CC0 1.0 Universal
+#: (CC0 1.0) Public Domain Dedication"``). Anything else trailing the label is
+#: an added condition we have not assessed, so it disqualifies the dedication
+#: rather than being silently ignored as prefix matching would do.
+_CC0_TRAILING_OK = re.compile(
+    r"^[\s\d.,()]*((universal|dedication|public\s+domain\s+dedication"
+    r"|legal\s+code|cc0)[\s\d.,()]*)*$",
+    re.IGNORECASE,
+)
+
+
+def is_bare_cc0(text: str) -> bool:
+    """True only for an *unconditional* CC0 dedication.
+
+    ``"CC0 1.0 Universal"`` -> True. ``"CC0 but no commercial use"`` -> False;
+    ``"CC0 with restrictions"`` -> False. Adding a restriction while claiming
+    CC0 is a contradiction, and the restrictive reading wins.
+    """
+    text = _coerce_text(text).strip()
+    if not text:
+        return False
+    match = _CC0_SHORT.match(text)
+    if not match:
+        return False
+    if has_restrictive_modifier(text):
+        return False
+    return bool(_CC0_TRAILING_OK.match(text[match.end():]))
+
+
+def has_restrictive_modifier(text: str) -> bool:
+    """True when ``text`` attaches terms that contradict a permissive licence.
+
+    ``"CC0 with restrictions"`` -> True; ``"CC0 1.0 Universal"`` -> False.
+    """
+    text = _coerce_text(text).strip()
+    if not text:
+        return False
+    return bool(_RESTRICTIVE_MODIFIER.search(text))
+
+
+#: Placeholder author values that name no actual person or organisation.
+#:
+#: CC BY and CC BY-SA require attribution *to a named party*. ``"N/A"`` names
+#: nobody, so such a file cannot satisfy its own licence and must not be
+#: approved on the strength of a non-empty string. Compared case-insensitively
+#: after stripping punctuation and invisible characters.
+_PLACEHOLDER_AUTHORS = frozenset(
+    {
+        "unknown",
+        "unknown author",
+        "unknown artist",
+        "unknown photographer",
+        "anonymous",
+        "anon",
+        "na",
+        "none",
+        "nil",
+        "-",
+        "\u2014",
+        "\u2013",
+        "null",
+        "not applicable",
+        "not known",
+        "not stated",
+        "not specified",
+        "no author",
+        "no name",
+        "unnamed",
+        "tbd",
+        "todo",
+    }
+)
+
+#: Zero-width and other invisible characters. ``"\u200b"`` is visually empty but
+#: truthy as a string, so it would otherwise satisfy the attribution test.
+_INVISIBLE = re.compile("[\u200b-\u200f\u2060\ufeff\u00ad]")
+
+#: ``N/A``-shaped placeholders. Handled separately from the word list so that a
+#: legitimate initials-only attribution such as ``"N A"`` is not rejected, while
+#: the slash form (which is unambiguously a placeholder) still is.
+_PLACEHOLDER_SLASH = re.compile(
+    r"^\s*(n\s*/\s*a|n\.\s*a\.?|none\s*/\s*none|not\s*/\s*applicable)\s*$",
+    re.IGNORECASE,
+)
+
+
+def is_placeholder_author(text: str) -> bool:
+    """True when ``text`` is empty, invisible, or a placeholder identity.
+
+    Legitimate names are never matched: ``"Anonymous"`` is a placeholder but
+    ``"Anonymouse"`` (a real Commons username) is not, because comparison is
+    against the whole normalised string rather than a substring.
+    """
+    cleaned = _INVISIBLE.sub("", _coerce_text(text)).strip()
+    if not cleaned:
+        return True
+    if _PLACEHOLDER_SLASH.match(cleaned):
+        return True
+    normalised = re.sub(r"\s+", " ", cleaned).strip().lower()
+    return normalised in _PLACEHOLDER_AUTHORS
 
 # Deferred: PD designations that are NOT automatically treated as CC0.
 #
@@ -486,7 +628,11 @@ def classify_rights(
     # CC0 waives attribution, so it must not require an author; CC BY and
     # CC BY-SA both impose attribution obligations, so both must.
     pd_designation: Optional[str] = None
-    attribution_sufficient = bool(artist)
+    # A non-empty string is not necessarily an identity: "N/A" and a
+    # zero-width space both name nobody, so neither can satisfy an
+    # attribution obligation.
+    artist_is_placeholder = is_placeholder_author(artist)
+    attribution_sufficient = bool(artist) and not artist_is_placeholder
 
     if provenance_strength == "scrape_risk":
         tier = EXCLUDED
@@ -503,7 +649,19 @@ def classify_rights(
                 "equivalent to CC0; deferred to human review pending a per-template "
                 "assessment"
             )
-        elif _CC0_SHORT.search(designation_text):
+        elif has_restrictive_modifier(designation_text):
+            # A CC0 label carrying added restrictions ("CC0 but no commercial
+            # use", "CC0 with restrictions") is self-contradictory. The
+            # restrictive reading wins, and the file is excluded rather than
+            # deferred: deferring would let a later reviewer approve it on the
+            # strength of the CC0 prefix alone.
+            tier = EXCLUDED
+            reasons.append(
+                f"CC0_PD bucket but short_name {designation_text!r} attaches "
+                "restrictive conditions to a CC0 label; a contradiction cannot be "
+                "resolved in favour of the permissive reading"
+            )
+        elif is_bare_cc0(designation_text):
             # CC0: attribution is waived, so an author name is not required.
             tier = TRAINING_APPROVED
             reasons.append(
@@ -556,6 +714,7 @@ def classify_rights(
         "provenance_signals": provenance["signals"],
         "public_domain_designation": pd_designation,
         "attribution_sufficient": attribution_sufficient,
+        "author_is_placeholder": artist_is_placeholder,
         "short_name": short_name,
         "designation_text": designation_text,
         # NAMING NOTE: despite the name, this means "the declared licence policy

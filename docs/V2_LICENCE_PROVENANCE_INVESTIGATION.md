@@ -719,3 +719,83 @@ malformed file is excluded rather than aborting the class.
 `_APPROVED_CLASSES` deleted, with a comment recording that coupling CC0/PD with
 CC BY in one set is what caused the original author-requirement bug. A test
 asserts it is not reintroduced.
+
+---
+
+# Post-review corrections (C-1 … L-2)
+
+Findings from `docs/PR8_FINAL_REVIEW.md`. The guiding rule remains: a decision
+that cannot be made safely is held out, never guessed in the permissive
+direction.
+
+## C-1 — a CC0 label must not override conditions attached to it
+
+`_CC0_SHORT` matched a CC0 **prefix**, so `"CC0 with restrictions"` was approved
+outright. Two independent guards now apply, and both must pass:
+
+| Guard | Catches |
+|---|---|
+| `has_restrictive_modifier()` | `nc`, `nd`, `sa`, `non-commercial`, `restrict`, `additional conditions`, `no derivative`, `permission required`, `all rights reserved` |
+| `is_bare_cc0()` | anything trailing the label that is not a dedication qualifier |
+
+`is_bare_cc0("CC0 1.0 Universal (CC0 1.0) Public Domain Dedication")` → `True`.
+`is_bare_cc0("CC0 with restrictions")` → `False`.
+`is_bare_cc0("CC0 - see terms below")` → `False` (no keyword; caught only by the
+whole-label rule, which is why both guards exist).
+
+Contradictory descriptions are **excluded**, not deferred to review. Deferring
+would leave a path where a reviewer approves on the strength of the CC0 prefix.
+Public Domain families are untouched and still defer to `REVIEW_REQUIRED`.
+
+## H-1 — a non-empty string is not an identity
+
+`attribution_sufficient` previously tested `bool(artist)`. `"N/A"` names nobody,
+so a CC BY file approved on that basis cannot satisfy its own licence.
+
+`is_placeholder_author()` now rejects empty and whitespace-only values, invisible
+characters (zero-width space, ZWJ/ZWNJ, BOM, soft hyphen), a placeholder word
+list (`unknown`, `anonymous`, `none`, `nil`, `null`, `not stated`, `tbd`, …), the
+dash forms (`-`, `—`, `–`) and `N/A` shapes (`N/A`, `n.a.`, `N / A`).
+
+Deliberately **not** rejected: `"N A"` (initials), `"Anonymouse"` (a real Commons
+username), and `"Unknown Soldier Memorial Trust"` — comparison is against the
+whole normalised string, never a substring. `author_is_placeholder` is exposed on
+the rights record for auditing. CC0 still does not require an author.
+
+## M-1 — a screenshot is an image type, not evidence of copying
+
+The pattern matched the bare noun. Capturing a user interface
+(`"Screenshot of a website"`, `"Screenshot of the app"`, `"Screenshot of the
+menu"`) is a legitimate way to depict a screen and is no longer flagged.
+Capturing a media work (`"Screenshot of a video"`, `"Screenshot from YouTube"`,
+`"Screen grab of the film"`) remains `scrape_risk`.
+
+## L-1 — hosting destinations
+
+`"Uploaded to Imgur"` and `"Hosted on Photobucket"` are now evidence of re-upload.
+Flickr is deliberately **excluded** from the destination list: Commons' Flickr
+review bot imports under the credit line `"uploaded to Flickr by <author>"`, which
+is attributable provenance rather than an anonymous dump. Flagging it would
+reject a large, licensed, correctly-sourced slice of the corpus. A bare platform
+mention remains non-evidence.
+
+## M-2 — the checkpoint guard
+
+The old guard tested `out_dir == models/` **and** the production file already
+existing. It could never fire for the overwrite it claimed to prevent, because
+the checkpoint is written under a different filename
+(`food_classifier_v2_experimental.pt`), and `--out` naming the production file
+itself was not checked at all. `train()` now refuses (exit 2) before touching the
+dataset if `--out` resolves to `models/` or to the production file. Behavioural
+tests call `train()` directly.
+
+## H-2 / L-2 — tests that pin the protections
+
+The previous round's tests exercised helpers (`review_verdict`) but not the
+production paths, so three safety mutants survived. `tests/test_review_findings_c1_l2.py`
+now calls `prepare()` and `train()` directly, plus a positive control proving that
+bytes + review approval *does* yield a usable row (without it, the negative tests
+could pass for the wrong reason).
+
+`strip_markup`'s contract is pinned for scalars and for `None`/list/dict/bool/
+object, so a revert to `str()` fails immediately.
