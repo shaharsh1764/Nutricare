@@ -1,0 +1,1333 @@
+{
+ "schema_version": "1.0",
+ "measured_utc": "2026-11-05",
+ "method": "MediaWiki action API, generator=search, gsrsearch=incategory:\"<cat>\" haslicense:unrestricted filetype:bitmap, iiprop=url|size|sha1|mime|extmetadata; fetched out-of-sandbox via documented fetch tooling (sandbox egress to Wikimedia is blocked).",
+ "caveat": "These are DISCOVERED CANDIDATES with declared permissive licences. No bytes have been downloaded, no image has been decoded, deduplicated, quality-checked or visually confirmed to depict the stated dish. Not a training count.",
+ "note_on_labels": "Category membership is not label correctness. Spot checks already found mislabels: 'Zoolbia Bamieh' (Persian zoolbia) filed under Jalebi; an Armenian village bread and a USDA MyPlate photo filed under Naan; a butter chicken photo filed under Naan.",
+ "records": [
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 30288056,
+    "ns": 6,
+    "title": "File:Arabian Camel Meat Biryani.JPG",
+    "imageinfo": [
+     {
+      "size": 8262345,
+      "width": 4896,
+      "height": 3672,
+      "sha1": "e6d9926bd229849af2022b5fa1c6d285c68d67ff",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Arabian_Camel_Meat_Biryani.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Arabian_Camel_Meat_Biryani.JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Miansari66",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 201150503,
+    "ns": 6,
+    "title": "File:Biryani and tempting.jpg",
+    "imageinfo": [
+     {
+      "size": 147862,
+      "width": 720,
+      "height": 1280,
+      "sha1": "3224a85f769b40e03f708df921f00cface1addfc",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Biryani_and_tempting.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Biryani_and_tempting.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Mythili Perumal",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 34169168,
+    "ns": 6,
+    "title": "File:Degi Biryani.JPG",
+    "imageinfo": [
+     {
+      "size": 11854161,
+      "width": 4896,
+      "height": 3672,
+      "sha1": "85051f21b38ae7404497bb487591484a5e17e4b3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/35/Degi_Biryani.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Degi_Biryani.JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Miansari66",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 45909443,
+    "ns": 6,
+    "title": "File:Keema Biryani.JPG",
+    "imageinfo": [
+     {
+      "size": 8974429,
+      "width": 4896,
+      "height": 3672,
+      "sha1": "c4d2696e89769a1848b1e62b3744b7c154ca2dff",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Keema_Biryani.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Keema_Biryani.JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Miansari66",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 177688923,
+    "ns": 6,
+    "title": "File:Mandhi biriyani at irani restaurant.jpg",
+    "imageinfo": [
+     {
+      "size": 1187078,
+      "width": 3120,
+      "height": 4160,
+      "sha1": "31ed22dd17d3d8ae088cbdbbbeeda437c2119c3e",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Mandhi_biriyani_at_irani_restaurant.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Mandhi_biriyani_at_irani_restaurant.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Indhuja ramachandran",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 15913726,
+    "ns": 6,
+    "title": "File:Punjabi Chicken Biryani.JPG",
+    "imageinfo": [
+     {
+      "size": 4422435,
+      "width": 2816,
+      "height": 2112,
+      "sha1": "c69451c15fab8419567fb0841e5c5cfc14750852",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Punjabi_Chicken_Biryani.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Punjabi_Chicken_Biryani.JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Miansari66",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 49572531,
+    "ns": 6,
+    "title": "File:Sanfaz Biryani.jpg",
+    "imageinfo": [
+     {
+      "size": 7070918,
+      "width": 4896,
+      "height": 3672,
+      "sha1": "5174f768865076001cd5faa312f2658b8218d2b6",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Sanfaz_Biryani.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sanfaz_Biryani.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Miansari66",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 93477017,
+    "ns": 6,
+    "title": "File:Sanfaz Bombay Biryani.jpg",
+    "imageinfo": [
+     {
+      "size": 2755499,
+      "width": 2976,
+      "height": 2976,
+      "sha1": "221b6c705f5b60309479232fd991b23cd6bc9962",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/57/Sanfaz_Bombay_Biryani.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sanfaz_Bombay_Biryani.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Miansari66",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "biryani",
+   "page": {
+    "pageid": 150624085,
+    "ns": 6,
+    "title": "File:The Red Bucket Biryani.jpg",
+    "imageinfo": [
+     {
+      "size": 4570222,
+      "width": 3072,
+      "height": 4080,
+      "sha1": "bcc60e244fd6615cbc9d241e1768d46a0d217dba",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/The_Red_Bucket_Biryani.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:The_Red_Bucket_Biryani.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Kl2300031442",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 114995778,
+    "ns": 6,
+    "title": "File:Avocado and black pepper on naan - Massachusetts.jpg",
+    "imageinfo": [
+     {
+      "size": 1930281,
+      "width": 2864,
+      "height": 2864,
+      "sha1": "4b0486e6395400e9c9a7198f0b38480f4b54270e",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Avocado_and_black_pepper_on_naan_-_Massachusetts.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Avocado_and_black_pepper_on_naan_-_Massachusetts.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Daderot",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 89257633,
+    "ns": 6,
+    "title": "File:B\u00e1nh m\u00ec Naan t\u1ecfi \u1edf T\u00e2n Ph\u00fa (2).jpg",
+    "imageinfo": [
+     {
+      "size": 1311347,
+      "width": 2929,
+      "height": 2654,
+      "sha1": "aab5abb233f6fd6fe93b30951c33e8e0a8775338",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/B%C3%A1nh_m%C3%AC_Naan_t%E1%BB%9Fi_%E1%BB%9F_T%C3%A2n_Ph%C3%BA_%282%29.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:B\u00e1nh_m\u00ec_Naan_t\u1ecfi_\u1edf_T\u00e2n_Ph\u00fa_(2).jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Ph\u01b0\u01a1ng Huy (th\u1ea3o lu\u1eadn)",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 152857104,
+    "ns": 6,
+    "title": "File:Cumin spicy naan crumble.jpg",
+    "imageinfo": [
+     {
+      "size": 3321809,
+      "width": 3000,
+      "height": 3000,
+      "sha1": "c9018f7718f8d6b93e9755609d98132387acaa07",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Cumin_spicy_naan_crumble.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Cumin_spicy_naan_crumble.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Fumikas Sagisavas",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 131207982,
+    "ns": 6,
+    "title": "File:Food Indian butter chicken (52843424475).jpg",
+    "imageinfo": [
+     {
+      "size": 6382686,
+      "width": 4032,
+      "height": 3024,
+      "sha1": "a490d4a207e76dc965a18aa79d0e350a4694f7e5",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Food_Indian_butter_chicken_%2852843424475%29.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Food_Indian_butter_chicken_(52843424475).jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Jan Helebrant",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 65412265,
+    "ns": 6,
+    "title": "File:Making bread in Armote, the Christian village adjacent to Koye 07.jpg",
+    "imageinfo": [
+     {
+      "size": 12725312,
+      "width": 6000,
+      "height": 4000,
+      "sha1": "78e03381c89532eda8cb433e036180e2a89f2965",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Making_bread_in_Armote%2C_the_Christian_village_adjacent_to_Koye_07.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Making_bread_in_Armote,_the_Christian_village_adjacent_to_Koye_07.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Levi Clancy",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 184647833,
+    "ns": 6,
+    "title": "File:MyPlate gov Cultural Food (20241025-USDA-FNS-UNK-0065).jpg",
+    "imageinfo": [
+     {
+      "size": 1629550,
+      "width": 3300,
+      "height": 2475,
+      "sha1": "31d3b14019aa8a3a73f821ed6d13ed9d133f2a48",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/MyPlate_gov_Cultural_Food_%2820241025-USDA-FNS-UNK-0065%29.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:MyPlate_gov_Cultural_Food_(20241025-USDA-FNS-UNK-0065).jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "USDAgov",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 154481567,
+    "ns": 6,
+    "title": "File:Naan and Chicken.jpg",
+    "imageinfo": [
+     {
+      "size": 198587,
+      "width": 960,
+      "height": 1280,
+      "sha1": "0a732d1d0cc7e9aea604871db324f29a3a848e8d",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Naan_and_Chicken.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Naan_and_Chicken.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Rajalakshmi duraikathiresan",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 154481090,
+    "ns": 6,
+    "title": "File:Naan chappathi.jpg",
+    "imageinfo": [
+     {
+      "size": 117372,
+      "width": 720,
+      "height": 1280,
+      "sha1": "4f78bb1e162aafcc9b4a2c044b01d1ffe184dd2f",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/56/Naan_chappathi.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Naan_chappathi.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "ReshmaNazeerhussain",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "naan",
+   "page": {
+    "pageid": 154416407,
+    "ns": 6,
+    "title": "File:Naan with masala.jpg",
+    "imageinfo": [
+     {
+      "size": 125935,
+      "width": 720,
+      "height": 1280,
+      "sha1": "",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Naan_with_masala.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Naan_with_masala.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "idli",
+   "page": {
+    "pageid": 154506674,
+    "ns": 6,
+    "title": "File:Idli28.jpg",
+    "imageinfo": [
+     {
+      "size": 163558,
+      "width": 960,
+      "height": 1280,
+      "sha1": "cdb0725cb48fab686cecd30860e3f91532b64a40",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Idli28.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Idli28.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Santhosh",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "idli",
+   "page": {
+    "pageid": 4775479,
+    "ns": 6,
+    "title": "File:Mangalorean Catholic Sanna Dukra mass.jpg",
+    "imageinfo": [
+     {
+      "size": 28273,
+      "width": 390,
+      "height": 452,
+      "sha1": "107e0dddef3d770e4cc45ddabefa252e8248ef1d",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Mangalorean_Catholic_Sanna_Dukra_mass.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Mangalorean_Catholic_Sanna_Dukra_mass.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Kensplanet",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "idli",
+   "page": {
+    "pageid": 4983948,
+    "ns": 6,
+    "title": "File:Sanna (Commons).jpg",
+    "imageinfo": [
+     {
+      "size": 13667,
+      "width": 390,
+      "height": 255,
+      "sha1": "e7a3a3d7945a879b182f5c8d73a5696e1354fc60",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Sanna_%28Commons%29.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sanna_(Commons).jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Kensplanet",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "jalebi",
+   "page": {
+    "pageid": 3503578,
+    "ns": 6,
+    "title": "File:Jalebi 2.jpg",
+    "imageinfo": [
+     {
+      "size": 1715603,
+      "width": 2832,
+      "height": 2128,
+      "sha1": "4567540c535544fd53fcd2bf0a380f9e9f896018",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Jalebi_2.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Jalebi_2.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Haroldandkumar at English Wikipedia",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "jalebi",
+   "page": {
+    "pageid": 2893972,
+    "ns": 6,
+    "title": "File:Jilami making1.JPG",
+    "imageinfo": [
+     {
+      "size": 2328760,
+      "width": 3488,
+      "height": 2616,
+      "sha1": "4c1883d1afac8565e7c1a1c3de183fea04380339",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/15/Jilami_making1.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Jilami_making1.JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Md.Saiful Aziz Shamseer",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       },
+       "Restrictions": {
+        "value": "personality",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "jalebi",
+   "page": {
+    "pageid": 125247457,
+    "ns": 6,
+    "title": "File:Jilebe.jpg",
+    "imageinfo": [
+     {
+      "size": 63387,
+      "width": 480,
+      "height": 992,
+      "sha1": "49a19f8d41502098f06a24158e2377b3f54a1288",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/37/Jilebe.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Jilebe.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Navyasri24",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "jalebi",
+   "page": {
+    "pageid": 12279909,
+    "ns": 6,
+    "title": "File:Jilebi.jpg",
+    "imageinfo": [
+     {
+      "size": 1257518,
+      "width": 1876,
+      "height": 1056,
+      "sha1": "3fcc975d2f14f1a2ad3c6aa8c370f1ded371ae5a",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Jilebi.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Jilebi.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Bluemangoa2z at Malayalam Wikipedia",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "jalebi",
+   "page": {
+    "pageid": 17671638,
+    "ns": 6,
+    "title": "File:World famous 'Jaleebi and Puri Bhajee' recipe of Varanasi..jpg",
+    "imageinfo": [
+     {
+      "size": 301077,
+      "width": 1120,
+      "height": 840,
+      "sha1": "b520fcbfaa5e72c0beb22c04cc792739ed410e55",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/World_famous_%27Jaleebi_and_Puri_Bhajee%27_recipe_of_Varanasi..jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:World_famous_'Jaleebi_and_Puri_Bhajee'_recipe_of_Varanasi..jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Rudolph.A.furtado",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       },
+       "Restrictions": {
+        "value": "personality",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "jalebi",
+   "page": {
+    "pageid": 5232305,
+    "ns": 6,
+    "title": "File:Zoolbia Bamieh.JPG",
+    "imageinfo": [
+     {
+      "size": 321444,
+      "width": 2560,
+      "height": 1920,
+      "sha1": "5f4c0e520e761bad8751bd645638b13e3767acd6",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/11/Zoolbia_Bamieh.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Zoolbia_Bamieh.JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Asadi",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "jalebi",
+   "page": {
+    "pageid": 99492952,
+    "ns": 6,
+    "title": "File:Zoolbia Bamieh (cropped).JPG",
+    "imageinfo": [
+     {
+      "size": 378024,
+      "width": 1221,
+      "height": 1256,
+      "sha1": "07850ff2940a78c97053eaaebf269ea382ad683e",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Zoolbia_Bamieh_%28cropped%29.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Zoolbia_Bamieh_(cropped).JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Asadi",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "gulab_jamun",
+   "page": {
+    "pageid": 87320325,
+    "ns": 6,
+    "title": "File:Golab Jamun.jpg",
+    "imageinfo": [
+     {
+      "size": 574987,
+      "width": 1129,
+      "height": 847,
+      "sha1": "48223081fe570424d9fb2b4ca64a8be79c7ba226",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Golab_Jamun.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Golab_Jamun.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Apurv013",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "gulab_jamun",
+   "page": {
+    "pageid": 15298926,
+    "ns": 6,
+    "title": "File:Gulab Jaman.JPG",
+    "imageinfo": [
+     {
+      "size": 3974298,
+      "width": 2816,
+      "height": 2112,
+      "sha1": "65ff71295b5b31781c9f13c25eec5b511d0485cd",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Gulab_Jaman.JPG",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gulab_Jaman.JPG",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Miansari66",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "gulab_jamun",
+   "page": {
+    "pageid": 190685436,
+    "ns": 6,
+    "title": "File:Gulab Jamun (half-eaten) - Worthing Indian Cafe & Bar 2026-04-27.jpg",
+    "imageinfo": [
+     {
+      "size": 6151188,
+      "width": 6144,
+      "height": 8160,
+      "sha1": "c960fac425396d7bdba6a122ec0cda5159cbc150",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/Gulab_Jamun_%28half-eaten%29_-_Worthing_Indian_Cafe_%26_Bar_2026-04-27.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gulab_Jamun_(half-eaten)_-_Worthing_Indian_Cafe_&_Bar_2026-04-27.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Andy Li",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "gulab_jamun",
+   "page": {
+    "pageid": 190685429,
+    "ns": 6,
+    "title": "File:Gulab Jamun with Ice Cream - Worthing Indian Cafe & Bar 2026-04-27.jpg",
+    "imageinfo": [
+     {
+      "size": 8730963,
+      "width": 8160,
+      "height": 6144,
+      "sha1": "a6b02d92ad327fcfc0810a1f17eb212835119090",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Gulab_Jamun_with_Ice_Cream_-_Worthing_Indian_Cafe_%26_Bar_2026-04-27.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gulab_Jamun_with_Ice_Cream_-_Worthing_Indian_Cafe_&_Bar_2026-04-27.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Andy Li",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "gulab_jamun",
+   "page": {
+    "pageid": 154182167,
+    "ns": 6,
+    "title": "File:Gulab jammun.jpg",
+    "imageinfo": [
+     {
+      "size": 41869,
+      "width": 420,
+      "height": 540,
+      "sha1": "f25ce4d8656410a0b870e265eceef050625014f8",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/15/Gulab_jammun.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gulab_jammun.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Divya Chinnasamy",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "gulab_jamun",
+   "page": {
+    "pageid": 76389207,
+    "ns": 6,
+    "title": "File:Gulab jamun avec du yaourt au restaurant La Voie Himalaya \u00e0 Lyon.jpg",
+    "imageinfo": [
+     {
+      "size": 5425834,
+      "width": 3024,
+      "height": 2728,
+      "sha1": "95c93f6ad1e6fc687641585b14247430d31ff107",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/58/Gulab_jamun_avec_du_yaourt_au_restaurant_La_Voie_Himalaya_%C3%A0_Lyon.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gulab_jamun_avec_du_yaourt_au_restaurant_La_Voie_Himalaya_\u00e0_Lyon.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Beno\u00eet Prieur",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "dosa",
+   "page": {
+    "pageid": 15651844,
+    "ns": 6,
+    "title": "File:Sada dosa.jpg",
+    "imageinfo": [
+     {
+      "size": 59090,
+      "width": 480,
+      "height": 600,
+      "sha1": "90a1978ca024bfdd89531c8c1136fc4ce2aa1213",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Sada_dosa.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sada_dosa.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Sridhar100",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "samosa",
+   "page": {
+    "pageid": 162442295,
+    "ns": 6,
+    "title": "File:Meat pie samosa and spring roll.jpg",
+    "imageinfo": [
+     {
+      "size": 3780821,
+      "width": 3120,
+      "height": 4160,
+      "sha1": "ace0675532b27f986be7f55e93528da7ed1deb82",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Meat_pie_samosa_and_spring_roll.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Meat_pie_samosa_and_spring_roll.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Aisha Yahuza",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "samosa",
+   "page": {
+    "pageid": 185479070,
+    "ns": 6,
+    "title": "File:Mushroom Fried Samosas.jpg",
+    "imageinfo": [
+     {
+      "size": 2111322,
+      "width": 3456,
+      "height": 2304,
+      "sha1": "716248052cbcd0e22be9db9cbc441b3e9d24154f",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Mushroom_Fried_Samosas.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Mushroom_Fried_Samosas.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Namwanje Sauyah",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "samosa",
+   "page": {
+    "pageid": 337542,
+    "ns": 6,
+    "title": "File:Samosa half-eaten.jpg",
+    "imageinfo": [
+     {
+      "size": 178979,
+      "width": 828,
+      "height": 948,
+      "sha1": "bf81078491a367e89878ae866beb490e46f01c29",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Samosa_half-eaten.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Samosa_half-eaten.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "No machine-readable author provided. Ranveig assumed (based on copyright claims).",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "samosa",
+   "page": {
+    "pageid": 154516993,
+    "ns": 6,
+    "title": "File:Samosa with sweet chutney.jpg",
+    "imageinfo": [
+     {
+      "size": 129187,
+      "width": 957,
+      "height": 1280,
+      "sha1": "2768ab07b1d3500e22743d09b55bd3cdea86c638",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/95/Samosa_with_sweet_chutney.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Samosa_with_sweet_chutney.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Swathi sri srinivasa raghavan",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "class": "samosa",
+   "page": {
+    "pageid": 185397324,
+    "ns": 6,
+    "title": "File:Samosas (mini), sauce, and salad - San Francisco, CA.jpg",
+    "imageinfo": [
+     {
+      "size": 2740334,
+      "width": 2268,
+      "height": 3748,
+      "sha1": "3e6813ffbe009562544e9cd02a89e6d10c8ff99e",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Samosas_%28mini%29%2C_sauce%2C_and_salad_-_San_Francisco%2C_CA.jpg",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Samosas_(mini),_sauce,_and_salad_-_San_Francisco,_CA.jpg",
+      "mime": "image/jpeg",
+      "extmetadata": {
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "Daderot",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page"
+       }
+      }
+     }
+    ]
+   }
+  }
+ ]
+}
