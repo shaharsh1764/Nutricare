@@ -1,0 +1,1968 @@
+{
+  "version": "3.0-proposed",
+  "created": "2026-11-07",
+  "status": "PROPOSAL - not approved, not harvested",
+  "target_classes": 100,
+  "class_count": 100,
+  "bucket_counts": {
+    "A_preliminary_threshold_met": 17,
+    "C_marginal": 41,
+    "B_possible": 39,
+    "D_unmeasured": 3
+  },
+  "verified_total_direct_files": 8451,
+  "honest_summary": {
+    "A_ready_ge150": 17,
+    "C_marginal_lt50": 41,
+    "D_unmeasured": 3,
+    "classes_at_or_above_200": 9,
+    "answer": "100 classes at 200-500 images each is NOT established as supportable. 17 proposed classes meet a preliminary 150-file CATEGORY-COUNT threshold; this does not establish they contain 150 unique, usable, correctly labelled, appropriately licensed images. 56 reach 50 category files; 9 reach 200. All figures are sums of direct category-file counts excluding subcategories, they are non-additive because categories overlap, and none is licence-verified. 40-60 classes is a preliminary development target, not an established result: feasibility depends on image-level licence verification, image quality review, deduplication and subcategory expansion, none of which has been performed. Subcategory expansion is an unmeasured opportunity, not confirmed volume.",
+    "B_possible_50_149": 39
+  },
+  "source": {
+    "primary": "Wikimedia Commons",
+    "access": "API reachable via out-of-sandbox tooling; image hosts (upload.wikimedia.org) BLOCKED from sandbox",
+    "licence_model": "per-file; allowlist CC0/PD/CC-BY/CC-BY-SA only",
+    "share_alike_caveat": "CC BY-SA is share-alike on the image; effect on trained model weights is legally unsettled"
+  },
+  "known_gaps": [
+    "per-file licence distribution not enumerated",
+    "duplicate rate not measured",
+    "subcategory file counts not measured",
+    "image resolution not systematically measured",
+    "images not downloadable from the sandbox - the biggest unknown"
+  ],
+  "recreated_note": "This file and the research report were lost when the previous branch was closed; they were never committed. Recreated from the measured figures in this session. The Commons category counts are the same measurements; nothing was invented.",
+  "classes": [
+    {
+      "slug": "biryani",
+      "canonical": "Biryani",
+      "aliases": [
+        "biriyani",
+        "beriyani"
+      ],
+      "category": "rice",
+      "commons_categories": [
+        "Biryani",
+        "Chicken biryani",
+        "Hyderabadi biryani"
+      ],
+      "verified_direct_files": 468,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "pulao",
+      "canonical": "Pulao / Pilaf",
+      "aliases": [
+        "pilaf",
+        "pulav"
+      ],
+      "category": "rice",
+      "commons_categories": [
+        "Pulao"
+      ],
+      "verified_direct_files": 20,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "pongal",
+      "canonical": "Pongal",
+      "aliases": [
+        "khara pongal",
+        "ven pongal"
+      ],
+      "category": "rice",
+      "commons_categories": [
+        "Pongal"
+      ],
+      "verified_direct_files": 151,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "lemon_rice",
+      "canonical": "Lemon Rice",
+      "aliases": [
+        "chitranna",
+        "nimbu rice"
+      ],
+      "category": "rice",
+      "commons_categories": [
+        "Lemon rice"
+      ],
+      "verified_direct_files": 15,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "curd_rice",
+      "canonical": "Curd Rice",
+      "aliases": [
+        "thayir sadam",
+        "dahi chawal"
+      ],
+      "category": "rice",
+      "commons_categories": [
+        "Curd rice"
+      ],
+      "verified_direct_files": 49,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "fried_rice",
+      "canonical": "Fried Rice",
+      "aliases": [
+        "veg fried rice"
+      ],
+      "category": "rice",
+      "commons_categories": [
+        "Fried rice"
+      ],
+      "verified_direct_files": 115,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "roti",
+      "canonical": "Roti / Chapati",
+      "aliases": [
+        "chapati",
+        "chapatti",
+        "phulka"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Roti"
+      ],
+      "verified_direct_files": 393,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "naan",
+      "canonical": "Naan",
+      "aliases": [
+        "nan",
+        "butter naan"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Naan"
+      ],
+      "verified_direct_files": 230,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "paratha",
+      "canonical": "Paratha",
+      "aliases": [
+        "parantha",
+        "porota"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Paratha"
+      ],
+      "verified_direct_files": 44,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "aloo_paratha",
+      "canonical": "Aloo Paratha",
+      "aliases": [
+        "alu paratha"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Aloo paratha"
+      ],
+      "verified_direct_files": 97,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "puri",
+      "canonical": "Puri / Poori",
+      "aliases": [
+        "poori"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Puri"
+      ],
+      "verified_direct_files": 141,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "bhatura",
+      "canonical": "Bhatura",
+      "aliases": [
+        "bature",
+        "bhature"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Bhatura"
+      ],
+      "verified_direct_files": 10,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "kulcha",
+      "canonical": "Kulcha",
+      "aliases": [
+        "amritsari kulcha"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Kulcha"
+      ],
+      "verified_direct_files": 23,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "tandoori_roti",
+      "canonical": "Tandoori Roti",
+      "aliases": [],
+      "category": "bread",
+      "commons_categories": [
+        "Tandoori roti"
+      ],
+      "verified_direct_files": 47,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "rumali_roti",
+      "canonical": "Rumali Roti",
+      "aliases": [
+        "roomali roti"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Rumali roti"
+      ],
+      "verified_direct_files": 17,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "thepla",
+      "canonical": "Thepla",
+      "aliases": [],
+      "category": "bread",
+      "commons_categories": [
+        "Thepla"
+      ],
+      "verified_direct_files": 18,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "parotta",
+      "canonical": "Parotta",
+      "aliases": [
+        "barotta",
+        "kerala parotta"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Parotta"
+      ],
+      "verified_direct_files": 134,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "appam",
+      "canonical": "Appam",
+      "aliases": [
+        "palappam"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Appam"
+      ],
+      "verified_direct_files": 105,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "idiyappam",
+      "canonical": "Idiyappam",
+      "aliases": [
+        "string hoppers",
+        "noolappam"
+      ],
+      "category": "bread",
+      "commons_categories": [
+        "Idiyappam"
+      ],
+      "verified_direct_files": 36,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "idli",
+      "canonical": "Idli",
+      "aliases": [
+        "idly",
+        "iddli"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Idli"
+      ],
+      "verified_direct_files": 248,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "dosa",
+      "canonical": "Dosa (plain)",
+      "aliases": [
+        "dose",
+        "dosai"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Dosa"
+      ],
+      "verified_direct_files": 73,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "masala_dosa",
+      "canonical": "Masala Dosa",
+      "aliases": [
+        "masala dose"
+      ],
+      "category": "breakfast",
+      "commons_categories": [],
+      "verified_direct_files": 0,
+      "has_subcategories": false,
+      "bucket": "D_unmeasured",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "rava_dosa",
+      "canonical": "Rava Dosa",
+      "aliases": [
+        "semolina dosa"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Rava dosa"
+      ],
+      "verified_direct_files": 31,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "uttapam",
+      "canonical": "Uttapam",
+      "aliases": [
+        "uthappam",
+        "uttappa"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Uttapam"
+      ],
+      "verified_direct_files": 61,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "upma",
+      "canonical": "Upma",
+      "aliases": [
+        "uppuma"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Upma"
+      ],
+      "verified_direct_files": 49,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "poha",
+      "canonical": "Poha",
+      "aliases": [
+        "pauwa",
+        "aval"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Poha"
+      ],
+      "verified_direct_files": 116,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "puttu",
+      "canonical": "Puttu",
+      "aliases": [
+        "pittu"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Puttu"
+      ],
+      "verified_direct_files": 74,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "pesarattu",
+      "canonical": "Pesarattu",
+      "aliases": [
+        "pesara dosa"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Pesarattu"
+      ],
+      "verified_direct_files": 14,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "vada",
+      "canonical": "Vada",
+      "aliases": [
+        "medu vada",
+        "vadai",
+        "urad vada"
+      ],
+      "category": "breakfast",
+      "commons_categories": [
+        "Vada"
+      ],
+      "verified_direct_files": 0,
+      "has_subcategories": false,
+      "bucket": "D_unmeasured",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "dal",
+      "canonical": "Dal",
+      "aliases": [
+        "daal",
+        "dhal"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Dal"
+      ],
+      "verified_direct_files": 164,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "dal_makhani",
+      "canonical": "Dal Makhani",
+      "aliases": [
+        "makhani dal"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Dal makhani"
+      ],
+      "verified_direct_files": 30,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "dal_tadka",
+      "canonical": "Dal Tadka",
+      "aliases": [
+        "dal fry"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Dal tadka"
+      ],
+      "verified_direct_files": 26,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "rajma",
+      "canonical": "Rajma",
+      "aliases": [
+        "kidney bean curry",
+        "rajma curry"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Rajma"
+      ],
+      "verified_direct_files": 32,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chana_masala",
+      "canonical": "Chana Masala",
+      "aliases": [
+        "chole"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Chana masala"
+      ],
+      "verified_direct_files": 71,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "sambar",
+      "canonical": "Sambar",
+      "aliases": [
+        "sambhar"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Sambar"
+      ],
+      "verified_direct_files": 181,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "rasam",
+      "canonical": "Rasam",
+      "aliases": [
+        "saaru",
+        "chaaru"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Rasam"
+      ],
+      "verified_direct_files": 43,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "moong_dal",
+      "canonical": "Moong Dal",
+      "aliases": [
+        "mung dal"
+      ],
+      "category": "dal",
+      "commons_categories": [
+        "Moong dal"
+      ],
+      "verified_direct_files": 21,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "palak_paneer",
+      "canonical": "Palak Paneer",
+      "aliases": [
+        "saag paneer"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Palak paneer"
+      ],
+      "verified_direct_files": 45,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "shahi_paneer",
+      "canonical": "Shahi Paneer",
+      "aliases": [
+        "shahi panir"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Shahi paneer"
+      ],
+      "verified_direct_files": 32,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "kadai_paneer",
+      "canonical": "Kadai Paneer",
+      "aliases": [
+        "karahi paneer"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Kadai paneer"
+      ],
+      "verified_direct_files": 30,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "paneer_tikka",
+      "canonical": "Paneer Tikka",
+      "aliases": [],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Paneer tikka"
+      ],
+      "verified_direct_files": 74,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "aloo_gobi",
+      "canonical": "Aloo Gobi",
+      "aliases": [
+        "aloo gobhi"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Aloo gobi"
+      ],
+      "verified_direct_files": 56,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "bhindi_masala",
+      "canonical": "Bhindi Masala",
+      "aliases": [
+        "okra masala"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Bhindi masala"
+      ],
+      "verified_direct_files": 47,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "baingan_bharta",
+      "canonical": "Baingan Bharta",
+      "aliases": [
+        "brinjal bharta"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Baingan bharta"
+      ],
+      "verified_direct_files": 33,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "malai_kofta",
+      "canonical": "Malai Kofta",
+      "aliases": [
+        "kofta curry"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Malai kofta"
+      ],
+      "verified_direct_files": 12,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "saag",
+      "canonical": "Saag",
+      "aliases": [
+        "sarson ka saag"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [
+        "Saag"
+      ],
+      "verified_direct_files": 20,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "matar_paneer",
+      "canonical": "Matar Paneer",
+      "aliases": [
+        "mutter paneer"
+      ],
+      "category": "veg_curry",
+      "commons_categories": [],
+      "verified_direct_files": 0,
+      "has_subcategories": false,
+      "bucket": "D_unmeasured",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chicken_curry",
+      "canonical": "Chicken Curry",
+      "aliases": [
+        "murgh curry"
+      ],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Chicken curries"
+      ],
+      "verified_direct_files": 143,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chicken_tikka",
+      "canonical": "Chicken Tikka",
+      "aliases": [],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Chicken tikka"
+      ],
+      "verified_direct_files": 56,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chicken_tikka_masala",
+      "canonical": "Chicken Tikka Masala",
+      "aliases": [],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Chicken tikka masala"
+      ],
+      "verified_direct_files": 52,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "butter_chicken",
+      "canonical": "Butter Chicken",
+      "aliases": [
+        "murgh makhani"
+      ],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Butter chicken"
+      ],
+      "verified_direct_files": 74,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "tandoori_chicken",
+      "canonical": "Tandoori Chicken",
+      "aliases": [],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Tandoori chicken"
+      ],
+      "verified_direct_files": 161,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "chicken_65",
+      "canonical": "Chicken 65",
+      "aliases": [],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Chicken 65"
+      ],
+      "verified_direct_files": 43,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "mutton_curry",
+      "canonical": "Mutton Curry",
+      "aliases": [
+        "lamb curry",
+        "goat curry"
+      ],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Mutton curry"
+      ],
+      "verified_direct_files": 55,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "nihari",
+      "canonical": "Nihari",
+      "aliases": [],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Nihari"
+      ],
+      "verified_direct_files": 17,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "haleem",
+      "canonical": "Haleem",
+      "aliases": [
+        "harees"
+      ],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Haleem"
+      ],
+      "verified_direct_files": 48,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "fish_curry",
+      "canonical": "Fish Curry",
+      "aliases": [
+        "maacher jhol"
+      ],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Fish curries"
+      ],
+      "verified_direct_files": 50,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "fried_fish",
+      "canonical": "Fried Fish",
+      "aliases": [
+        "fish fry"
+      ],
+      "category": "nonveg_curry",
+      "commons_categories": [
+        "Fried fish"
+      ],
+      "verified_direct_files": 163,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "samosa",
+      "canonical": "Samosa",
+      "aliases": [
+        "samosas",
+        "singara"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Samosas",
+        "Samosas of India"
+      ],
+      "verified_direct_files": 273,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "pakora",
+      "canonical": "Pakora / Bhajji",
+      "aliases": [
+        "pakoda",
+        "pakode",
+        "bhaji",
+        "bhajji",
+        "beguni"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Pakora",
+        "Bhaji"
+      ],
+      "verified_direct_files": 166,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "vada_pav",
+      "canonical": "Vada Pav",
+      "aliases": [
+        "wada pav"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Vada pav"
+      ],
+      "verified_direct_files": 71,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "panipuri",
+      "canonical": "Pani Puri",
+      "aliases": [
+        "pani puri",
+        "gol gappa",
+        "phuchka"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Panipuri"
+      ],
+      "verified_direct_files": 221,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "bhelpuri",
+      "canonical": "Bhel Puri",
+      "aliases": [
+        "jhal muri"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Bhelpuri"
+      ],
+      "verified_direct_files": 87,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chaat",
+      "canonical": "Chaat",
+      "aliases": [
+        "chat"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Chaat"
+      ],
+      "verified_direct_files": 148,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "aloo_tikki",
+      "canonical": "Aloo Tikki",
+      "aliases": [
+        "tikki"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Aloo tikki"
+      ],
+      "verified_direct_files": 59,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chole_bhature",
+      "canonical": "Chole Bhature",
+      "aliases": [],
+      "category": "street_food",
+      "commons_categories": [
+        "Chole bhature"
+      ],
+      "verified_direct_files": 81,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "kachori",
+      "canonical": "Kachori",
+      "aliases": [
+        "katchori"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Kachori"
+      ],
+      "verified_direct_files": 51,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "papri_chaat",
+      "canonical": "Papri Chaat",
+      "aliases": [
+        "papdi chaat"
+      ],
+      "category": "street_food",
+      "commons_categories": [
+        "Papri chaat"
+      ],
+      "verified_direct_files": 41,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "dhokla",
+      "canonical": "Dhokla",
+      "aliases": [
+        "khaman"
+      ],
+      "category": "snack",
+      "commons_categories": [
+        "Dhokla"
+      ],
+      "verified_direct_files": 75,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "momos",
+      "canonical": "Momos",
+      "aliases": [
+        "momo"
+      ],
+      "category": "snack",
+      "commons_categories": [
+        "Momos"
+      ],
+      "verified_direct_files": 103,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chow_mein",
+      "canonical": "Chow Mein",
+      "aliases": [
+        "chowmein"
+      ],
+      "category": "snack",
+      "commons_categories": [
+        "Chow mein"
+      ],
+      "verified_direct_files": 70,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "murukku",
+      "canonical": "Murukku",
+      "aliases": [
+        "chakralu"
+      ],
+      "category": "snack",
+      "commons_categories": [
+        "Murukku"
+      ],
+      "verified_direct_files": 66,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chakli",
+      "canonical": "Chakli",
+      "aliases": [
+        "chakkuli"
+      ],
+      "category": "snack",
+      "commons_categories": [
+        "Chakli"
+      ],
+      "verified_direct_files": 27,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "cutlet",
+      "canonical": "Cutlet",
+      "aliases": [
+        "aloo cutlet"
+      ],
+      "category": "snack",
+      "commons_categories": [
+        "Cutlets of India"
+      ],
+      "verified_direct_files": 55,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "jalebi",
+      "canonical": "Jalebi",
+      "aliases": [
+        "jilebi",
+        "jilapi"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Jalebi"
+      ],
+      "verified_direct_files": 237,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "imarti",
+      "canonical": "Imarti",
+      "aliases": [
+        "amriti",
+        "jhangiri"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Imarti"
+      ],
+      "verified_direct_files": 39,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "gulab_jamun",
+      "canonical": "Gulab Jamun",
+      "aliases": [
+        "gulab jamoon"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Gulab jamun"
+      ],
+      "verified_direct_files": 216,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "rasgulla",
+      "canonical": "Rasgulla",
+      "aliases": [
+        "rosogolla"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Rasgulla"
+      ],
+      "verified_direct_files": 54,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "rasmalai",
+      "canonical": "Rasmalai",
+      "aliases": [
+        "ras malai"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Rasmalai"
+      ],
+      "verified_direct_files": 59,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chomchom",
+      "canonical": "Chomchom",
+      "aliases": [
+        "cham cham"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Chomchom"
+      ],
+      "verified_direct_files": 26,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "barfi",
+      "canonical": "Barfi",
+      "aliases": [
+        "burfi"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Barfi"
+      ],
+      "verified_direct_files": 65,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "laddu",
+      "canonical": "Laddu",
+      "aliases": [
+        "laddoo",
+        "ladoo"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Laddu"
+      ],
+      "verified_direct_files": 164,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "halwa",
+      "canonical": "Halwa",
+      "aliases": [
+        "halva"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Halva"
+      ],
+      "verified_direct_files": 94,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "gajar_ka_halwa",
+      "canonical": "Gajar Ka Halwa",
+      "aliases": [
+        "carrot halwa",
+        "gajrela"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Gajar ka halwa"
+      ],
+      "verified_direct_files": 77,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "kheer",
+      "canonical": "Kheer",
+      "aliases": [
+        "payasam",
+        "payesh",
+        "rice pudding"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Kheer",
+        "Payasam"
+      ],
+      "verified_direct_files": 182,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "phirni",
+      "canonical": "Phirni",
+      "aliases": [
+        "firni"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Phirni"
+      ],
+      "verified_direct_files": 33,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "rabri",
+      "canonical": "Rabri",
+      "aliases": [
+        "rabdi"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Rabri"
+      ],
+      "verified_direct_files": 30,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "kulfi",
+      "canonical": "Kulfi",
+      "aliases": [
+        "qulfi"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Kulfi"
+      ],
+      "verified_direct_files": 76,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "modak",
+      "canonical": "Modak",
+      "aliases": [
+        "modakam"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Modak"
+      ],
+      "verified_direct_files": 35,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "peda",
+      "canonical": "Peda",
+      "aliases": [
+        "penda"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Peda"
+      ],
+      "verified_direct_files": 47,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "sandesh",
+      "canonical": "Sandesh",
+      "aliases": [
+        "sondesh"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Sandesh"
+      ],
+      "verified_direct_files": 28,
+      "has_subcategories": true,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "mysore_pak",
+      "canonical": "Mysore Pak",
+      "aliases": [
+        "mysurpa"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Mysore pak"
+      ],
+      "verified_direct_files": 33,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "malpua",
+      "canonical": "Malpua",
+      "aliases": [],
+      "category": "sweet",
+      "commons_categories": [
+        "Malpua"
+      ],
+      "verified_direct_files": 75,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "shrikhand",
+      "canonical": "Shrikhand",
+      "aliases": [
+        "srikhand"
+      ],
+      "category": "sweet",
+      "commons_categories": [
+        "Shrikhand"
+      ],
+      "verified_direct_files": 22,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "lassi",
+      "canonical": "Lassi",
+      "aliases": [
+        "sweet lassi"
+      ],
+      "category": "drink",
+      "commons_categories": [
+        "Lassi"
+      ],
+      "verified_direct_files": 121,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "masala_chai",
+      "canonical": "Masala Chai",
+      "aliases": [
+        "chai"
+      ],
+      "category": "drink",
+      "commons_categories": [
+        "Masala chai"
+      ],
+      "verified_direct_files": 48,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "filter_coffee",
+      "canonical": "Indian Filter Coffee",
+      "aliases": [
+        "filter kaapi"
+      ],
+      "category": "drink",
+      "commons_categories": [
+        "Indian filter coffee"
+      ],
+      "verified_direct_files": 36,
+      "has_subcategories": false,
+      "bucket": "C_marginal",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "falooda",
+      "canonical": "Falooda",
+      "aliases": [
+        "faluda"
+      ],
+      "category": "drink",
+      "commons_categories": [
+        "Falooda"
+      ],
+      "verified_direct_files": 74,
+      "has_subcategories": false,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered.",
+      "meets_preliminary_150_file_threshold": false
+    },
+    {
+      "slug": "chutney",
+      "canonical": "Chutney",
+      "aliases": [
+        "chatni"
+      ],
+      "category": "accompaniment",
+      "commons_categories": [
+        "Chutney"
+      ],
+      "verified_direct_files": 298,
+      "has_subcategories": true,
+      "bucket": "A_preliminary_threshold_met",
+      "sufficient_for_200_floor": true,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": true
+    },
+    {
+      "slug": "raita",
+      "canonical": "Raita",
+      "aliases": [
+        "raitha"
+      ],
+      "category": "accompaniment",
+      "commons_categories": [
+        "Raita"
+      ],
+      "verified_direct_files": 130,
+      "has_subcategories": true,
+      "bucket": "B_possible",
+      "sufficient_for_200_floor": false,
+      "licence_verified": false,
+      "licence_note": "Not enumerated per file. Commons requires a free licence, but the per-file licence must be harvested and filtered before use.",
+      "count_note": "Sum of direct category-file counts, subcategories EXCLUDED. Not a count of unique images: categories overlap and the same image may be counted more than once. Not licence- or quality-filtered. Subcategory contents unmeasured - an open question, not confirmed volume.",
+      "meets_preliminary_150_file_threshold": false
+    }
+  ],
+  "bucket_definitions": {
+    "A_preliminary_threshold_met": "≥150 direct category files. Meets a preliminary count threshold only; NOT training-ready and NOT verified as usable.",
+    "B_possible": "50–149 direct category files. Possible but likely thin for a three-way split.",
+    "C_marginal": "1–49 direct category files. Too few to plan around.",
+    "D_unmeasured": "Commons category not identified/verified; count is 0 and means unknown, not absent."
+  },
+  "count_semantics": "verified_direct_files = number of files Commons reports directly in the category (API prop=categoryinfo). Subcategory contents are excluded. Categories overlap, so these values are NOT additive and the corpus total is NOT a unique-image count. These are counts of file pages, not of verified usable photographs, and they are not licence-filtered.",
+  "unverified_estimates": [
+    "~50 classes retaining ≥100 images is a projection, not a measurement.",
+    "40-60 classes being achievable is a preliminary target contingent on four unperformed checks.",
+    "10-20% additional loss from dedupe + contamination filtering is assumed, not measured on Commons.",
+    "The only measured dedupe loss (13.15%, 4000->3474) comes from the unrelated 80-class V2 audit set."
+  ],
+  "licence_verified_scope": "false for all 100 classes: per-file licence distribution not enumerated."
+}
