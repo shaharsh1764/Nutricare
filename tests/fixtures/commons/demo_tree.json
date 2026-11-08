@@ -1,0 +1,324 @@
+{
+  "description": "Recorded-shape Commons responses demonstrating the auditor offline. Not a real recording of live Commons data.",
+  "responses": [
+    {
+      "match": {
+        "list": "categorymembers",
+        "cmtitle": "Category:Jalebi",
+        "cmcontinue": null
+      },
+      "response": {
+        "continue": {
+          "cmcontinue": "p2",
+          "continue": "||"
+        },
+        "query": {
+          "categorymembers": [
+            {
+              "title": "Jalebi of India",
+              "ns": 14
+            },
+            {
+              "title": "File:Jalebi 1.jpg",
+              "ns": 6,
+              "pageid": 1
+            },
+            {
+              "title": "File:Jalebi 2.jpg",
+              "ns": 6,
+              "pageid": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "match": {
+        "list": "categorymembers",
+        "cmtitle": "Category:Jalebi",
+        "cmcontinue": "p2"
+      },
+      "response": {
+        "query": {
+          "categorymembers": [
+            {
+              "title": "File:Shared sweet.jpg",
+              "ns": 6,
+              "pageid": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "match": {
+        "list": "categorymembers",
+        "cmtitle": "Category:Jalebi of India"
+      },
+      "response": {
+        "query": {
+          "categorymembers": [
+            {
+              "title": "File:Jalebi 3.jpg",
+              "ns": 6,
+              "pageid": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "match": {
+        "list": "categorymembers",
+        "cmtitle": "Category:Gulab jamun"
+      },
+      "response": {
+        "query": {
+          "categorymembers": [
+            {
+              "title": "File:Gulab 1.jpg",
+              "ns": 6,
+              "pageid": 1
+            },
+            {
+              "title": "File:Gulab 2.jpg",
+              "ns": 6,
+              "pageid": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "match": {
+        "list": "categorymembers",
+        "cmtitle": "Category:Rasgulla"
+      },
+      "response": {
+        "query": {
+          "categorymembers": []
+        }
+      }
+    },
+    {
+      "match": {
+        "prop": "categoryinfo"
+      },
+      "filter_pages": true,
+      "response": {
+        "query": {
+          "pages": [
+            {
+              "title": "Category:Jalebi",
+              "ns": 14,
+              "categoryinfo": {
+                "files": 3,
+                "subcats": 1
+              }
+            },
+            {
+              "title": "Category:Jalebi of India",
+              "ns": 14,
+              "categoryinfo": {
+                "files": 1,
+                "subcats": 0
+              }
+            },
+            {
+              "title": "Category:Gulab jamun",
+              "ns": 14,
+              "categoryinfo": {
+                "files": 2,
+                "subcats": 0
+              }
+            },
+            {
+              "title": "Category:Rasgulla",
+              "missing": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "match": {
+        "prop": "imageinfo"
+      },
+      "filter_pages": true,
+      "response": {
+        "query": {
+          "pages": [
+            {
+              "pageid": 1,
+              "title": "File:Jalebi 1.jpg",
+              "ns": 6,
+              "imageinfo": [
+                {
+                  "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/Jalebi 1.jpg",
+                  "width": 1600,
+                  "height": 1200,
+                  "sha1": "sha1",
+                  "mime": "image/jpeg",
+                  "mediatype": "BITMAP",
+                  "size": 980000,
+                  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Jalebi_1.jpg",
+                  "extmetadata": {
+                    "LicenseShortName": {
+                      "value": "CC BY-SA 4.0"
+                    },
+                    "AttributionRequired": {
+                      "value": "true"
+                    },
+                    "Artist": {
+                      "value": "<a href='#'>A Photographer</a>"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "pageid": 2,
+              "title": "File:Jalebi 2.jpg",
+              "ns": 6,
+              "imageinfo": [
+                {
+                  "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/Jalebi 2.jpg",
+                  "width": 1600,
+                  "height": 1200,
+                  "sha1": "sha2",
+                  "mime": "image/jpeg",
+                  "mediatype": "BITMAP",
+                  "size": 980000,
+                  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Jalebi_2.jpg",
+                  "extmetadata": {
+                    "LicenseShortName": {
+                      "value": "CC BY-NC 4.0"
+                    },
+                    "AttributionRequired": {
+                      "value": "true"
+                    },
+                    "Artist": {
+                      "value": "<a href='#'>A Photographer</a>"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "pageid": 3,
+              "title": "File:Shared sweet.jpg",
+              "ns": 6,
+              "imageinfo": [
+                {
+                  "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/Shared sweet.jpg",
+                  "width": 1600,
+                  "height": 1200,
+                  "sha1": "DUPSHA",
+                  "mime": "image/jpeg",
+                  "mediatype": "BITMAP",
+                  "size": 980000,
+                  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Shared_sweet.jpg",
+                  "extmetadata": {
+                    "LicenseShortName": {
+                      "value": "CC0"
+                    },
+                    "AttributionRequired": {
+                      "value": "true"
+                    },
+                    "Artist": {
+                      "value": "<a href='#'>A Photographer</a>"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "pageid": 4,
+              "title": "File:Jalebi 3.jpg",
+              "ns": 6,
+              "imageinfo": [
+                {
+                  "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/Jalebi 3.jpg",
+                  "width": 1600,
+                  "height": 1200,
+                  "sha1": "sha4",
+                  "mime": "image/jpeg",
+                  "mediatype": "BITMAP",
+                  "size": 980000,
+                  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Jalebi_3.jpg",
+                  "extmetadata": {
+                    "LicenseShortName": {
+                      "value": "CC BY 4.0"
+                    },
+                    "AttributionRequired": {
+                      "value": "true"
+                    },
+                    "Artist": {
+                      "value": "<a href='#'>A Photographer</a>"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "pageid": 5,
+              "title": "File:Gulab 1.jpg",
+              "ns": 6,
+              "imageinfo": [
+                {
+                  "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/Gulab 1.jpg",
+                  "width": 1600,
+                  "height": 1200,
+                  "sha1": "DUPSHA",
+                  "mime": "image/jpeg",
+                  "mediatype": "BITMAP",
+                  "size": 980000,
+                  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gulab_1.jpg",
+                  "extmetadata": {
+                    "LicenseShortName": {
+                      "value": "CC0"
+                    },
+                    "AttributionRequired": {
+                      "value": "true"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "pageid": 6,
+              "title": "File:Gulab 2.jpg",
+              "ns": 6,
+              "imageinfo": [
+                {
+                  "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/Gulab 2.jpg",
+                  "width": 1600,
+                  "height": 1200,
+                  "sha1": "sha6",
+                  "mime": "image/jpeg",
+                  "mediatype": "BITMAP",
+                  "size": 980000,
+                  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gulab_2.jpg",
+                  "extmetadata": {
+                    "LicenseShortName": {
+                      "value": ""
+                    },
+                    "AttributionRequired": {
+                      "value": "true"
+                    },
+                    "Artist": {
+                      "value": "<a href='#'>A Photographer</a>"
+                    },
+                    "Permission": {
+                      "value": "see discussion"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
