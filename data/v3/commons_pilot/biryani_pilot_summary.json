@@ -1,0 +1,63 @@
+{
+ "class_slug": "biryani",
+ "class_canonical": "Biryani",
+ "taxonomy_categories": [
+  "Biryani",
+  "Chicken biryani",
+  "Hyderabadi biryani"
+ ],
+ "measured": {
+  "categories_captured_per_file": [
+   "Hyderabadi chicken biryani",
+   "Mutton biryani"
+  ],
+  "raw_rows_across_captured_categories": 93,
+  "unique_commons_files": 93,
+  "unique_pageids": 93,
+  "unique_sha1_values": 93,
+  "files_in_multiple_categories": 0,
+  "exact_sha1_duplicate_groups": 0,
+  "exact_sha1_duplicate_files": 0,
+  "duplicate_normalized_title_groups": 4,
+  "licence_distribution": {
+   "CC_BY_SA": 89,
+   "CC_BY": 2,
+   "CC0_PD": 2
+  },
+  "preliminarily_acceptable": 93,
+  "unknown_or_unsuitable": 0,
+  "metadata_gaps": {},
+  "count_potential_by_unique_files": "limited",
+  "count_potential_by_acceptable_licence": "limited"
+ },
+ "per_category": [
+  {
+   "category": "Hyderabadi chicken biryani",
+   "raw_rows_returned": 23,
+   "unique_files_in_category": 23,
+   "files_acceptable_licence": 23,
+   "files_in_multiple_categories": 0,
+   "count_potential": "insufficient"
+  },
+  {
+   "category": "Mutton biryani",
+   "raw_rows_returned": 70,
+   "unique_files_in_category": 70,
+   "files_acceptable_licence": 70,
+   "files_in_multiple_categories": 0,
+   "count_potential": "limited"
+  }
+ ],
+ "duplicate_groups_sha1": [],
+ "multi_category_files": [],
+ "not_determined": [
+  "image relevance to the labelled dish",
+  "visual quality, framing, resolution adequacy",
+  "perceptual / near-duplicate rate (needs image bytes)",
+  "label correctness and class separability",
+  "whether any file is legally cleared for redistribution",
+  "categories beyond those captured here (the full biryani tree is larger)"
+ ],
+ "training_ready": false,
+ "training_ready_reason": "count and licence screening only; no relevance, quality, duplicate or label review performed"
+}

@@ -1,0 +1,266 @@
+{
+ "_provenance": {
+  "retrieved_utc": "2026-11-05",
+  "method": "MediaWiki action API (prop=categoryinfo) via out-of-sandbox documented HTTP fetch",
+  "endpoint": "https://commons.wikimedia.org/w/api.php",
+  "note": "Each 'direct_files' value is the API's categoryinfo.files for that category, measured individually in this session. These are CATEGORY-FILE COUNTS, not unique images: categories overlap and subcategory contents are counted separately.",
+  "taxonomy_roots": [
+   "Biryani",
+   "Chicken biryani",
+   "Hyderabadi biryani"
+  ],
+  "subcategory_listings_verified": [
+   {
+    "parent": "Biryani",
+    "count": 19,
+    "via": "list=categorymembers&cmtype=subcat"
+   },
+   {
+    "parent": "Chicken biryani",
+    "count": 4,
+    "via": "list=categorymembers&cmtype=subcat"
+   },
+   {
+    "parent": "Hyderabadi biryani",
+    "count": 4,
+    "via": "list=categorymembers&cmtype=subcat"
+   }
+  ],
+  "coverage_caveat": "This tree is depth-2 from the three taxonomy roots. Deeper descendants (e.g. subcategories of 'Biryani by location', 'Mutton biryani', 'Vegetarian biryani', 'Chicken Mandi in India') were NOT enumerated."
+ },
+ "categories": [
+  {
+   "category": "Biryani",
+   "commons_pageid": 10954839,
+   "direct_files": 207,
+   "subcats": 19,
+   "depth": 0,
+   "parent": null
+  },
+  {
+   "category": "Chicken biryani",
+   "commons_pageid": 20191062,
+   "direct_files": 199,
+   "subcats": 4,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Hyderabadi biryani",
+   "commons_pageid": 40701595,
+   "direct_files": 62,
+   "subcats": 4,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Aloo biryani",
+   "commons_pageid": 26539133,
+   "direct_files": 2,
+   "subcats": 1,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Beef biryani",
+   "commons_pageid": 60975413,
+   "direct_files": 15,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Chatti biryani",
+   "commons_pageid": 162826393,
+   "direct_files": 2,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Dan bauk",
+   "commons_pageid": 143579063,
+   "direct_files": 4,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Dum biryani",
+   "commons_pageid": 125493586,
+   "direct_files": 33,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Egg biryani",
+   "commons_pageid": 126522890,
+   "direct_files": 38,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Fish biryani",
+   "commons_pageid": 60975423,
+   "direct_files": 10,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Kacchi biryani",
+   "commons_pageid": 89358152,
+   "direct_files": 36,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Khao mok",
+   "commons_pageid": 33799534,
+   "direct_files": 8,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Lahori biryani",
+   "commons_pageid": 199393832,
+   "direct_files": 4,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Matka biryani",
+   "commons_pageid": 127784320,
+   "direct_files": 3,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Mushroom biryani",
+   "commons_pageid": 177674187,
+   "direct_files": 8,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Mutton biryani",
+   "commons_pageid": 60975361,
+   "direct_files": 70,
+   "subcats": 2,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Prawn biryani",
+   "commons_pageid": 143998730,
+   "direct_files": 8,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Turkey biryani",
+   "commons_pageid": 56776736,
+   "direct_files": 1,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Vegetarian biryani",
+   "commons_pageid": 199393673,
+   "direct_files": 5,
+   "subcats": 1,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Biryani by location",
+   "commons_pageid": 201948858,
+   "direct_files": 0,
+   "subcats": 2,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Biryani making",
+   "commons_pageid": 38372156,
+   "direct_files": 22,
+   "subcats": 0,
+   "depth": 1,
+   "parent": "Biryani"
+  },
+  {
+   "category": "Chicken Mandi in India",
+   "commons_pageid": 127704759,
+   "direct_files": 16,
+   "subcats": 1,
+   "depth": 2,
+   "parent": "Chicken biryani"
+  },
+  {
+   "category": "Hyderabadi chicken biryani",
+   "commons_pageid": 100269634,
+   "direct_files": 23,
+   "subcats": 0,
+   "depth": 2,
+   "parent": "Chicken biryani AND Hyderabadi biryani"
+  },
+  {
+   "category": "Kolkata chicken biryani",
+   "commons_pageid": 124963556,
+   "direct_files": 15,
+   "subcats": 0,
+   "depth": 2,
+   "parent": "Chicken biryani"
+  },
+  {
+   "category": "Thalassery chicken biryani",
+   "commons_pageid": 100308795,
+   "direct_files": 4,
+   "subcats": 0,
+   "depth": 2,
+   "parent": "Chicken biryani"
+  },
+  {
+   "category": "Hyderabadi biryani overseas",
+   "commons_pageid": 58567256,
+   "direct_files": 7,
+   "subcats": 0,
+   "depth": 2,
+   "parent": "Hyderabadi biryani"
+  },
+  {
+   "category": "Hyderabadi mutton biryani",
+   "commons_pageid": 100269775,
+   "direct_files": 10,
+   "subcats": 0,
+   "depth": 2,
+   "parent": "Hyderabadi biryani"
+  },
+  {
+   "category": "Videos of Hyderabadi biryani",
+   "commons_pageid": 86948525,
+   "direct_files": 1,
+   "subcats": 0,
+   "depth": 2,
+   "parent": "Hyderabadi biryani"
+  }
+ ],
+ "rollup": {
+  "categories_enumerated": 28,
+  "direct_file_sum_all_categories": 813,
+  "depth0_direct_files": 207,
+  "depth1_direct_files": 530,
+  "depth2_direct_files": 76,
+  "categories_with_zero_direct_files": 1,
+  "categories_with_subcats": 8
+ }
+}
