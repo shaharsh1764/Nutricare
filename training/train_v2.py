@@ -75,6 +75,93 @@ def load_split(prepared_dir: Path, split: str) -> List[Dict[str, Any]]:
     return doc.get("images", [])
 
 
+
+#: Image extensions the pipeline produces. Used only for diagnostics.
+_IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".webp")
+
+#: How much of a file to read to prove it is readable. The header is enough to
+#: detect an unreadable file or a truncated download without loading whole
+#: images, which would be slow on a real dataset.
+_READ_PROBE_BYTES = 4096
+
+
+def _resolve_row_path(raw_path: str, prepared_dir: Path) -> Path:
+    """Resolve a manifest path consistently.
+
+    Relative paths are interpreted against ``prepared_dir`` rather than the
+    current working directory, so a manifest behaves the same however the
+    trainer is invoked. Absolute paths are used as given.
+    """
+    candidate = Path(raw_path)
+    if candidate.is_absolute():
+        return candidate
+    return (Path(prepared_dir) / candidate).resolve()
+
+
+def check_manifest_paths(prepared_dir: Path, splits: Dict[str, List[Dict[str, Any]]]) -> List[str]:
+    """Verify every usable row points at a readable image file.
+
+    Preparation already checks bytes, but the manifest is the trust boundary
+    between preparation and training: a stale, hand-edited or partially
+    downloaded manifest would otherwise pass the audit and fail inside the
+    dataloader, after the model has been built. Each failure is reported with
+    the split, the pageid and the path so it can be acted on.
+
+    Checks performed per row:
+
+    * the path is present and is a string;
+    * it resolves to an existing regular file;
+    * it lives inside ``prepared_dir`` when given as a relative path (guards
+      against ``../../../etc/passwd``-style escapes);
+    * it has an image extension;
+    * its first bytes can actually be read and are non-empty.
+    """
+    problems: List[str] = []
+    prepared_root = Path(prepared_dir).resolve()
+    for split, rows in splits.items():
+        for row in rows:
+            if not row.get("training_usable"):
+                continue  # already reported by the caller
+            pageid = row.get("pageid")
+            local = row.get("local") or {}
+            raw_path = local.get("path")
+            if not raw_path or not isinstance(raw_path, str):
+                problems.append(f"{split}: image {pageid} has no usable local path")
+                continue
+            path = _resolve_row_path(raw_path, prepared_dir)
+            # Reject escapes from the prepared directory via a relative path.
+            if not Path(raw_path).is_absolute():
+                try:
+                    path.relative_to(prepared_root)
+                except ValueError:
+                    problems.append(
+                        f"{split}: image {pageid} path {raw_path!r} escapes the dataset "
+                        f"directory {prepared_root}"
+                    )
+                    continue
+            if not path.exists():
+                problems.append(f"{split}: image {pageid} file is missing: {path}")
+                continue
+            if not path.is_file():
+                problems.append(f"{split}: image {pageid} path is not a regular file: {path}")
+                continue
+            if path.suffix.lower() not in _IMAGE_SUFFIXES:
+                problems.append(
+                    f"{split}: image {pageid} has a non-image extension "
+                    f"{path.suffix!r}: {path}"
+                )
+                continue
+            try:
+                with open(path, "rb") as handle:
+                    head = handle.read(_READ_PROBE_BYTES)
+            except OSError as exc:
+                problems.append(f"{split}: image {pageid} is unreadable ({exc}): {path}")
+                continue
+            if not head:
+                problems.append(f"{split}: image {pageid} file is empty: {path}")
+    return problems
+
+
 def check_dataset(prepared_dir: Path) -> Dict[str, Any]:
     """Load all three splits and refuse anything a trainer must not accept."""
     splits = {s: load_split(prepared_dir, s) for s in SPLITS}
@@ -89,6 +176,9 @@ def check_dataset(prepared_dir: Path) -> Dict[str, Any]:
                 problems.append(f"{split}: image {row.get('pageid')} has no local path")
         if not rows:
             problems.append(f"{split} split is empty")
+
+    # Byte-level validation: the manifest must point at real, readable images.
+    problems.extend(check_manifest_paths(prepared_dir, splits))
 
     classes = sorted({r["class"] for rows in splits.values() for r in rows})
     if len(classes) < 2:

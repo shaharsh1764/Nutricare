@@ -799,3 +799,74 @@ could pass for the wrong reason).
 
 `strip_markup`'s contract is pinned for scalars and for `None`/list/dict/bool/
 object, so a revert to `str()` fails immediately.
+
+---
+
+# Post-review corrections (H-1a, M-1 … M-4)
+
+Findings from the second independent review of `cd6ccc7`.
+
+## H-1a — punctuation-only identities
+
+An identity must contain at least one Unicode letter or digit. Stating the rule
+positively closes the whole class (`--`, `?`, `...`, `==`, `[]`, `()`), instead
+of enumerating spellings as the previous `-`/`—` entries did. Punctuation *around*
+a name is unaffected: `N A`, `N.A. Smith`, `-John-`, `O'Brien, Sean`, `李小龙` and
+`Anonymouse` all pass.
+
+## M-1 — photographic descriptions are not copying
+
+`taken`, `pulled`, `retrieved`, `saved` and `obtained` describe how a photograph
+was *made* as often as how a file was obtained. They now count as copying only
+when the object is a source one copies *out of* (`_SOURCE_OBJECT`: web, site,
+blog, forum, a named platform, book, newspaper, video, film, scan …). Verbs that
+assert copying on their own (`copied`, `ripped`, `downloaded`, `hotlinked`,
+`sourced`) are unchanged.
+
+| Text | Before | Now |
+|---|---|---|
+| `Photo taken from above` | `scrape_risk` | `unknown` |
+| `Taken from the kitchen` | `scrape_risk` | `unknown` |
+| `Pulled from the tandoor` | `scrape_risk` | `unknown` |
+| `Taken from a website` | `scrape_risk` | `scrape_risk` |
+| `Copied from a website` | `scrape_risk` | `scrape_risk` |
+
+## M-2 — the ``Restrictions`` field is preserved and enforced
+
+`Restrictions` was used to build `review_reason` and then discarded, so a file
+with `Restrictions = "no commercial use"` was still approved on the strength of
+`short_name`. The field is now carried verbatim and classified into four kinds:
+
+| Kind | Example | Tier |
+|---|---|---|
+| `none` | empty | unchanged |
+| `licence` | `no commercial use`, `No derivatives`, `All rights reserved`, `fair use` | `EXCLUDED` |
+| `other` | `trademarked`, `personality rights`, `privacy` | unchanged, caveat added to `reasons` |
+| `text` | unclassifiable prose | `REVIEW_REQUIRED` |
+
+Not every value is a copyright term: trademark and personality-rights caveats do
+not block a research dataset, so they are surfaced to the reviewer rather than
+used to exclude. Unclassifiable text is held, not assumed benign. A recorded
+licence restriction beats any permissive label, including `CC0`.
+
+The key is emitted only when the field is present, so existing manifests —
+including the Biryani pilot — rebuild byte-identically. An absent field and an
+empty one both mean "no restriction recorded".
+
+## M-3 — the model-guard test no longer passes without torch
+
+`train()` returns `2` both for "missing ML dependency" and for "refusing to write
+into `models/`", so the old test's `rc == 2` assertion passed in the base
+environment even with the guard deleted. The tests now assert the specific
+refusal message and additionally assert that no `mkdir` occurred, and they fail
+in **both** environments when either guard is removed.
+
+## M-4 — manifest paths are validated
+
+`check_dataset()` now verifies, for every training-usable row: the path is a
+non-empty string; it resolves to an existing regular file; a relative path
+resolves against the prepared directory rather than the process working
+directory; a relative path cannot escape that directory; the extension is an
+image type; and the first 4 KiB can actually be read and is non-empty. Failures
+name the split, the pageid and the path. Previously a manifest pointing at
+nonexistent files passed the audit and failed later inside the dataloader.

@@ -415,14 +415,25 @@ class TestH2EndToEndSafetyGates:
         assert usable, [r["exclusion_reasons"] for r in report["rows"]]
 
     def test_train_refuses_to_write_into_models_directory(self):
-        """The model-overwrite guard in the real checkpoint path."""
+        """The model-overwrite guard in the real checkpoint path.
+
+        Asserts the *specific* refusal message, not just the exit code. Exit
+        code 2 is also returned by the missing-dependency path, so a test that
+        only checked ``rc == 2`` would pass in the base environment even with
+        the guard deleted (that was finding M-3).
+        """
         tv = pytest.importorskip("training.train_v2")
         err = io.StringIO()
         with contextlib.redirect_stderr(err):
             rc = tv.train(Path("/nonexistent-dataset"), Path("/nonexistent-images"),
                           out_dir=Path("models"))
+        message = err.getvalue().lower()
         assert rc == 2
-        assert "refusing" in err.getvalue().lower()
+        assert "refusing to write into models" in message, (
+            f"expected the production-model refusal, got: {message!r}"
+        )
+        # Distinguish this from the missing-torch path, which also returns 2.
+        assert "missing ml dependency" not in message
 
     def test_train_refuses_out_pointing_at_production_model(self):
         tv = pytest.importorskip("training.train_v2")
@@ -433,22 +444,48 @@ class TestH2EndToEndSafetyGates:
                 Path("/nonexistent-images"),
                 out_dir=PRODUCTION_MODEL,
             )
+        message = err.getvalue().lower()
         assert rc == 2
-        assert "refusing" in err.getvalue().lower()
+        assert "refusing" in message
+        assert "production model file itself" in message
+        assert "missing ml dependency" not in message
 
     def test_train_refusal_happens_before_any_data_access(self):
-        """The guard must fire before the dataset is read, so a bad --out can
-        never partially train and then fail to save, or worse, save over
-        something while reporting a later error."""
+        """The guard must fire before the dataset is read or any directory is
+        created, so a bad --out cannot leave artefacts behind or overwrite
+        something before failing."""
         tv = pytest.importorskip("training.train_v2")
         err = io.StringIO()
         with contextlib.redirect_stderr(err):
             rc = tv.train(Path("/nonexistent-dataset"), Path("/nonexistent-images"),
                           out_dir=Path("models"))
         assert rc == 2
-        # A missing dataset would return 3 or raise; 2 proves the guard ran first.
-        assert "dataset" not in err.getvalue().lower() or "refusing" in err.getvalue().lower()
+        # A missing dataset would raise SystemExit or return 3; the specific
+        # refusal string proves the guard ran first.
+        assert "refusing to write into models" in err.getvalue().lower()
 
+    def test_guard_reports_before_creating_any_output_directory(self, tmp_path, monkeypatch):
+        """Behavioural proof that resolution happens before mkdir.
+
+        ``mkdir`` is replaced with a sentinel so the test does not depend on
+        whether torch is installed: if the guard were moved after directory
+        creation, or removed, the sentinel would fire.
+        """
+        tv = pytest.importorskip("training.train_v2")
+        created = []
+        monkeypatch.setattr(
+            tv.Path, "mkdir", lambda self, *a, **k: created.append(str(self)), raising=False
+        )
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = tv.train(Path("/nonexistent-dataset"), Path("/nonexistent-images"),
+                          out_dir=PRODUCTION_MODEL.parent)
+        message = err.getvalue().lower()
+        assert rc == 2
+        # The refusal must be the reason, not the missing-dependency path.
+        assert "refusing to write into models" in message, message
+        assert "missing ml dependency" not in message
+        assert created == [], f"mkdir was called before the refusal: {created}"
 
 # ---------------------------------------------------------------------------
 # M-1 / L-1 — screenshot and hosting provenance
@@ -635,3 +672,328 @@ class TestL2StripMarkupContract:
                 "CC0_PD", "CC_BY", "CC_BY_SA", "NC_RESTRICTED",
                 "ND_RESTRICTED", "UNKNOWN_MISSING", "OTHER_REVIEW",
             }
+
+
+# ---------------------------------------------------------------------------
+# Round 3 findings (H-1a, M-3, M-2, M-1, M-4)
+# ---------------------------------------------------------------------------
+
+
+class TestH1aPunctuationOnlyAuthors:
+    """An identity must contain a letter or digit; punctuation names nobody."""
+
+    @pytest.mark.parametrize(
+        "artist",
+        ["--", "?", "...", "==", "[]", "()", "**", "_", "/", "\\\\", "|", "~~~",
+         "---", "?!", "…", "·", "\u2014\u2014", "  --  "],
+    )
+    def test_punctuation_only_is_rejected(self, artist):
+        assert is_placeholder_author(artist) is True, repr(artist)
+
+    @pytest.mark.parametrize(
+        "artist",
+        ["N A", "N.A. Smith", "-John-", "O'Brien, Sean", "李小龙", "Anonymouse",
+         "John Smith", "12345", "a", "María González", "J. R. R. Tolkien"],
+    )
+    def test_legitimate_identities_are_accepted(self, artist):
+        assert is_placeholder_author(artist) is False, repr(artist)
+
+    @pytest.mark.parametrize("artist", ["--", "?", "...", "==", "[]"])
+    def test_punctuation_author_fails_cc_by_end_to_end(self, artist):
+        """Through build_file_record -> enrich, not just the helper."""
+        page = {
+            "pageid": 11,
+            "title": "File:C.jpg",
+            "imageinfo": [{
+                "sha1": "s11", "width": 1200, "height": 900,
+                "mime": "image/jpeg", "url": "u", "descriptionurl": "d",
+                "extmetadata": {
+                    "LicenseShortName": {"value": "CC BY 4.0"},
+                    "Artist": {"value": artist},
+                },
+            }],
+        }
+        record = enrich(build_file_record("File:C.jpg", page, [], []))
+        assert record["rights"]["rights_tier"] == EXCLUDED, repr(artist)
+        assert record["rights"]["attribution_sufficient"] is False
+
+    @pytest.mark.parametrize("artist", ["N A", "-John-", "O'Brien, Sean", "李小龙"])
+    def test_legitimate_identity_passes_cc_by_end_to_end(self, artist):
+        page = {
+            "pageid": 12,
+            "title": "File:D.jpg",
+            "imageinfo": [{
+                "sha1": "s12", "width": 1200, "height": 900,
+                "mime": "image/jpeg", "url": "u", "descriptionurl": "d",
+                "extmetadata": {
+                    "LicenseShortName": {"value": "CC BY 4.0"},
+                    "Artist": {"value": artist},
+                },
+            }],
+        }
+        record = enrich(build_file_record("File:D.jpg", page, [], []))
+        assert record["rights"]["rights_tier"] == TRAINING_APPROVED, repr(artist)
+
+
+class TestM2RestrictionsMetadata:
+    """The Commons Restrictions field must survive and must affect the tier."""
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        ["no commercial use", "No derivatives", "All rights reserved",
+         "non-commercial", "fair use", "no redistribution"],
+    )
+    def test_licence_restriction_blocks_approval(self, restrictions):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0", "restrictions": restrictions}
+        )
+        assert out["rights_tier"] == EXCLUDED, restrictions
+        assert out["restrictions_kind"] == "licence"
+        assert out["restrictions"] == restrictions  # preserved verbatim
+
+    @pytest.mark.parametrize(
+        "restrictions", ["trademarked", "personality rights", "privacy"]
+    )
+    def test_non_copyright_caveat_does_not_block_but_is_recorded(self, restrictions):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0", "restrictions": restrictions}
+        )
+        # Not a licence term, so it does not exclude; but it is kept visible.
+        assert out["rights_tier"] == TRAINING_APPROVED
+        assert out["restrictions_kind"] == "other"
+        assert out["restrictions"] == restrictions
+        assert any("not a licence term" in r for r in out["reasons"])
+
+    @pytest.mark.parametrize("restrictions", ["", "   ", None])
+    def test_empty_restrictions_are_benign(self, restrictions):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0", "restrictions": restrictions}
+        )
+        assert out["rights_tier"] == TRAINING_APPROVED
+        assert out["restrictions_kind"] == "none"
+
+    def test_unclassified_text_is_held_for_review(self):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": "some vague note about usage"}
+        )
+        # Not assumed benign, not assumed restrictive: deferred to a human.
+        assert out["rights_tier"] == REVIEW_REQUIRED
+        assert out["restrictions_kind"] == "text"
+
+    def test_restrictions_survive_commons_audit(self):
+        out = classify_licence(
+            {"LicenseShortName": {"value": "CC0"},
+             "Restrictions": {"value": "no commercial use"}}
+        )
+        assert out["restrictions"] == "no commercial use"
+
+    @pytest.mark.parametrize(
+        "restrictions,expected_tier",
+        [("no commercial use", EXCLUDED), ("No derivatives", EXCLUDED),
+         ("All rights reserved", EXCLUDED), ("trademarked", TRAINING_APPROVED),
+         ("personality rights", TRAINING_APPROVED), (None, TRAINING_APPROVED)],
+    )
+    def test_restrictions_end_to_end(self, restrictions, expected_tier):
+        ext = {"LicenseShortName": {"value": "CC0"}}
+        if restrictions:
+            ext["Restrictions"] = {"value": restrictions}
+        page = {
+            "pageid": 13, "title": "File:R.jpg",
+            "imageinfo": [{
+                "sha1": "s13", "width": 1200, "height": 900,
+                "mime": "image/jpeg", "url": "u", "descriptionurl": "d",
+                "extmetadata": ext,
+            }],
+        }
+        record = enrich(build_file_record("File:R.jpg", page, [], []))
+        assert record["rights"]["rights_tier"] == expected_tier, restrictions
+
+    def test_restriction_beats_a_permissive_label(self):
+        """A recorded restriction must not be overridden by the short_name."""
+        for short in ["CC0", "CC BY 4.0"]:
+            declared = "CC0_PD" if short == "CC0" else "CC_BY"
+            out = classify_rights(
+                {"declared_class": declared, "short_name": short,
+                 "restrictions": "no commercial use"},
+                artist="A Person",
+            )
+            assert out["rights_tier"] == EXCLUDED, short
+
+
+class TestM1PhotographicDescriptions:
+    """Everyday camera language must not be read as evidence of copying."""
+
+    @pytest.mark.parametrize(
+        "text",
+        ["Photo taken from above", "Taken from the kitchen", "Pulled from the tandoor",
+         "Retrieved from the menu", "Taken from an angle", "Pulled from the oven",
+         "Saved from the freezer", "Grabbed from the counter",
+         "Retrieved from the market", "Photo taken from the roof of the restaurant",
+         "Taken from a low angle", "Pulled from the tawa"],
+    )
+    def test_photographic_description_is_not_scraping(self, text):
+        assert classify_provenance(credit_text=text)["strength"] != "scrape_risk", text
+
+    @pytest.mark.parametrize(
+        "text",
+        ["Copied from a website", "Ripped from a DVD", "Downloaded from the internet",
+         "Taken from a website", "Taken from the web", "Pulled from a blog",
+         "Retrieved from Facebook", "Sourced from Google", "Taken from a book",
+         "Copied from Imgur", "Grabbed from a blog", "Saved from a website",
+         "Obtained from the internet", "Taken from Wikipedia"],
+    )
+    def test_genuine_copying_is_still_scraping(self, text):
+        assert classify_provenance(credit_text=text)["strength"] == "scrape_risk", text
+
+    def test_photographic_description_does_not_exclude_a_cc0_file(self):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0"},
+            credit_text="Photo taken from above",
+        )
+        assert out["rights_tier"] == TRAINING_APPROVED
+
+    def test_genuine_copying_still_excludes(self):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0"},
+            credit_text="Copied from a website",
+        )
+        assert out["rights_tier"] == EXCLUDED
+
+
+class TestM4DatasetPathValidation:
+    """The manifest must point at real, readable image files."""
+
+    @staticmethod
+    def _manifest(tmp_path, rows):
+        """Write the same rows to each split, with sha1 rewritten per split.
+
+        Rewriting keeps the leakage check out of the way so these tests fail
+        only for path reasons.
+        """
+        for split in ("train", "val", "test"):
+            copy = [dict(r, sha1=f"{split}-{r['sha1']}") for r in rows]
+            (tmp_path / f"split_{split}.json").write_text(
+                json.dumps({"split": split, "count": len(copy), "images": copy})
+            )
+
+    @staticmethod
+    def _row(pageid, cls, sha1, path):
+        return {"pageid": pageid, "class": cls, "training_usable": True,
+                "sha1": sha1, "local": {"path": path}}
+
+    def _image(self, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"\xff\xd8\xff\xe0" + b"x" * 64)
+        return path
+
+    def test_valid_paths_pass(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        a = self._image(tmp_path / "a.jpg")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", str(a)), self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is True, result["problems"]
+
+    def test_missing_file_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", str(tmp_path / "nope.jpg")),
+                self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is False
+        assert any("missing" in p for p in result["problems"])
+
+    def test_null_path_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", None), self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is False
+        assert any("no usable local path" in p for p in result["problems"])
+
+    def test_unreadable_file_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        unreadable = self._image(tmp_path / "locked.jpg")
+        unreadable.chmod(0o000)
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", str(unreadable)),
+                self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        try:
+            result = tv.check_dataset(tmp_path)
+        finally:
+            unreadable.chmod(0o644)
+        # Running as root defeats the permission bits; accept either diagnosis.
+        assert result["ok"] is False
+        assert any("unreadable" in p or "empty" in p for p in result["problems"])
+
+    def test_empty_file_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        empty = tmp_path / "empty.jpg"
+        empty.write_bytes(b"")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", str(empty)), self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is False
+        assert any("empty" in p for p in result["problems"])
+
+    def test_directory_instead_of_file_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        (tmp_path / "adir.jpg").mkdir()
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", str(tmp_path / "adir.jpg")),
+                self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is False
+        assert any("not a regular file" in p for p in result["problems"])
+
+    def test_non_image_extension_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        bad = tmp_path / "notes.txt"
+        bad.write_bytes(b"hello")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", str(bad)), self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is False
+        assert any("non-image extension" in p for p in result["problems"])
+
+    def test_relative_path_is_resolved_against_the_dataset_dir(self, tmp_path):
+        """A relative path must not depend on the process working directory."""
+        tv = pytest.importorskip("training.train_v2")
+        self._image(tmp_path / "a.jpg")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", "a.jpg"), self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is True, result["problems"]
+
+    def test_path_escaping_the_dataset_dir_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        outside = self._image(tmp_path.parent / "outside_escape.jpg")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(1, "x", "s1", "../outside_escape.jpg"),
+                self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        try:
+            result = tv.check_dataset(tmp_path)
+        finally:
+            outside.unlink(missing_ok=True)
+        assert result["ok"] is False
+        assert any("escapes the dataset directory" in p for p in result["problems"])
+
+    def test_diagnostics_name_the_split_and_pageid(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        b = self._image(tmp_path / "b.jpg")
+        rows = [self._row(77, "x", "s1", str(tmp_path / "gone.jpg")),
+                self._row(2, "y", "s2", str(b))]
+        self._manifest(tmp_path, rows)
+        result = tv.check_dataset(tmp_path)
+        joined = " ".join(result["problems"])
+        assert "77" in joined and "train" in joined

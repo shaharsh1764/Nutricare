@@ -183,9 +183,42 @@ _SCRAPE_WORD = re.compile(
     re.IGNORECASE,
 )
 #: Verbs that turn any source mention into evidence of copying.
+#: A *source object*: the kind of thing an image is copied out of.
+#:
+#: Used only to disambiguate the everyday verbs below. It is an inclusion list on
+#: purpose: "taken from a website" is copying, "taken from above" is a camera
+#: angle, and only the object can tell them apart.
+_SOURCE_OBJECT = (
+    r"(?:the\s+|a\s+|an\s+)?"
+    r"(web|internet|online|web\s?site|site|web\s?page|page|blog|forum"
+    r"|google|bing|yandex|duckduckgo|baidu|search|image\s+search"
+    r"|facebook|instagram|flickr|imgur|photobucket|pinterest|reddit|tumblr"
+    r"|tiktok|twitter|youtube|wikipedia|wikimedia|commons"
+    r"|book|magazine|newspaper|article|journal|publication|menu\s+card"
+    r"|video|film|movie|tv|television|stream|scan|album|post|tweet|profile"
+    r"|account|channel|pdf|document|source|news)\b"
+)
+
+#: Verbs that assert an act of copying regardless of what follows.
+_UNAMBIGUOUS_COPY = r"(?:copied|ripped|downloaded|hotlinked|re-?uploaded|scraped|sourced)"
+
+#: Everyday photography verbs. "Taken from above", "pulled from the tandoor" and
+#: "retrieved from the menu" describe how a picture was *made*, not copied, so
+#: these only count as copying when the object is a source to copy out of.
+_AMBIGUOUS_COPY = r"(?:taken|grabbed|pulled|lifted|leached|saved|retrieved|obtained)"
+
 _COPY_VERB = re.compile(
-    r"(\b(taken|grabbed|pulled|lifted|leached|copied|ripped|downloaded|saved"
-    r"|sourced|obtained|retrieved|hotlinked|re-?uploaded)\b\s+(from|off|via)"
+    # Unambiguous copying: any object will do.
+    r"(\b" + _UNAMBIGUOUS_COPY + r"\b\s+(from|off|via)"
+    # Ambiguous verbs: only when a source object follows.
+    r"|\b" + _AMBIGUOUS_COPY + r"\b\s+(from|off|via)\s+(?:the\s+|a\s+|an\s+)?"
+    r"(web|internet|online|web\s?site|site|web\s?page|page|blog|forum"
+    r"|google|bing|yandex|duckduckgo|baidu|search"
+    r"|facebook|instagram|flickr|imgur|photobucket|pinterest|reddit|tumblr"
+    r"|tiktok|twitter|youtube|wikipedia|wikimedia|commons"
+    r"|book|magazine|newspaper|article|journal|publication"
+    r"|video|film|movie|tv|television|stream|scan|album|post|tweet|profile"
+    r"|account|channel|pdf|document|source|news)\b"
     # A screenshot is an image *type*. Capturing a user interface ("Screenshot of
     # a website", "Screenshot of the app", "Screenshot of the menu") is a
     # legitimate way to depict a screen, so the bare noun and UI objects are
@@ -401,6 +434,10 @@ _INVISIBLE = re.compile("[\u200b-\u200f\u2060\ufeff\u00ad]")
 #: ``N/A``-shaped placeholders. Handled separately from the word list so that a
 #: legitimate initials-only attribution such as ``"N A"`` is not rejected, while
 #: the slash form (which is unambiguously a placeholder) still is.
+#: Any Unicode letter or digit. Used to require that an "author" actually
+#: contains something attributable rather than punctuation or symbols alone.
+_ALNUM = re.compile(r"[^\W_]", re.UNICODE)
+
 _PLACEHOLDER_SLASH = re.compile(
     r"^\s*(n\s*/\s*a|n\.\s*a\.?|none\s*/\s*none|not\s*/\s*applicable)\s*$",
     re.IGNORECASE,
@@ -410,12 +447,23 @@ _PLACEHOLDER_SLASH = re.compile(
 def is_placeholder_author(text: str) -> bool:
     """True when ``text`` is empty, invisible, or a placeholder identity.
 
+    An identity must contain at least one letter or digit. An enumeration of
+    punctuation cannot be complete (``--``, ``?``, ``...``, ``==``, ``[]``, ``""``
+    all name nobody), so the rule is stated positively: no alphanumeric character
+    means no identity. This generalises the earlier ``-``/``—`` entries instead of
+    chasing each new spelling.
+
     Legitimate names are never matched: ``"Anonymous"`` is a placeholder but
     ``"Anonymouse"`` (a real Commons username) is not, because comparison is
-    against the whole normalised string rather than a substring.
+    against the whole normalised string rather than a substring. Punctuation
+    *around* a name is fine — ``"-John-"`` and ``"O'Brien, Sean"`` both keep their
+    letters.
     """
     cleaned = _INVISIBLE.sub("", _coerce_text(text)).strip()
     if not cleaned:
+        return True
+    # No letter and no digit anywhere: there is nothing to attribute to.
+    if not _ALNUM.search(cleaned):
         return True
     if _PLACEHOLDER_SLASH.match(cleaned):
         return True
@@ -592,6 +640,77 @@ def classify_provenance(
     return {"strength": "unknown", "signals": signals, "reasons": reasons}
 
 
+#: How a Commons ``Restrictions`` field is treated.
+#:
+#: The field is overloaded. It carries genuine licence restrictions ("no
+#: commercial use"), non-copyright caveats that do not block a research dataset
+#: ("personality rights", "trademarked"), and free descriptive prose. Treating
+#: every value as a licence term would reject legitimate material; ignoring it,
+#: as the pipeline did before, means a restricted file is approved on the
+#: strength of its ``short_name`` alone. The two cases must therefore be named
+#: separately rather than collapsed into one bucket.
+
+#: Restrictions that contradict or narrow the declared licence.
+_RESTRICTION_LICENCE = re.compile(
+    r"(non[-\s]?commercial|\bnc\b|no commercial|not for commercial"
+    r"|no derivative|no derivatives|\bnd\b|no modif|no redistribution"
+    r"|all rights reserved|used with permission|permission required"
+    r"|\bfair use\b|copyrighted|non[-\s]?free|credit required"
+    r"|attribution required|no\s+reuse|not for reuse)",
+    re.IGNORECASE,
+)
+
+#: Restrictions that are real caveats but not copyright-licence terms.
+#: They do not block use here, but they must stay visible to a human reviewer.
+_RESTRICTION_OTHER = re.compile(
+    r"(trademark|personality rights|\bprivacy\b|moral rights"
+    r"|insulting|defam|, )",
+    re.IGNORECASE,
+)
+
+
+def classify_restrictions(text: str) -> Dict[str, Any]:
+    """Sort a Commons ``Restrictions`` value into one of four kinds.
+
+    ``kind`` is one of:
+
+    * ``"none"`` — the field is empty;
+    * ``"licence"`` — a copyright restriction that contradicts or narrows the
+      licence; the file must not be auto-approved;
+    * ``"other"`` — a non-copyright caveat (trademark, personality rights). Not a
+      licence term, but carried into the reasons so a human sees it;
+    * ``"text"`` — free descriptive text we cannot classify. Held for review
+      rather than assumed benign, because the pipeline cannot tell an
+      unassessed condition from a remark.
+
+    Returns the ``kind`` plus the original ``text`` unchanged, so the raw Commons
+    value is never lost.
+    """
+    text = _coerce_text(text).strip()
+    if not text:
+        return {"kind": "none", "text": "", "reason": ""}
+    if _RESTRICTION_LICENCE.search(text):
+        return {
+            "kind": "licence",
+            "text": text,
+            "reason": f"Commons Restrictions field carries a licence restriction: {text!r}",
+        }
+    if _RESTRICTION_OTHER.search(text):
+        return {
+            "kind": "other",
+            "text": text,
+            "reason": (
+                f"Commons Restrictions field carries a non-copyright caveat "
+                f"{text!r}; retained for human review, not a licence term"
+            ),
+        }
+    return {
+        "kind": "text",
+        "text": text,
+        "reason": f"Commons Restrictions field is unclassified text {text!r}; deferred to human review",
+    }
+
+
 def classify_rights(
     licence: Dict[str, Any],
     *,
@@ -611,6 +730,7 @@ def classify_rights(
     artist = _coerce_text(artist).strip()
     attribution_required = licence.get("attribution_required")
     short_name = _coerce_text(licence.get("short_name")).strip()
+    restriction = classify_restrictions(licence.get("restrictions"))
     # ``classify_licence`` can bucket a file as CC0_PD from UsageTerms/License
     # while LicenseShortName is empty, so fall back to that text rather than
     # discarding a real designation. If neither is present, there is genuinely
@@ -634,7 +754,17 @@ def classify_rights(
     artist_is_placeholder = is_placeholder_author(artist)
     attribution_sufficient = bool(artist) and not artist_is_placeholder
 
-    if provenance_strength == "scrape_risk":
+    if restriction["kind"] == "licence":
+        # A recorded restriction that narrows or contradicts the licence beats
+        # any permissive label: the restrictive reading wins.
+        tier = EXCLUDED
+        reasons.append(restriction["reason"])
+    elif restriction["kind"] == "text":
+        # Unclassified text is not assumed benign, and not assumed restrictive
+        # either: hold it for a human rather than guessing in either direction.
+        tier = REVIEW_REQUIRED
+        reasons.append(restriction["reason"])
+    elif provenance_strength == "scrape_risk":
         tier = EXCLUDED
         reasons.append("permitted licence but provenance indicates scraping")
     elif declared == "CC0_PD":
@@ -706,6 +836,11 @@ def classify_rights(
         tier = EXCLUDED
         reasons.append(f"{declared} is not usable for training")
 
+    if restriction["kind"] == "other" and restriction["reason"]:
+        # A caveat that is not a licence term. It must not change the tier, but
+        # it must reach the reviewer rather than disappear.
+        reasons.append(restriction["reason"])
+
     return {
         "rights_tier": tier,
         "declared_class": declared,
@@ -713,6 +848,8 @@ def classify_rights(
         "provenance_strength": provenance_strength,
         "provenance_signals": provenance["signals"],
         "public_domain_designation": pd_designation,
+        "restrictions": restriction["text"],
+        "restrictions_kind": restriction["kind"],
         "attribution_sufficient": attribution_sufficient,
         "author_is_placeholder": artist_is_placeholder,
         "short_name": short_name,

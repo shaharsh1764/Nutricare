@@ -230,7 +230,7 @@ def classify_licence(extmetadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:
             f"Commons Restrictions field present: {restrictions}"
         )
 
-    return {
+    result = {
         "declared_class": declared,
         "short_name": short,
         "licence_url": licence_url,
@@ -243,6 +243,13 @@ def classify_licence(extmetadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         "share_alike": declared == CC_BY_SA,
         "review_reason": review_reason,
     }
+    # Carried verbatim so downstream policy can act on it, but only when the
+    # field is actually present. Emitting an empty key would rewrite every
+    # existing manifest (including the Biryani pilot) for no gain, since an
+    # absent field and an empty one both mean "no restriction recorded".
+    if restrictions:
+        result["restrictions"] = restrictions
+    return result
 
 
 # ---------------------------------------------------------------------------
