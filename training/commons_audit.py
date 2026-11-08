@@ -80,6 +80,32 @@ DEFAULT_PAGE_SIZE = 500
 
 IIPROP = "url|size|mime|mediatype|sha1|extmetadata|canonicaltitle"
 
+#: extmetadata keys the pipeline actually consumes.
+#:
+#: Sent to the API as ``iiextmetadatafilter`` so that the request and the code
+#: cannot drift apart. Only keys listed here are fetched, which keeps responses
+#: small and makes metadata collection auditable: anything not in this tuple is
+#: genuinely absent from a record rather than silently discarded downstream.
+#:
+#: ``Credit`` and ``Permission`` are included deliberately. ``Credit`` is
+#: frequently just the photo description on Flickr imports, and ``Permission``
+#: is often absent even when a Commons review template exists on the file page,
+#: so neither is evidence of authorship or permission. They feed provenance
+#: *signalling* only.
+EXTMETADATA_KEYS = (
+    "LicenseShortName",
+    "LicenseUrl",
+    "UsageTerms",
+    "License",
+    "Artist",
+    "Credit",
+    "Permission",
+    "AttributionRequired",
+    "Restrictions",
+    "Copyrighted",
+)
+IIEXTMETADATAFILTER = "|".join(EXTMETADATA_KEYS)
+
 # ---------------------------------------------------------------------------
 # Licence classification
 # ---------------------------------------------------------------------------
@@ -402,23 +428,32 @@ class CommonsClient:
                     }
         return info
 
-    def file_info(self, titles: Sequence[str]) -> Dict[str, Dict[str, Any]]:
+    def file_info(
+        self,
+        titles: Sequence[str],
+        *,
+        extmetadata_filter: Optional[str] = IIEXTMETADATAFILTER,
+    ) -> Dict[str, Dict[str, Any]]:
         """Per-file metadata for up to 50 titles per request.
 
         Returns ``{requested_title: page_dict}``. Titles that do not resolve are
         returned with a ``missing`` marker rather than dropped, so callers can
         record the gap.
+
+        ``extmetadata_filter`` is sent as ``iiextmetadatafilter``. Pass ``None``
+        to request every extmetadata key the API offers.
         """
         result: Dict[str, Dict[str, Any]] = {}
         for batch in _batched(list(titles), MAX_TITLES_PER_REQUEST):
-            response = self.query(
-                {
-                    "action": "query",
-                    "prop": "imageinfo",
-                    "iiprop": IIPROP,
-                    "titles": "|".join(batch),
-                }
-            )
+            params: Dict[str, Any] = {
+                "action": "query",
+                "prop": "imageinfo",
+                "iiprop": IIPROP,
+                "titles": "|".join(batch),
+            }
+            if extmetadata_filter:
+                params["iiextmetadatafilter"] = extmetadata_filter
+            response = self.query(params)
             query = response.get("query", {})
             normalized = _normalization_map(query)
             by_title = {

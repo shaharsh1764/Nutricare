@@ -61,6 +61,7 @@ from commons_audit import (  # noqa: E402
     ND_RESTRICTED,
     OTHER_REVIEW,
     UNKNOWN_MISSING,
+    IIEXTMETADATAFILTER,
     CommonsClient,
     build_file_record,
     classify_licence,
@@ -77,10 +78,13 @@ SCHEMA_VERSION = "4.0"
 DEFAULT_TAXONOMY = PROJECT / "data" / "v3" / "taxonomy_100_proposed.json"
 DEFAULT_OUT = PROJECT / "data" / "v4" / "classes"
 
-#: Minimal, non-HTML imageinfo request. Requesting ``Permission``/``Credit``
-#: yields multi-kilobyte HTML blobs, so provenance-text signals are unavailable.
+#: imageinfo properties requested for every file.
 IIPROP = "sha1|dimensions|mime|extmetadata"
-EXTMETADATA_FILTER = "LicenseShortName|LicenseUrl|Artist|AttributionRequired|UsageTerms"
+
+#: extmetadata keys actually requested. Imported from commons_audit so the
+#: request and the manifest cannot disagree, and so ``Credit``/``Permission``
+#: (used for provenance signalling) are genuinely fetched rather than assumed.
+EXTMETADATA_FILTER = IIEXTMETADATAFILTER
 
 #: Minimum edge length for a candidate to be worth a human's review time.
 MIN_EDGE = 300
@@ -150,9 +154,15 @@ def gather_category(
 def enrich(record: Dict[str, Any], *, min_edge: int = MIN_EDGE) -> Dict[str, Any]:
     """Add rights tiering and technical flags to one commons_audit record."""
     licence = record.get("licence") or {}
+    attribution = record.get("attribution") or {}
     rights = classify_rights(
         licence,
-        artist=(record.get("attribution") or {}).get("artist_raw", ""),
+        artist=attribution.get("artist_raw", ""),
+        # Provenance fields are preserved by commons_audit and must reach the
+        # classifier, or the scrape / review rules never see any text at all.
+        # Both may legitimately be empty; classify_provenance handles that.
+        permission_text=record.get("permission") or "",
+        credit_text=attribution.get("credit") or "",
     )
     width, height = record.get("width"), record.get("height")
     technical_flags: List[str] = []
@@ -294,7 +304,11 @@ def collect_class(
             "endpoint": "https://commons.wikimedia.org/w/api.php",
             "generator": "categorymembers",
             "iiprop": IIPROP,
-            "extmetadata_filter": EXTMETADATA_FILTER,
+            # Recorded from the constant that is actually sent as
+            # iiextmetadatafilter, so this field describes behaviour rather
+            # than intent.
+            "extmetadata_filter_sent": EXTMETADATA_FILTER,
+            "extmetadata_filter_param": "iiextmetadatafilter",
             "depth": depth,
             "per_category_limit": limit,
             "bytes_downloaded": 0,

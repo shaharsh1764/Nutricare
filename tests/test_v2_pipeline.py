@@ -77,7 +77,8 @@ BIRYANI_REVIEW = ROOT / "data/v3/commons_pilot/review"
 
 class TestRightsTiering:
     def test_cc0_with_author_is_training_approved(self):
-        out = classify_rights({"declared_class": "CC0_PD"}, artist="Someone")
+        out = classify_rights({"declared_class": "CC0_PD", "short_name": "CC0"},
+                              artist="Someone")
         assert out["rights_tier"] == TRAINING_APPROVED
         assert out["training_approved"] is True
 
@@ -106,7 +107,7 @@ class TestRightsTiering:
 
     def test_scrape_provenance_overrides_permissive_licence(self):
         out = classify_rights(
-            {"declared_class": "CC0_PD"}, artist="X",
+            {"declared_class": "CC0_PD", "short_name": "CC0"}, artist="X",
             permission_text="Taken from Google image search",
         )
         assert out["rights_tier"] == EXCLUDED
@@ -117,18 +118,18 @@ class TestRightsTiering:
             {"declared_class": "CC_BY"}, artist="X",
             permission_text="This file was reviewed by the Flickr upload bot",
         )
-        assert out["provenance_strength"] == "external_review"
+        assert out["provenance_strength"] == "independent_review"
         assert out["rights_tier"] == TRAINING_APPROVED
 
     def test_legal_clearance_is_never_claimed(self):
-        out = classify_rights({"declared_class": "CC0_PD"}, artist="X")
+        out = classify_rights({"declared_class": "CC0_PD", "short_name": "CC0"}, artist="X")
         assert out["legal_clearance"] == "not_verified"
         assert out["verification"] == "declared_only"
         assert out["human_review_required"] is True
 
     def test_summary_separates_tiers(self):
         tiers = [
-            classify_rights({"declared_class": "CC0_PD"}, artist="A"),
+            classify_rights({"declared_class": "CC0_PD", "short_name": "CC0"}, artist="A"),
             classify_rights({"declared_class": "CC_BY_SA"}, artist="B"),
             classify_rights({"declared_class": "NC_RESTRICTED"}, artist="C"),
         ]

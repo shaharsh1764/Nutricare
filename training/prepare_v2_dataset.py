@@ -533,7 +533,12 @@ def prepare(
             if tier == TRAINING_APPROVED:
                 pass
             elif tier == REVIEW_REQUIRED and include_cc_by_sa:
-                pass
+                # Lifting the share-alike hold must not lift the attribution
+                # requirement: an attribution licence with nobody to attribute
+                # still cannot be satisfied. Re-checked here rather than
+                # trusting the tier alone.
+                if rights.get("attribution_sufficient") is False:
+                    row["exclusion_reasons"].append("attribution_incomplete")
             elif tier == REVIEW_REQUIRED:
                 row["exclusion_reasons"].append("cc_by_sa_held_out")
             else:

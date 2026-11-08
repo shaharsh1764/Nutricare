@@ -2,12 +2,13 @@
  "schema_version": "4.0",
  "class": "idli",
  "canonical": "Idli",
- "collected_utc": "2026-11-08T10:40:45Z",
+ "collected_utc": "2026-11-08T11:07:07Z",
  "source": {
   "endpoint": "https://commons.wikimedia.org/w/api.php",
   "generator": "categorymembers",
   "iiprop": "sha1|dimensions|mime|extmetadata",
-  "extmetadata_filter": "LicenseShortName|LicenseUrl|Artist|AttributionRequired|UsageTerms",
+  "extmetadata_filter_sent": "LicenseShortName|LicenseUrl|UsageTerms|License|Artist|Credit|Permission|AttributionRequired|Restrictions|Copyrighted",
+  "extmetadata_filter_param": "iiextmetadatafilter",
   "depth": 0,
   "per_category_limit": null,
   "bytes_downloaded": 0
@@ -103,13 +104,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 3.0",
+    "designation_text": "CC BY-SA 3.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -161,13 +167,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 3.0",
+    "designation_text": "CC BY-SA 3.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -219,13 +230,18 @@
     "declared_class": "CC_BY",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY 2.0",
+    "designation_text": "CC BY 2.0",
     "training_approved": true,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC_BY permits commercial use and modification; author recorded"
+     "CC BY permits commercial use and modification; author recorded"
     ]
    },
    "technical_flags": []
@@ -277,13 +293,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 2.0",
+    "designation_text": "CC BY-SA 2.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -335,13 +356,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 2.0",
+    "designation_text": "CC BY-SA 2.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -393,13 +419,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -451,13 +482,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -509,13 +545,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -567,13 +608,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -625,13 +671,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -683,13 +734,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -741,13 +797,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -799,13 +860,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
@@ -857,13 +923,18 @@
     "declared_class": "CC_BY_SA",
     "verification": "declared_only",
     "provenance_strength": "unknown",
+    "provenance_signals": [],
+    "public_domain_designation": null,
+    "attribution_sufficient": true,
+    "short_name": "CC BY-SA 4.0",
+    "designation_text": "CC BY-SA 4.0",
     "training_approved": false,
     "human_review_required": true,
     "legal_clearance": "not_verified",
     "attribution_required": true,
     "reasons": [
      "no permission/credit text captured; provenance strength unknown",
-     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+     "CC_BY_SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
     ]
    },
    "technical_flags": []
