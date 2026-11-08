@@ -15,17 +15,57 @@ application changes, no model changes.**
 
 ## 0. Direct answer
 
-**Yes for a smaller, genuinely licensed dataset. No for 100 classes at the
-200–500 images/class target — not with Wikimedia Commons alone, and not within
-reach of any source currently accessible from the sandbox.**
+**For 100 classes at the 200–500 images/class target: no — this is not
+established for Wikimedia Commons, nor for any source currently accessible from
+the sandbox.**
 
-Every count below is **direct files in the Commons category only**, *excluding*
-subcategories. So each figure is a **lower bound** — but also an **upper bound on
-what could be downloaded today**, because the image hosts are blocked (§5).
+**For a smaller dataset: not yet established either.** What the evidence supports
+is narrower than "a 40–60 class dataset is achievable". It establishes that
+**40–60 classes are a preliminary development target** — the number of classes
+worth investigating. Their feasibility depends on image-level licence
+verification, image quality review, deduplication, and subcategory expansion,
+**none of which has been performed**. Until those steps run, no class count is
+demonstrated to be buildable.
+
+### What the numbers below actually are
+
+Every count in this document is a **category-file count**: the number of files
+Commons reports as directly in a category. It is **not** a count of unique,
+usable, correctly labelled, or appropriately licensed images.
+
+- **Not unique.** Categories overlap. A photograph of biryani can sit in
+  `Biryani`, `Chicken biryani` and `Hyderabadi biryani` at once, and is then
+  counted three times. **These figures are not additive and must never be summed
+  to produce a dataset size.**
+- **Not verified as images.** The Commons API reports how many *file pages* sit
+  in a category. It does not report that each is a usable photograph of that
+  dish. Non-photo media, diagrams, collages, unrelated uploads and misdescriptions
+  are all included in the raw figure.
+- **Not licence-filtered.** A category file count makes no claim that any file is
+  under an acceptable licence (§3).
+- **Lower bound on the category, not on usable data.** Subcategories are excluded
+  (see below), so the true category population is larger — but the *usable
+  dataset* may still be far smaller than the number here, after the filters above.
+
+So a figure of "207" means *207 file pages in that category*, not *207 training
+images*.
+
+### Subcategories: an open question, not confirmed volume
+
+Counts exclude subcategory contents. Many categories hold most of their files in
+subcategories, so the measured figure can substantially understate the category
+population.
+
+**This is an opportunity for further investigation, not confirmed dataset
+volume.** The subcategory contents have not been counted, so they cannot be
+claimed as available images. 79 measured categories have subcategories (§8).
+Treating them as headroom would be exactly the unfounded optimism this document
+is meant to avoid.
 
 Two rollups are used, and they differ on purpose.
 
-**(a) Raw Commons categories measured — 116 categories, 8,906 direct files**
+**(a) Raw Commons categories measured — 116 categories; 8,906 category files
+(sum of direct category-file counts, not unique images)**
 
 | Threshold | Categories meeting it |
 |---|---|
@@ -43,8 +83,8 @@ Two rollups are used, and they differ on purpose.
 | ≥ 200 direct files | **9** |
 | ≥ 150 direct files | **17** |
 | ≥ 50 direct files | **56** |
-| < 50 direct files | **41** |
-| not yet measured | **3** |
+| < 50 direct files (1–49) | **41** |
+| not yet measured (0 counted) | **3** |
 
 Classes score lower than categories at the 50-file line because merges add files
 while also *removing* classes, and because a class needs its images in **one**
@@ -78,7 +118,11 @@ larger than reported, and that is flagged rather than guessed.
 
 ## 2. Wikimedia Commons — the strongest source, and why
 
-### 2.1 Why it is the right primary source
+### 2.1 Why it is the strongest candidate source
+
+These are **structural advantages** — properties of how Commons works, not
+findings about our candidate images. None of them has been verified across the
+categories counted in §2.2.
 
 - **Per-file licence metadata.** Every file page carries an explicit licence
   template, the author (`Artist`), and whether attribution is required — the
@@ -89,7 +133,9 @@ larger than reported, and that is flagged rather than guessed.
 - **No `NC`/`ND` contamination** if filtering is enforced, unlike Khana.
 - **Attribution is tractable** — one record per image, harvested from the API.
 
-Sampled proof (three real files via `extmetadata`):
+Three sampled files, shown to establish that the metadata fields are real and
+populated — **not** to establish how the corpus is licensed. Three files say
+nothing about the licence distribution across ~8,900 (see §3.1):
 
 | File | Licence | Artist | Attribution required |
 |---|---|---|---|
@@ -98,9 +144,11 @@ Sampled proof (three real files via `extmetadata`):
 | `Enjoyed food at nandos.jpg` | CC BY-SA 4.0 | Rehansha41 | yes |
 
 Note the third: an "indian food" search returned a **Nando's** meal. Search is
-noisy; category-based harvesting plus manual review is mandatory.
+noisy; category-based harvesting plus manual review is mandatory. The second is
+also a caution — a drink photograph from a cultural-documentation context, not a
+dish portrait; relevance must be reviewed per image.
 
-### 2.2 Verified class counts — strongest
+### 2.2 Category-file counts (not verified image counts)
 
 | Class | Files | Subcats |
 |---|---|---|
@@ -215,20 +263,31 @@ chain of title. **Better than scraped sets; not zero risk.**
 
 Machine-readable at `data/v3/taxonomy_100_proposed.json`. Per class: `slug`,
 `canonical`, `aliases[]`, `category`, `commons_categories[]`,
-`verified_direct_files`, `has_subcategories`, `bucket`, `sufficient_data`,
-`licence_verified`, `count_note`.
+`verified_direct_files`, `has_subcategories`, `bucket`,
+`meets_preliminary_150_file_threshold`, `licence_verified`, `count_note`.
 
 ### 4.1 Honest bucketing
 
-| Bucket | Count | Definition |
+Buckets describe **how many category files** a proposed class has, and nothing
+else. "A" does **not** mean training-ready: it means the category has more files
+to look at before the filtering steps in §0.
+
+| Bucket | Count | Meaning (category-file count only) |
 |---|---|---|
-| **A. Ready** (≥150 verified direct files) | **17** | Could train and evaluate now |
-| **B. Viable** (50–149) | **39** | Usable with augmentation; thin test set |
-| **C. Marginal** (<50) | **41** | Not enough for train/val/test |
+| **A. Preliminary threshold met** (≥150 direct category files) | **17** | Most files to investigate; unverified |
+| **B. Possible** (50–149) | **39** | Few files; likely thin for a 3-way split |
+| **C. Marginal** (<50) | **41** | Too few files to plan around |
 | **D. Unmeasured** | **3** | Commons category not identified/verified |
 
-**17 classes are solid, 56 reach ≥50 images, only 9 reach the 200-image floor.
-100 classes is not currently supportable at 200–500 images each.**
+**17 proposed classes meet the preliminary 150-file category-count threshold.
+This does not establish that they contain 150 unique, usable, correctly labelled,
+appropriately licensed images.** 56 proposed classes reach 50 category files and
+only 9 reach 200. 100 classes is not established as supportable at 200–500
+images each.
+
+Note these are class-level figures derived from the per-class
+`verified_direct_files` values in the JSON (which are themselves sums of
+overlapping category counts), so they carry the same three caveats as §0.
 
 Two classes were dropped from an earlier 102-class draft (`mutton_biryani`,
 `veg_biryani`) because they are unmeasured and `biryani` already covers the dish —
@@ -331,57 +390,121 @@ Sidecar design keeps per-image provenance intact through the split.
 
 ## 7. Recommendation
 
-**Build 40–60 classes, not 100.**
+**Treat 40–60 classes as a preliminary development target. Do not commit to 100,
+and do not yet commit to 40–60 as achievable.**
 
-- **Tier A now (17 classes, ≥150 files)** — solid train/val/test.
-- **Tier B (39 classes, 50–149 files)** — viable; smaller, noisier classes.
-  Realistically **~50 classes** retain ≥100 images after dedupe and contamination
-  filtering (assume 10–20% loss; 13.2% was measured on the 80-class set from
-  duplicates alone).
-- **Do not include Tier C (<50 files)** merely to reach a round number. That is
-  precisely the "unsuitable data to hit the target" trap the brief warns against.
+`40–60` is a scoping decision: it is the band where categories have enough files
+in them to justify the **next** investigative step. It is **not** a forecast that
+40–60 properly licensed, deduplicated classes will exist. That depends on:
 
-**What would close the gap to 100:**
+- image-level licence verification (not done — `licence_verified: false` throughout),
+- image quality and relevance review (not done),
+- global deduplication (not done — cross-category overlap is expected),
+- subcategory expansion (not done; contents unmeasured).
+
+- **Bucket A (17 proposed classes, ≥150 category files)** — deserves first
+  investigation. **Not** verified as ready to train; see §4.1.
+- **Bucket B (39 proposed classes, 50–149 category files)** — fewer files to work
+  with; likely thin for a three-way split.
+- **Bucket C (<50 category files)** — do not include merely to reach a round
+  number. That is precisely the "unsuitable data to hit the target" trap the brief
+  warns against.
+
+**On the ~50-class estimate:** an earlier draft said roughly 50 classes would
+retain ≥100 images after dedupe. That figure is an **estimate with no direct
+support** — it is a projection, not a measurement, and it rests on an assumed
+10–20% loss. The only measured dedupe loss available is **13.15%** (4,000 → 3,474
+files) on the unrelated 80-class V2 audit set (`data/v2/indian_audit.json`). It is
+**not** evidence about Commons. Treat the ~50 figure as unverified.
+
+**What would close the gap to 100 — as hypotheses to test, not as headroom already
+banked:**
 
 1. **Subcategory expansion** — 79 measured categories have subcategories whose
-   files I could not count (hosts blocked). This is the most likely source of the
-   missing images and the first thing to measure once egress opens.
+   files could not be counted (hosts blocked). This is the most promising line of
+   investigation, and it is **entirely unmeasured**. It must not be counted as
+   confirmed volume.
 2. A second permissively licensed source with verifiable per-image terms.
-3. Accepting ~50–100 images for tail classes, with the smaller count documented.
+3. Accepting a lower per-class count for tail classes, with the smaller count
+   documented.
 
-**What I will not do:** claim 100 classes are feasible, pad classes with
-near-duplicates, or count augmented copies as independent images — the exact
-failure mode of the SohlHealth dataset (`docs/SOHLHEALTH_PROVENANCE.md` §6).
+**What this document will not do:** claim 100 classes are feasible, claim 40–60
+are already achievable, present category-file counts as usable image counts, or
+count augmented copies as independent images — the exact failure mode of the
+SohlHealth dataset (`docs/SOHLHEALTH_PROVENANCE.md` §6).
 
 ---
 
 ## 8. Fact / estimate / inference / unknown
 
-**Verified facts**
-- 116 Commons category counts measured via API; 8,906 direct files.
+**Verified facts** (measured directly via the Commons API)
+- 116 Commons category counts measured via API. Their **sum** is 8,906 direct
+  category files — a sum of per-category counts that **overlap**, so it is **not**
+  a count of unique images.
 - 9 categories ≥200 files, 16 ≥150, 29 ≥100, 62 ≥50; 54 categories <50.
-- Rolled up to 100 proposed classes: 9 ≥200, 17 ≥150, 56 ≥50, 41 <50, 3 unmeasured.
+- Rolled up to 100 proposed classes: 9 ≥200, 17 ≥150, 56 ≥50; 41 have 1–49 files and
+  3 have no measured category (0 files, meaning *unknown*, not *absent*).
 - Per-file licence/author/permission metadata exists and is populated.
 - All Wikimedia hosts are blocked from the sandbox (`000`).
 - 79 measured categories have uncounted subcategories.
+- 4,000 → 3,474 files (13.15% loss) on the **separate** 80-class V2 audit set
+  (`data/v2/indian_audit.json`). This is a fact about *that* dataset, **not** about
+  Commons.
 
-**Estimates**
+**Estimates** (projections, not measurements)
 - ~2 GB for 20,000 thumbnails; ~15–25 GB for originals.
-- 10–20% further loss from dedupe + contamination filtering.
-- ~50 classes will retain ≥100 usable images.
+- 10–20% further loss from dedupe + contamination filtering on Commons.
+- That ~50 classes would retain ≥100 usable images. **Unverified** — this
+  extrapolates a 13.15% figure measured on a different dataset and should not be
+  relied on.
+- That 40–60 classes are achievable at all. **Unverified** — a preliminary
+  target, contingent on the four unperformed checks in §7.
 
 **Inferences**
-- Subcategory expansion will raise most mid-tier counts substantially.
+- Subcategory expansion *may* raise mid-tier counts substantially. Direction is
+  plausible; magnitude is unknown.
 - Search-based harvesting is much noisier than category-based (the Nando's result).
 - CC BY-SA is *probably* acceptable for model weights, but this is unsettled law.
 
 **Unknown / not measured**
 - Whether image download works at all (host blocked) — **the biggest unknown**.
+- Whether any category file is a usable, correct, unique photo of the dish.
 - Actual licence distribution across the corpus.
-- Duplicate / near-duplicate rate.
+- Duplicate / near-duplicate rate, including cross-category overlap.
 - True totals once subcategories are counted.
-- Whether 100 classes can reach 200–500 images each. **I do not know, and I will
-  not assert it either way.**
+- Whether 40–60 classes are achievable, and whether 100 can reach 200–500 images
+  each. **I do not know, and I will not assert it either way.**
+
+---
+
+## 8a. Which figures are independently re-checkable
+
+The audit trail matters for citation, so: **figures in this document are of two
+kinds.**
+
+**Re-derivable from the committed JSON** (`data/v3/taxonomy_100_proposed.json`):
+the class-level rollups (9 / 17 / 56 / 41 / 3), the per-class counts, the corpus
+sum of 8,451 across the 100 proposed classes, and the 65 classes flagged
+`has_subcategories`.
+
+**Carried from the prior research session and NOT re-derivable from any committed
+artifact** — treat as **recorded measurements, not independently verified**:
+
+- the individual per-category counts in §2.2;
+- the aggregate **8,906** across 116 raw categories (and the 116 itself);
+- the category-level rollup 9 / 16 / 29 / 62 / 54;
+- **79** categories with uncounted subcategories;
+- the "missing category" list in §2.3;
+- the three sampled licence records in §2.1.
+
+These came from live Commons API queries in a session whose transcript is not
+stored. The API hosts are blocked from the sandbox (§5), so **they cannot be
+re-queried now to confirm them.** They are consistent with one another and with
+the JSON, and no figure was altered to strengthen the case — but if exact numbers
+matter for a decision, re-measure them once egress opens. Note the two corpus
+totals differ by design: **8,906** sums 116 raw overlapping categories, **8,451**
+sums the 100 de-duplicated-by-name proposed classes. Neither is a unique-image
+count.
 
 ---
 
@@ -389,6 +512,12 @@ failure mode of the SohlHealth dataset (`docs/SOHLHEALTH_PROVENANCE.md` §6).
 
 - **No model was trained. No images were downloaded. No application code changed.
   The 12-class model is untouched.**
+- **No class count in this document is a verified usable-image count.** Every
+  figure is a category-file count that excludes subcategories, may double-count
+  across overlapping categories, and has not been licence- or quality-filtered.
+- **No class is described as ready for training.** Bucket "A" means only that a
+  proposed class met a preliminary file-count threshold.
+- **40–60 classes is a preliminary development target, not an established result.**
 - No dataset is described as "legally cleared". Commons files are *permissively
   licensed with per-file attribution* — verifiable, but not proven chain of title.
 - The Bangladeshi dataset is **not** presented as Indian anywhere in this document.
