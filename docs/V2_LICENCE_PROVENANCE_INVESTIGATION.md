@@ -870,3 +870,62 @@ directory; a relative path cannot escape that directory; the extension is an
 image type; and the first 4 KiB can actually be read and is non-empty. Failures
 name the split, the pageid and the path. Previously a manifest pointing at
 nonexistent files passed the audit and failed later inside the dataloader.
+
+---
+
+# Post-review corrections (C-1, M-1, M-2 — third round)
+
+## C-1 — punctuation must not create a caveat
+
+`_RESTRICTION_OTHER` contained a bare `", "` alternative, so any restriction
+string holding a comma was classified as a non-blocking caveat and the file
+stayed `TRAINING_APPROVED`. `"Restrictions apply, ask the uploader"` was approved
+while the same text without the comma was held.
+
+Three changes:
+
+1. The comma alternative is gone. Every entry in `_RESTRICTION_OTHER` must name
+   an actual non-copyright concern.
+2. The field is split into clauses on `, ; | / & - —` and the words
+   `and`/`plus`/`including`, and each clause is classified independently.
+3. The **most restrictive** clause decides, via `_RESTRICTION_SEVERITY`
+   (`none < other < text < licence`). A field mixing a trademark caveat with an
+   unassessed clause is `text` (held), not `other`.
+
+Separators cannot be enumerated exhaustively — `"Trademarked + unclear"` has no
+recognised separator at all — so a clause that matches a known concern is only
+accepted when no unassessed content words remain (`_clause_residue`). This
+replaced an earlier character-ratio heuristic that mis-scored
+`"defamatory or otherwise unlawful use prohibited"` and could not distinguish
+connective padding from a hidden second condition.
+
+| `Restrictions` | Kind | Tier |
+|---|---|---|
+| `Restrictions apply, ask the uploader` | `text` | `REVIEW_REQUIRED` |
+| `Trademarked, see below` | `text` | `REVIEW_REQUIRED` |
+| `Some restriction we never assessed, plus another one` | `text` | `REVIEW_REQUIRED` |
+| `Insulting, defamatory or otherwise unlawful use prohibited` | `text` | `REVIEW_REQUIRED` |
+| `Trademarked` | `other` | unchanged (caveat recorded) |
+| `Trademarked; no commercial use` | `licence` | `EXCLUDED` |
+
+`"Insulting, defamatory or otherwise unlawful use prohibited"` is now held rather
+than approved. Both clauses name a recognised concern, but "otherwise unlawful
+use prohibited" is an unassessed condition, so the conservative outcome is
+review. This is stricter than the review required and is recorded here as a
+deliberate choice.
+
+## M-1 — one source-object list
+
+`_COPY_VERB` is now assembled from `_SOURCE_OBJECT` instead of duplicating the
+list inline. The duplicate had already drifted: `menu card` was documented in
+`_SOURCE_OBJECT` but missing from the compiled pattern. A test asserts
+`_SOURCE_OBJECT in _COPY_VERB.pattern`, and parametrised tests check every source
+object against an ambiguous verb.
+
+## M-2 — every path stays inside the dataset root
+
+Containment was only checked for relative paths, so an absolute path outside the
+prepared directory was accepted. `_resolve_row_path` now calls `resolve()` for
+absolute paths too, collapsing symlinks, and the containment check runs for both
+spellings. A symlink inside the tree pointing outside it is caught by the same
+check.

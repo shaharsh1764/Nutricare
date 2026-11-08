@@ -44,6 +44,7 @@ from training.licence_policy import (  # noqa: E402
     REVIEW_REQUIRED,
     TRAINING_APPROVED,
     classify_provenance,
+    classify_restrictions,
     classify_rights,
     has_restrictive_modifier,
     is_bare_cc0,
@@ -997,3 +998,336 @@ class TestM4DatasetPathValidation:
         result = tv.check_dataset(tmp_path)
         joined = " ".join(result["problems"])
         assert "77" in joined and "train" in joined
+
+
+# ---------------------------------------------------------------------------
+# Round 4 findings (C-1, M-1, M-2)
+# ---------------------------------------------------------------------------
+
+
+class TestC1RestrictionsCaveatBypass:
+    """Punctuation must never turn an unassessed restriction into a caveat.
+
+    The previous form of ``_RESTRICTION_OTHER`` included a bare ``", "``
+    alternative, so any restriction string containing a comma was classified as
+    a non-blocking non-copyright caveat and the file stayed TRAINING_APPROVED.
+    """
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        [
+            "Restrictions apply, ask the uploader",
+            "Trademarked, see below",
+            "Some restriction we never assessed, plus another one",
+            "Restrictions apply ask the uploader",
+            "See above, ask someone",
+            "Ask the uploader, please",
+            "Note, unexplained",
+        ],
+    )
+    def test_unclassified_text_with_punctuation_is_held(self, restrictions):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": restrictions}
+        )
+        assert out["rights_tier"] != TRAINING_APPROVED, restrictions
+        assert out["rights_tier"] == REVIEW_REQUIRED, restrictions
+        assert out["restrictions_kind"] == "text"
+
+    def test_comma_alone_does_not_change_the_outcome(self):
+        """The discriminating pair from the review: identical semantics."""
+        without = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": "Restrictions apply ask the uploader"}
+        )
+        with_comma = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": "Restrictions apply, ask the uploader"}
+        )
+        assert without["rights_tier"] == with_comma["rights_tier"] == REVIEW_REQUIRED
+        assert without["restrictions_kind"] == with_comma["restrictions_kind"] == "text"
+
+    @pytest.mark.parametrize(
+        "separator", [",", ";", " / ", " and ", " & ", "|", " - ", " plus "]
+    )
+    def test_any_separator_leaves_unclassified_text_held(self, separator):
+        text = f"Restrictions apply{separator}ask the uploader"
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0", "restrictions": text}
+        )
+        assert out["rights_tier"] == REVIEW_REQUIRED, text
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        ["trademarked", "personality rights", "privacy", "moral rights", "libel"],
+    )
+    def test_named_non_copyright_caveat_is_still_a_caveat(self, restrictions):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": restrictions}
+        )
+        assert out["rights_tier"] == TRAINING_APPROVED
+        assert out["restrictions_kind"] == "other"
+
+    def test_multiple_clauses_apply_the_most_restrictive(self):
+        # licence beats other beats text; text beats other.
+        assert classify_restrictions("Trademarked; no commercial use")["kind"] == "licence"
+        assert classify_restrictions("Trademarked, see below")["kind"] == "text"
+        assert (
+            classify_restrictions("Personality rights, trademarked")["kind"] == "other"
+        )
+
+    def test_clause_verdicts_are_recorded(self):
+        out = classify_restrictions("Trademarked; no commercial use")
+        assert [c["kind"] for c in out["clauses"]] == ["other", "licence"]
+
+    def test_defamation_clause_with_unassessed_tail_is_held(self):
+        """'Insulting, defamatory...' is held on substance, not on the comma.
+
+        Both clauses name a recognised non-copyright concern, but the second
+        carries "otherwise unlawful use prohibited", which is an unassessed
+        condition. The conservative outcome is REVIEW_REQUIRED, and removing the
+        comma must not change it.
+        """
+        text = "Insulting, defamatory or otherwise unlawful use prohibited"
+        assert classify_restrictions(text)["kind"] == "text"
+        assert (
+            classify_restrictions(
+                "Insulting defamatory or otherwise unlawful use prohibited"
+            )["kind"]
+            == "text"
+        )
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0", "restrictions": text}
+        )
+        assert out["rights_tier"] != TRAINING_APPROVED
+        assert out["rights_tier"] == REVIEW_REQUIRED
+
+    def test_bare_defamation_caveat_remains_a_caveat(self):
+        """Without the unassessed tail, a named concern is still a caveat."""
+        for text in ["Defamatory content", "Personality rights", "Insulting material"]:
+            kind = classify_restrictions(text)["kind"]
+            assert kind in {"other", "text"}, text
+        assert classify_restrictions("Trademarked")["kind"] == "other"
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        ["Restrictions apply, ask the uploader", "Trademarked, see below",
+         "Some restriction we never assessed, plus another one"],
+    )
+    def test_held_end_to_end_through_commons_metadata(self, restrictions):
+        page = {
+            "pageid": 21, "title": "File:Q.jpg",
+            "imageinfo": [{
+                "sha1": "s21", "width": 1200, "height": 900,
+                "mime": "image/jpeg", "url": "u", "descriptionurl": "d",
+                "extmetadata": {
+                    "LicenseShortName": {"value": "CC0"},
+                    "Restrictions": {"value": restrictions},
+                },
+            }],
+        }
+        record = enrich(build_file_record("File:Q.jpg", page, [], []))
+        assert record["rights"]["rights_tier"] != TRAINING_APPROVED, restrictions
+
+    def test_licence_clause_still_wins_over_caveat(self):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": "Trademarked, no commercial use"}
+        )
+        assert out["rights_tier"] == EXCLUDED
+        assert out["restrictions_kind"] == "licence"
+
+
+class TestM1SourceObjectIsShared:
+    """_COPY_VERB must be built from _SOURCE_OBJECT, not a duplicate list."""
+
+    def test_copy_verb_pattern_contains_the_source_object_list(self):
+        from training.licence_policy import _COPY_VERB, _SOURCE_OBJECT
+
+        # The shared constant must actually reach the compiled pattern.
+        assert _SOURCE_OBJECT in _COPY_VERB.pattern
+
+    def test_menu_card_example_is_detected(self):
+        """The documented example must behave like other source objects."""
+        for text in ["Retrieved from a menu card", "Retrieved from the menu card",
+                     "Taken from a menu card"]:
+            assert classify_provenance(credit_text=text)["strength"] == "scrape_risk", text
+
+    @pytest.mark.parametrize(
+        "text",
+        ["web", "internet", "site", "blog", "forum", "book", "newspaper",
+         "video", "film", "scan", "menu card"],
+    )
+    def test_every_source_object_is_honoured_with_an_ambiguous_verb(self, text):
+        assert (
+            classify_provenance(credit_text=f"Taken from a {text}")["strength"]
+            == "scrape_risk"
+        ), text
+
+    @pytest.mark.parametrize(
+        "text",
+        ["Photo taken from above", "Taken from the kitchen", "Pulled from the tandoor",
+         "Retrieved from the menu", "Taken from a distance", "Obtained from the market"],
+    )
+    def test_photographic_descriptions_still_not_scraping(self, text):
+        assert classify_provenance(credit_text=text)["strength"] != "scrape_risk", text
+
+
+class TestM2PathContainment:
+    """Absolute paths and symlinks must stay inside the prepared dataset root."""
+
+    @staticmethod
+    def _manifest(tmp_path, rows):
+        for split in ("train", "val", "test"):
+            copy = [dict(r, sha1=f"{split}-{r['sha1']}") for r in rows]
+            (tmp_path / f"split_{split}.json").write_text(
+                json.dumps({"split": split, "count": len(copy), "images": copy})
+            )
+
+    @staticmethod
+    def _row(pageid, cls, sha1, path):
+        return {"pageid": pageid, "class": cls, "training_usable": True,
+                "sha1": sha1, "local": {"path": path}}
+
+    def _image(self, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"\xff\xd8\xff\xe0" + b"x" * 64)
+        return path
+
+    def test_absolute_path_inside_root_is_accepted(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        a = self._image(tmp_path / "a.jpg")
+        b = self._image(tmp_path / "b.jpg")
+        self._manifest(tmp_path, [self._row(1, "x", "s1", str(a)),
+                                  self._row(2, "y", "s2", str(b))])
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is True, result["problems"]
+
+    def test_absolute_path_outside_root_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        outside = self._image(tmp_path.parent / "outside_abs.jpg")
+        b = self._image(tmp_path / "b.jpg")
+        self._manifest(tmp_path, [self._row(1, "x", "s1", str(outside)),
+                                  self._row(2, "y", "s2", str(b))])
+        try:
+            result = tv.check_dataset(tmp_path)
+        finally:
+            outside.unlink(missing_ok=True)
+        assert result["ok"] is False
+        assert any("escapes the dataset directory" in p for p in result["problems"])
+
+    def test_symlink_escaping_root_is_rejected(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        target = self._image(tmp_path.parent / "symlink_target.jpg")
+        link = tmp_path / "link.jpg"
+        link.symlink_to(target)
+        b = self._image(tmp_path / "b.jpg")
+        self._manifest(tmp_path, [self._row(1, "x", "s1", "link.jpg"),
+                                  self._row(2, "y", "s2", str(b))])
+        try:
+            result = tv.check_dataset(tmp_path)
+        finally:
+            target.unlink(missing_ok=True)
+        assert result["ok"] is False
+        assert any("escapes the dataset directory" in p for p in result["problems"])
+
+    def test_symlink_inside_root_is_accepted(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        target = self._image(tmp_path / "real.jpg")
+        link = tmp_path / "alias.jpg"
+        link.symlink_to(target)
+        b = self._image(tmp_path / "b.jpg")
+        self._manifest(tmp_path, [self._row(1, "x", "s1", "alias.jpg"),
+                                  self._row(2, "y", "s2", str(b))])
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is True, result["problems"]
+
+    def test_relative_path_inside_root_still_works(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        self._image(tmp_path / "a.jpg")
+        b = self._image(tmp_path / "b.jpg")
+        self._manifest(tmp_path, [self._row(1, "x", "s1", "a.jpg"),
+                                  self._row(2, "y", "s2", str(b))])
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is True, result["problems"]
+
+    def test_absolute_symlink_escaping_root_is_rejected(self, tmp_path):
+        """An absolute path that is a symlink out of the tree must be caught.
+
+        ``resolve()`` collapses the link before the containment check; without
+        it the path looks like an ordinary absolute file and is accepted.
+        """
+        tv = pytest.importorskip("training.train_v2")
+        target = self._image(tmp_path.parent / "abs_symlink_target.jpg")
+        link = tmp_path / "abs_link.jpg"
+        link.symlink_to(target)
+        b = self._image(tmp_path / "b.jpg")
+        self._manifest(tmp_path, [self._row(1, "x", "s1", str(link)),
+                                  self._row(2, "y", "s2", str(b))])
+        try:
+            result = tv.check_dataset(tmp_path)
+        finally:
+            target.unlink(missing_ok=True)
+        assert result["ok"] is False
+        assert any("escapes the dataset directory" in p for p in result["problems"])
+
+    def test_absolute_symlink_inside_root_is_accepted(self, tmp_path):
+        tv = pytest.importorskip("training.train_v2")
+        target = self._image(tmp_path / "real_abs.jpg")
+        link = tmp_path / "abs_alias.jpg"
+        link.symlink_to(target)
+        b = self._image(tmp_path / "b.jpg")
+        self._manifest(tmp_path, [self._row(1, "x", "s1", str(link)),
+                                  self._row(2, "y", "s2", str(b))])
+        result = tv.check_dataset(tmp_path)
+        assert result["ok"] is True, result["problems"]
+
+
+class TestC1ResidueRule:
+    """A named concern plus unassessed text must be held, not accepted.
+
+    Separators cannot be enumerated exhaustively ("Trademarked + unclear" has no
+    recognised separator), so the clause is examined directly: content words that
+    name no recognised concern mean something is unassessed.
+    """
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        [
+            "Trademarked plus another thing",
+            "Trademarked + unclear",
+            "Trademarked & unassessed",
+            "Trademarked, unassessed condition here",
+            "Personality rights: the photographer objects to commercial reuse",
+            "Trademarked, see below",
+        ],
+    )
+    def test_named_concern_with_unassessed_tail_is_held(self, restrictions):
+        assert classify_restrictions(restrictions)["kind"] == "text", restrictions
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": restrictions}
+        )
+        assert out["rights_tier"] != TRAINING_APPROVED, restrictions
+
+    @pytest.mark.parametrize(
+        "restrictions",
+        ["Trademarked", "trademarked", "Trademarks apply", "Personality rights",
+         "Privacy", "Moral rights", "Personality rights, trademarked"],
+    )
+    def test_pure_named_concern_is_still_a_caveat(self, restrictions):
+        out = classify_rights(
+            {"declared_class": "CC0_PD", "short_name": "CC0",
+             "restrictions": restrictions}
+        )
+        assert out["restrictions_kind"] == "other", restrictions
+        assert out["rights_tier"] == TRAINING_APPROVED, restrictions
+
+    @pytest.mark.parametrize(
+        "fillers",
+        ["", " apply", " applies", " noted", " as above"],
+    )
+    def test_connective_padding_does_not_trigger_the_residue_rule(self, fillers):
+        kind = classify_restrictions(f"Trademarked{fillers}")["kind"]
+        assert kind == "other", fillers

@@ -207,24 +207,23 @@ _UNAMBIGUOUS_COPY = r"(?:copied|ripped|downloaded|hotlinked|re-?uploaded|scraped
 #: these only count as copying when the object is a source to copy out of.
 _AMBIGUOUS_COPY = r"(?:taken|grabbed|pulled|lifted|leached|saved|retrieved|obtained)"
 
-_COPY_VERB = re.compile(
-    # Unambiguous copying: any object will do.
-    r"(\b" + _UNAMBIGUOUS_COPY + r"\b\s+(from|off|via)"
-    # Ambiguous verbs: only when a source object follows.
-    r"|\b" + _AMBIGUOUS_COPY + r"\b\s+(from|off|via)\s+(?:the\s+|a\s+|an\s+)?"
-    r"(web|internet|online|web\s?site|site|web\s?page|page|blog|forum"
-    r"|google|bing|yandex|duckduckgo|baidu|search"
-    r"|facebook|instagram|flickr|imgur|photobucket|pinterest|reddit|tumblr"
-    r"|tiktok|twitter|youtube|wikipedia|wikimedia|commons"
-    r"|book|magazine|newspaper|article|journal|publication"
-    r"|video|film|movie|tv|television|stream|scan|album|post|tweet|profile"
-    r"|account|channel|pdf|document|source|news)\b"
-    # A screenshot is an image *type*. Capturing a user interface ("Screenshot of
-    # a website", "Screenshot of the app", "Screenshot of the menu") is a
-    # legitimate way to depict a screen, so the bare noun and UI objects are
-    # descriptive and must NOT be treated as evidence of unauthorised copying.
-    # Capturing a *media work* (film, broadcast, video, stream) is evidence, and
-    # so is an explicit capture verb.
+#: Non-verb scraping evidence: screenshot capture of a media work, screen grabs,
+#: search engines, and re-uploads to anonymous hosts.
+#:
+#: A screenshot is an image *type*. Capturing a user interface ("Screenshot of a
+#: website", "Screenshot of the app", "Screenshot of the menu") is a legitimate
+#: way to depict a screen, so the bare noun and UI objects are descriptive and
+#: must NOT be treated as evidence of unauthorised copying. Capturing a *media
+#: work* (film, broadcast, video, stream) is evidence, and so is an explicit
+#: capture verb.
+#:
+#: Hosting verbs name a destination, which is evidence of re-upload only when the
+#: destination is an anonymous image dump. "Uploaded to Commons" is legitimate,
+#: and Flickr is deliberately absent: Commons' Flickr review bot imports under
+#: exactly the credit line "uploaded to Flickr by <author>", so flagging that
+#: phrasing would reject a large, licensed, legitimately-sourced slice of the
+#: corpus. Imgur/Photobucket have no such attribution route.
+_OTHER_SCRAPE_EVIDENCE = (
     r"|\bscreenshot\b\s*(from|of)\s+(a\s+|the\s+)?"
     r"(film|movie|video|tv|television|youtube|stream|episode|documentary)"
     r"|\bscreenshot(s|ed)?\s+(taken|grabbed|captured)\s+(from|of)"
@@ -233,15 +232,22 @@ _COPY_VERB = re.compile(
     r"|\bimage\s+search\b|\breverse\s+image\s+search\b"
     r"|\bfound\s+(on|via)\s+the\s+(web|internet)\b"
     r"|\bfrom\s+the\s+(web|internet)\b"
-    # Hosting verbs name a destination, which is evidence of re-upload only when
-    # the destination is an anonymous image dump. "Uploaded to Commons" is
-    # legitimate, and Flickr is deliberately absent: Commons' Flickr review bot
-    # imports under exactly the credit line "uploaded to Flickr by <author>", so
-    # flagging that phrasing would reject a large, licensed, legitimately-sourced
-    # slice of the corpus. Imgur/Photobucket have no such attribution route.
     r"|\b(hosted|uploaded|posted|published)\s+(on|to)\s+"
     r"(imgur|photobucket|tinypic|postimg|imgbb|a\s+blog|the\s+web|the\s+internet"
-    r"|a\s+(website|forum|blog)))",
+    r"|a\s+(website|forum|blog))"
+)
+
+#: Assembled from the shared pieces so the source-object list has exactly one
+#: definition. Duplicating it inline previously let the documented example
+#: ("menu card") be present in ``_SOURCE_OBJECT`` but absent from the regex.
+_COPY_VERB = re.compile(
+    r"("
+    # Unambiguous copying: any object will do.
+    r"\b" + _UNAMBIGUOUS_COPY + r"\b\s+(from|off|via)"
+    # Ambiguous verbs: only when a source object follows.
+    + r"|\b" + _AMBIGUOUS_COPY + r"\b\s+(from|off|via)\s+" + _SOURCE_OBJECT
+    + _OTHER_SCRAPE_EVIDENCE
+    + r")",
     re.IGNORECASE,
 )
 #: Explicitly unknown provenance.
@@ -662,11 +668,87 @@ _RESTRICTION_LICENCE = re.compile(
 
 #: Restrictions that are real caveats but not copyright-licence terms.
 #: They do not block use here, but they must stay visible to a human reviewer.
+#:
+#: Every alternative here must name an actual non-copyright concern. Punctuation
+#: and separators are deliberately absent: a comma is not evidence that a
+#: restriction is harmless, and treating it as such let unassessed text slip
+#: through to ``TRAINING_APPROVED`` (finding C-1).
 _RESTRICTION_OTHER = re.compile(
     r"(trademark|personality rights|\bprivacy\b|moral rights"
-    r"|insulting|defam|, )",
+    r"|insulting|defam|\blibel)",
     re.IGNORECASE,
 )
+
+
+#: Separators that may delimit independent restriction clauses.
+#:
+#: Commons uploaders frequently list several concerns in one field
+#: ("Trademarked, see below"). Splitting first lets each clause be judged on its
+#: own merits; only afterwards is the most restrictive outcome applied. A
+#: separator is never itself evidence that a clause is harmless.
+_RESTRICTION_SEPARATOR = re.compile(
+    r"\s*[;,|]\s*"              # comma, semicolon, pipe
+    r"|\s*/\s*"                  # slash
+    r"|\s+&\s+"                   # ampersand
+    r"|\s+(?:-|\u2013|\u2014)\s+"      # spaced dash
+    r"|\s+(?:and|plus|including)\s+(?=\w)",
+    re.IGNORECASE,
+)
+
+#: Severity order for restriction kinds: the most restrictive wins.
+_RESTRICTION_SEVERITY = {"none": 0, "other": 1, "text": 2, "licence": 3}
+
+
+#: Vocabulary that may legitimately surround a non-copyright concern without
+#: introducing a new condition. Everything else in the clause is a content word,
+#: and a content word that names no recognised concern means the clause carries
+#: something we have not assessed.
+#:
+#: This replaces an earlier character-ratio heuristic, which mis-scored clauses
+#: such as "defamatory or otherwise unlawful use prohibited" (the concern was
+#: matched, but most of the clause was connective prose) and so could not tell
+#: harmless padding from a hidden second condition.
+_RESTRICTION_FILLER = frozenset(
+    """
+    a an the this that these those it its of in on at to for from by with without
+    and or nor not no any all some other otherwise else plus including also
+    is are was were be been being may might must should can could will would
+    apply applies applied use used using usage permitted prohibited forbidden
+    allowed requires require required restriction restrictions restricted
+    image images file files work works content media material see below above
+    note notes respect respects regarding concerning per under terms condition
+    conditions on upon same such more most less least very please ask asks
+    noted note notes as above below stated mentioned given specified here
+    """.split()
+)
+
+
+def _clause_residue(clause: str) -> List[str]:
+    """Content words in ``clause`` not explained by a recognised concern."""
+    text = clause.lower()
+    # Remove the concern vocabulary first, so inflections are covered, then any
+    # matched phrase that remains.
+    text = re.sub(
+        r"\b(trademark\w*|personality|privacy|moral|insult\w*|defam\w*"
+        r"|libel\w*|slander\w*|rights?)\b",
+        " ",
+        text,
+    )
+    for match in _RESTRICTION_OTHER.finditer(text):
+        text = text.replace(match.group(0), " ")
+    words = re.findall(r"[a-z]+", text)
+    return [w for w in words if w not in _RESTRICTION_FILLER]
+
+
+def _classify_restriction_clause(clause: str) -> str:
+    """Classify a single restriction clause as ``licence``, ``other`` or ``text``."""
+    if _RESTRICTION_LICENCE.search(clause):
+        return "licence"
+    if _RESTRICTION_OTHER.search(clause):
+        # A named concern only makes the clause a caveat if nothing unassessed
+        # is hiding alongside it.
+        return "other" if not _clause_residue(clause) else "text"
+    return "text"
 
 
 def classify_restrictions(text: str) -> Dict[str, Any]:
@@ -683,31 +765,49 @@ def classify_restrictions(text: str) -> Dict[str, Any]:
       rather than assumed benign, because the pipeline cannot tell an
       unassessed condition from a remark.
 
+    The field may list several concerns at once, so it is split into clauses and
+    each clause is classified independently. The **most restrictive** clause
+    determines the result: a field containing both a trademark caveat and an
+    unassessed clause is ``text`` (held), not ``other`` (approved). Punctuation
+    alone never makes a clause harmless.
+
     Returns the ``kind`` plus the original ``text`` unchanged, so the raw Commons
-    value is never lost.
+    value is never lost, along with the individual clause verdicts for audit.
     """
     text = _coerce_text(text).strip()
     if not text:
-        return {"kind": "none", "text": "", "reason": ""}
-    if _RESTRICTION_LICENCE.search(text):
-        return {
-            "kind": "licence",
-            "text": text,
-            "reason": f"Commons Restrictions field carries a licence restriction: {text!r}",
-        }
-    if _RESTRICTION_OTHER.search(text):
-        return {
-            "kind": "other",
-            "text": text,
-            "reason": (
-                f"Commons Restrictions field carries a non-copyright caveat "
-                f"{text!r}; retained for human review, not a licence term"
-            ),
-        }
+        return {"kind": "none", "text": "", "reason": "", "clauses": []}
+
+    clauses = [c.strip() for c in _RESTRICTION_SEPARATOR.split(text) if c and c.strip()]
+    if not clauses:
+        clauses = [text]
+
+    verdicts = [(_classify_restriction_clause(c), c) for c in clauses]
+    worst_kind, worst_clause = max(
+        verdicts, key=lambda pair: _RESTRICTION_SEVERITY[pair[0]]
+    )
+
+    if worst_kind == "licence":
+        reason = (
+            f"Commons Restrictions field carries a licence restriction "
+            f"{worst_clause!r} (in {text!r})"
+        )
+    elif worst_kind == "other":
+        reason = (
+            f"Commons Restrictions field carries a non-copyright caveat "
+            f"{text!r}; retained for human review, not a licence term"
+        )
+    else:
+        reason = (
+            f"Commons Restrictions field is unclassified text {worst_clause!r} "
+            f"(in {text!r}); deferred to human review"
+        )
+
     return {
-        "kind": "text",
+        "kind": worst_kind,
         "text": text,
-        "reason": f"Commons Restrictions field is unclassified text {text!r}; deferred to human review",
+        "reason": reason,
+        "clauses": [{"text": c, "kind": k} for k, c in verdicts],
     }
 
 

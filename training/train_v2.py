@@ -94,7 +94,10 @@ def _resolve_row_path(raw_path: str, prepared_dir: Path) -> Path:
     """
     candidate = Path(raw_path)
     if candidate.is_absolute():
-        return candidate
+        # ``resolve()`` collapses symlinks, so a link inside the dataset that
+        # points outside it is caught by the containment check below rather
+        # than passing on its in-tree location.
+        return candidate.resolve()
     return (Path(prepared_dir) / candidate).resolve()
 
 
@@ -111,8 +114,9 @@ def check_manifest_paths(prepared_dir: Path, splits: Dict[str, List[Dict[str, An
 
     * the path is present and is a string;
     * it resolves to an existing regular file;
-    * it lives inside ``prepared_dir`` when given as a relative path (guards
-      against ``../../../etc/passwd``-style escapes);
+    * it resolves inside ``prepared_dir`` whether given as an absolute or a
+      relative path, with symlinks collapsed (guards against both
+      ``../../../etc/passwd``-style escapes and links pointing out of the tree);
     * it has an image extension;
     * its first bytes can actually be read and are non-empty.
     """
@@ -129,16 +133,18 @@ def check_manifest_paths(prepared_dir: Path, splits: Dict[str, List[Dict[str, An
                 problems.append(f"{split}: image {pageid} has no usable local path")
                 continue
             path = _resolve_row_path(raw_path, prepared_dir)
-            # Reject escapes from the prepared directory via a relative path.
-            if not Path(raw_path).is_absolute():
-                try:
-                    path.relative_to(prepared_root)
-                except ValueError:
-                    problems.append(
-                        f"{split}: image {pageid} path {raw_path!r} escapes the dataset "
-                        f"directory {prepared_root}"
-                    )
-                    continue
+            # Every path, absolute or relative, must stay inside the prepared
+            # dataset root once symlinks are resolved. An absolute path is not
+            # exempt: "validation does not accept paths outside the dataset
+            # root" has to hold for both spellings or it does not hold at all.
+            try:
+                path.relative_to(prepared_root)
+            except ValueError:
+                problems.append(
+                    f"{split}: image {pageid} path {raw_path!r} escapes the dataset "
+                    f"directory {prepared_root} (resolves to {path})"
+                )
+                continue
             if not path.exists():
                 problems.append(f"{split}: image {pageid} file is missing: {path}")
                 continue
