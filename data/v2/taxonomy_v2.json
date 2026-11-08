@@ -1,0 +1,441 @@
+{
+  "version": "1.0",
+  "created": "2026-11-07",
+  "class_count": 41,
+  "raw_image_count": 10042,
+  "dataset_label_count": 45,
+  "cuisine_scope": "Bengali / Bangladeshi only",
+  "target_not_met": {
+    "requested_indian": 120,
+    "requested_international": 30,
+    "requested_total": 150,
+    "actual_total": 41,
+    "reason": "The Indian and international datasets were unreachable from the build environment; only this dataset could be accessed. No classes were invented to reach 150."
+  },
+  "provenance": {
+    "id": "bfd",
+    "repository": "Ishmam97/Bangladeshi-Food-Dataset",
+    "licence_readme": "CC BY 4.0",
+    "licence_file": "CC0 1.0 Universal",
+    "licence_conflict": true,
+    "licence_treated_as": "CC BY 4.0",
+    "attribution_required": true,
+    "provenance_caveat": "README says images were collected from 'homes, restaurants, markets, and online platforms'. The publisher's licence grant is not a verified chain of title for every underlying photograph."
+  },
+  "classes": [
+    {
+      "slug": "sandesh",
+      "label": "Sandesh",
+      "group": "sweet",
+      "dataset_labels": [
+        "Balosai",
+        "Hafsi Sondesh",
+        "Kacha Golla"
+      ],
+      "raw_images": 628,
+      "merge_note": "Balosai, Hafsi Sondesh and Kacha Golla are all fresh chhena sweets of the sandesh family. Merged."
+    },
+    {
+      "slug": "omelette",
+      "label": "Omelette",
+      "group": "snack",
+      "dataset_labels": [
+        "Egg_omlete"
+      ],
+      "raw_images": 560,
+      "merge_note": null
+    },
+    {
+      "slug": "rasgulla",
+      "label": "Rasgulla",
+      "group": "sweet",
+      "dataset_labels": [
+        "Rosogolla"
+      ],
+      "raw_images": 548,
+      "merge_note": null
+    },
+    {
+      "slug": "porota",
+      "label": "Porota (paratha)",
+      "group": "bread",
+      "dataset_labels": [
+        "Porota"
+      ],
+      "raw_images": 535,
+      "merge_note": null
+    },
+    {
+      "slug": "khichuri",
+      "label": "Khichuri (Bengali khichdi)",
+      "group": "rice",
+      "dataset_labels": [
+        "Khichuri"
+      ],
+      "raw_images": 521,
+      "merge_note": null
+    },
+    {
+      "slug": "chomchom",
+      "label": "Chomchom",
+      "group": "sweet",
+      "dataset_labels": [
+        "Kasmiri Chomchom",
+        "S.P.Chomchom",
+        "Sada Chomchom"
+      ],
+      "raw_images": 455,
+      "merge_note": "Four dataset labels (Chomchom, Sada/S.P./Kasmiri Chomchom) are stylistic variants of one sweet and are not reliably separable from a photograph. Merged, not silently dropped."
+    },
+    {
+      "slug": "kebab",
+      "label": "Kebab",
+      "group": "snack",
+      "dataset_labels": [
+        "Kabab"
+      ],
+      "raw_images": 398,
+      "merge_note": null
+    },
+    {
+      "slug": "haleem",
+      "label": "Haleem",
+      "group": "curry",
+      "dataset_labels": [
+        "Haleem"
+      ],
+      "raw_images": 369,
+      "merge_note": null
+    },
+    {
+      "slug": "phuchka",
+      "label": "Phuchka (pani puri)",
+      "group": "street_food",
+      "dataset_labels": [
+        "Phuchka"
+      ],
+      "raw_images": 358,
+      "merge_note": null
+    },
+    {
+      "slug": "biryani_bengali",
+      "label": "Biryani (Bengali style)",
+      "group": "rice",
+      "dataset_labels": [
+        "Biryani"
+      ],
+      "raw_images": 353,
+      "merge_note": null
+    },
+    {
+      "slug": "nihari",
+      "label": "Nihari",
+      "group": "curry",
+      "dataset_labels": [
+        "Nehari"
+      ],
+      "raw_images": 352,
+      "merge_note": null
+    },
+    {
+      "slug": "hilsa_curry",
+      "label": "Hilsa fish curry",
+      "group": "curry",
+      "dataset_labels": [
+        "Hilsha_fish"
+      ],
+      "raw_images": 351,
+      "merge_note": null
+    },
+    {
+      "slug": "doi",
+      "label": "Doi (sweet yogurt)",
+      "group": "dairy",
+      "dataset_labels": [
+        "Doi"
+      ],
+      "raw_images": 328,
+      "merge_note": null
+    },
+    {
+      "slug": "rasmalai",
+      "label": "Rasmalai",
+      "group": "sweet",
+      "dataset_labels": [
+        "Roshmalai"
+      ],
+      "raw_images": 325,
+      "merge_note": null
+    },
+    {
+      "slug": "beef_kala_bhuna",
+      "label": "Beef Kala Bhuna",
+      "group": "curry",
+      "dataset_labels": [
+        "Beef Kala Bhuna"
+      ],
+      "raw_images": 298,
+      "merge_note": null
+    },
+    {
+      "slug": "beguni",
+      "label": "Beguni (besan-fried aubergine)",
+      "group": "snack",
+      "dataset_labels": [
+        "Beguni"
+      ],
+      "raw_images": 279,
+      "merge_note": null
+    },
+    {
+      "slug": "kalojam",
+      "label": "Kalojam",
+      "group": "sweet",
+      "dataset_labels": [
+        "Kalojam"
+      ],
+      "raw_images": 232,
+      "merge_note": null
+    },
+    {
+      "slug": "malaikari",
+      "label": "Malaikari (coconut milk curry)",
+      "group": "curry",
+      "dataset_labels": [
+        "Malaikari"
+      ],
+      "raw_images": 205,
+      "merge_note": null
+    },
+    {
+      "slug": "rajbhog",
+      "label": "Rajbhog",
+      "group": "sweet",
+      "dataset_labels": [
+        "Rajvog"
+      ],
+      "raw_images": 199,
+      "merge_note": null
+    },
+    {
+      "slug": "lemon_barfi",
+      "label": "Lemon Barfi",
+      "group": "sweet",
+      "dataset_labels": [
+        "Lemon Barfi"
+      ],
+      "raw_images": 188,
+      "merge_note": null
+    },
+    {
+      "slug": "maoyaa_laddo",
+      "label": "Maoyaa Laddo",
+      "group": "sweet",
+      "dataset_labels": [
+        "Maoyaa Laddo"
+      ],
+      "raw_images": 177,
+      "merge_note": null
+    },
+    {
+      "slug": "ravogsai",
+      "label": "Ravogsai",
+      "group": "sweet",
+      "dataset_labels": [
+        "Ravogsai"
+      ],
+      "raw_images": 165,
+      "merge_note": null
+    },
+    {
+      "slug": "golap_jam",
+      "label": "Golap Jam (rose syrup sweet)",
+      "group": "sweet",
+      "dataset_labels": [
+        "Golap Jam"
+      ],
+      "raw_images": 160,
+      "merge_note": null
+    },
+    {
+      "slug": "bakarkhani",
+      "label": "Bakarkhani (crisp flatbread)",
+      "group": "bread",
+      "dataset_labels": [
+        "Bakorkhani"
+      ],
+      "raw_images": 156,
+      "merge_note": null
+    },
+    {
+      "slug": "morog_polao",
+      "label": "Morog Polao (chicken pilaf)",
+      "group": "rice",
+      "dataset_labels": [
+        "Morog_polao"
+      ],
+      "raw_images": 155,
+      "merge_note": null
+    },
+    {
+      "slug": "kacha_chana",
+      "label": "Kacha Chana (green gram)",
+      "group": "side",
+      "dataset_labels": [
+        "Kacha  Chana"
+      ],
+      "raw_images": 148,
+      "merge_note": null
+    },
+    {
+      "slug": "cream_jam",
+      "label": "Cream Jam",
+      "group": "sweet",
+      "dataset_labels": [
+        "Cream Jam"
+      ],
+      "raw_images": 145,
+      "merge_note": null
+    },
+    {
+      "slug": "falooda",
+      "label": "Falooda",
+      "group": "dessert",
+      "dataset_labels": [
+        "Faluda"
+      ],
+      "raw_images": 133,
+      "merge_note": null
+    },
+    {
+      "slug": "egg_bhuna",
+      "label": "Dim Bhuna (egg curry)",
+      "group": "curry",
+      "dataset_labels": [
+        "Dim Bhuna"
+      ],
+      "raw_images": 120,
+      "merge_note": null
+    },
+    {
+      "slug": "chola_bhuna",
+      "label": "Chola Bhuna (chickpea curry)",
+      "group": "curry",
+      "dataset_labels": [
+        "Chola_bhuna"
+      ],
+      "raw_images": 118,
+      "merge_note": null
+    },
+    {
+      "slug": "sajer_pitha",
+      "label": "Sajer Pitha",
+      "group": "dessert",
+      "dataset_labels": [
+        "Sajer Pitha"
+      ],
+      "raw_images": 111,
+      "merge_note": null
+    },
+    {
+      "slug": "payesh",
+      "label": "Payesh (rice pudding)",
+      "group": "dessert",
+      "dataset_labels": [
+        "Payesh"
+      ],
+      "raw_images": 110,
+      "merge_note": null
+    },
+    {
+      "slug": "nokshi_pitha",
+      "label": "Nokshi Pitha",
+      "group": "dessert",
+      "dataset_labels": [
+        "Nokshi Pitha"
+      ],
+      "raw_images": 109,
+      "merge_note": null
+    },
+    {
+      "slug": "shemai",
+      "label": "Shemai (vermicelli)",
+      "group": "dessert",
+      "dataset_labels": [
+        "Shemai"
+      ],
+      "raw_images": 102,
+      "merge_note": null
+    },
+    {
+      "slug": "dudh_puli_pitha",
+      "label": "Dudh Puli Pitha",
+      "group": "dessert",
+      "dataset_labels": [
+        "Dudh Puli PItha"
+      ],
+      "raw_images": 98,
+      "merge_note": null
+    },
+    {
+      "slug": "jalebi",
+      "label": "Jalebi (Jilapi)",
+      "group": "sweet",
+      "dataset_labels": [
+        "Jilapi"
+      ],
+      "raw_images": 98,
+      "merge_note": null
+    },
+    {
+      "slug": "pakon_pitha",
+      "label": "Pakon Pitha",
+      "group": "dessert",
+      "dataset_labels": [
+        "Pakon Pitha"
+      ],
+      "raw_images": 95,
+      "merge_note": null
+    },
+    {
+      "slug": "patishapta",
+      "label": "Patishapta (stuffed crepe)",
+      "group": "dessert",
+      "dataset_labels": [
+        "Patishapta"
+      ],
+      "raw_images": 95,
+      "merge_note": null
+    },
+    {
+      "slug": "shamok_pitha",
+      "label": "Shamok Pitha",
+      "group": "dessert",
+      "dataset_labels": [
+        "Shamok Pitha"
+      ],
+      "raw_images": 95,
+      "merge_note": null
+    },
+    {
+      "slug": "panta_ilish",
+      "label": "Panta Ilish (fermented rice with hilsa)",
+      "group": "rice",
+      "dataset_labels": [
+        "Panta Ilish"
+      ],
+      "raw_images": 87,
+      "merge_note": null
+    },
+    {
+      "slug": "aloo_bhorta",
+      "label": "Aloo Bhorta (mashed potato)",
+      "group": "side",
+      "dataset_labels": [
+        "Alu_Bhorta"
+      ],
+      "raw_images": 83,
+      "merge_note": null
+    }
+  ]
+}
