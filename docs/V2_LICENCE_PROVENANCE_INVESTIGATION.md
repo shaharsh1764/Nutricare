@@ -654,3 +654,68 @@ unchanged** as the regression guard.
 - **PD remains untested against real records** because none exist in the corpus.
   The deferral is correct but has never been exercised on genuine PD metadata.
 - `Credit`-field review claims remain unverifiable by construction.
+
+---
+
+# Post-review corrections (NB-1 … NB-5)
+
+Applied after the independent review in `docs/V2_COMMIT_747AA0D_REVIEW.md`.
+
+## NB-1 — scraping detection
+
+Layer rules so a *mention* is never confused with *evidence of copying*:
+
+| Layer | Example | Detected alone? |
+|---|---|---|
+| Unambiguous scrape vocabulary | `scraped`, `clip art`, `hotlinked`, `re-uploaded` | Yes |
+| Copy verb | `copied from`, `downloaded from`, `screenshot from a video` | Yes |
+| Search engine named | `from Google`, bare `Bing`, `google.com/search?q=` | **Yes** — no licensed original comes "from Google" |
+| Social platform named | `Flickr`, `Instagram`, `via Yahoo` | **No** — a host is not proof of copying |
+
+Platform mentions are surfaced by `platform_mentions()` for auditing only and
+never change the tier. `wallpaper` was removed from the pattern (it
+false-positived on "wallpaper paste texture"), and `unknown source` is now
+anchored so "unknown source of the spice" is not flagged.
+
+Restored `Bing` detection lost in the previous commit. Restored
+`found on the internet`, which the previous rewrite had dropped.
+
+## NB-2 — provenance is not a confidence ladder
+
+Documented in the module docstring as five **separate** decisions:
+licence-policy eligibility, provenance classification, human visual approval,
+technical validity, and final `training_usable`. Provenance is audit information:
+except for `scrape_risk` it does not change `rights_tier`, and `unknown` is no
+worse than `independent_review` for eligibility. `unknown` never implies verified;
+`independent_review` never establishes permission.
+
+`training_approved` is retained (renaming would touch downstream manifests) with
+an inline note pinning its meaning to "the declared licence policy permits
+training use" — not human or technical approval.
+
+## NB-3 — licence echoes rejected
+
+`Permission = "CC BY-SA 2.0"` is now recognised as a licence echo
+(`is_licence_label_only`) and classified `unknown` with a
+`permission_licence_echo` signal, instead of `permission_asserted`. Only genuine
+grant language counts (`permission granted`, `used with permission`,
+`released to the public domain`, `licensed for reuse`). The original field value
+is preserved in the record for audit.
+
+## NB-4 — malformed metadata
+
+`_coerce_text()` in `licence_policy` and a hardened `strip_markup`/`em` in
+`commons_audit` reject non-scalar values instead of stringifying them. This
+closed a real hole found during implementation: a list author was rendered as
+`"['A', 'B']"`, which passed as a valid attribution and made an authorless CC BY
+file **TRAINING_APPROVED**. It now yields `""` and the file is `EXCLUDED`.
+
+`enrich()` also type-checks `licence`/`attribution` and pixel dimensions
+(booleans and strings are not pixel counts), flagging `malformed_record`. A single
+malformed file is excluded rather than aborting the class.
+
+## NB-5 — dead constant removed
+
+`_APPROVED_CLASSES` deleted, with a comment recording that coupling CC0/PD with
+CC BY in one set is what caused the original author-requirement bug. A test
+asserts it is not reintroduced.

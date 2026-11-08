@@ -2,7 +2,7 @@
  "schema_version": "4.0",
  "class": "roti",
  "canonical": "Roti",
- "collected_utc": "2026-11-08T11:07:07Z",
+ "collected_utc": "2026-11-08T14:43:52Z",
  "source": {
   "endpoint": "https://commons.wikimedia.org/w/api.php",
   "generator": "categorymembers",

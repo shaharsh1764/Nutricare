@@ -152,9 +152,21 @@ def gather_category(
 
 
 def enrich(record: Dict[str, Any], *, min_edge: int = MIN_EDGE) -> Dict[str, Any]:
-    """Add rights tiering and technical flags to one commons_audit record."""
-    licence = record.get("licence") or {}
-    attribution = record.get("attribution") or {}
+    """Add rights tiering and technical flags to one commons_audit record.
+
+    A single malformed record must not abort collection of an entire class, so
+    every field is type-checked before use. Malformed structure is recorded as a
+    technical flag and the record fails closed rather than raising.
+    """
+    raw_licence = record.get("licence")
+    licence = raw_licence if isinstance(raw_licence, dict) else {}
+    raw_attribution = record.get("attribution")
+    attribution = raw_attribution if isinstance(raw_attribution, dict) else {}
+    if not isinstance(raw_licence, dict) or not isinstance(raw_attribution, dict):
+        # Note it, but still classify: an empty licence dict fails closed.
+        malformed_attribution = True
+    else:
+        malformed_attribution = False
     rights = classify_rights(
         licence,
         artist=attribution.get("artist_raw", ""),
@@ -166,13 +178,20 @@ def enrich(record: Dict[str, Any], *, min_edge: int = MIN_EDGE) -> Dict[str, Any
     )
     width, height = record.get("width"), record.get("height")
     technical_flags: List[str] = []
-    if not width or not height:
+    if malformed_attribution:
+        technical_flags.append("malformed_record")
+    # Numeric sanity: bools and strings must not be treated as pixel counts.
+    dims_ok = (
+        isinstance(width, int) and isinstance(height, int)
+        and not isinstance(width, bool) and not isinstance(height, bool)
+        and width > 0 and height > 0
+    )
+    if not dims_ok:
         technical_flags.append("missing_dimensions")
-    else:
-        if min(width, height) < min_edge:
-            technical_flags.append("below_min_edge")
-        if max(width, height) / max(1, min(width, height)) > 4.0:
-            technical_flags.append("extreme_aspect_ratio")
+    elif min(width, height) < min_edge:
+        technical_flags.append("below_min_edge")
+    elif max(width, height) / max(1, min(width, height)) > 4.0:
+        technical_flags.append("extreme_aspect_ratio")
     if record.get("mime") not in (None, "image/jpeg", "image/png", "image/webp"):
         technical_flags.append(f"unsupported_mime:{record.get('mime')}")
     if record.get("pageid") is None or record.get("sha1") is None:

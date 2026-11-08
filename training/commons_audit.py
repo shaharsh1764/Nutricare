@@ -141,9 +141,24 @@ _TAG_RE = re.compile(r"<[^>]+>")
 _WS_RE = re.compile(r"\s+")
 
 
+#: Types that can legitimately reach strip_markup. Anything else is a malformed
+#: record and must not be stringified into text that could be mistaken for an
+#: attribution (a list would otherwise become "['A', 'B']").
+_TEXT_TYPES = (str, int, float)
+
+
 def strip_markup(value: Optional[str]) -> str:
-    """Flatten an extmetadata HTML fragment to plain text."""
-    if not value:
+    """Flatten an extmetadata HTML fragment to plain text.
+
+    Non-scalar values return ``""``. Coercing a list or dict with ``str()``
+    would produce a printable blob that reads like attribution while being
+    meaningless, so malformed values are rejected rather than rendered.
+    """
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return ""
+    if not isinstance(value, _TEXT_TYPES):
         return ""
     return _WS_RE.sub(" ", html.unescape(_TAG_RE.sub(" ", str(value)))).strip()
 
@@ -157,7 +172,10 @@ def em(extmetadata: Optional[Dict[str, Any]], key: str) -> str:
         return strip_markup(entry.get("value"))
     if entry is None:
         return ""
-    return strip_markup(str(entry))
+    # Do not str() an arbitrary object: only scalar values are meaningful.
+    if isinstance(entry, (str, int, float)) and not isinstance(entry, bool):
+        return strip_markup(entry)
+    return ""
 
 
 def classify_licence(extmetadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:

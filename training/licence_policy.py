@@ -12,11 +12,31 @@ picture shows a biryani. Keeping the three separate is the whole point: an image
 can be perfectly valid and correctly labelled and still be unusable for lack of
 rights, or perfectly licensed and show the wrong food.
 
+Separate decisions that must never be collapsed
+-----------------------------------------------
+Five different questions are answered at five different stages. Passing one does
+not imply passing the next:
+
+1. **Licence-policy eligibility** (:func:`classify_rights`) — does the declared
+   licence permit the intended use? Produces ``rights_tier``.
+2. **Provenance classification** (:func:`classify_provenance`) — how much does
+   the surrounding credit/permission text actually tell us? Produces
+   ``provenance_strength``. This is **audit information, not a confidence
+   ladder**: except for ``scrape_risk`` it does not change ``rights_tier``, and
+   ``unknown`` is no worse than ``independent_review`` for eligibility.
+3. **Human visual approval** (``training/review_store.py``) — has a person
+   confirmed the image shows the labelled dish at acceptable quality?
+4. **Technical validity** (``training/prepare_v2_dataset.py``) — does the file
+   decode, is it large enough, is it a duplicate?
+5. **Final training eligibility** — ``training_usable`` is true only when *all*
+   of the above pass. It is the only count that may be called a training image.
+
 The rights tiers
 ----------------
 ``TRAINING_APPROVED``
-    CC0 / Public domain / CC BY, with an author recorded. These are the only
-    files that may enter a training-approved set.
+    The declared licence permits training use. CC0 needs no author; CC BY
+    requires one. This is a *licence-policy* verdict only: it is not legal
+    clearance, not human review, and not training eligibility.
 
 ``REVIEW_REQUIRED``
     CC BY-SA. Permitted in principle, but share-alike obligations on derived
@@ -49,9 +69,12 @@ TRAINING_APPROVED = "TRAINING_APPROVED"
 REVIEW_REQUIRED = "REVIEW_REQUIRED"
 EXCLUDED = "EXCLUDED"
 
-#: Licence classes (as produced by training.commons_audit) that may be trained on.
-_APPROVED_CLASSES = frozenset({"CC0_PD", "CC_BY"})
 #: Permitted in principle but held pending the share-alike question.
+#:
+#: Note: there is deliberately no ``_APPROVED_CLASSES`` set. Coupling CC0/PD with
+#: CC BY in one set is what originally applied CC BY's author requirement to CC0
+#: and silently dropped anonymous public-domain files. Each licence is now
+#: tiered explicitly in :func:`classify_rights`.
 _REVIEW_CLASSES = frozenset({"CC_BY_SA"})
 
 # Provenance signalling.
@@ -83,14 +106,46 @@ _INDEPENDENT_REVIEW = re.compile(
 
 #: Explicit permission / release language. Weak on its own: it says a grant is
 #: asserted, not that it was verified. Never a clearance.
+#: Explicit permission / release language.
+#:
+#: A bare licence name is deliberately NOT permission evidence: an echo such as
+#: ``Permission = "CC BY-SA 2.0"`` restates the licence tag, which says nothing
+#: about whether the uploader had the right to grant it. Only language that
+#: asserts a *grant* counts.
 _PERMISSION_EVIDENCE = re.compile(
-    r"(\bpermission (to use|granted|is granted|was granted)\b"
+    r"(\bpermission (to use|to publish|granted|is granted|was granted|has been granted)\b"
     r"|\bused with permission\b"
-    r"|\breleased under\b"
-    r"|\bcc[\s-]?by\b"
-    r"|\bcreative commons\b)",
+    r"|\bwith (the )?permission of\b"
+    r"|\b(written|explicit|express) permission\b"
+    r"|\breleased (under|to the public domain)\b"
+    r"|\blicensed (to|for) (use|reuse)\b)",
     re.IGNORECASE,
 )
+
+#: Text that is only a licence label (possibly with a version), with no grant
+#: language. Used to recognise and explicitly reject licence echoes.
+_LICENCE_LABEL_ONLY = re.compile(
+    r"^\s*(cc[\s-]?by([\s-]?sa)?([\s-]?nc)?([\s-]?nd)?"
+    r"|cc0|cc[\s-]?zero"
+    r"|creative commons( attribution)?( (share[- ]?alike|international))?"
+    r"|attribution( \d\.\d)?( international)?"
+    r"|public domain|pd[\s-][\w-]+"
+    r"|gfdl|fal)"
+    r"[\s\d.,/-]*$",
+    re.IGNORECASE,
+)
+
+
+def is_licence_label_only(text: str) -> bool:
+    """True when ``text`` just restates a licence name.
+
+    ``"CC BY-SA 2.0"`` -> True; ``"Permission granted to use this image"`` ->
+    False; ``"CC BY 4.0 photo taken in Kerala"`` -> False (has other content).
+    """
+    text = _coerce_text(text).strip()
+    if not text:
+        return False
+    return bool(_LICENCE_LABEL_ONLY.match(text))
 
 #: Attribution-completeness signals. These describe *who to credit*, not rights.
 _ATTRIBUTION_TEXT = re.compile(
@@ -106,13 +161,111 @@ _TRANSFER_HISTORY = re.compile(
     re.IGNORECASE,
 )
 
-#: Anything suggesting a scraped or re-hosted source.
-_SCRAPE_RISK = re.compile(
-    r"(google (image|search)|bing (image|search)|scraped|clip ?art|pinterest"
-    r"|wallpaper|unknown source|source unknown|no source|found (on|via) the (web|internet)"
-    r"|downloaded from (a )?(website|blog|facebook|instagram))",
+#: Search engines. Naming one as the *source* of an image is inherently a
+#: scraping indicator: there is no legitimate way to obtain a licensed original
+#: "from Google".
+_SEARCH_ENGINE = re.compile(
+    r"(\bgoogle\b|\bbing\b|\byandex\b|\bduckduckgo\b|\bask\.com\b|\bbaidu\b"
+    r"|google\.[a-z]{2,3}\b|images?\.[a-z.]*bing\.|\/search\?)",
     re.IGNORECASE,
 )
+#: Social / image-sharing platforms. A mention alone is NOT scraping: a credit
+#: line may legitimately name the host the photographer used.
+_SOCIAL_PLATFORM = re.compile(
+    r"(facebook|instagram|pinterest|reddit|tumblr|tiktok|imgur|weheartit"
+    r"|flickr|twitter)",
+    re.IGNORECASE,
+)
+#: Unambiguous scraping vocabulary: a hit is sufficient on its own.
+_SCRAPE_WORD = re.compile(
+    r"(\bscraped?\b|\bscraping\b|\bhotlink(ed|ing)?\b|\bclip ?art\b"
+    r"|\brehosted\b|\bre-hosted\b|\bre-?uploaded\b)",
+    re.IGNORECASE,
+)
+#: Verbs that turn any source mention into evidence of copying.
+_COPY_VERB = re.compile(
+    r"(\b(taken|grabbed|pulled|lifted|leached|copied|ripped|downloaded|saved"
+    r"|sourced|obtained|retrieved|hotlinked|re-?uploaded)\b\s+(from|off|via)"
+    r"|\bscreenshot(s|ed)?\b\s*(from|of)?"
+    r"|\bscreen\s?grab\b"
+    r"|\bcaptured\s+from\s+(a\s+)?(video|film|movie|tv|youtube|stream)"
+    r"|\bimage\s+search\b|\breverse\s+image\s+search\b"
+    r"|\bfound\s+(on|via)\s+the\s+(web|internet|internet)\b"
+    r"|\bfrom\s+the\s+(web|internet)\b)",
+    re.IGNORECASE,
+)
+#: Explicitly unknown provenance.
+#: Explicitly unknown provenance.
+#:
+#: Phrasing is anchored rather than loose: "no source of information about the
+#: dish" and "unknown source of the spice" are legitimate food descriptions, not
+#: provenance statements. Bare ``unknown source`` must therefore be the whole
+#: field, and the other forms are unambiguous.
+_UNKNOWN_SOURCE = re.compile(
+    r"(^\s*unknown source\s*$|\bsource unknown\b|\bsource\s*:\s*unknown\b"
+    r"|\bno source (given|provided|known|information)\b"
+    r"|\bsourced from the web\b|\bprovenance unknown\b"
+    r"|\bunknown provenance\b|\borigin unknown\b)",
+    re.IGNORECASE,
+)
+
+
+def scrape_signals(*texts: str) -> List[str]:
+    """Return the *scraping* indicators found in ``texts``.
+
+    Rules are layered so a **mention** is never confused with **evidence of
+    copying**:
+
+    * unambiguous scraping vocabulary matches alone (``scraped``, ``clip art``,
+      ``hotlinked``, ``re-uploaded``);
+    * a copy verb matches alone, because the verb already asserts the act
+      (``copied from``, ``downloaded from``, ``screenshot of``);
+    * a **search engine** named any way matches: there is no legitimate route to
+      a licensed original "from Google" or "from Bing";
+    * a **social platform** named alone does **not** match. "Flickr" or
+      "Instagram" in a credit line is a host the photographer used, not proof of
+      copying. It only becomes scraping when a copy verb accompanies it, which
+      the copy-verb rule already covers.
+
+    An empty list means "no scraping evidence found", which the caller must treat
+    as *unknown*, never as *safe*.
+
+    Platform-only mentions are surfaced separately via :func:`platform_mentions`
+    so an auditor can see them without them affecting the tier.
+    """
+    combined = " ".join(_coerce_text(t) for t in texts if t)
+    if not combined:
+        return []
+    found: List[str] = []
+    if _SCRAPE_WORD.search(combined):
+        found.append("scrape_vocabulary")
+    if _COPY_VERB.search(combined):
+        found.append("copy_verb")
+    if _UNKNOWN_SOURCE.search(combined):
+        found.append("unknown_source")
+    if _SEARCH_ENGINE.search(combined):
+        found.append("search_engine_source")
+    return found
+
+
+def platform_mentions(*texts: str) -> List[str]:
+    """Names of social/image platforms mentioned, for auditing only.
+
+    Deliberately advisory: this returns a list so a reader can see that a batch
+    of credits came from one platform, but the value never affects the rights
+    tier. "Most of our photos say Flickr" is a provenance observation, not a
+    licence judgement.
+    """
+    combined = " ".join(_coerce_text(t) for t in texts if t)
+    if not combined:
+        return []
+    return sorted({m.group(0).lower() for m in _SOCIAL_PLATFORM.finditer(combined)})
+
+
+#: Retained for callers that only want a boolean; ``scrape_signals`` is the
+#: authoritative implementation.
+_SCRAPE_RISK = _SCRAPE_WORD
+
 
 # ---------------------------------------------------------------------------
 # Public Domain designations
@@ -146,6 +299,38 @@ _DEFERRED_PD_SHORT = {
     # Catch-all must stay last so a named family always wins.
     "pd_other_template": re.compile(r"^\s*pd[\s-]", re.IGNORECASE),
 }
+
+
+def _coerce_text(value: Any) -> str:
+    """Coerce an arbitrary extmetadata value to safe text.
+
+    Commons extmetadata values are normally strings, but a malformed or
+    hand-edited record can carry ``None``, a list, a dict, or a number. Calling
+    ``.strip()`` on those raises ``AttributeError``, which upstream would abort
+    collection of an entire class. Returning ``""`` instead makes the record fail
+    closed: it is treated as "no text supplied" rather than crashing or being
+    trusted.
+
+    Deliberately does **not** stringify arbitrary objects into something that
+    could be mistaken for attribution.
+    """
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return str(value)
+    if isinstance(value, dict):
+        # extmetadata sometimes nests {"value": "..."}; accept only that shape.
+        inner = value.get("value")
+        return inner if isinstance(inner, str) else ""
+    if isinstance(value, (list, tuple)):
+        # Deliberately NOT joined. A multi-valued field where a single author is
+        # expected is a malformed record, and silently concatenating it would
+        # turn arbitrary objects into trusted attribution. Reject by returning
+        # empty text so the record fails closed.
+        return ""
+    return ""
 
 
 def public_domain_designation(short_name: str) -> Optional[str]:
@@ -192,8 +377,8 @@ def classify_provenance(
     tag* matches the source, not that the uploader owned the photograph, so the
     result is still only a declaration.
     """
-    permission_text = (permission_text or "").strip()
-    credit_text = (credit_text or "").strip()
+    permission_text = _coerce_text(permission_text).strip()
+    credit_text = _coerce_text(credit_text).strip()
     signals: List[str] = []
     reasons: List[str] = []
 
@@ -206,13 +391,13 @@ def classify_provenance(
     combined = f"{permission_text} {credit_text}".strip()
 
     # 1. Scraping risk dominates: it disqualifies regardless of other text.
-    if _SCRAPE_RISK.search(combined):
+    scrape = scrape_signals(permission_text, credit_text)
+    if scrape:
         reasons.append(
-            "provenance text suggests a scraped or re-hosted source; "
-            "downloadable is not the same as licensed"
+            "provenance text suggests a scraped, copied or re-hosted source "
+            f"({', '.join(scrape)}); downloadable is not the same as licensed"
         )
-        return {"strength": "scrape_risk", "signals": ["scrape_indicator"],
-                "reasons": reasons}
+        return {"strength": "scrape_risk", "signals": scrape, "reasons": reasons}
 
     # 2. Independent review: requires a bot/review claim in Permission, or an
     #    explicit review statement. A wiki transfer never qualifies.
@@ -231,7 +416,17 @@ def classify_provenance(
         signals.append("credit_review_claim")
 
     # 3. Permission evidence: an asserted grant.
-    if _PERMISSION_EVIDENCE.search(permission_text):
+    #
+    # A licence-name echo is rejected first. "Permission = CC BY-SA 2.0" merely
+    # restates the tag already recorded elsewhere, so it is not independent
+    # evidence and must not be upgraded to permission_asserted.
+    if permission_text and is_licence_label_only(permission_text):
+        signals.append("permission_licence_echo")
+        reasons.append(
+            "Permission field only restates the licence name; a licence echo is "
+            "not independent evidence of permission"
+        )
+    elif _PERMISSION_EVIDENCE.search(permission_text):
         reasons.append("Permission field asserts a release or permission")
         return {"strength": "permission_asserted",
                 "signals": signals + ["permission_asserted"], "reasons": reasons}
@@ -270,15 +465,15 @@ def classify_rights(
     declared = licence.get("declared_class") or "UNKNOWN_MISSING"
     if not artist:
         # Convenience: accept the artist embedded in a commons_audit licence dict.
-        artist = licence.get("artist_raw") or ""
-    artist = (artist or "").strip()
+        artist = _coerce_text(licence.get("artist_raw"))
+    artist = _coerce_text(artist).strip()
     attribution_required = licence.get("attribution_required")
-    short_name = (licence.get("short_name") or "").strip()
+    short_name = _coerce_text(licence.get("short_name")).strip()
     # ``classify_licence`` can bucket a file as CC0_PD from UsageTerms/License
     # while LicenseShortName is empty, so fall back to that text rather than
     # discarding a real designation. If neither is present, there is genuinely
     # no basis to decide and the file fails closed below.
-    designation_text = short_name or (licence.get("usage_terms") or "").strip()
+    designation_text = short_name or _coerce_text(licence.get("usage_terms")).strip()
     reasons: List[str] = []
 
     provenance = classify_provenance(permission_text=permission_text, credit_text=credit_text)
@@ -363,7 +558,12 @@ def classify_rights(
         "attribution_sufficient": attribution_sufficient,
         "short_name": short_name,
         "designation_text": designation_text,
-        # Never true from metadata alone: a human must still review the image.
+        # NAMING NOTE: despite the name, this means "the declared licence policy
+        # permits training use". It does NOT mean the image is approved for
+        # training: that requires human review plus technical checks, and is
+        # computed as ``training_usable`` in prepare_v2_dataset.py. Renaming it
+        # would touch downstream manifests, so the meaning is pinned here and in
+        # docs/V2_LICENCE_PROVENANCE_INVESTIGATION.md instead.
         "training_approved": tier == TRAINING_APPROVED,
         "human_review_required": True,
         "legal_clearance": "not_verified",
