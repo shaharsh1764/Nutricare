@@ -1,0 +1,2693 @@
+{
+ "version": "4.0-coverage",
+ "measured_utc": "2026-11-05",
+ "method": "MediaWiki action API prop=categoryinfo via out-of-sandbox documented fetch; one query per batch of 20 categories",
+ "endpoint": "https://commons.wikimedia.org/w/api.php",
+ "critical_caveat": "current_direct_files is a CATEGORY-FILE COUNT, not a unique or usable image count. Categories overlap, subcategory contents are excluded, and no file has been licence-filtered or reviewed. Never report this as a training-image count.",
+ "classes_total": 100,
+ "class_coverage": [
+  {
+   "slug": "biryani",
+   "canonical": "Biryani",
+   "category_group": "rice",
+   "aliases": [
+    "biriyani",
+    "beriyani"
+   ],
+   "commons_categories_requested": [
+    "Biryani",
+    "Chicken biryani",
+    "Hyderabadi biryani"
+   ],
+   "categories_measured": [
+    {
+     "category": "Biryani",
+     "direct_files": 207,
+     "subcats": 19
+    },
+    {
+     "category": "Chicken biryani",
+     "direct_files": 199,
+     "subcats": 4
+    },
+    {
+     "category": "Hyderabadi biryani",
+     "direct_files": 62,
+     "subcats": 4
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 468,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 468,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 27,
+   "permissive_measured": true
+  },
+  {
+   "slug": "pulao",
+   "canonical": "Pulao / Pilaf",
+   "category_group": "rice",
+   "aliases": [
+    "pilaf",
+    "pulav"
+   ],
+   "commons_categories_requested": [
+    "Pulao"
+   ],
+   "categories_measured": [
+    {
+     "category": "Pulao",
+     "direct_files": 20,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 20,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 20,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "pongal",
+   "canonical": "Pongal",
+   "category_group": "rice",
+   "aliases": [
+    "khara pongal",
+    "ven pongal"
+   ],
+   "commons_categories_requested": [
+    "Pongal"
+   ],
+   "categories_measured": [
+    {
+     "category": "Pongal",
+     "direct_files": 151,
+     "subcats": 5
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 151,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 151,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "lemon_rice",
+   "canonical": "Lemon Rice",
+   "category_group": "rice",
+   "aliases": [
+    "chitranna",
+    "nimbu rice"
+   ],
+   "commons_categories_requested": [
+    "Lemon rice"
+   ],
+   "categories_measured": [
+    {
+     "category": "Lemon rice",
+     "direct_files": 15,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 15,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 15,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "curd_rice",
+   "canonical": "Curd Rice",
+   "category_group": "rice",
+   "aliases": [
+    "thayir sadam",
+    "dahi chawal"
+   ],
+   "commons_categories_requested": [
+    "Curd rice"
+   ],
+   "categories_measured": [
+    {
+     "category": "Curd rice",
+     "direct_files": 49,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 49,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 49,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "fried_rice",
+   "canonical": "Fried Rice",
+   "category_group": "rice",
+   "aliases": [
+    "veg fried rice"
+   ],
+   "commons_categories_requested": [
+    "Fried rice"
+   ],
+   "categories_measured": [
+    {
+     "category": "Fried rice",
+     "direct_files": 115,
+     "subcats": 15
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 115,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 115,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "roti",
+   "canonical": "Roti / Chapati",
+   "category_group": "bread",
+   "aliases": [
+    "chapati",
+    "chapatti",
+    "phulka"
+   ],
+   "commons_categories_requested": [
+    "Roti"
+   ],
+   "categories_measured": [
+    {
+     "category": "Roti",
+     "direct_files": 393,
+     "subcats": 23
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 393,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 393,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 12,
+   "permissive_measured": true
+  },
+  {
+   "slug": "naan",
+   "canonical": "Naan",
+   "category_group": "bread",
+   "aliases": [
+    "nan",
+    "butter naan"
+   ],
+   "commons_categories_requested": [
+    "Naan"
+   ],
+   "categories_measured": [
+    {
+     "category": "Naan",
+     "direct_files": 230,
+     "subcats": 11
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 230,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 230,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 30,
+   "permissive_measured": true
+  },
+  {
+   "slug": "paratha",
+   "canonical": "Paratha",
+   "category_group": "bread",
+   "aliases": [
+    "parantha",
+    "porota"
+   ],
+   "commons_categories_requested": [
+    "Paratha"
+   ],
+   "categories_measured": [
+    {
+     "category": "Paratha",
+     "direct_files": 44,
+     "subcats": 15
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 44,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 44,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "aloo_paratha",
+   "canonical": "Aloo Paratha",
+   "category_group": "bread",
+   "aliases": [
+    "alu paratha"
+   ],
+   "commons_categories_requested": [
+    "Aloo paratha"
+   ],
+   "categories_measured": [
+    {
+     "category": "Aloo paratha",
+     "direct_files": 97,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 97,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 97,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "puri",
+   "canonical": "Puri / Poori",
+   "category_group": "bread",
+   "aliases": [
+    "poori"
+   ],
+   "commons_categories_requested": [
+    "Puri"
+   ],
+   "categories_measured": [
+    {
+     "category": "Puri",
+     "direct_files": 141,
+     "subcats": 9
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 141,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 141,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": 1,
+   "permissive_measured": true
+  },
+  {
+   "slug": "bhatura",
+   "canonical": "Bhatura",
+   "category_group": "bread",
+   "aliases": [
+    "bature",
+    "bhature"
+   ],
+   "commons_categories_requested": [
+    "Bhatura"
+   ],
+   "categories_measured": [
+    {
+     "category": "Bhatura",
+     "direct_files": 10,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 10,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 10,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "kulcha",
+   "canonical": "Kulcha",
+   "category_group": "bread",
+   "aliases": [
+    "amritsari kulcha"
+   ],
+   "commons_categories_requested": [
+    "Kulcha"
+   ],
+   "categories_measured": [
+    {
+     "category": "Kulcha",
+     "direct_files": 23,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 23,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 23,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "tandoori_roti",
+   "canonical": "Tandoori Roti",
+   "category_group": "bread",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Tandoori roti"
+   ],
+   "categories_measured": [
+    {
+     "category": "Tandoori roti",
+     "direct_files": 47,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 47,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 47,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "rumali_roti",
+   "canonical": "Rumali Roti",
+   "category_group": "bread",
+   "aliases": [
+    "roomali roti"
+   ],
+   "commons_categories_requested": [
+    "Rumali roti"
+   ],
+   "categories_measured": [
+    {
+     "category": "Rumali roti",
+     "direct_files": 17,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 17,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 17,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "thepla",
+   "canonical": "Thepla",
+   "category_group": "bread",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Thepla"
+   ],
+   "categories_measured": [
+    {
+     "category": "Thepla",
+     "direct_files": 18,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 18,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 18,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "parotta",
+   "canonical": "Parotta",
+   "category_group": "bread",
+   "aliases": [
+    "barotta",
+    "kerala parotta"
+   ],
+   "commons_categories_requested": [
+    "Parotta"
+   ],
+   "categories_measured": [
+    {
+     "category": "Parotta",
+     "direct_files": 134,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 134,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 134,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "appam",
+   "canonical": "Appam",
+   "category_group": "bread",
+   "aliases": [
+    "palappam"
+   ],
+   "commons_categories_requested": [
+    "Appam"
+   ],
+   "categories_measured": [
+    {
+     "category": "Appam",
+     "direct_files": 105,
+     "subcats": 10
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 105,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 105,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "idiyappam",
+   "canonical": "Idiyappam",
+   "category_group": "bread",
+   "aliases": [
+    "string hoppers",
+    "noolappam"
+   ],
+   "commons_categories_requested": [
+    "Idiyappam"
+   ],
+   "categories_measured": [
+    {
+     "category": "Idiyappam",
+     "direct_files": 36,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 36,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 36,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "idli",
+   "canonical": "Idli",
+   "category_group": "breakfast",
+   "aliases": [
+    "idly",
+    "iddli"
+   ],
+   "commons_categories_requested": [
+    "Idli"
+   ],
+   "categories_measured": [
+    {
+     "category": "Idli",
+     "direct_files": 248,
+     "subcats": 11
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 248,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 248,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 3,
+   "permissive_measured": true
+  },
+  {
+   "slug": "dosa",
+   "canonical": "Dosa (plain)",
+   "category_group": "breakfast",
+   "aliases": [
+    "dose",
+    "dosai"
+   ],
+   "commons_categories_requested": [
+    "Dosa"
+   ],
+   "categories_measured": [
+    {
+     "category": "Dosa",
+     "direct_files": 73,
+     "subcats": 29
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 73,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 73,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": 1,
+   "permissive_measured": true
+  },
+  {
+   "slug": "masala_dosa",
+   "canonical": "Masala Dosa",
+   "category_group": "breakfast",
+   "aliases": [
+    "masala dose"
+   ],
+   "commons_categories_requested": [],
+   "categories_measured": [],
+   "categories_missing": [],
+   "current_direct_files": 0,
+   "unmeasured": true,
+   "taxonomy_recorded_files": 0,
+   "delta_vs_taxonomy": 0,
+   "band": "unknown_or_unassessed",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "rava_dosa",
+   "canonical": "Rava Dosa",
+   "category_group": "breakfast",
+   "aliases": [
+    "semolina dosa"
+   ],
+   "commons_categories_requested": [
+    "Rava dosa"
+   ],
+   "categories_measured": [
+    {
+     "category": "Rava dosa",
+     "direct_files": 31,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 31,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 31,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "uttapam",
+   "canonical": "Uttapam",
+   "category_group": "breakfast",
+   "aliases": [
+    "uthappam",
+    "uttappa"
+   ],
+   "commons_categories_requested": [
+    "Uttapam"
+   ],
+   "categories_measured": [
+    {
+     "category": "Uttapam",
+     "direct_files": 61,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 61,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 61,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "upma",
+   "canonical": "Upma",
+   "category_group": "breakfast",
+   "aliases": [
+    "uppuma"
+   ],
+   "commons_categories_requested": [
+    "Upma"
+   ],
+   "categories_measured": [
+    {
+     "category": "Upma",
+     "direct_files": 49,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 49,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 49,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "poha",
+   "canonical": "Poha",
+   "category_group": "breakfast",
+   "aliases": [
+    "pauwa",
+    "aval"
+   ],
+   "commons_categories_requested": [
+    "Poha"
+   ],
+   "categories_measured": [
+    {
+     "category": "Poha",
+     "direct_files": 116,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 116,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 116,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": 6,
+   "permissive_measured": true
+  },
+  {
+   "slug": "puttu",
+   "canonical": "Puttu",
+   "category_group": "breakfast",
+   "aliases": [
+    "pittu"
+   ],
+   "commons_categories_requested": [
+    "Puttu"
+   ],
+   "categories_measured": [
+    {
+     "category": "Puttu",
+     "direct_files": 74,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 74,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 74,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "pesarattu",
+   "canonical": "Pesarattu",
+   "category_group": "breakfast",
+   "aliases": [
+    "pesara dosa"
+   ],
+   "commons_categories_requested": [
+    "Pesarattu"
+   ],
+   "categories_measured": [
+    {
+     "category": "Pesarattu",
+     "direct_files": 14,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 14,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 14,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "vada",
+   "canonical": "Vada",
+   "category_group": "breakfast",
+   "aliases": [
+    "medu vada",
+    "vadai",
+    "urad vada"
+   ],
+   "commons_categories_requested": [
+    "Vada"
+   ],
+   "categories_measured": [
+    {
+     "category": "Vada",
+     "direct_files": 0,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 0,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 0,
+   "delta_vs_taxonomy": 0,
+   "band": "unknown_or_unassessed",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "dal",
+   "canonical": "Dal",
+   "category_group": "dal",
+   "aliases": [
+    "daal",
+    "dhal"
+   ],
+   "commons_categories_requested": [
+    "Dal"
+   ],
+   "categories_measured": [
+    {
+     "category": "Dal",
+     "direct_files": 164,
+     "subcats": 25
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 164,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 164,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "dal_makhani",
+   "canonical": "Dal Makhani",
+   "category_group": "dal",
+   "aliases": [
+    "makhani dal"
+   ],
+   "commons_categories_requested": [
+    "Dal makhani"
+   ],
+   "categories_measured": [
+    {
+     "category": "Dal makhani",
+     "direct_files": 30,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 30,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 30,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "dal_tadka",
+   "canonical": "Dal Tadka",
+   "category_group": "dal",
+   "aliases": [
+    "dal fry"
+   ],
+   "commons_categories_requested": [
+    "Dal tadka"
+   ],
+   "categories_measured": [
+    {
+     "category": "Dal tadka",
+     "direct_files": 26,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 26,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 26,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "rajma",
+   "canonical": "Rajma",
+   "category_group": "dal",
+   "aliases": [
+    "kidney bean curry",
+    "rajma curry"
+   ],
+   "commons_categories_requested": [
+    "Rajma"
+   ],
+   "categories_measured": [
+    {
+     "category": "Rajma",
+     "direct_files": 32,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 32,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 32,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chana_masala",
+   "canonical": "Chana Masala",
+   "category_group": "dal",
+   "aliases": [
+    "chole"
+   ],
+   "commons_categories_requested": [
+    "Chana masala"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chana masala",
+     "direct_files": 71,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 71,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 71,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "sambar",
+   "canonical": "Sambar",
+   "category_group": "dal",
+   "aliases": [
+    "sambhar"
+   ],
+   "commons_categories_requested": [
+    "Sambar"
+   ],
+   "categories_measured": [],
+   "categories_missing": [
+    "Sambar"
+   ],
+   "current_direct_files": 0,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 181,
+   "delta_vs_taxonomy": -181,
+   "band": "unknown_or_unassessed",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "rasam",
+   "canonical": "Rasam",
+   "category_group": "dal",
+   "aliases": [
+    "saaru",
+    "chaaru"
+   ],
+   "commons_categories_requested": [
+    "Rasam"
+   ],
+   "categories_measured": [
+    {
+     "category": "Rasam",
+     "direct_files": 43,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 43,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 43,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "moong_dal",
+   "canonical": "Moong Dal",
+   "category_group": "dal",
+   "aliases": [
+    "mung dal"
+   ],
+   "commons_categories_requested": [
+    "Moong dal"
+   ],
+   "categories_measured": [
+    {
+     "category": "Moong dal",
+     "direct_files": 21,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 21,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 21,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "palak_paneer",
+   "canonical": "Palak Paneer",
+   "category_group": "veg_curry",
+   "aliases": [
+    "saag paneer"
+   ],
+   "commons_categories_requested": [
+    "Palak paneer"
+   ],
+   "categories_measured": [
+    {
+     "category": "Palak paneer",
+     "direct_files": 45,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 45,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 45,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "shahi_paneer",
+   "canonical": "Shahi Paneer",
+   "category_group": "veg_curry",
+   "aliases": [
+    "shahi panir"
+   ],
+   "commons_categories_requested": [
+    "Shahi paneer"
+   ],
+   "categories_measured": [
+    {
+     "category": "Shahi paneer",
+     "direct_files": 32,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 32,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 32,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "kadai_paneer",
+   "canonical": "Kadai Paneer",
+   "category_group": "veg_curry",
+   "aliases": [
+    "karahi paneer"
+   ],
+   "commons_categories_requested": [
+    "Kadai paneer"
+   ],
+   "categories_measured": [
+    {
+     "category": "Kadai paneer",
+     "direct_files": 30,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 30,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 30,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "paneer_tikka",
+   "canonical": "Paneer Tikka",
+   "category_group": "veg_curry",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Paneer tikka"
+   ],
+   "categories_measured": [
+    {
+     "category": "Paneer tikka",
+     "direct_files": 74,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 74,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 74,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "aloo_gobi",
+   "canonical": "Aloo Gobi",
+   "category_group": "veg_curry",
+   "aliases": [
+    "aloo gobhi"
+   ],
+   "commons_categories_requested": [
+    "Aloo gobi"
+   ],
+   "categories_measured": [
+    {
+     "category": "Aloo gobi",
+     "direct_files": 56,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 56,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 56,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "bhindi_masala",
+   "canonical": "Bhindi Masala",
+   "category_group": "veg_curry",
+   "aliases": [
+    "okra masala"
+   ],
+   "commons_categories_requested": [
+    "Bhindi masala"
+   ],
+   "categories_measured": [
+    {
+     "category": "Bhindi masala",
+     "direct_files": 47,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 47,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 47,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "baingan_bharta",
+   "canonical": "Baingan Bharta",
+   "category_group": "veg_curry",
+   "aliases": [
+    "brinjal bharta"
+   ],
+   "commons_categories_requested": [
+    "Baingan bharta"
+   ],
+   "categories_measured": [
+    {
+     "category": "Baingan bharta",
+     "direct_files": 33,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 33,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 33,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "malai_kofta",
+   "canonical": "Malai Kofta",
+   "category_group": "veg_curry",
+   "aliases": [
+    "kofta curry"
+   ],
+   "commons_categories_requested": [
+    "Malai kofta"
+   ],
+   "categories_measured": [
+    {
+     "category": "Malai kofta",
+     "direct_files": 12,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 12,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 12,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "saag",
+   "canonical": "Saag",
+   "category_group": "veg_curry",
+   "aliases": [
+    "sarson ka saag"
+   ],
+   "commons_categories_requested": [
+    "Saag"
+   ],
+   "categories_measured": [
+    {
+     "category": "Saag",
+     "direct_files": 20,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 20,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 20,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "matar_paneer",
+   "canonical": "Matar Paneer",
+   "category_group": "veg_curry",
+   "aliases": [
+    "mutter paneer"
+   ],
+   "commons_categories_requested": [],
+   "categories_measured": [],
+   "categories_missing": [],
+   "current_direct_files": 0,
+   "unmeasured": true,
+   "taxonomy_recorded_files": 0,
+   "delta_vs_taxonomy": 0,
+   "band": "unknown_or_unassessed",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chicken_curry",
+   "canonical": "Chicken Curry",
+   "category_group": "nonveg_curry",
+   "aliases": [
+    "murgh curry"
+   ],
+   "commons_categories_requested": [
+    "Chicken curries"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chicken curries",
+     "direct_files": 143,
+     "subcats": 4
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 143,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 143,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chicken_tikka",
+   "canonical": "Chicken Tikka",
+   "category_group": "nonveg_curry",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Chicken tikka"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chicken tikka",
+     "direct_files": 56,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 56,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 56,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chicken_tikka_masala",
+   "canonical": "Chicken Tikka Masala",
+   "category_group": "nonveg_curry",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Chicken tikka masala"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chicken tikka masala",
+     "direct_files": 52,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 52,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 52,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "butter_chicken",
+   "canonical": "Butter Chicken",
+   "category_group": "nonveg_curry",
+   "aliases": [
+    "murgh makhani"
+   ],
+   "commons_categories_requested": [
+    "Butter chicken"
+   ],
+   "categories_measured": [
+    {
+     "category": "Butter chicken",
+     "direct_files": 74,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 74,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 74,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": 7,
+   "permissive_measured": true
+  },
+  {
+   "slug": "tandoori_chicken",
+   "canonical": "Tandoori Chicken",
+   "category_group": "nonveg_curry",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Tandoori chicken"
+   ],
+   "categories_measured": [
+    {
+     "category": "Tandoori chicken",
+     "direct_files": 161,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 161,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 161,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": 8,
+   "permissive_measured": true
+  },
+  {
+   "slug": "chicken_65",
+   "canonical": "Chicken 65",
+   "category_group": "nonveg_curry",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Chicken 65"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chicken 65",
+     "direct_files": 43,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 43,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 43,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "mutton_curry",
+   "canonical": "Mutton Curry",
+   "category_group": "nonveg_curry",
+   "aliases": [
+    "lamb curry",
+    "goat curry"
+   ],
+   "commons_categories_requested": [
+    "Mutton curry"
+   ],
+   "categories_measured": [
+    {
+     "category": "Mutton curry",
+     "direct_files": 55,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 55,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 55,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "nihari",
+   "canonical": "Nihari",
+   "category_group": "nonveg_curry",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Nihari"
+   ],
+   "categories_measured": [
+    {
+     "category": "Nihari",
+     "direct_files": 17,
+     "subcats": 4
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 17,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 17,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "haleem",
+   "canonical": "Haleem",
+   "category_group": "nonveg_curry",
+   "aliases": [
+    "harees"
+   ],
+   "commons_categories_requested": [
+    "Haleem"
+   ],
+   "categories_measured": [
+    {
+     "category": "Haleem",
+     "direct_files": 48,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 48,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 48,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "fish_curry",
+   "canonical": "Fish Curry",
+   "category_group": "nonveg_curry",
+   "aliases": [
+    "maacher jhol"
+   ],
+   "commons_categories_requested": [
+    "Fish curries"
+   ],
+   "categories_measured": [
+    {
+     "category": "Fish curries",
+     "direct_files": 50,
+     "subcats": 6
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 50,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 50,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "fried_fish",
+   "canonical": "Fried Fish",
+   "category_group": "nonveg_curry",
+   "aliases": [
+    "fish fry"
+   ],
+   "commons_categories_requested": [
+    "Fried fish"
+   ],
+   "categories_measured": [
+    {
+     "category": "Fried fish",
+     "direct_files": 163,
+     "subcats": 18
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 163,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 163,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "samosa",
+   "canonical": "Samosa",
+   "category_group": "street_food",
+   "aliases": [
+    "samosas",
+    "singara"
+   ],
+   "commons_categories_requested": [
+    "Samosas",
+    "Samosas of India"
+   ],
+   "categories_measured": [
+    {
+     "category": "Samosas",
+     "direct_files": 72,
+     "subcats": 4
+    },
+    {
+     "category": "Samosas of India",
+     "direct_files": 201,
+     "subcats": 4
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 273,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 273,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 9,
+   "permissive_measured": true
+  },
+  {
+   "slug": "pakora",
+   "canonical": "Pakora / Bhajji",
+   "category_group": "street_food",
+   "aliases": [
+    "pakoda",
+    "pakode",
+    "bhaji",
+    "bhajji",
+    "beguni"
+   ],
+   "commons_categories_requested": [
+    "Pakora",
+    "Bhaji"
+   ],
+   "categories_measured": [
+    {
+     "category": "Pakora",
+     "direct_files": 145,
+     "subcats": 20
+    },
+    {
+     "category": "Bhaji",
+     "direct_files": 21,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 166,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 166,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "vada_pav",
+   "canonical": "Vada Pav",
+   "category_group": "street_food",
+   "aliases": [
+    "wada pav"
+   ],
+   "commons_categories_requested": [
+    "Vada pav"
+   ],
+   "categories_measured": [
+    {
+     "category": "Vada pav",
+     "direct_files": 71,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 71,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 71,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "panipuri",
+   "canonical": "Pani Puri",
+   "category_group": "street_food",
+   "aliases": [
+    "pani puri",
+    "gol gappa",
+    "phuchka"
+   ],
+   "commons_categories_requested": [
+    "Panipuri"
+   ],
+   "categories_measured": [
+    {
+     "category": "Panipuri",
+     "direct_files": 221,
+     "subcats": 5
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 221,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 221,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "bhelpuri",
+   "canonical": "Bhel Puri",
+   "category_group": "street_food",
+   "aliases": [
+    "jhal muri"
+   ],
+   "commons_categories_requested": [
+    "Bhelpuri"
+   ],
+   "categories_measured": [
+    {
+     "category": "Bhelpuri",
+     "direct_files": 87,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 87,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 87,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chaat",
+   "canonical": "Chaat",
+   "category_group": "street_food",
+   "aliases": [
+    "chat"
+   ],
+   "commons_categories_requested": [
+    "Chaat"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chaat",
+     "direct_files": 148,
+     "subcats": 23
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 148,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 148,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "aloo_tikki",
+   "canonical": "Aloo Tikki",
+   "category_group": "street_food",
+   "aliases": [
+    "tikki"
+   ],
+   "commons_categories_requested": [
+    "Aloo tikki"
+   ],
+   "categories_measured": [
+    {
+     "category": "Aloo tikki",
+     "direct_files": 59,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 59,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 59,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chole_bhature",
+   "canonical": "Chole Bhature",
+   "category_group": "street_food",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Chole bhature"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chole bhature",
+     "direct_files": 81,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 81,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 81,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "kachori",
+   "canonical": "Kachori",
+   "category_group": "street_food",
+   "aliases": [
+    "katchori"
+   ],
+   "commons_categories_requested": [
+    "Kachori"
+   ],
+   "categories_measured": [
+    {
+     "category": "Kachori",
+     "direct_files": 51,
+     "subcats": 4
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 51,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 51,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "papri_chaat",
+   "canonical": "Papri Chaat",
+   "category_group": "street_food",
+   "aliases": [
+    "papdi chaat"
+   ],
+   "commons_categories_requested": [
+    "Papri chaat"
+   ],
+   "categories_measured": [
+    {
+     "category": "Papri chaat",
+     "direct_files": 41,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 41,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 41,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "dhokla",
+   "canonical": "Dhokla",
+   "category_group": "snack",
+   "aliases": [
+    "khaman"
+   ],
+   "commons_categories_requested": [
+    "Dhokla"
+   ],
+   "categories_measured": [
+    {
+     "category": "Dhokla",
+     "direct_files": 75,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 75,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 75,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "momos",
+   "canonical": "Momos",
+   "category_group": "snack",
+   "aliases": [
+    "momo"
+   ],
+   "commons_categories_requested": [
+    "Momos"
+   ],
+   "categories_measured": [
+    {
+     "category": "Momos",
+     "direct_files": 103,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 103,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 103,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chow_mein",
+   "canonical": "Chow Mein",
+   "category_group": "snack",
+   "aliases": [
+    "chowmein"
+   ],
+   "commons_categories_requested": [
+    "Chow mein"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chow mein",
+     "direct_files": 70,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 70,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 70,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "murukku",
+   "canonical": "Murukku",
+   "category_group": "snack",
+   "aliases": [
+    "chakralu"
+   ],
+   "commons_categories_requested": [
+    "Murukku"
+   ],
+   "categories_measured": [
+    {
+     "category": "Murukku",
+     "direct_files": 66,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 66,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 66,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chakli",
+   "canonical": "Chakli",
+   "category_group": "snack",
+   "aliases": [
+    "chakkuli"
+   ],
+   "commons_categories_requested": [
+    "Chakli"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chakli",
+     "direct_files": 27,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 27,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 27,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "cutlet",
+   "canonical": "Cutlet",
+   "category_group": "snack",
+   "aliases": [
+    "aloo cutlet"
+   ],
+   "commons_categories_requested": [
+    "Cutlets of India"
+   ],
+   "categories_measured": [
+    {
+     "category": "Cutlets of India",
+     "direct_files": 55,
+     "subcats": 6
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 55,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 55,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "jalebi",
+   "canonical": "Jalebi",
+   "category_group": "sweet",
+   "aliases": [
+    "jilebi",
+    "jilapi"
+   ],
+   "commons_categories_requested": [
+    "Jalebi"
+   ],
+   "categories_measured": [
+    {
+     "category": "Jalebi",
+     "direct_files": 237,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 237,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 237,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 7,
+   "permissive_measured": true
+  },
+  {
+   "slug": "imarti",
+   "canonical": "Imarti",
+   "category_group": "sweet",
+   "aliases": [
+    "amriti",
+    "jhangiri"
+   ],
+   "commons_categories_requested": [
+    "Imarti"
+   ],
+   "categories_measured": [
+    {
+     "category": "Imarti",
+     "direct_files": 39,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 39,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 39,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "gulab_jamun",
+   "canonical": "Gulab Jamun",
+   "category_group": "sweet",
+   "aliases": [
+    "gulab jamoon"
+   ],
+   "commons_categories_requested": [
+    "Gulab jamun"
+   ],
+   "categories_measured": [
+    {
+     "category": "Gulab jamun",
+     "direct_files": 216,
+     "subcats": 3
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 216,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 216,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 6,
+   "permissive_measured": true
+  },
+  {
+   "slug": "rasgulla",
+   "canonical": "Rasgulla",
+   "category_group": "sweet",
+   "aliases": [
+    "rosogolla"
+   ],
+   "commons_categories_requested": [
+    "Rasgulla"
+   ],
+   "categories_measured": [
+    {
+     "category": "Rasgulla",
+     "direct_files": 54,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 54,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 54,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "rasmalai",
+   "canonical": "Rasmalai",
+   "category_group": "sweet",
+   "aliases": [
+    "ras malai"
+   ],
+   "commons_categories_requested": [
+    "Rasmalai"
+   ],
+   "categories_measured": [
+    {
+     "category": "Rasmalai",
+     "direct_files": 59,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 59,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 59,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chomchom",
+   "canonical": "Chomchom",
+   "category_group": "sweet",
+   "aliases": [
+    "cham cham"
+   ],
+   "commons_categories_requested": [
+    "Chomchom"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chomchom",
+     "direct_files": 26,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 26,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 26,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "barfi",
+   "canonical": "Barfi",
+   "category_group": "sweet",
+   "aliases": [
+    "burfi"
+   ],
+   "commons_categories_requested": [
+    "Barfi"
+   ],
+   "categories_measured": [
+    {
+     "category": "Barfi",
+     "direct_files": 65,
+     "subcats": 6
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 65,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 65,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "laddu",
+   "canonical": "Laddu",
+   "category_group": "sweet",
+   "aliases": [
+    "laddoo",
+    "ladoo"
+   ],
+   "commons_categories_requested": [
+    "Laddu"
+   ],
+   "categories_measured": [
+    {
+     "category": "Laddu",
+     "direct_files": 164,
+     "subcats": 11
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 164,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 164,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": 4,
+   "permissive_measured": true
+  },
+  {
+   "slug": "halwa",
+   "canonical": "Halwa",
+   "category_group": "sweet",
+   "aliases": [
+    "halva"
+   ],
+   "commons_categories_requested": [
+    "Halva"
+   ],
+   "categories_measured": [
+    {
+     "category": "Halva",
+     "direct_files": 94,
+     "subcats": 8
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 94,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 94,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "gajar_ka_halwa",
+   "canonical": "Gajar Ka Halwa",
+   "category_group": "sweet",
+   "aliases": [
+    "carrot halwa",
+    "gajrela"
+   ],
+   "commons_categories_requested": [
+    "Gajar ka halwa"
+   ],
+   "categories_measured": [
+    {
+     "category": "Gajar ka halwa",
+     "direct_files": 77,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 77,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 77,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "kheer",
+   "canonical": "Kheer",
+   "category_group": "sweet",
+   "aliases": [
+    "payasam",
+    "payesh",
+    "rice pudding"
+   ],
+   "commons_categories_requested": [
+    "Kheer",
+    "Payasam"
+   ],
+   "categories_measured": [
+    {
+     "category": "Kheer",
+     "direct_files": 135,
+     "subcats": 6
+    },
+    {
+     "category": "Payasam",
+     "direct_files": 47,
+     "subcats": 4
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 182,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 182,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": 7,
+   "permissive_measured": true
+  },
+  {
+   "slug": "phirni",
+   "canonical": "Phirni",
+   "category_group": "sweet",
+   "aliases": [
+    "firni"
+   ],
+   "commons_categories_requested": [
+    "Phirni"
+   ],
+   "categories_measured": [
+    {
+     "category": "Phirni",
+     "direct_files": 33,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 33,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 33,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "rabri",
+   "canonical": "Rabri",
+   "category_group": "sweet",
+   "aliases": [
+    "rabdi"
+   ],
+   "commons_categories_requested": [
+    "Rabri"
+   ],
+   "categories_measured": [
+    {
+     "category": "Rabri",
+     "direct_files": 30,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 30,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 30,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "kulfi",
+   "canonical": "Kulfi",
+   "category_group": "sweet",
+   "aliases": [
+    "qulfi"
+   ],
+   "commons_categories_requested": [
+    "Kulfi"
+   ],
+   "categories_measured": [
+    {
+     "category": "Kulfi",
+     "direct_files": 76,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 76,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 76,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "modak",
+   "canonical": "Modak",
+   "category_group": "sweet",
+   "aliases": [
+    "modakam"
+   ],
+   "commons_categories_requested": [
+    "Modak"
+   ],
+   "categories_measured": [
+    {
+     "category": "Modak",
+     "direct_files": 35,
+     "subcats": 4
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 35,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 35,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "peda",
+   "canonical": "Peda",
+   "category_group": "sweet",
+   "aliases": [
+    "penda"
+   ],
+   "commons_categories_requested": [
+    "Peda"
+   ],
+   "categories_measured": [
+    {
+     "category": "Peda",
+     "direct_files": 47,
+     "subcats": 2
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 47,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 47,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "sandesh",
+   "canonical": "Sandesh",
+   "category_group": "sweet",
+   "aliases": [
+    "sondesh"
+   ],
+   "commons_categories_requested": [
+    "Sandesh"
+   ],
+   "categories_measured": [
+    {
+     "category": "Sandesh",
+     "direct_files": 28,
+     "subcats": 7
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 28,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 28,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "mysore_pak",
+   "canonical": "Mysore Pak",
+   "category_group": "sweet",
+   "aliases": [
+    "mysurpa"
+   ],
+   "commons_categories_requested": [
+    "Mysore pak"
+   ],
+   "categories_measured": [
+    {
+     "category": "Mysore pak",
+     "direct_files": 33,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 33,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 33,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "malpua",
+   "canonical": "Malpua",
+   "category_group": "sweet",
+   "aliases": [],
+   "commons_categories_requested": [
+    "Malpua"
+   ],
+   "categories_measured": [
+    {
+     "category": "Malpua",
+     "direct_files": 75,
+     "subcats": 1
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 75,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 75,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "shrikhand",
+   "canonical": "Shrikhand",
+   "category_group": "sweet",
+   "aliases": [
+    "srikhand"
+   ],
+   "commons_categories_requested": [
+    "Shrikhand"
+   ],
+   "categories_measured": [
+    {
+     "category": "Shrikhand",
+     "direct_files": 22,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 22,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 22,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "lassi",
+   "canonical": "Lassi",
+   "category_group": "drink",
+   "aliases": [
+    "sweet lassi"
+   ],
+   "commons_categories_requested": [
+    "Lassi"
+   ],
+   "categories_measured": [
+    {
+     "category": "Lassi",
+     "direct_files": 121,
+     "subcats": 5
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 121,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 121,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": 8,
+   "permissive_measured": true
+  },
+  {
+   "slug": "masala_chai",
+   "canonical": "Masala Chai",
+   "category_group": "drink",
+   "aliases": [
+    "chai"
+   ],
+   "commons_categories_requested": [
+    "Masala chai"
+   ],
+   "categories_measured": [
+    {
+     "category": "Masala chai",
+     "direct_files": 48,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 48,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 48,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "filter_coffee",
+   "canonical": "Indian Filter Coffee",
+   "category_group": "drink",
+   "aliases": [
+    "filter kaapi"
+   ],
+   "commons_categories_requested": [
+    "Indian filter coffee"
+   ],
+   "categories_measured": [
+    {
+     "category": "Indian filter coffee",
+     "direct_files": 36,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 36,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 36,
+   "delta_vs_taxonomy": 0,
+   "band": "insufficient",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "falooda",
+   "canonical": "Falooda",
+   "category_group": "drink",
+   "aliases": [
+    "faluda"
+   ],
+   "commons_categories_requested": [
+    "Falooda"
+   ],
+   "categories_measured": [
+    {
+     "category": "Falooda",
+     "direct_files": 74,
+     "subcats": 0
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 74,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 74,
+   "delta_vs_taxonomy": 0,
+   "band": "limited",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  },
+  {
+   "slug": "chutney",
+   "canonical": "Chutney",
+   "category_group": "accompaniment",
+   "aliases": [
+    "chatni"
+   ],
+   "commons_categories_requested": [
+    "Chutney"
+   ],
+   "categories_measured": [
+    {
+     "category": "Chutney",
+     "direct_files": 298,
+     "subcats": 8
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 298,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 298,
+   "delta_vs_taxonomy": 0,
+   "band": "strong",
+   "permissive_direct_files": 11,
+   "permissive_measured": true
+  },
+  {
+   "slug": "raita",
+   "canonical": "Raita",
+   "category_group": "accompaniment",
+   "aliases": [
+    "raitha"
+   ],
+   "commons_categories_requested": [
+    "Raita"
+   ],
+   "categories_measured": [
+    {
+     "category": "Raita",
+     "direct_files": 130,
+     "subcats": 5
+    }
+   ],
+   "categories_missing": [],
+   "current_direct_files": 130,
+   "unmeasured": false,
+   "taxonomy_recorded_files": 130,
+   "delta_vs_taxonomy": 0,
+   "band": "moderate",
+   "permissive_direct_files": null,
+   "permissive_measured": false
+  }
+ ],
+ "taxonomy_discrepancies": [
+  {
+   "class": "matar_paneer",
+   "issue": "taxonomy recorded 0 direct files (bucket D unmeasured); Category:Matar paneer now measures 31 files",
+   "action": "recorded as a collection gap closed by measurement, NOT auto-approved"
+  },
+  {
+   "class": "sambar",
+   "issue": "taxonomy requests 'Category:Sambar', which is missing/1 page; the real Commons category is 'Category:Sambhar' (8 files)",
+   "action": "discrepancy recorded; taxonomy NOT renamed without approval"
+  },
+  {
+   "class": "vada",
+   "issue": "Category:Vada has 0 files and is missing; the taxonomy has no verified Vada category",
+   "action": "remains a collection gap"
+  }
+ ],
+ "summary": {
+  "with_measured_category": 97,
+  "unmeasured": 3,
+  "ge_200": 9,
+  "ge_150": 16,
+  "ge_100": 26,
+  "ge_50": 55,
+  "lt_50": 41,
+  "zero": 4,
+  "total_direct_file_slots": 8270,
+  "permissive_measured_classes": 16,
+  "permissive_ge_20": 2,
+  "permissive_ge_10": 4,
+  "permissive_lt_5": 4
+ },
+ "permissive_licence_measurement": {
+  "method": "action=query&list=search&srnamespace=6&srsearch=incategory:\"<cat>\" haslicense:unrestricted filetype:bitmap",
+  "measured_utc": "2026-11-05",
+  "meaning": "files in the DIRECT category whose Commons-declared licence is unrestricted (CC0 / PD / CC BY, i.e. not share-alike and not restricted). Subcategories excluded.",
+  "caveat": "Still a candidate count, not a training count: no duplicate, quality, label or review filtering has been applied, and a declared licence is not verified rights.",
+  "counts": {
+   "Roti": 12,
+   "Idli": 3,
+   "Dosa": 1,
+   "Biryani": 19,
+   "Chicken biryani": 8,
+   "Naan": 30,
+   "Jalebi": 7,
+   "Laddu": 4,
+   "Poha": 6,
+   "Samosas": 5,
+   "Samosas of India": 4,
+   "Butter chicken": 7,
+   "Tandoori chicken": 8,
+   "Lassi": 8,
+   "Kheer": 7,
+   "Gulab jamun": 6,
+   "Chutney": 11,
+   "Puri": 1
+  }
+ }
+}

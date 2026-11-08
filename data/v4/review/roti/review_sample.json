@@ -1,0 +1,562 @@
+{
+ "schema_version": "4.0",
+ "generated_utc": "2026-11-08T10:39:04Z",
+ "class": "roti",
+ "canonical": "Roti",
+ "batch_limit": 10,
+ "batch_size": 10,
+ "selection_method": "rights-supported first (author round-robin), then a CC BY-SA slice; ordered by Commons page id",
+ "source_collection_utc": "2026-11-08T10:39:04Z",
+ "image_bytes_downloaded": false,
+ "licence_mix": {
+  "CC_BY": 2,
+  "CC_BY_SA": 8
+ },
+ "rights_tier_mix": {
+  "TRAINING_APPROVED": 2,
+  "REVIEW_REQUIRED": 8
+ },
+ "licence_reminder": "A declared Commons licence is not independently verified permission. Nothing here is legally cleared, and usable_for_training is false for every record until a human records a decision.",
+ "images": [
+  {
+   "pageid": 4649402,
+   "title": "File:Chicken Balti Bhuna.jpg",
+   "sha1": "9ae5a0c6e6d05f5ef69b794e7dc1789d56376a86",
+   "width": 1200,
+   "height": 800,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Chicken_Balti_Bhuna.jpg",
+   "licence": {
+    "declared_class": "CC_BY",
+    "short_name": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": false,
+    "review_reason": ""
+   },
+   "attribution": {
+    "artist_raw": "Edinburgh Blog",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "TRAINING_APPROVED",
+    "declared_class": "CC_BY",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": true,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC_BY permits commercial use and modification; author recorded"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 6914617,
+   "title": "File:Butterroti.jpg",
+   "sha1": "f314ae98e3b514034fc4f5aa9e808707d32b905a",
+   "width": 1152,
+   "height": 864,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Butterroti.jpg",
+   "licence": {
+    "declared_class": "CC_BY",
+    "short_name": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": false,
+    "review_reason": ""
+   },
+   "attribution": {
+    "artist_raw": "Diabolic Preacher",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "TRAINING_APPROVED",
+    "declared_class": "CC_BY",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": true,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC_BY permits commercial use and modification; author recorded"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 8818770,
+   "title": "File:Flickr - cyclonebill - Lamb Korma, raita, Masoor Dal, gulerødder og chapati.jpg",
+   "sha1": "6df9bf0b8f28ae9b5ce5d05d701308b1ea217976",
+   "width": 3264,
+   "height": 2448,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Flickr_-_cyclonebill_-_Lamb_Korma,_raita,_Masoor_Dal,_gulerødder_og_chapati.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "cyclonebill",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 29697575,
+   "title": "File:A thali with daal roti bhindi ki sabzi and mango pickle.jpg",
+   "sha1": "d0e1e64bde8f2f2cb3b5483ca4d1236afd3ed8bd",
+   "width": 3648,
+   "height": 2736,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:A_thali_with_daal_roti_bhindi_ki_sabzi_and_mango_pickle.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Devika",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 40582960,
+   "title": "File:Dal Makhani in North east.jpg",
+   "sha1": "c382c72940b8df8fa7e9ae50d3d5f47fabad1260",
+   "width": 2592,
+   "height": 1944,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Dal_Makhani_in_North_east.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Arun Sekhar",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 40622336,
+   "title": "File:Art of cooking roti.JPG",
+   "sha1": "d182c0c8ba57a5b7ca523995f18675855aace446",
+   "width": 1800,
+   "height": 1196,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Art_of_cooking_roti.JPG",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Aman22jan",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 40676425,
+   "title": "File:Do june ki roti.jpg",
+   "sha1": "cde5c2fb7d6f9db4fe3e131f9188d3a437fbf063",
+   "width": 1280,
+   "height": 770,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Do_june_ki_roti.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Tilak rathore",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 40680718,
+   "title": "File:Besan Bhakar.jpg",
+   "sha1": "3f5dcaab217c2f2a2bfc2c2a674d2d9568007f26",
+   "width": 1600,
+   "height": 1200,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Besan_Bhakar.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Rambhade",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 40681709,
+   "title": "File:Besani Roti With Urad Dal.jpg",
+   "sha1": "d4006265cf49fa98a395bbb86bed2c372e00d550",
+   "width": 2560,
+   "height": 1920,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Besani_Roti_With_Urad_Dal.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Anubhav Jain",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  },
+  {
+   "pageid": 40717405,
+   "title": "File:Back to basics.JPG",
+   "sha1": "b28d73a564b1f41e811f3eff2389547ecb54fbb4",
+   "width": 4000,
+   "height": 3000,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Back_to_basics.JPG",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Subhajit",
+    "credit": "",
+    "attribution_required": true
+   },
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "categories": [
+    "Category:Roti"
+   ],
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "technical_flags": [],
+   "thumbnail": {
+    "url": "",
+    "retrieval_status": "url_unresolved",
+    "retrieval_note": "Resolve with a fresh imageinfo iiurlwidth call; no bytes were downloaded by the collector."
+   },
+   "usable_for_training": false
+  }
+ ]
+}

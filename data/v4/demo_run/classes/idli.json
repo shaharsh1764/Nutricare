@@ -1,0 +1,872 @@
+{
+ "schema_version": "4.0",
+ "class": "idli",
+ "canonical": "Idli",
+ "collected_utc": "2026-11-08T10:40:45Z",
+ "source": {
+  "endpoint": "https://commons.wikimedia.org/w/api.php",
+  "generator": "categorymembers",
+  "iiprop": "sha1|dimensions|mime|extmetadata",
+  "extmetadata_filter": "LicenseShortName|LicenseUrl|Artist|AttributionRequired|UsageTerms",
+  "depth": 0,
+  "per_category_limit": null,
+  "bytes_downloaded": 0
+ },
+ "categories": [
+  {
+   "category": "Category:Idli",
+   "discovered_file_slots": 14,
+   "unique_titles": 14,
+   "files_in_category_only": 14,
+   "exact_duplicates_within_class": 0,
+   "subcategories_traversed": 1
+  }
+ ],
+ "counts": {
+  "1_discovered_file_slots": 14,
+  "1b_discovered_unique_titles": 14,
+  "2_metadata_retrieved": 14,
+  "3_rights_supported": 1,
+  "3b_rights_review_required_cc_by_sa": 13,
+  "3c_rights_excluded": 0,
+  "4_reviewed": 0,
+  "5_approved": 0,
+  "6_training_usable": 0,
+  "note": "Counts 1-3 are metadata-derived. Counts 4-6 require human review and image bytes; they are zero until a reviewer and a local dataset exist. Count 1 is a category file count, not an image count."
+ },
+ "licences_by_declared_class": {
+  "CC_BY_SA": 13,
+  "CC_BY": 1
+ },
+ "rights_summary": {
+  "by_tier": {
+   "TRAINING_APPROVED": 1,
+   "REVIEW_REQUIRED": 13,
+   "EXCLUDED": 0
+  },
+  "by_provenance_strength": {
+   "unknown": 14
+  },
+  "note": "TRAINING_APPROVED means the DECLARED licence permits it and an author is recorded. It is not legal clearance and it is not human approval.",
+  "cc_by_sa_policy": "tracked separately; excluded from training-approved sets until the share-alike question is resolved"
+ },
+ "metadata_gaps": {
+  "missing_permission": 14,
+  "missing_image_url": 14
+ },
+ "warnings": [],
+ "files": [
+  {
+   "pageid": 10522071,
+   "title": "File:Button idli.JPG",
+   "normalized_title": "file:button idli.jpg",
+   "sha1": "65b08faa6bbbcb13a171c254e84d3e0487a44c6d",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:Button_idli.JPG",
+   "width": 1600,
+   "height": 1200,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Randhirreddy at English Wikipedia",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 17718265,
+   "title": "File:A plate of Idly and Vadai.JPG",
+   "normalized_title": "file:a plate of idly and vadai.jpg",
+   "sha1": "50e370c803ebfc81b460a6f4271a7ecfe87293c6",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:A_plate_of_Idly_and_Vadai.JPG",
+   "width": 3648,
+   "height": 2736,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Thamizhpparithi Maari",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 28225558,
+   "title": "File:Breakfast (6090558570).jpg",
+   "normalized_title": "file:breakfast (6090558570).jpg",
+   "sha1": "0c13fcf8aecc21035c7f10de07a8610811c69baa",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:Breakfast_(6090558570).jpg",
+   "width": 1920,
+   "height": 1080,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY",
+    "short_name": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": false,
+    "review_reason": ""
+   },
+   "attribution": {
+    "artist_raw": "Prateek Rungta from Delhi, India",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "TRAINING_APPROVED",
+    "declared_class": "CC_BY",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": true,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC_BY permits commercial use and modification; author recorded"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 28526839,
+   "title": "File:Breakfast South India.jpg",
+   "normalized_title": "file:breakfast south india.jpg",
+   "sha1": "1be6ff8a362074c85dfa9e2d7ec7deea9483befe",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:Breakfast_South_India.jpg",
+   "width": 3872,
+   "height": 2592,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Harsha K R from Bangalore, India",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 31761141,
+   "title": "File:Breakfast in India is the best.jpg",
+   "normalized_title": "file:breakfast in india is the best.jpg",
+   "sha1": "7a7f8df702a5061a413ae2160dfd9d9fbaf37c35",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:Breakfast_in_India_is_the_best.jpg",
+   "width": 1600,
+   "height": 1200,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "vincelaconte from Chicago, Illinois, USA",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 39605894,
+   "title": "File:\"Idly\".jpg",
+   "normalized_title": "file:\"idly\".jpg",
+   "sha1": "77b1b697b9060d2073bd23260e76fff82edf1646",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:\"Idly\".jpg",
+   "width": 2033,
+   "height": 2124,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Thamizhpparithi Maari",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 39984677,
+   "title": "File:A flour for idly making.jpg",
+   "normalized_title": "file:a flour for idly making.jpg",
+   "sha1": "abbcdb9d219e6ea8000bd64d398ab1122770e917",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:A_flour_for_idly_making.jpg",
+   "width": 4208,
+   "height": 2368,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Thamizhpparithi Maari",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 39984679,
+   "title": "File:An idly show.jpg",
+   "normalized_title": "file:an idly show.jpg",
+   "sha1": "da7a8906d4afc3875943ffb8122a8af5dba0a60e",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:An_idly_show.jpg",
+   "width": 4208,
+   "height": 2368,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Thamizhpparithi Maari",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 40049744,
+   "title": "File:A view of mini idlies.jpg",
+   "normalized_title": "file:a view of mini idlies.jpg",
+   "sha1": "d753d36045fc4bc0fdc89256eaa170287773b223",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:A_view_of_mini_idlies.jpg",
+   "width": 4208,
+   "height": 2368,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Thamizhpparithi Maari",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 40671678,
+   "title": "File:Breakfast platter.jpg",
+   "normalized_title": "file:breakfast platter.jpg",
+   "sha1": "b571e473c4f40685a7aeb75e2ceccac82bfd9dcc",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:Breakfast_platter.jpg",
+   "width": 719,
+   "height": 1280,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "SHARATH1712",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 40942303,
+   "title": "File:Carrot Peas Idli.JPG",
+   "normalized_title": "file:carrot peas idli.jpg",
+   "sha1": "a0df389912127f0c785385b23dcf06ca65c3b301",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:Carrot_Peas_Idli.JPG",
+   "width": 5184,
+   "height": 3456,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Kurinjikathambam",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 40976295,
+   "title": "File:CameraZOOM-20150614100720279.jpg",
+   "normalized_title": "file:camerazoom-20150614100720279.jpg",
+   "sha1": "63727c3a3634b92db8ca4d822a60e993b3fd2b46",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:CameraZOOM-20150614100720279.jpg",
+   "width": 2560,
+   "height": 1920,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "Pratik2001",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 40983743,
+   "title": "File:Bullet Idli by Malhar Clicks.jpg",
+   "normalized_title": "file:bullet idli by malhar clicks.jpg",
+   "sha1": "9392af908001c86d822cc1ca510eb0f07f1efcf1",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:Bullet_Idli_by_Malhar_Clicks.jpg",
+   "width": 2448,
+   "height": 3264,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "malhar bhatt",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  },
+  {
+   "pageid": 40985930,
+   "title": "File:A Handful of Southern India Cusine.jpg",
+   "normalized_title": "file:a handful of southern india cusine.jpg",
+   "sha1": "62cf9c050cf6beb399e73c9b6e1bf674aa4ffdec",
+   "url": null,
+   "description_url": "https://commons.wikimedia.org/wiki/File:A_Handful_of_Southern_India_Cusine.jpg",
+   "width": 5184,
+   "height": 3456,
+   "mime": "image/jpeg",
+   "mediatype": null,
+   "size_bytes": null,
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts"
+   },
+   "attribution": {
+    "artist_raw": "AhonaMukherjee",
+    "credit": "",
+    "attribution_required": true
+   },
+   "permission": "",
+   "categories": [
+    "Category:Idli"
+   ],
+   "classes": [],
+   "in_multiple_categories": false,
+   "in_multiple_classes": false,
+   "metadata_gaps": [
+    "missing_permission",
+    "missing_image_url"
+   ],
+   "usable_for_training": false,
+   "usable_reason": "not assessed: relevance, quality, duplicates and label correctness require further inspection",
+   "rights": {
+    "rights_tier": "REVIEW_REQUIRED",
+    "declared_class": "CC_BY_SA",
+    "verification": "declared_only",
+    "provenance_strength": "unknown",
+    "training_approved": false,
+    "human_review_required": true,
+    "legal_clearance": "not_verified",
+    "attribution_required": true,
+    "reasons": [
+     "no permission/credit text captured; provenance strength unknown",
+     "CC BY-SA: share-alike obligations on derived artefacts are unsettled; held out of the training-approved set pending legal review"
+    ]
+   },
+   "technical_flags": []
+  }
+ ]
+}

@@ -1,0 +1,616 @@
+{
+ "schema_version": "4.0-fixture",
+ "purpose": "Real Commons metadata captured 2026-11-05 for offline pipeline tests. Metadata only; no bytes downloaded.",
+ "provenance": {
+  "endpoint": "https://commons.wikimedia.org/w/api.php",
+  "generator": "categorymembers",
+  "gcmlimit_requested": 20,
+  "captured_utc": "2026-11-05",
+  "bytes_downloaded": 0,
+  "note": "Two classes only, small samples. These are NOT full class inventories and NOT usable image counts."
+ },
+ "classes": {
+  "roti": {
+   "commons_categories": [
+    "Category:Roti"
+   ],
+   "files": [
+    {
+     "pageid": 4649402,
+     "title": "File:Chicken Balti Bhuna.jpg",
+     "sha1": "9ae5a0c6e6d05f5ef69b794e7dc1789d56376a86",
+     "width": 1200,
+     "height": 800,
+     "extmetadata": {
+      "Artist": {
+       "value": "Edinburgh Blog"
+      },
+      "LicenseShortName": {
+       "value": "CC BY 2.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by/2.0"
+      }
+     }
+    },
+    {
+     "pageid": 6914617,
+     "title": "File:Butterroti.jpg",
+     "sha1": "f314ae98e3b514034fc4f5aa9e808707d32b905a",
+     "width": 1152,
+     "height": 864,
+     "extmetadata": {
+      "Artist": {
+       "value": "Diabolic Preacher"
+      },
+      "LicenseShortName": {
+       "value": "CC BY 2.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by/2.0"
+      }
+     }
+    },
+    {
+     "pageid": 8818770,
+     "title": "File:Flickr - cyclonebill - Lamb Korma, raita, Masoor Dal, gulerødder og chapati.jpg",
+     "sha1": "6df9bf0b8f28ae9b5ce5d05d701308b1ea217976",
+     "width": 3264,
+     "height": 2448,
+     "extmetadata": {
+      "Artist": {
+       "value": "cyclonebill"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 2.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/2.0"
+      }
+     }
+    },
+    {
+     "pageid": 20671398,
+     "title": "File:Dhalpurie Roti, Pumpkin, Channa and Potato, Curry Goat, Trinidad and Tobago.JPG",
+     "sha1": "178c2dfec9728df5ef62e720b1cca63b42b896a5",
+     "width": 3938,
+     "height": 3150,
+     "extmetadata": {
+      "Artist": {
+       "value": "Kalamazadkhan"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 3.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/3.0"
+      }
+     }
+    },
+    {
+     "pageid": 20671399,
+     "title": "File:Dhalpurie Roti, Channa and Potato, Curry Shrimp, Trinidad and Tobago.JPG",
+     "sha1": "ad00317831a686bde96da55aa88bb4b57f108723",
+     "width": 3879,
+     "height": 3103,
+     "extmetadata": {
+      "Artist": {
+       "value": "Kalamazadkhan"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 3.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/3.0"
+      }
+     }
+    },
+    {
+     "pageid": 29697575,
+     "title": "File:A thali with daal roti bhindi ki sabzi and mango pickle.jpg",
+     "sha1": "d0e1e64bde8f2f2cb3b5483ca4d1236afd3ed8bd",
+     "width": 3648,
+     "height": 2736,
+     "extmetadata": {
+      "Artist": {
+       "value": "Devika"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 2.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/2.0"
+      }
+     }
+    },
+    {
+     "pageid": 39778982,
+     "title": "File:Fulka Roti.jpg",
+     "sha1": "7f17b15ec512d8b6708bb0f1156bb473d64f30eb",
+     "width": 5184,
+     "height": 3456,
+     "extmetadata": {
+      "Artist": {
+       "value": "Dkgohil"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 39779792,
+     "title": "File:Complete served Lunch.jpg",
+     "sha1": "e69fced3d1cb0e0add434736645799770369eb24",
+     "width": 5184,
+     "height": 3456,
+     "extmetadata": {
+      "Artist": {
+       "value": "Dkgohil"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40582960,
+     "title": "File:Dal Makhani in North east.jpg",
+     "sha1": "c382c72940b8df8fa7e9ae50d3d5f47fabad1260",
+     "width": 2592,
+     "height": 1944,
+     "extmetadata": {
+      "Artist": {
+       "value": "Arun Sekhar"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40622336,
+     "title": "File:Art of cooking roti.JPG",
+     "sha1": "d182c0c8ba57a5b7ca523995f18675855aace446",
+     "width": 1800,
+     "height": 1196,
+     "extmetadata": {
+      "Artist": {
+       "value": "Aman22jan"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40676425,
+     "title": "File:Do june ki roti.jpg",
+     "sha1": "cde5c2fb7d6f9db4fe3e131f9188d3a437fbf063",
+     "width": 1280,
+     "height": 770,
+     "extmetadata": {
+      "Artist": {
+       "value": "Tilak rathore"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40680718,
+     "title": "File:Besan Bhakar.jpg",
+     "sha1": "3f5dcaab217c2f2a2bfc2c2a674d2d9568007f26",
+     "width": 1600,
+     "height": 1200,
+     "extmetadata": {
+      "Artist": {
+       "value": "Rambhade"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40681709,
+     "title": "File:Besani Roti With Urad Dal.jpg",
+     "sha1": "d4006265cf49fa98a395bbb86bed2c372e00d550",
+     "width": 2560,
+     "height": 1920,
+     "extmetadata": {
+      "Artist": {
+       "value": "Anubhav Jain"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40717405,
+     "title": "File:Back to basics.JPG",
+     "sha1": "b28d73a564b1f41e811f3eff2389547ecb54fbb4",
+     "width": 4000,
+     "height": 3000,
+     "extmetadata": {
+      "Artist": {
+       "value": "Subhajit"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    }
+   ]
+  },
+  "idli": {
+   "commons_categories": [
+    "Category:Idli"
+   ],
+   "files": [
+    {
+     "pageid": 10522071,
+     "title": "File:Button idli.JPG",
+     "sha1": "65b08faa6bbbcb13a171c254e84d3e0487a44c6d",
+     "width": 1600,
+     "height": 1200,
+     "extmetadata": {
+      "Artist": {
+       "value": "Randhirreddy at English Wikipedia"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 3.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/3.0"
+      }
+     }
+    },
+    {
+     "pageid": 17718265,
+     "title": "File:A plate of Idly and Vadai.JPG",
+     "sha1": "50e370c803ebfc81b460a6f4271a7ecfe87293c6",
+     "width": 3648,
+     "height": 2736,
+     "extmetadata": {
+      "Artist": {
+       "value": "Thamizhpparithi Maari"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 3.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/3.0"
+      }
+     }
+    },
+    {
+     "pageid": 28225558,
+     "title": "File:Breakfast (6090558570).jpg",
+     "sha1": "0c13fcf8aecc21035c7f10de07a8610811c69baa",
+     "width": 1920,
+     "height": 1080,
+     "extmetadata": {
+      "Artist": {
+       "value": "Prateek Rungta from Delhi, India"
+      },
+      "LicenseShortName": {
+       "value": "CC BY 2.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by/2.0"
+      }
+     }
+    },
+    {
+     "pageid": 28526839,
+     "title": "File:Breakfast South India.jpg",
+     "sha1": "1be6ff8a362074c85dfa9e2d7ec7deea9483befe",
+     "width": 3872,
+     "height": 2592,
+     "extmetadata": {
+      "Artist": {
+       "value": "Harsha K R from Bangalore, India"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 2.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/2.0"
+      }
+     }
+    },
+    {
+     "pageid": 31761141,
+     "title": "File:Breakfast in India is the best.jpg",
+     "sha1": "7a7f8df702a5061a413ae2160dfd9d9fbaf37c35",
+     "width": 1600,
+     "height": 1200,
+     "extmetadata": {
+      "Artist": {
+       "value": "vincelaconte from Chicago, Illinois, USA"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 2.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/2.0"
+      }
+     }
+    },
+    {
+     "pageid": 39605894,
+     "title": "File:\"Idly\".jpg",
+     "sha1": "77b1b697b9060d2073bd23260e76fff82edf1646",
+     "width": 2033,
+     "height": 2124,
+     "extmetadata": {
+      "Artist": {
+       "value": "Thamizhpparithi Maari"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 39984677,
+     "title": "File:A flour for idly making.jpg",
+     "sha1": "abbcdb9d219e6ea8000bd64d398ab1122770e917",
+     "width": 4208,
+     "height": 2368,
+     "extmetadata": {
+      "Artist": {
+       "value": "Thamizhpparithi Maari"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 39984679,
+     "title": "File:An idly show.jpg",
+     "sha1": "da7a8906d4afc3875943ffb8122a8af5dba0a60e",
+     "width": 4208,
+     "height": 2368,
+     "extmetadata": {
+      "Artist": {
+       "value": "Thamizhpparithi Maari"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40049744,
+     "title": "File:A view of mini idlies.jpg",
+     "sha1": "d753d36045fc4bc0fdc89256eaa170287773b223",
+     "width": 4208,
+     "height": 2368,
+     "extmetadata": {
+      "Artist": {
+       "value": "Thamizhpparithi Maari"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40671678,
+     "title": "File:Breakfast platter.jpg",
+     "sha1": "b571e473c4f40685a7aeb75e2ceccac82bfd9dcc",
+     "width": 719,
+     "height": 1280,
+     "extmetadata": {
+      "Artist": {
+       "value": "SHARATH1712"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40942303,
+     "title": "File:Carrot Peas Idli.JPG",
+     "sha1": "a0df389912127f0c785385b23dcf06ca65c3b301",
+     "width": 5184,
+     "height": 3456,
+     "extmetadata": {
+      "Artist": {
+       "value": "Kurinjikathambam"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40976295,
+     "title": "File:CameraZOOM-20150614100720279.jpg",
+     "sha1": "63727c3a3634b92db8ca4d822a60e993b3fd2b46",
+     "width": 2560,
+     "height": 1920,
+     "extmetadata": {
+      "Artist": {
+       "value": "Pratik2001"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40983743,
+     "title": "File:Bullet Idli by Malhar Clicks.jpg",
+     "sha1": "9392af908001c86d822cc1ca510eb0f07f1efcf1",
+     "width": 2448,
+     "height": 3264,
+     "extmetadata": {
+      "Artist": {
+       "value": "malhar bhatt"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    },
+    {
+     "pageid": 40985930,
+     "title": "File:A Handful of Southern India Cusine.jpg",
+     "sha1": "62cf9c050cf6beb399e73c9b6e1bf674aa4ffdec",
+     "width": 5184,
+     "height": 3456,
+     "extmetadata": {
+      "Artist": {
+       "value": "AhonaMukherjee"
+      },
+      "LicenseShortName": {
+       "value": "CC BY-SA 4.0"
+      },
+      "AttributionRequired": {
+       "value": "true"
+      },
+      "LicenseUrl": {
+       "value": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+     }
+    }
+   ]
+  }
+ }
+}
