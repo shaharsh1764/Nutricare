@@ -24,6 +24,14 @@
    "CC_BY": 2,
    "CC0_PD": 2
   },
+  "attribution_required_true": 91,
+  "attribution_required_false": 2,
+  "attribution_required_unknown": 0,
+  "attribution_violations_cc_by_without_attribution": 0,
+  "licence_url_sources": {
+   "derived:canonical_cc_deed_url": 70,
+   "api:extmetadata": 23
+  },
   "preliminarily_acceptable": 93,
   "unknown_or_unsuitable": 0,
   "metadata_gaps": {},

@@ -49,24 +49,84 @@ CLASS_CANONICAL = "Biryani"
 TAXONOMY_CATEGORIES = ["Biryani", "Chicken biryani", "Hyderabadi biryani"]
 
 
+#: Canonical Creative Commons deed URLs, used ONLY to render a URL for files
+#: whose capture did not transcribe ``LicenseUrl``. Every entry here was also
+#: observed verbatim in a Commons API response during this project, so this is a
+#: rendering of an observed value, not an invention. It is still recorded
+#: separately from the API-supplied value and labelled as derived.
+_CANONICAL_CC_URLS = {
+    "CC0": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "CC BY 2.0": "https://creativecommons.org/licenses/by/2.0",
+    "CC BY 3.0": "https://creativecommons.org/licenses/by/3.0",
+    "CC BY 4.0": "https://creativecommons.org/licenses/by/4.0",
+    "CC BY-SA 2.0": "https://creativecommons.org/licenses/by-sa/2.0",
+    "CC BY-SA 3.0": "https://creativecommons.org/licenses/by-sa/3.0",
+    "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0",
+}
+
+SOURCE_API = "api:extmetadata"
+SOURCE_UNRECORDED = "unrecorded_in_capture"
+SOURCE_DERIVED = "derived:canonical_cc_deed_url"
+SOURCE_NOT_REQUESTED = "not_requested_in_query"
+
+
 def _licence_block(raw: Dict[str, Any]) -> Dict[str, Any]:
     """Classify a transcribed file's declared licence via the shared classifier.
 
     The raw rows store flattened fields, so rebuild the extmetadata shape the
     classifier expects. Nothing is inferred: absent fields stay absent.
+
+    Every field that can be empty carries an explicit ``*_source`` marker, so an
+    empty value can never be mistaken for "the API says there is no
+    requirement". This is what a previous version of this function got wrong: it
+    passed only ``license_short`` and ``artist``, so ``AttributionRequired`` was
+    always absent and the classifier defaulted it to ``False`` even for CC BY-SA.
     """
     extmetadata: Dict[str, Any] = {}
-    if raw.get("license_short"):
-        extmetadata["LicenseShortName"] = {"value": raw["license_short"]}
+    short = raw.get("license_short")
+
+    if short:
+        extmetadata["LicenseShortName"] = {"value": short}
     if raw.get("license_url"):
         extmetadata["LicenseUrl"] = {"value": raw["license_url"]}
     if raw.get("artist"):
         extmetadata["Artist"] = {"value": raw["artist"]}
+    # Pass the API value through verbatim. `is not None` matters: a captured
+    # "false" must stay "false" rather than being treated as missing.
     if raw.get("attribution_required") is not None:
         extmetadata["AttributionRequired"] = {"value": str(raw["attribution_required"])}
     if raw.get("permission"):
         extmetadata["Permission"] = {"value": raw["permission"]}
-    return classify_licence(extmetadata)
+
+    licence = classify_licence(extmetadata)
+
+    # --- provenance for attribution_required -------------------------------
+    if raw.get("attribution_required") is not None:
+        licence["attribution_required_source"] = SOURCE_API
+    else:
+        licence["attribution_required_source"] = SOURCE_UNRECORDED
+        # Do not let an absent field masquerade as "no attribution needed".
+        licence["attribution_required"] = None
+
+    # --- provenance for licence_url ----------------------------------------
+    if raw.get("license_url"):
+        licence["licence_url_source"] = SOURCE_API
+        licence["licence_url_derived"] = None
+    elif short in _CANONICAL_CC_URLS:
+        licence["licence_url"] = ""
+        licence["licence_url_source"] = SOURCE_DERIVED
+        licence["licence_url_derived"] = _CANONICAL_CC_URLS[short]
+    else:
+        licence["licence_url_source"] = SOURCE_UNRECORDED
+        licence["licence_url_derived"] = None
+
+    # --- usage_terms -------------------------------------------------------
+    # These queries never requested extmetadata `UsageTerms`, so the empty value
+    # means "not asked", never "no usage terms".
+    licence["usage_terms"] = ""
+    licence["usage_terms_source"] = SOURCE_NOT_REQUESTED
+
+    return licence
 
 
 def load_raw(raw_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
@@ -97,7 +157,10 @@ def build_manifest(by_category: Dict[str, List[Dict[str, Any]]]) -> List[Dict[st
                     "height": raw.get("height"),
                     "mime": raw.get("mime"),
                     "raw_licence_short": raw.get("license_short"),
+                    "raw_licence_url": raw.get("license_url"),
                     "raw_artist": raw.get("artist"),
+                    "raw_attribution_required": raw.get("attribution_required"),
+                    "raw_permission": raw.get("permission"),
                     "categories": [],
                 },
             )
@@ -110,7 +173,10 @@ def build_manifest(by_category: Dict[str, List[Dict[str, Any]]]) -> List[Dict[st
         licence = _licence_block(
             {
                 "license_short": record["raw_licence_short"],
+                "license_url": record["raw_licence_url"],
                 "artist": record["raw_artist"],
+                "attribution_required": record["raw_attribution_required"],
+                "permission": record["raw_permission"],
             }
         )
         gaps: List[str] = []
@@ -138,7 +204,13 @@ def build_manifest(by_category: Dict[str, List[Dict[str, Any]]]) -> List[Dict[st
                 "licence": licence,
                 "attribution": {
                     "artist_raw": record.get("raw_artist") or "",
+                    # Authoritative copy lives under `licence` with its source
+                    # marker; kept here for filter ergonomics only.
                     "attribution_required": licence["attribution_required"],
+                    "attribution_required_source": licence[
+                        "attribution_required_source"
+                    ],
+                    "permission_raw": record.get("raw_permission") or "",
                 },
                 "categories": categories,
                 "classes": [CLASS_SLUG],
@@ -197,6 +269,23 @@ def analyse(records: List[Dict[str, Any]], by_category: Dict[str, List[Dict[str,
     acceptable_total = sum(
         1 for r in records if r["licence"]["preliminarily_acceptable"]
     )
+
+    # Attribution reporting: an attribution-required value must come from the
+    # API, and a CC-BY/CC-BY-SA file must never be recorded as not requiring
+    # attribution. Both are checked explicitly rather than assumed.
+    attr_true = sum(1 for r in records if r["licence"]["attribution_required"] is True)
+    attr_false = sum(1 for r in records if r["licence"]["attribution_required"] is False)
+    attr_unknown = sum(1 for r in records if r["licence"]["attribution_required"] is None)
+    attribution_violations = [
+        r["title"]
+        for r in records
+        if r["licence"]["declared_class"] in (CC_BY, CC_BY_SA)
+        and r["licence"]["attribution_required"] is not True
+    ]
+    url_sources: Dict[str, int] = {}
+    for r in records:
+        key = r["licence"]["licence_url_source"]
+        url_sources[key] = url_sources.get(key, 0) + 1
     summary = {
         "class_slug": CLASS_SLUG,
         "class_canonical": CLASS_CANONICAL,
@@ -216,6 +305,13 @@ def analyse(records: List[Dict[str, Any]], by_category: Dict[str, List[Dict[str,
             "exact_sha1_duplicate_files": sum(len(v) for v in dup_sha1.values()),
             "duplicate_normalized_title_groups": len(dup_norm),
             "licence_distribution": licence_counts,
+            "attribution_required_true": attr_true,
+            "attribution_required_false": attr_false,
+            "attribution_required_unknown": attr_unknown,
+            "attribution_violations_cc_by_without_attribution": len(
+                attribution_violations
+            ),
+            "licence_url_sources": url_sources,
             "preliminarily_acceptable": acceptable_total,
             "unknown_or_unsuitable": len(records) - acceptable_total,
             "metadata_gaps": gap_counts,

@@ -265,3 +265,179 @@ def test_taxonomy_categories_match_the_taxonomy_file():
     )
     entry = next(c for c in taxonomy["classes"] if c["slug"] == CLASS_SLUG)
     assert entry["commons_categories"] == TAXONOMY_CATEGORIES
+
+
+# ---------------------------------------------------------------------------
+# Regression tests: attribution_required / licence_url / usage_terms mapping
+#
+# These exist because a previous version of the builder passed only
+# license_short and artist into the classifier. AttributionRequired was then
+# always absent, and the classifier defaulted it to False -- so every CC BY-SA
+# file was silently recorded as not requiring attribution. These tests pin the
+# correct field mapping so the bug cannot return.
+# ---------------------------------------------------------------------------
+
+
+def raw_row_with_attribution(pageid, title, licence, attribution_required, licence_url=None):
+    row = raw_row(pageid, title, licence)
+    row["attribution_required"] = attribution_required
+    if licence_url is not None:
+        row["license_url"] = licence_url
+    return row
+
+
+def test_cc_by_sa_with_api_true_reports_true():
+    """The original bug: CC BY-SA must keep the API's 'true', not default to False."""
+    rows = {
+        "Biryani": [
+            raw_row_with_attribution(1, "File:A.jpg", "CC BY-SA 4.0", "true")
+        ]
+    }
+    record = build_manifest(rows)[0]
+    assert record["licence"]["declared_class"] == CC_BY_SA
+    assert record["licence"]["attribution_required"] is True
+    assert record["licence"]["attribution_required_source"] == "api:extmetadata"
+
+
+def test_cc_by_with_api_true_reports_true():
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "CC BY 2.0", "true")]}
+    assert build_manifest(rows)[0]["licence"]["attribution_required"] is True
+
+
+def test_cc0_with_api_false_reports_false():
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "CC0", "false")]}
+    record = build_manifest(rows)[0]
+    assert record["licence"]["declared_class"] == CC0_PD
+    assert record["licence"]["attribution_required"] is False
+    assert record["licence"]["attribution_required_source"] == "api:extmetadata"
+
+
+def test_missing_attribution_field_is_unknown_not_false():
+    """An absent field must never be reported as 'no attribution required'."""
+    row = raw_row(1, "File:A.jpg", "CC BY-SA 4.0")
+    row.pop("attribution_required")
+    record = build_manifest({"Biryani": [row]})[0]
+    assert record["licence"]["attribution_required"] is None
+    assert record["licence"]["attribution_required_source"] == "unrecorded_in_capture"
+
+
+def test_api_supplied_licence_url_is_used_verbatim():
+    rows = {
+        "Biryani": [
+            raw_row_with_attribution(
+                1, "File:A.jpg", "CC BY-SA 4.0", "true",
+                licence_url="https://creativecommons.org/licenses/by-sa/4.0",
+            )
+        ]
+    }
+    licence = build_manifest(rows)[0]["licence"]
+    assert licence["licence_url"] == "https://creativecommons.org/licenses/by-sa/4.0"
+    assert licence["licence_url_source"] == "api:extmetadata"
+    assert licence["licence_url_derived"] is None
+
+
+def test_untranscribed_licence_url_is_derived_and_labelled():
+    """When the capture omitted LicenseUrl, mark it derived -- never as API data."""
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "CC BY-SA 4.0", "true")]}
+    licence = build_manifest(rows)[0]["licence"]
+    assert licence["licence_url"] == ""  # API value stays empty, not fabricated
+    assert licence["licence_url_source"] == "derived:canonical_cc_deed_url"
+    assert licence["licence_url_derived"] == "https://creativecommons.org/licenses/by-sa/4.0"
+
+
+def test_cc0_derived_url_points_at_the_cc0_deed():
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "CC0", "false")]}
+    licence = build_manifest(rows)[0]["licence"]
+    assert "publicdomain/zero" in licence["licence_url_derived"]
+
+
+def test_unknown_licence_gets_no_derived_url():
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "Some odd licence", "true")]}
+    licence = build_manifest(rows)[0]["licence"]
+    assert licence["licence_url_derived"] is None
+    assert licence["licence_url_source"] == "unrecorded_in_capture"
+
+
+def test_usage_terms_is_empty_because_it_was_not_requested():
+    """Empty must mean 'not asked', not 'no usage terms apply'."""
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "CC BY-SA 4.0", "true")]}
+    licence = build_manifest(rows)[0]["licence"]
+    assert licence["usage_terms"] == ""
+    assert licence["usage_terms_source"] == "not_requested_in_query"
+
+
+def test_preliminarily_acceptable_is_not_permission_to_train():
+    """The flag must never be readable as authorisation."""
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "CC0", "false")]}
+    record = build_manifest(rows)[0]
+    assert record["licence"]["preliminarily_acceptable"] is True
+    assert record["licence"]["verification"] == "declared_only"
+    assert record["licence"]["requires_human_review"] is True
+    # Usability is still false even on the most permissive possible licence.
+    assert record["usable_for_training"] is False
+
+
+def test_attribution_block_carries_source_marker():
+    rows = {"Biryani": [raw_row_with_attribution(1, "File:A.jpg", "CC BY-SA 4.0", "true")]}
+    attribution = build_manifest(rows)[0]["attribution"]
+    assert attribution["attribution_required"] is True
+    assert attribution["attribution_required_source"] == "api:extmetadata"
+
+
+def test_summary_flags_cc_by_without_attribution():
+    rows = {
+        "Biryani": [
+            raw_row_with_attribution(1, "File:Good.jpg", "CC BY-SA 4.0", "true"),
+            raw_row_with_attribution(2, "File:Bad.jpg", "CC BY-SA 4.0", "false"),
+        ]
+    }
+    summary = analyse(build_manifest(rows), rows)
+    # A CC BY-SA file recorded as not requiring attribution is a violation.
+    assert summary["measured"]["attribution_violations_cc_by_without_attribution"] == 1
+
+
+@pytest.mark.skipif(not RAW_DIR.exists(), reason="no captured raw data present")
+def test_real_capture_has_zero_attribution_violations():
+    by_category = load_raw(RAW_DIR)
+    summary = analyse(build_manifest(by_category), by_category)
+    m = summary["measured"]
+    assert m["attribution_violations_cc_by_without_attribution"] == 0
+    assert m["attribution_required_unknown"] == 0
+    # Exactly the two CC0 files may lack an attribution requirement.
+    assert m["attribution_required_false"] == 2
+    assert m["licence_distribution"].get("CC0_PD", 0) == 2
+    assert m["attribution_required_true"] == sum(
+        v for k, v in m["licence_distribution"].items() if k in ("CC_BY", "CC_BY_SA")
+    )
+
+
+@pytest.mark.skipif(not RAW_DIR.exists(), reason="no captured raw data present")
+def test_real_capture_attribution_matches_raw_source_field():
+    """Cross-check the manifest against the raw field, file by file."""
+    by_category = load_raw(RAW_DIR)
+    raw_by_pageid = {}
+    for rows in by_category.values():
+        for row in rows:
+            raw_by_pageid[row["pageid"]] = row
+    for record in build_manifest(by_category):
+        raw = raw_by_pageid[record["pageid"]]
+        expected = str(raw["attribution_required"]).lower() == "true"
+        assert record["licence"]["attribution_required"] is expected
+
+
+@pytest.mark.skipif(not RAW_DIR.exists(), reason="no captured raw data present")
+def test_real_capture_never_fabricates_licence_url():
+    """An empty API value must stay empty, with the derived value kept separate."""
+    by_category = load_raw(RAW_DIR)
+    for record in build_manifest(by_category):
+        if record["licence"]["licence_url_source"] == "derived:canonical_cc_deed_url":
+            assert record["licence"]["licence_url"] == ""
+            assert record["licence"]["licence_url_derived"]
+
+
+@pytest.mark.skipif(not RAW_DIR.exists(), reason="no captured raw data present")
+def test_every_real_record_still_not_usable():
+    by_category = load_raw(RAW_DIR)
+    records = build_manifest(by_category)
+    assert all(r["usable_for_training"] is False for r in records)
+    assert all(r["licence"]["verification"] == "declared_only" for r in records)

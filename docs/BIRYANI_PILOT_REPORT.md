@@ -122,6 +122,103 @@ of 813.
 
 ---
 
+## 3a. Field-mapping review (corrected)
+
+Four questions were raised about the licence/attribution fields. All four were
+traced to the exact API field. **One was a real bug and has been fixed.**
+
+### Q1 — Why did records show `attribution_required: false` on CC BY-SA files?
+
+**Bug. Now fixed.**
+
+The raw transcriptions were correct: every one of the 93 rows carries the API's
+`AttributionRequired` value, and zero of them disagree with their licence
+(checked directly: 0 inconsistencies).
+
+The error was in `build_biryani_pilot.py`. `_licence_block()` rebuilds the
+`extmetadata` shape for the shared classifier, but the caller passed only
+`license_short` and `artist`:
+
+```python
+licence = _licence_block({
+    "license_short": record["raw_licence_short"],
+    "artist": record["raw_artist"],
+})          # <-- attribution_required and license_url never passed
+```
+
+`classify_licence` reads `AttributionRequired` via
+`strip_markup(...).lower() == "true"`. With the key absent, `em()` returns `""`,
+`"".lower() == "true"` is `False`, so the field defaulted to `False` — **for every
+file, including CC BY-SA.** A missing value was silently rendered as a negative
+fact.
+
+Fixed by carrying `raw_attribution_required` (and `raw_licence_url`,
+`raw_permission`) through the merge into the classifier.
+
+An absent field now becomes `null` with
+`attribution_required_source: "unrecorded_in_capture"` — never `False`.
+
+After the fix: **91 true, 2 false, 0 unknown**, and the 2 `false` records are
+exactly the two CC0 files.
+
+### Q2 — Is the value copied from the correct API field?
+
+**Yes.** `extmetadata.AttributionRequired`, requested via
+`iiextmetadatafilter=...|AttributionRequired` and present in both raw files.
+Verified file-by-file: `test_real_capture_attribution_matches_raw_source_field`
+compares every manifest record against its raw row.
+
+A per-record `attribution_required_source` marker now records where the value
+came from (`api:extmetadata` / `unrecorded_in_capture`).
+
+### Q3 — Why were `licence_url` and `usage_terms` empty?
+
+**Two different reasons, and only one was a bug.**
+
+**`licence_url`** — the queries *did* request `LicenseUrl`, but the
+`Mutton biryani` transcription (70 of 93 rows) omitted it, per a note in that
+file saying it was "derivable from license_short". That was a transcription
+shortcut, and it left the API value genuinely unrecorded for those rows.
+
+Now handled explicitly rather than silently left blank:
+- the API value stays `""` — **not fabricated**;
+- a separate `licence_url_derived` field carries the canonical Creative Commons
+  deed URL, and `licence_url_source` marks it
+  `derived:canonical_cc_deed_url`;
+- the 23 rows that *do* have the API value use it verbatim with source
+  `api:extmetadata`.
+
+Every derived URL was also observed verbatim in a Commons response during this
+project, so nothing is invented — but derived and API-supplied values are never
+conflated.
+
+Current split: **23 `api:extmetadata`, 70 `derived:canonical_cc_deed_url`**.
+
+**`usage_terms`** — never empty-by-meaning. `UsageTerms` was **not requested** in
+`iiextmetadatafilter`, so the value is `""` because nobody asked. Each record now
+says `usage_terms_source: "not_requested_in_query"`. This is a coverage gap, not
+a finding, and it is the one item still outstanding if you want it filled.
+
+### Q4 — Does `preliminarily_acceptable: true` mean permission to train?
+
+**No.** It means exactly one thing: *the declared licence string does not
+obviously forbid commercial reuse of the image.* It is a bucket test on text, and
+it is the weakest useful signal in the record.
+
+It is **not** permission to train, because:
+- `verification` stays `"declared_only"` — an uploader's declaration is not proof
+  of ownership;
+- `requires_human_review` stays `true` on every record;
+- `usable_for_training` stays **`false`** on every record, including the CC0 ones
+  with the most permissive possible licence;
+- relevance, quality, near-duplicates and label correctness were never inspected;
+- the CC BY-SA / model-weights question is unresolved.
+
+The field name is doing a lot of work; the record now carries the source markers
+so no consumer can read it as authorisation.
+
+---
+
 ## 4. Licence audit — declared only
 
 | Declared class | Files | Share |
@@ -134,6 +231,10 @@ of 813.
 | `UNKNOWN_MISSING` | 0 | — |
 | `OTHER_REVIEW` | 0 | — |
 | **Preliminarily acceptable** | **93** | 100% |
+| Attribution required = true | 91 | — |
+| Attribution required = false | 2 (both CC0) | — |
+| Attribution required = unknown | 0 | — |
+| CC BY/CC BY-SA recorded as *not* requiring attribution | **0** | — |
 | **Unknown or unsuitable** | **0** | 0% |
 
 Metadata gaps across the 93 files: **none**. Every file carries a SHA1,

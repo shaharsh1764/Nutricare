@@ -20,16 +20,22 @@
     "short_name": "CC BY-SA 2.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/2.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Alpha from Melbourne, Australia",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -56,16 +62,22 @@
     "short_name": "CC BY-SA 3.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/3.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Number55",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -90,18 +102,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 3.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Randhirreddy at English Wikipedia",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -126,18 +144,24 @@
    "licence": {
     "declared_class": "CC_BY",
     "short_name": "CC BY 2.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": false,
-    "review_reason": ""
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Garrett Ziegler from New York, United States",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -164,16 +188,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Kennedy Bundi",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -205,11 +235,17 @@
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": false,
-    "review_reason": ""
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Miansari66",
-    "attribution_required": false
+    "attribution_required": false,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -236,16 +272,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Thamizhpparithi Maari",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -272,16 +314,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Agnivajgec",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -308,16 +356,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Jayanthkumar101",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -342,18 +396,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Aa.deeshna",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -380,16 +440,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Thamizhpparithi Maari",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -416,16 +482,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Sayantan Gayen",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -450,18 +522,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Manpreet Singh Grover",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -488,16 +566,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Camellia singha roy",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -524,16 +608,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Nairdeepa",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -558,18 +648,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Trishahitk2012",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -594,18 +690,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Trishahitk2012",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -630,18 +732,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Trishahitk2012",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -668,16 +776,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "MD JARJIS HOSSAIN",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -704,16 +818,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Shrads.m",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -740,16 +860,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Balaji Sakthivel",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -774,18 +900,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "S-fairy",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -810,18 +942,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Mducityman",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -846,18 +984,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Monali.mishra",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -884,16 +1028,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Subrat0405",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -920,16 +1070,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Truptii Gaikwad",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -954,18 +1110,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "TabassumJawed",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -992,16 +1154,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Fatimahope",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1028,16 +1196,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Arindam Karmakar",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1064,16 +1238,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Fatimahope",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1100,16 +1280,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Sarbani89",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1134,18 +1320,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "FoodPlate",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -1172,16 +1364,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Fatimahope",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1208,16 +1406,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Khansabiha",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1244,16 +1448,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Gupchup",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1280,16 +1490,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Poojaart09",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1314,18 +1530,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Dheerajk88",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -1352,16 +1574,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Pranaykuma12",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1388,16 +1616,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Ketakiamare",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1424,16 +1658,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "GrammarFascist",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1460,16 +1700,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "EurovisionNim",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1496,16 +1742,22 @@
     "short_name": "CC BY-SA 2.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/2.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Alpha from Melbourne, Australia",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1532,16 +1784,22 @@
     "short_name": "CC BY-SA 3.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/3.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Sumit Surai",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1566,18 +1824,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 2.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Charles Haynes from Hobart, Australia",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -1602,18 +1866,24 @@
    "licence": {
     "declared_class": "CC_BY",
     "short_name": "CC BY 2.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": false,
-    "review_reason": ""
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Amborish - Axis Images from Kolkata, India",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -1638,18 +1908,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 2.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "pelican from Tokyo, Japan",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -1676,16 +1952,22 @@
     "short_name": "CC BY-SA 3.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/3.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Dibyadarsi Nayak",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1712,16 +1994,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Subhrajyoti07",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1748,16 +2036,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Gaurav Dhwaj Khadka",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1782,18 +2076,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Srujay Dulapalli",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -1820,16 +2120,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Agamani Saha",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1856,16 +2162,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Agamani Saha",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1892,16 +2204,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "YashodhanDixit",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -1926,18 +2244,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Soumyasmita Mallick",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -1964,16 +2288,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Bds 3rd",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2000,16 +2330,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Arkasenguptaas4",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2036,16 +2372,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Rashid Jorvee",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2072,16 +2414,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Maddyatpondy",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2108,16 +2456,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Goutamroykol",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2144,16 +2498,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Debasree1983",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2180,16 +2540,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Shabareesh B",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2216,16 +2582,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Shabareesh B",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2250,18 +2622,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Maharana7573",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -2288,16 +2666,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Nandhinikandhasamy",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2324,16 +2708,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Nandhinikandhasamy",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2360,16 +2750,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Agamani Saha",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2396,16 +2792,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Sreenorainee",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2432,16 +2834,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Sreenorainee",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2468,16 +2876,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Sreenorainee",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2504,16 +2918,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Mohan raj96",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2538,18 +2958,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Divya4232",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -2576,16 +3002,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "AdhiRajamanickam",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2612,16 +3044,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Yakshitha",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2648,16 +3086,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Subrata Ghose",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2684,16 +3128,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Kalesh",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2720,16 +3170,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Kalesh",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2756,16 +3212,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Tamilselvi Kumarasamy",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2792,16 +3254,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "শরদিন্দু ভট্টাচার্য্য",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2826,18 +3294,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Vis M",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -2862,18 +3336,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Tarunsamanta",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -2898,18 +3378,24 @@
    "licence": {
     "declared_class": "CC_BY_SA",
     "short_name": "CC BY-SA 4.0",
-    "licence_url": "",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "ప్రశాంతి",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Hyderabadi chicken biryani"
@@ -2941,11 +3427,17 @@
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": false,
-    "review_reason": ""
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "RamyaMBA",
-    "attribution_required": false
+    "attribution_required": false,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -2972,16 +3464,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Munni Akter Mim",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3008,16 +3506,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "রিজওয়ান আহমেদ",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3044,16 +3548,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "রিজওয়ান আহমেদ",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3080,16 +3590,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Avaya2024",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3116,16 +3632,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Yakshitha",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3152,16 +3674,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Yakshitha",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3188,16 +3716,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Muthuraj0305",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3224,16 +3758,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Kiruthikapalani",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3260,16 +3800,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Saddam19",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3296,16 +3842,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Kyu3a",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
@@ -3332,16 +3884,22 @@
     "short_name": "CC BY-SA 4.0",
     "licence_url": "",
     "usage_terms": "",
-    "attribution_required": false,
+    "attribution_required": true,
     "verification": "declared_only",
     "requires_human_review": true,
     "preliminarily_acceptable": true,
     "share_alike": true,
-    "review_reason": "share-alike: may impose obligations on derived artefacts"
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
    },
    "attribution": {
     "artist_raw": "Kyu3a",
-    "attribution_required": false
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
    },
    "categories": [
     "Mutton biryani"
