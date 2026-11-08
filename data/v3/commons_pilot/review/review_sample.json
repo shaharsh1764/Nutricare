@@ -1,0 +1,465 @@
+{
+ "schema_version": "1.0",
+ "generated_utc": "2026-11-08T07:16:10+00:00",
+ "source_manifest": "data/v3/commons_pilot/biryani_manifest.json",
+ "source_manifest_sha256": "a6992c7237f2b347ef8de73462c0dd995b3b5cbfcc57bca009c5ef355d6d9d71",
+ "source_manifest_read_only": true,
+ "sample_limit": 10,
+ "sample_size": 10,
+ "selection_method": "deterministic, round-robin across declared licence classes, ordered by Commons page id",
+ "image_bytes_downloaded": false,
+ "retrieval_blocked_reason": null,
+ "licence_reminder": "A declared Commons licence is not independently verified permission. Nothing in this sample is legally cleared, and usable_for_training is false for every record.",
+ "images": [
+  {
+   "pageid": 8196059,
+   "title": "File:Biryani Rice with Goat Masala and Lamb Rogan Josh - Zam Zam (415375255).jpg",
+   "sha1": "2b9fbb86731e8d224d4e62d834859506d5ee4a50",
+   "width": 800,
+   "height": 600,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Biryani_Rice_with_Goat_Masala_and_Lamb_Rogan_Josh_-_Zam_Zam_(415375255).jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 2.0",
+    "licence_url": "",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/2.0",
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Alpha from Melbourne, Australia",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Mutton biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Biryani_Rice_with_Goat_Masala_and_Lamb_Rogan_Josh_-_Zam_Zam_%28415375255%29.jpg",
+    "width": 512,
+    "height": 384,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/4/43/Biryani_Rice_with_Goat_Masala_and_Lamb_Rogan_Josh_-_Zam_Zam_%28415375255%29.jpg"
+   }
+  },
+  {
+   "pageid": 10812474,
+   "title": "File:Mutton Biryani.jpg",
+   "sha1": "b7286a7adae61e0aa5f527d1c2722b1e55401491",
+   "width": 3648,
+   "height": 2736,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Mutton_Biryani.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 3.0",
+    "licence_url": "",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/3.0",
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Number55",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Mutton biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Mutton_Biryani.jpg/960px-Mutton_Biryani.jpg",
+    "width": 512,
+    "height": 384,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Mutton_Biryani.jpg"
+   }
+  },
+  {
+   "pageid": 10977043,
+   "title": "File:Chickenbiryani.JPG",
+   "sha1": "8eafb580d40d3a8c235fa136250fcae42752da70",
+   "width": 1600,
+   "height": 1200,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Chickenbiryani.JPG",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Randhirreddy at English Wikipedia",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Hyderabadi chicken biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Chickenbiryani.JPG/960px-Chickenbiryani.JPG",
+    "width": 512,
+    "height": 384,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Chickenbiryani.JPG"
+   }
+  },
+  {
+   "pageid": 13250518,
+   "title": "File:Hyderabadi Chicken Biryani.jpg",
+   "sha1": "5d2e349fb0c568b2bb17297171ebdf9021cbef10",
+   "width": 3888,
+   "height": 2592,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Hyderabadi_Chicken_Biryani.jpg",
+   "licence": {
+    "declared_class": "CC_BY",
+    "short_name": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": false,
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Garrett Ziegler from New York, United States",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Hyderabadi chicken biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Hyderabadi_Chicken_Biryani.jpg/960px-Hyderabadi_Chicken_Biryani.jpg",
+    "width": 512,
+    "height": 341,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Hyderabadi_Chicken_Biryani.jpg"
+   }
+  },
+  {
+   "pageid": 35938783,
+   "title": "File:Mutton Biriani with sliced onion rings and lettuce.JPG",
+   "sha1": "b89f126026425d1d833d008b98e944951c5f9043",
+   "width": 5184,
+   "height": 3456,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Mutton_Biriani_with_sliced_onion_rings_and_lettuce.JPG",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Kennedy Bundi",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Mutton biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Mutton_Biriani_with_sliced_onion_rings_and_lettuce.JPG/960px-Mutton_Biriani_with_sliced_onion_rings_and_lettuce.JPG",
+    "width": 512,
+    "height": 341,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Mutton_Biriani_with_sliced_onion_rings_and_lettuce.JPG"
+   }
+  },
+  {
+   "pageid": 37542255,
+   "title": "File:Mutton Biryani..JPG",
+   "sha1": "69c8214b9974e8f518b3cb21e1c2c66e90ef6d80",
+   "width": 4896,
+   "height": 3672,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Mutton_Biryani..JPG",
+   "licence": {
+    "declared_class": "CC0_PD",
+    "short_name": "CC0",
+    "licence_url": "",
+    "usage_terms": "",
+    "attribution_required": false,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": false,
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Miansari66",
+    "attribution_required": false,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Mutton biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Mutton_Biryani..JPG/960px-Mutton_Biryani..JPG",
+    "width": 512,
+    "height": 384,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/8/88/Mutton_Biryani..JPG"
+   }
+  },
+  {
+   "pageid": 39794153,
+   "title": "File:Aesthetic Mutton Lamp Biyani.jpg",
+   "sha1": "790d8702f7f5e883f113b50c265f25e2543bb883",
+   "width": 4208,
+   "height": 2368,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Aesthetic_Mutton_Lamp_Biyani.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Thamizhpparithi Maari",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Mutton biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Aesthetic_Mutton_Lamp_Biyani.jpg/960px-Aesthetic_Mutton_Lamp_Biyani.jpg",
+    "width": 512,
+    "height": 288,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Aesthetic_Mutton_Lamp_Biyani.jpg"
+   }
+  },
+  {
+   "pageid": 40565779,
+   "title": "File:The quintessential Mughlai biriyani.jpg",
+   "sha1": "a72d61184ce82983f09ff6e1f41220d81ac74ca5",
+   "width": 1024,
+   "height": 683,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:The_quintessential_Mughlai_biriyani.jpg",
+   "licence": {
+    "declared_class": "CC_BY_SA",
+    "short_name": "CC BY-SA 4.0",
+    "licence_url": "",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": true,
+    "review_reason": "share-alike: may impose obligations on derived artefacts",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "https://creativecommons.org/licenses/by-sa/4.0",
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Agnivajgec",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Mutton biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/The_quintessential_Mughlai_biriyani.jpg/960px-The_quintessential_Mughlai_biriyani.jpg",
+    "width": 512,
+    "height": 342,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/a/ae/The_quintessential_Mughlai_biriyani.jpg"
+   }
+  },
+  {
+   "pageid": 57755179,
+   "title": "File:Hyderabadi Chicken Biriyani (8306823336).jpg",
+   "sha1": "3c0c54cb1c3ac8fbb2de9941465800400d0d0272",
+   "width": 1200,
+   "height": 1800,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Hyderabadi_Chicken_Biriyani_(8306823336).jpg",
+   "licence": {
+    "declared_class": "CC_BY",
+    "short_name": "CC BY 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "usage_terms": "",
+    "attribution_required": true,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": false,
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "api:extmetadata",
+    "licence_url_derived": null,
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "Amborish - Axis Images from Kolkata, India",
+    "attribution_required": true,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Hyderabadi chicken biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Hyderabadi_Chicken_Biriyani_%288306823336%29.jpg/960px-Hyderabadi_Chicken_Biriyani_%288306823336%29.jpg",
+    "width": 512,
+    "height": 768,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/6/60/Hyderabadi_Chicken_Biriyani_%288306823336%29.jpg"
+   }
+  },
+  {
+   "pageid": 140711670,
+   "title": "File:Spicy Mutton Biriyani.jpg",
+   "sha1": "9549f33b703bfa15c0578d3fafb7f5786acc148b",
+   "width": 1800,
+   "height": 4000,
+   "mime": "image/jpeg",
+   "description_url": "https://commons.wikimedia.org/wiki/File:Spicy_Mutton_Biriyani.jpg",
+   "licence": {
+    "declared_class": "CC0_PD",
+    "short_name": "CC0",
+    "licence_url": "",
+    "usage_terms": "",
+    "attribution_required": false,
+    "verification": "declared_only",
+    "requires_human_review": true,
+    "preliminarily_acceptable": true,
+    "share_alike": false,
+    "review_reason": "",
+    "attribution_required_source": "api:extmetadata",
+    "licence_url_source": "derived:canonical_cc_deed_url",
+    "licence_url_derived": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "usage_terms_source": "not_requested_in_query"
+   },
+   "attribution": {
+    "artist_raw": "RamyaMBA",
+    "attribution_required": false,
+    "attribution_required_source": "api:extmetadata",
+    "permission_raw": ""
+   },
+   "categories": [
+    "Mutton biryani"
+   ],
+   "metadata_gaps": [],
+   "usable_for_training": false,
+   "thumbnail": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Spicy_Mutton_Biriyani.jpg/960px-Spicy_Mutton_Biriyani.jpg",
+    "width": 512,
+    "height": 1138,
+    "retrieval_status": "url_resolved_not_downloaded",
+    "retrieval_note": "Thumbnail URL resolved from the Commons API. Image bytes were NOT downloaded by this tool; the review page loads the thumbnail from Wikimedia's own servers in the reviewer's browser.",
+    "retrieved_utc": "2026-11-08T07:16:10+00:00",
+    "original_url_recorded_only": "https://upload.wikimedia.org/wikipedia/commons/5/52/Spicy_Mutton_Biriyani.jpg"
+   }
+  }
+ ]
+}
