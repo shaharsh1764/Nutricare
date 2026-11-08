@@ -1,0 +1,131 @@
+{
+ "_provenance": {
+  "note": "Verbatim live Commons imageinfo responses (iiurlwidth=512) captured via the out-of-sandbox documented API fetch on 2026-11-05. The utm_* query strings the API appends were stripped from the stored URLs; the path and thumbnail rendering are unchanged. Used so the sample build and tests run offline without inventing URLs.",
+  "endpoint": "https://commons.wikimedia.org/w/api.php",
+  "query": "action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url&iiurlwidth=512&titles=<10 titles>",
+  "captured_utc": "2026-11-05",
+  "downloads_performed": false
+ },
+ "pages": [
+  {
+   "pageid": 8196059,
+   "title": "File:Biryani Rice with Goat Masala and Lamb Rogan Josh - Zam Zam (415375255).jpg",
+   "imageinfo": [
+    {
+     "thumburl": "https://upload.wikimedia.org/wikipedia/commons/4/43/Biryani_Rice_with_Goat_Masala_and_Lamb_Rogan_Josh_-_Zam_Zam_%28415375255%29.jpg",
+     "thumbwidth": 512,
+     "thumbheight": 384,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Biryani_Rice_with_Goat_Masala_and_Lamb_Rogan_Josh_-_Zam_Zam_%28415375255%29.jpg"
+    }
+   ]
+  },
+  {
+   "pageid": 10812474,
+   "title": "File:Mutton Biryani.jpg",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Mutton_Biryani.jpg/960px-Mutton_Biryani.jpg",
+     "thumbwidth": 512,
+     "thumbheight": 384,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Mutton_Biryani.jpg"
+    }
+   ]
+  },
+  {
+   "pageid": 10977043,
+   "title": "File:Chickenbiryani.JPG",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Chickenbiryani.JPG/960px-Chickenbiryani.JPG",
+     "thumbwidth": 512,
+     "thumbheight": 384,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Chickenbiryani.JPG"
+    }
+   ]
+  },
+  {
+   "pageid": 13250518,
+   "title": "File:Hyderabadi Chicken Biryani.jpg",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Hyderabadi_Chicken_Biryani.jpg/960px-Hyderabadi_Chicken_Biryani.jpg",
+     "thumbwidth": 512,
+     "thumbheight": 341,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Hyderabadi_Chicken_Biryani.jpg"
+    }
+   ]
+  },
+  {
+   "pageid": 35938783,
+   "title": "File:Mutton Biriani with sliced onion rings and lettuce.JPG",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Mutton_Biriani_with_sliced_onion_rings_and_lettuce.JPG/960px-Mutton_Biriani_with_sliced_onion_rings_and_lettuce.JPG",
+     "thumbwidth": 512,
+     "thumbheight": 341,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Mutton_Biriani_with_sliced_onion_rings_and_lettuce.JPG"
+    }
+   ]
+  },
+  {
+   "pageid": 37542255,
+   "title": "File:Mutton Biryani..JPG",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Mutton_Biryani..JPG/960px-Mutton_Biryani..JPG",
+     "thumbwidth": 512,
+     "thumbheight": 384,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/8/88/Mutton_Biryani..JPG"
+    }
+   ]
+  },
+  {
+   "pageid": 39794153,
+   "title": "File:Aesthetic Mutton Lamp Biyani.jpg",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Aesthetic_Mutton_Lamp_Biyani.jpg/960px-Aesthetic_Mutton_Lamp_Biyani.jpg",
+     "thumbwidth": 512,
+     "thumbheight": 288,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Aesthetic_Mutton_Lamp_Biyani.jpg"
+    }
+   ]
+  },
+  {
+   "pageid": 40565779,
+   "title": "File:The quintessential Mughlai biriyani.jpg",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/The_quintessential_Mughlai_biriyani.jpg/960px-The_quintessential_Mughlai_biriyani.jpg",
+     "thumbwidth": 512,
+     "thumbheight": 342,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/The_quintessential_Mughlai_biriyani.jpg"
+    }
+   ]
+  },
+  {
+   "pageid": 57755179,
+   "title": "File:Hyderabadi Chicken Biriyani (8306823336).jpg",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Hyderabadi_Chicken_Biriyani_%288306823336%29.jpg/960px-Hyderabadi_Chicken_Biriyani_%288306823336%29.jpg",
+     "thumbwidth": 512,
+     "thumbheight": 768,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/6/60/Hyderabadi_Chicken_Biriyani_%288306823336%29.jpg"
+    }
+   ]
+  },
+  {
+   "pageid": 140711670,
+   "title": "File:Spicy Mutton Biriyani.jpg",
+   "imageinfo": [
+    {
+     "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Spicy_Mutton_Biriyani.jpg/960px-Spicy_Mutton_Biriyani.jpg",
+     "thumbwidth": 512,
+     "thumbheight": 1138,
+     "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Spicy_Mutton_Biriyani.jpg"
+    }
+   ]
+  }
+ ]
+}
