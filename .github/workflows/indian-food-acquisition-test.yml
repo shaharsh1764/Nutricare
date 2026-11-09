@@ -163,13 +163,16 @@ jobs:
         run: |
           python - <<'PY'
           import json
+          import time
           import urllib.request
           import urllib.error
           from pathlib import Path
           from training.acquire_v2 import load_seeds, run_acquisition_attempt
 
           def verbose_opener(url, timeout):
-              """Custom opener that prints HTTP response details for diagnosis."""
+              """Custom opener that prints HTTP response details for diagnosis.
+              Handles HTTP 429 (Too Many Requests) by respecting Retry-After
+                  and retrying once — directly addressing Wikimedia rate-limiting."""
               req = urllib.request.Request(
                   url,
                   headers={
@@ -185,6 +188,20 @@ jobs:
               except urllib.error.HTTPError as e:
                   body = e.read()[:500]
                   print(f"  HTTP ERROR {e.code} {e.geturl()} body={body!r}")
+                  if e.code == 429:
+                      retry_after = e.headers.get("Retry-After")
+                      delay = int(retry_after) if retry_after and retry_after.isdigit() else 5
+                      print(f"  Rate limited (429). Retrying after {delay}s...")
+                      time.sleep(delay)
+                      try:
+                          with urllib.request.urlopen(req, timeout=timeout) as response:
+                              body = response.read()
+                              print(f"  HTTP {response.status} {response.geturl()} size={len(body)} (retry)")
+                              return body
+                      except urllib.error.HTTPError as e2:
+                          body2 = e2.read()[:500]
+                          print(f"  HTTP ERROR {e2.code} {e2.geturl()} body={body2!r} (retry)")
+                          raise
                   raise
               except Exception as e:
                   print(f"  FETCH ERROR {type(e).__name__}: {e}")
