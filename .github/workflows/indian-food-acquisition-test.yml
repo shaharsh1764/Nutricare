@@ -212,6 +212,18 @@ jobs:
           print(f"  images_downloaded: {downloaded}")
           print(f"  passing_integrity: {integrity}")
 
+          # Print per-row status for diagnosis
+          for row in rows:
+              status = row.get("acquire_status", "unknown")
+              pageid = row.get("pageid", "?")
+              if status == "failed":
+                  print(f"  FAILED ROW: pageid={pageid}, reason={row.get('failure_reason')}")
+              elif status == "downloaded":
+                  dl = row.get("download", {})
+                  print(f"  DOWNLOADED ROW: pageid={pageid}, bytes={dl.get('bytes')}, sha256={dl.get('sha256')}")
+              else:
+                  print(f"  SKIPPED ROW: pageid={pageid}, status={status}")
+
           if downloaded != 1:
               print(f"FAIL: expected exactly 1 downloaded image, got {downloaded}")
               sys.exit(1)
