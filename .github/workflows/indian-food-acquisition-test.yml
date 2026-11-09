@@ -252,7 +252,16 @@ jobs:
               print(f"FAIL: could not open image with Pillow: {type(exc).__name__}: {exc}")
               sys.exit(1)
 
-          print(f"  Pillow format: {fmt} size: {width}x{height}")
+          declared_w = row.get("declared_width")
+          declared_h = row.get("declared_height")
+          if declared_w is not None and width != declared_w:
+              print(f"FAIL: Pillow width {width} != declared width {declared_w}")
+              sys.exit(1)
+          if declared_h is not None and height != declared_h:
+              print(f"FAIL: Pillow height {height} != declared height {declared_h}")
+              sys.exit(1)
+
+          print(f"  Pillow format: {fmt} size: {width}x{height} (matches declared {declared_w}x{declared_h})")
 
           class_slug = row.get("class", "unknown")
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
