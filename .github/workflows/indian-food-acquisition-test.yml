@@ -183,9 +183,10 @@ jobs:
                   },
               )
               # Pace requests: Wikimedia rate-limits rapid successive fetches
-              # from shared CI runner IPs. Pause between downloads so each
-              # fetch is spaced out and less likely to trigger the limiter.
-              time.sleep(8)
+              # from shared CI runner IPs. A short pause between downloads
+              # spaces out fetches without making the batch impractically slow;
+              # the 429 retry below handles any remaining rate limiting.
+              time.sleep(3)
               try:
                   with urllib.request.urlopen(req, timeout=timeout) as response:
                       body = response.read()
