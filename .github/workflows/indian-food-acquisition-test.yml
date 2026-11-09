@@ -217,8 +217,8 @@ jobs:
           out_dir = Path("data/v4/acquisition")
           images_dir = Path("data/v4/images")
 
-          # All seed classes, limit 1 per class (7 images total)
-          # One verified image per class to establish the pipeline across all classes.
+          # All seed classes, limit 4 per class (~28 images total)
+          # Scaling up from the proven single-per-class batch to a usable dataset size.
           seeds = load_seeds(seeds_path)
           target_classes = ["biryani", "dosa", "gulab_jamun", "idli", "jalebi", "naan", "samosa"]
           filtered = [s for s in seeds if s.get("class") in target_classes]
@@ -230,7 +230,7 @@ jobs:
               out_dir=out_dir,
               images_dir=images_dir,
               download=True,
-              limit_per_class=1,
+              limit_per_class=4,
               opener=verbose_opener,
           )
           print(json.dumps(report.get("totals", {}), indent=2))
