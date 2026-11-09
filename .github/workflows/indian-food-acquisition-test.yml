@@ -202,6 +202,8 @@ jobs:
           report = json.loads(report_path.read_text())
           totals = report.get("totals", {})
 
+          print(f"  FULL REPORT: {json.dumps(report, indent=2)}")
+
           discovered = totals.get("images_discovered", 0)
           downloaded = totals.get("images_downloaded", 0)
           integrity = totals.get("passing_integrity", 0)
