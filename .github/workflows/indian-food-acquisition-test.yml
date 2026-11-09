@@ -213,7 +213,7 @@ jobs:
               print(f"FAIL: download not ok: {dl.get('reason')}")
               sys.exit(1)
 
-          integrity_block = dl.get("integrity", {})
+          integrity_block = row.get("integrity", {})
           if integrity_block.get("bytes") != row.get("declared_bytes"):
               print(f"FAIL: downloaded bytes {integrity_block.get('bytes')} != declared {row.get('declared_bytes')}")
               sys.exit(1)
@@ -270,6 +270,7 @@ jobs:
           PY
 
       - name: Upload acquisition report artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: acquisition-report
@@ -277,6 +278,7 @@ jobs:
           retention-days: 90
 
       - name: Upload metadata check artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: metadata-check
@@ -284,6 +286,7 @@ jobs:
           retention-days: 90
 
       - name: Upload downloaded image artifact (single image only)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: downloaded-images
