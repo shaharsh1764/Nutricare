@@ -204,6 +204,28 @@ jobs:
 
           print(f"  FULL REPORT: {json.dumps(report, indent=2)}")
 
+          # Write to GITHUB_STEP_SUMMARY so it renders on the run page
+          summary_path = Path(os.environ.get("GITHUB_STEP_SUMMARY", "/tmp/summary.md"))
+          summary_path.parent.mkdir(parents=True, exist_ok=True)
+          summary_lines = [
+              "## Acquisition Diagnostic Summary",
+              f"- images_discovered: {totals.get('images_discovered', 0)}",
+              f"- images_downloaded: {totals.get('images_downloaded', 0)}",
+              f"- passing_integrity: {totals.get('passing_integrity', 0)}",
+              "",
+          ]
+          for row in report.get("rows", []):
+              status = row.get("acquire_status", "unknown")
+              pageid = row.get("pageid", "?")
+              summary_lines.append(f"- Row pageid={pageid}: status={status}")
+              if status == "failed":
+                  summary_lines.append(f"  - failure_reason: {row.get('failure_reason', 'unknown')}")
+              elif status == "downloaded":
+                  dl = row.get("download", {})
+                  summary_lines.append(f"  - bytes: {dl.get('bytes')}, sha256: {dl.get('sha256')}")
+                  summary_lines.append(f"  - width: {dl.get('width')}, height: {dl.get('height')}")
+          summary_path.write_text("\n".join(summary_lines) + "\n")
+
           discovered = totals.get("images_discovered", 0)
           downloaded = totals.get("images_downloaded", 0)
           integrity = totals.get("passing_integrity", 0)
