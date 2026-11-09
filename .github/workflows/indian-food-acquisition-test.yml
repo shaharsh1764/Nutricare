@@ -158,7 +158,7 @@ jobs:
               f"licence={record['licence']} artist={record['artist']}")
           PY
 
-      - name: Run single-image acquisition (acquire_v2.py pipeline)
+      - name: Run batch acquisition (acquire_v2.py pipeline)
         id: acquire
         run: |
           python - <<'PY'
@@ -172,7 +172,9 @@ jobs:
           def verbose_opener(url, timeout):
               """Custom opener that prints HTTP response details for diagnosis.
               Handles HTTP 429 (Too Many Requests) by respecting Retry-After
-                  and retrying once — directly addressing Wikimedia rate-limiting."""
+                  and retrying once — directly addressing Wikimedia rate-limiting.
+              Adds a small inter-request pause to pace downloads from shared CI
+              runner IPs."""
               req = urllib.request.Request(
                   url,
                   headers={
@@ -181,9 +183,9 @@ jobs:
                   },
               )
               # Pace requests: Wikimedia rate-limits rapid successive fetches
-              # from shared CI runner IPs. A short pause before the first
-              # attempt avoids triggering the limiter on the download itself.
-              time.sleep(15)
+              # from shared CI runner IPs. Pause between downloads so each
+              # fetch is spaced out and less likely to trigger the limiter.
+              time.sleep(8)
               try:
                   with urllib.request.urlopen(req, timeout=timeout) as response:
                       body = response.read()
@@ -215,24 +217,26 @@ jobs:
           out_dir = Path("data/v4/acquisition")
           images_dir = Path("data/v4/images")
 
-          # Filter to biryani class only, limit 1 seed
+          # All seed classes, limit 6 per class (~35-40 images total)
           seeds = load_seeds(seeds_path)
-          biryani = [s for s in seeds if s.get("class") == "biryani"][:1]
-          filtered_path = Path("data/v4/acquisition/biryani_seeds.json")
-          filtered_path.write_text(json.dumps({"records": biryani}, indent=1))
+          target_classes = ["biryani", "dosa", "gulab_jamun", "idli", "jalebi", "naan", "samosa"]
+          filtered = [s for s in seeds if s.get("class") in target_classes]
+          filtered_path = Path("data/v4/acquisition/batch_seeds.json")
+          filtered_path.write_text(json.dumps({"records": filtered}, indent=1))
 
           report = run_acquisition_attempt(
               filtered_path,
               out_dir=out_dir,
               images_dir=images_dir,
               download=True,
-              limit_per_class=1,
+              limit_per_class=6,
               opener=verbose_opener,
           )
           print(json.dumps(report.get("totals", {}), indent=2))
+          print(json.dumps(report.get("per_class", {}), indent=2))
           PY
 
-      - name: Verify acquisition downloaded exactly one valid image
+      - name: Verify batch acquisition downloaded valid images
         id: verify-acquisition
         run: |
           python - <<'PY'
@@ -263,7 +267,8 @@ jobs:
           for row in report.get("rows", []):
               status = row.get("acquire_status", "unknown")
               pageid = row.get("pageid", "?")
-              summary_lines.append(f"- Row pageid={pageid}: status={status}")
+              class_slug = row.get("class", "?")
+              summary_lines.append(f"- Row pageid={pageid} class={class_slug}: status={status}")
               if status == "failed":
                   summary_lines.append(f"  - failure_reason: {row.get('failure_reason', 'unknown')}")
               elif status == "downloaded":
@@ -286,109 +291,108 @@ jobs:
           for row in rows:
               status = row.get("acquire_status", "unknown")
               pageid = row.get("pageid", "?")
+              class_slug = row.get("class", "?")
               if status == "failed":
                   reason = row.get("failure_reason", "unknown")
-                  print(f"  FAILED ROW: pageid={pageid}, reason={reason}")
-                  print(f"::error::Acquisition failed for pageid={pageid}: {reason}")
+                  print(f"  FAILED ROW: pageid={pageid} class={class_slug}, reason={reason}")
+                  print(f"::error::Acquisition failed for pageid={pageid} class={class_slug}: {reason}")
               elif status == "downloaded":
                   dl = row.get("download", {})
-                  print(f"  DOWNLOADED ROW: pageid={pageid}, bytes={dl.get('bytes')}, sha256={dl.get('sha256')}")
+                  print(f"  DOWNLOADED ROW: pageid={pageid} class={class_slug}, bytes={dl.get('bytes')}, sha256={dl.get('sha256')}")
               else:
-                  print(f"  SKIPPED ROW: pageid={pageid}, status={status}")
+                  print(f"  SKIPPED ROW: pageid={pageid} class={class_slug}, status={status}")
 
-          if downloaded != 1:
-              print(f"FAIL: expected exactly 1 downloaded image, got {downloaded}")
-              print(f"::error::Expected exactly 1 downloaded image, got {downloaded}")
-              sys.exit(1)
-          if integrity != 1:
-              print(f"FAIL: expected exactly 1 image passing integrity, got {integrity}")
-              sys.exit(1)
-          if len(rows) != 1:
-              print(f"FAIL: expected exactly 1 row in report, got {len(rows)}")
+          if downloaded == 0:
+              print("FAIL: no images were downloaded")
+              print("::error::No images were downloaded from Wikimedia Commons")
               sys.exit(1)
 
-          row = rows[0]
-          pageid = row.get("pageid")
-          if pageid is None:
-              print("FAIL: row missing pageid")
+          # Verify each downloaded row has full provenance and valid image bytes
+          downloaded_rows = [r for r in rows if r.get("acquire_status") == "downloaded"]
+          all_ok = True
+          for row in downloaded_rows:
+              pageid = row.get("pageid")
+              class_slug = row.get("class", "unknown")
+              if pageid is None:
+                  print(f"FAIL: row missing pageid: {row}")
+                  all_ok = False
+                  continue
+
+              required = ["source_url", "licence", "author", "declared_sha1",
+                          "declared_bytes", "declared_width", "declared_height",
+                          "rights_tier", "human_review_status", "download"]
+              missing = [k for k in required if k not in row]
+              if missing:
+                  print(f"FAIL: pageid={pageid} row missing provenance fields: {missing}")
+                  all_ok = False
+                  continue
+
+              dl = row.get("download", {})
+              if not dl.get("ok"):
+                  print(f"FAIL: pageid={pageid} download not ok: {dl.get('reason')}")
+                  all_ok = False
+                  continue
+
+              integrity_block = row.get("integrity", {})
+              if integrity_block.get("bytes") != row.get("declared_bytes"):
+                  print(f"FAIL: pageid={pageid} bytes {integrity_block.get('bytes')} != declared {row.get('declared_bytes')}")
+                  all_ok = False
+              if integrity_block.get("width") != row.get("declared_width"):
+                  print(f"FAIL: pageid={pageid} width {integrity_block.get('width')} != declared {row.get('declared_width')}")
+                  all_ok = False
+              if integrity_block.get("height") != row.get("declared_height"):
+                  print(f"FAIL: pageid={pageid} height {integrity_block.get('height')} != declared {row.get('declared_height')}")
+                  all_ok = False
+
+              # Verify SHA256 from the downloaded file
+              image_path = Path("data/v4/images") / class_slug / f"{pageid}.jpg"
+              if not image_path.exists():
+                  print(f"FAIL: pageid={pageid} image file not found at {image_path}")
+                  all_ok = False
+                  continue
+
+              sha256 = hashlib.sha256(image_path.read_bytes()).hexdigest()
+              recorded_sha256 = dl.get("sha256")
+              if sha256 != recorded_sha256:
+                  print(f"FAIL: pageid={pageid} SHA256 mismatch: computed {sha256}, recorded {recorded_sha256}")
+                  all_ok = False
+
+              # Verify the file opens as a valid image with Pillow
+              try:
+                  with Image.open(image_path) as img:
+                      img.verify()
+                  with Image.open(image_path) as img:
+                      width, height = img.size
+                      fmt = img.format
+              except Exception as exc:
+                  print(f"FAIL: pageid={pageid} could not open image with Pillow: {type(exc).__name__}: {exc}")
+                  all_ok = False
+                  continue
+
+              declared_w = row.get("declared_width")
+              declared_h = row.get("declared_height")
+              if declared_w is not None and width != declared_w:
+                  print(f"FAIL: pageid={pageid} Pillow width {width} != declared width {declared_w}")
+                  all_ok = False
+              if declared_h is not None and height != declared_h:
+                  print(f"FAIL: pageid={pageid} Pillow height {height} != declared height {declared_h}")
+                  all_ok = False
+
+              print(f"  VERIFIED: pageid={pageid} class={class_slug} sha256={sha256} "
+                    f"dims={width}x{height} fmt={fmt} licence={row['licence'].get('short_name')}")
+
+          if not all_ok:
+              print("FAIL: one or more downloaded images failed verification")
+              print("::error::Batch acquisition verification found invalid images")
               sys.exit(1)
 
-          required = ["source_url", "licence", "author", "declared_sha1",
-                      "declared_bytes", "declared_width", "declared_height",
-                      "rights_tier", "human_review_status", "download"]
-          missing = [k for k in required if k not in row]
-          if missing:
-              print(f"FAIL: row missing provenance fields: {missing}")
-              sys.exit(1)
-
-          dl = row.get("download", {})
-          if not dl.get("ok"):
-              print(f"FAIL: download not ok: {dl.get('reason')}")
-              sys.exit(1)
-
-          integrity_block = row.get("integrity", {})
-          if integrity_block.get("bytes") != row.get("declared_bytes"):
-              print(f"FAIL: downloaded bytes {integrity_block.get('bytes')} != declared {row.get('declared_bytes')}")
-              sys.exit(1)
-          if integrity_block.get("width") != row.get("declared_width"):
-              print(f"FAIL: downloaded width {integrity_block.get('width')} != declared {row.get('declared_width')}")
-              sys.exit(1)
-          if integrity_block.get("height") != row.get("declared_height"):
-              print(f"FAIL: downloaded height {integrity_block.get('height')} != declared {row.get('declared_height')}")
-              sys.exit(1)
-
-          # --- NEW: independently verify SHA256 from the downloaded file ---
-          class_slug = row.get("class", "unknown")
-          image_path = Path("data/v4/images") / class_slug / f"{pageid}.jpg"
-          print(f"  image path: {image_path}")
-          if not image_path.exists():
-              print(f"FAIL: downloaded image file not found at {image_path}")
-              sys.exit(1)
-
-          sha256 = hashlib.sha256(image_path.read_bytes()).hexdigest()
-          recorded_sha256 = dl.get("sha256")
-          print(f"  computed SHA256: {sha256}")
-          print(f"  recorded SHA256: {recorded_sha256}")
-          if sha256 != recorded_sha256:
-              print(f"FAIL: SHA256 mismatch: computed {sha256}, recorded {recorded_sha256}")
-              sys.exit(1)
-
-          # --- NEW: verify the file opens as a valid image with Pillow ---
-          try:
-              with Image.open(image_path) as img:
-                  img.verify()
-              # Re-open after verify() (verify() can leave the file in an unusable state)
-              with Image.open(image_path) as img:
-                  width, height = img.size
-                  fmt = img.format
-          except Exception as exc:
-              print(f"FAIL: could not open image with Pillow: {type(exc).__name__}: {exc}")
-              sys.exit(1)
-
-          declared_w = row.get("declared_width")
-          declared_h = row.get("declared_height")
-          if declared_w is not None and width != declared_w:
-              print(f"FAIL: Pillow width {width} != declared width {declared_w}")
-              sys.exit(1)
-          if declared_h is not None and height != declared_h:
-              print(f"FAIL: Pillow height {height} != declared height {declared_h}")
-              sys.exit(1)
-
-          print(f"  Pillow format: {fmt} size: {width}x{height} (matches declared {declared_w}x{declared_h})")
-
-          class_slug = row.get("class", "unknown")
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"pageid={pageid}\n")
-              f.write(f"class_slug={class_slug}\n")
-
-          print("PASS: exactly one valid image downloaded with full provenance")
-          print(f"  pageid: {pageid}")
-          print(f"  class: {class_slug}")
-          print(f"  source_url: {row['source_url']}")
-          print(f"  licence: {row['licence'].get('short_name')} author: {row['author']}")
-          print(f"  rights_tier: {row['rights_tier']} review: {row['human_review_status']}")
-          print(f"  local_sha256: {sha256}")
-          print(f"  dimensions: {width}x{height} bytes: {integrity_block.get('bytes')}")
+          print(f"PASS: {len(downloaded_rows)} valid image(s) downloaded with full provenance")
+          for row in downloaded_rows:
+              pageid = row.get("pageid")
+              class_slug = row.get("class", "unknown")
+              print(f"  pageid={pageid} class={class_slug} source_url={row['source_url']}")
+              print(f"    licence={row['licence'].get('short_name')} author={row['author']}")
+              print(f"    rights_tier={row['rights_tier']} review={row['human_review_status']}")
           PY
 
       - name: Upload acquisition report artifact
@@ -407,10 +411,10 @@ jobs:
           path: data/v4/acquisition/metadata_check.json
           retention-days: 90
 
-      - name: Upload downloaded image artifact (single image only)
+      - name: Upload downloaded image artifact (all downloaded images)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: downloaded-images
-          path: data/v4/images/${{ steps.verify-acquisition.outputs.class_slug }}/${{ steps.verify-acquisition.outputs.pageid }}.jpg
+          path: data/v4/images/**/*.jpg
           retention-days: 90
