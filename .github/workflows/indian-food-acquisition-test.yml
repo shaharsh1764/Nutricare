@@ -158,10 +158,33 @@ jobs:
               f"licence={record['licence']} artist={record['artist']}")
           PY
 
-      - name: Run single-image acquisition (acquire_v2.py unchanged)
+      - name: Run single-image acquisition (acquire_v2.py pipeline)
         id: acquire
         run: |
-          python training/acquire_v2.py --class biryani --limit 1
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from training.acquire_v2 import load_seeds, run_acquisition_attempt
+
+          seeds_path = Path("data/v4/acquisition/commons_seeds.json")
+          out_dir = Path("data/v4/acquisition")
+          images_dir = Path("data/v4/images")
+
+          # Filter to biryani class only, limit 1 seed
+          seeds = load_seeds(seeds_path)
+          biryani = [s for s in seeds if s.get("class") == "biryani"][:1]
+          filtered_path = Path("data/v4/acquisition/biryani_seeds.json")
+          filtered_path.write_text(json.dumps({"records": biryani}, indent=1))
+
+          report = run_acquisition_attempt(
+              filtered_path,
+              out_dir=out_dir,
+              images_dir=images_dir,
+              download=True,
+              limit_per_class=1,
+          )
+          print(json.dumps(report.get("totals", {}), indent=2))
+          PY
 
       - name: Verify acquisition downloaded exactly one valid image
         id: verify-acquisition
