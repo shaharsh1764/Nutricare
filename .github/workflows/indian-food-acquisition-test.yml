@@ -1,0 +1,291 @@
+name: "Indian Food Image Acquisition Test"
+
+on:
+  workflow_dispatch:
+    inputs: {}
+
+permissions:
+  contents: read
+
+jobs:
+  connectivity-and-acquisition:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Pillow
+
+      - name: Probe Wikimedia host reachability (socket + TLS)
+        id: probe
+        run: |
+          python - <<'PY'
+          import json, socket, ssl, time
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          hosts = ["commons.wikimedia.org", "upload.wikimedia.org"]
+          results = []
+          for host in hosts:
+              started = time.time()
+              try:
+                  context = ssl.create_default_context()
+                  with socket.create_connection((host, 443), timeout=10) as sock:
+                      with context.wrap_socket(sock, server_hostname=host) as tls:
+                          peer = tls.getpeercert().get("subject", [])
+                  results.append({
+                      "host": host,
+                      "reachable": True,
+                      "tls_subject": str(peer)[:120],
+                      "elapsed_s": round(time.time() - started, 3),
+                  })
+              except Exception as exc:
+                  results.append({
+                      "host": host,
+                      "reachable": False,
+                      "error": f"{type(exc).__name__}: {exc}"[:200],
+                      "elapsed_s": round(time.time() - started, 3),
+                  })
+
+          out_dir = Path("data/v4/acquisition")
+          out_dir.mkdir(parents=True, exist_ok=True)
+          (out_dir / "source_probe.json").write_text(
+              json.dumps({"probed_at": datetime.now(timezone.utc).isoformat(), "hosts": results}, indent=2) + "\n"
+          )
+
+          for r in results:
+              status = "REACHABLE" if r["reachable"] else "UNREACHABLE"
+              detail = r.get("error") or r.get("tls_subject", "")
+              print(f"  {status:12s} {r['host']:32s} {detail[:80]}")
+
+          all_ok = all(r["reachable"] for r in results)
+          print(f"\n{'PASS' if all_ok else 'FAIL'}: Wikimedia host reachability")
+          if not all_ok:
+              print("WARNING: Not all Wikimedia hosts reachable. Image download may fail.")
+          PY
+
+      - name: Verify Wikimedia Commons metadata API returns valid JSON
+        id: metadata-check
+        run: |
+          python - <<'PY'
+          import json, urllib.request
+          from urllib.parse import quote
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          # Seed record: File:Biryani and tempting.jpg (pageid 201150503)
+          title = "File:Biryani and tempting.jpg"
+          api_url = (
+              "https://commons.wikimedia.org/w/api.php"
+              "?action=query"
+              "&prop=imageinfo"
+              f"&titles={quote(title)}"
+              "&iiprop=url|size|sha1|mime|extmetadata"
+              "&format=json"
+          )
+
+          req = urllib.request.Request(
+              api_url,
+              headers={
+                  "User-Agent": "NutriCare-V2-dataset/1.0 (research; contact: repo owner)",
+                  "Accept": "application/json",
+              },
+          )
+          with urllib.request.urlopen(req, timeout=30) as response:
+              body = response.read()
+          data = json.loads(body)
+
+          pages = data.get("query", {}).get("pages", {})
+          if not pages:
+              raise SystemExit("FAIL: metadata API returned no 'pages'")
+
+          page = next(iter(pages.values()))
+          if page.get("missing"):
+              raise SystemExit(f"FAIL: file '{title}' is missing on Commons")
+
+          ii = page.get("imageinfo", [])
+          if not ii:
+              raise SystemExit(f"FAIL: file '{title}' has no imageinfo")
+
+          info = ii[0]
+          required = ["size", "width", "height", "sha1", "url", "mime"]
+          missing = [k for k in required if k not in info]
+          if missing:
+              raise SystemExit(f"FAIL: imageinfo missing fields: {missing}")
+
+          ext = info.get("extmetadata", {})
+          licence = ext.get("LicenseShortName", {}).get("value", "")
+          artist = ext.get("Artist", {}).get("value", "")
+
+          record = {
+              "pageid": page.get("pageid"),
+              "title": page.get("title"),
+              "url": info.get("url"),
+              "descriptionurl": info.get("descriptionurl"),
+              "size": info.get("size"),
+              "width": info.get("width"),
+              "height": info.get("height"),
+              "sha1": info.get("sha1"),
+              "mime": info.get("mime"),
+              "licence": licence,
+              "artist": artist,
+          }
+
+          out_dir = Path("data/v4/acquisition")
+          out_dir.mkdir(parents=True, exist_ok=True)
+          (out_dir / "metadata_check.json").write_text(
+              json.dumps({"checked_at": datetime.now(timezone.utc).isoformat(), "record": record}, indent=2) + "\n"
+          )
+
+          print(f"PASS: metadata API returned valid JSON for '{title}'")
+          print(f"  pageid={record['pageid']} size={record['size']} "
+                f"{record['width']}x{record['height']} "
+              f"licence={record['licence']} artist={record['artist']}")
+          PY
+
+      - name: Run single-image acquisition (acquire_v2.py unchanged)
+        id: acquire
+        run: |
+          python training/acquire_v2.py --class biryani --limit 1
+
+      - name: Verify acquisition downloaded exactly one valid image
+        id: verify-acquisition
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, sys
+          from pathlib import Path
+          from PIL import Image
+
+          report_path = Path("data/v4/acquisition/acquisition_attempt.json")
+          if not report_path.exists():
+              print("FAIL: acquisition_attempt.json not found")
+              sys.exit(1)
+
+          report = json.loads(report_path.read_text())
+          totals = report.get("totals", {})
+
+          discovered = totals.get("images_discovered", 0)
+          downloaded = totals.get("images_downloaded", 0)
+          integrity = totals.get("passing_integrity", 0)
+
+          print(f"  images_discovered: {discovered}")
+          print(f"  images_downloaded: {downloaded}")
+          print(f"  passing_integrity: {integrity}")
+
+          if downloaded != 1:
+              print(f"FAIL: expected exactly 1 downloaded image, got {downloaded}")
+              sys.exit(1)
+          if integrity != 1:
+              print(f"FAIL: expected exactly 1 image passing integrity, got {integrity}")
+              sys.exit(1)
+
+          rows = report.get("rows", [])
+          if len(rows) != 1:
+              print(f"FAIL: expected exactly 1 row in report, got {len(rows)}")
+              sys.exit(1)
+
+          row = rows[0]
+          pageid = row.get("pageid")
+          if pageid is None:
+              print("FAIL: row missing pageid")
+              sys.exit(1)
+
+          required = ["source_url", "licence", "author", "declared_sha1",
+                      "declared_bytes", "declared_width", "declared_height",
+                      "rights_tier", "human_review_status", "download"]
+          missing = [k for k in required if k not in row]
+          if missing:
+              print(f"FAIL: row missing provenance fields: {missing}")
+              sys.exit(1)
+
+          dl = row.get("download", {})
+          if not dl.get("ok"):
+              print(f"FAIL: download not ok: {dl.get('reason')}")
+              sys.exit(1)
+
+          integrity_block = dl.get("integrity", {})
+          if integrity_block.get("bytes") != row.get("declared_bytes"):
+              print(f"FAIL: downloaded bytes {integrity_block.get('bytes')} != declared {row.get('declared_bytes')}")
+              sys.exit(1)
+          if integrity_block.get("width") != row.get("declared_width"):
+              print(f"FAIL: downloaded width {integrity_block.get('width')} != declared {row.get('declared_width')}")
+              sys.exit(1)
+          if integrity_block.get("height") != row.get("declared_height"):
+              print(f"FAIL: downloaded height {integrity_block.get('height')} != declared {row.get('declared_height')}")
+              sys.exit(1)
+
+          # --- NEW: independently verify SHA256 from the downloaded file ---
+          class_slug = row.get("class", "unknown")
+          image_path = Path("data/v4/images") / class_slug / f"{pageid}.jpg"
+          print(f"  image path: {image_path}")
+          if not image_path.exists():
+              print(f"FAIL: downloaded image file not found at {image_path}")
+              sys.exit(1)
+
+          sha256 = hashlib.sha256(image_path.read_bytes()).hexdigest()
+          recorded_sha256 = dl.get("sha256")
+          print(f"  computed SHA256: {sha256}")
+          print(f"  recorded SHA256: {recorded_sha256}")
+          if sha256 != recorded_sha256:
+              print(f"FAIL: SHA256 mismatch: computed {sha256}, recorded {recorded_sha256}")
+              sys.exit(1)
+
+          # --- NEW: verify the file opens as a valid image with Pillow ---
+          try:
+              with Image.open(image_path) as img:
+                  img.verify()
+              # Re-open after verify() (verify() can leave the file in an unusable state)
+              with Image.open(image_path) as img:
+                  width, height = img.size
+                  fmt = img.format
+          except Exception as exc:
+              print(f"FAIL: could not open image with Pillow: {type(exc).__name__}: {exc}")
+              sys.exit(1)
+
+          print(f"  Pillow format: {fmt} size: {width}x{height}")
+
+          class_slug = row.get("class", "unknown")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"pageid={pageid}\n")
+              f.write(f"class_slug={class_slug}\n")
+
+          print("PASS: exactly one valid image downloaded with full provenance")
+          print(f"  pageid: {pageid}")
+          print(f"  class: {class_slug}")
+          print(f"  source_url: {row['source_url']}")
+          print(f"  licence: {row['licence'].get('short_name')} author: {row['author']}")
+          print(f"  rights_tier: {row['rights_tier']} review: {row['human_review_status']}")
+          print(f"  local_sha256: {sha256}")
+          print(f"  dimensions: {width}x{height} bytes: {integrity_block.get('bytes')}")
+          PY
+
+      - name: Upload acquisition report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: acquisition-report
+          path: data/v4/acquisition/acquisition_attempt.json
+          retention-days: 90
+
+      - name: Upload metadata check artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-check
+          path: data/v4/acquisition/metadata_check.json
+          retention-days: 90
+
+      - name: Upload downloaded image artifact (single image only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: downloaded-images
+          path: data/v4/images/${{ steps.verify-acquisition.outputs.class_slug }}/${{ steps.verify-acquisition.outputs.pageid }}.jpg
+          retention-days: 90
