@@ -3,6 +3,11 @@ name: "Indian Food Image Acquisition Test"
 on:
   workflow_dispatch:
     inputs: {}
+  push:
+    branches:
+      - arena/9235252f-nutricare
+    paths:
+      - '.github/workflows/indian-food-acquisition-test.yml'
 
 permissions:
   contents: read
