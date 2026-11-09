@@ -158,21 +158,37 @@ jobs:
               f"licence={record['licence']} artist={record['artist']}")
           PY
 
-      - name: Diagnostic: check Wikimedia image HTTP status
-        id: diag-curl
-        run: |
-          echo "=== Wikimedia image HTTP status ==="
-          curl -s -o /dev/null -w "%{http_code}\n" "https://upload.wikimedia.org/wikipedia/commons/6/61/Arabian_Camel_Meat_Biryani.JPG"
-          echo "=== Wikimedia metadata API HTTP status ==="
-          curl -s -o /dev/null -w "%{http_code}\n" "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&titles=File:Biryani%20and%20tempting.jpg&iiprop=url|size|sha1|mime|extmetadata&format=json"
-
       - name: Run single-image acquisition (acquire_v2.py pipeline)
         id: acquire
         run: |
           python - <<'PY'
           import json
+          import urllib.request
+          import urllib.error
           from pathlib import Path
           from training.acquire_v2 import load_seeds, run_acquisition_attempt
+
+          def verbose_opener(url, timeout):
+              """Custom opener that prints HTTP response details for diagnosis."""
+              req = urllib.request.Request(
+                  url,
+                  headers={
+                      "User-Agent": "NutriCare-V2-dataset/1.0 (research; contact: repo owner)",
+                      "Accept": "image/*",
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=timeout) as response:
+                      body = response.read()
+                      print(f"  HTTP {response.status} {response.geturl()} size={len(body)}")
+                      return body
+              except urllib.error.HTTPError as e:
+                  body = e.read()[:500]
+                  print(f"  HTTP ERROR {e.code} {e.geturl()} body={body!r}")
+                  raise
+              except Exception as e:
+                  print(f"  FETCH ERROR {type(e).__name__}: {e}")
+                  raise
 
           seeds_path = Path("data/v4/acquisition/commons_seeds.json")
           out_dir = Path("data/v4/acquisition")
@@ -190,6 +206,7 @@ jobs:
               images_dir=images_dir,
               download=True,
               limit_per_class=1,
+              opener=verbose_opener,
           )
           print(json.dumps(report.get("totals", {}), indent=2))
           PY
