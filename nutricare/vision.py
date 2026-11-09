@@ -432,17 +432,129 @@ def build_model(architecture: str, num_classes: int, pretrained: bool = False):
     return model
 
 
+
+# --------------------------------------------------------------- fallback
+
+# The 35-class Indian-food model trained on a curated dataset
+# (35 classes, 6,975 images, test accuracy 83.7%).
+# Kept beside the 12-class CC0 model so the old model remains a fallback.
+# NOTE: the training dataset's licensing conflict (CC0 vs CC BY, unverified
+# provenance) remains unresolved — this model is experimental only and must
+# NOT become the production default.
+INDIAN_MODEL_PATH = PROJECT_DIR / "models" / "indian_food_v1.pt"
+INDIAN_MODEL_METRICS = PROJECT_DIR / "models" / "indian_food_v1.metrics.json"
+
+
+class FallbackPredictor:
+    """Tries the primary (Indian-food) checkpoint, falls back to the 12-class CC0 model.
+
+    Never fabricates a prediction: if neither checkpoint is available, every
+    predict() call raises ModelUnavailable. The status() method reports which
+    model is actually serving so the UI can be honest about coverage.
+    """
+
+    def __init__(self, primary_path: Path, fallback_path: Path):
+        self.primary_path = primary_path
+        self.fallback_path = fallback_path
+        self._primary: Predictor | None = None
+        self._fallback: Predictor | None = None
+        self._serving: str | None = None
+        self._lock = threading.Lock()
+
+    def _resolve(self) -> Predictor:
+        with self._lock:
+            if self._serving is not None:
+                return self._primary if self._serving == "primary" else self._fallback  # type: ignore[return-value]
+            if self.primary_path.is_file():
+                try:
+                    self._primary = Predictor(self.primary_path)
+                    self._primary._load()
+                    self._serving = "primary"
+                    return self._primary
+                except Exception:
+                    self._primary = None
+            if self.fallback_path.is_file():
+                try:
+                    self._fallback = Predictor(self.fallback_path)
+                    self._fallback._load()
+                    self._serving = "fallback"
+                    return self._fallback
+                except Exception:
+                    self._fallback = None
+            raise ModelUnavailable(
+                f"No usable checkpoint at {self.primary_path} or {self.fallback_path}."
+            )
+
+    @property
+    def serving(self) -> str | None:
+        return self._serving
+
+    @property
+    def primary_present(self) -> bool:
+        return self.primary_path.is_file()
+
+    @property
+    def fallback_present(self) -> bool:
+        return self.fallback_path.is_file()
+
+    def status(self) -> dict:
+        self._resolve()
+        info = {
+            "model_path": str(
+                self.primary_path if self._serving == "primary" else self.fallback_path
+            ),
+            "serving": self._serving,
+            "primary_present": self.primary_present,
+            "fallback_present": self.fallback_present,
+            "low_confidence_threshold": LOW_CONFIDENCE_THRESHOLD,
+            "max_upload_bytes": MAX_UPLOAD_BYTES,
+            "single_label": True,
+            "note": SINGLE_LABEL_NOTE,
+        }
+        meta = {}
+        if self._serving == "primary" and self._primary is not None:
+            meta = dict(self._primary._meta)
+        elif self._serving == "fallback" and self._fallback is not None:
+            meta = dict(self._fallback._meta)
+        if meta:
+            info.update({k: v for k, v in meta.items() if v is not None})
+        sidecar = (
+            INDIAN_MODEL_METRICS
+            if self._serving == "primary"
+            else DEFAULT_MODEL_PATH.with_suffix(".metrics.json")
+        )
+        if sidecar.is_file():
+            try:
+                side = json.loads(sidecar.read_text(encoding="utf-8"))
+                test = side.get("test_metrics") or {}
+                info["test_accuracy"] = test.get("accuracy")
+                info["test_macro_f1"] = test.get("macro_f1")
+                info["test_support"] = test.get("support")
+                info["classes"] = side.get("classes")
+                info["dataset"] = side.get("dataset")
+            except Exception:
+                pass
+        return info
+
+    def predict(self, image_bytes: bytes, top_k: int = 3) -> dict:
+        model = self._resolve()
+        return model.predict(image_bytes, top_k=top_k)
+
+
 # --------------------------------------------------------------- singleton
-_PREDICTOR: Predictor | None = None
+_PREDICTOR: Predictor | FallbackPredictor | None = None
 _PREDICTOR_LOCK = threading.Lock()
 
 
-def get_predictor() -> Predictor:
+def get_predictor() -> Predictor | FallbackPredictor:
     global _PREDICTOR
     if _PREDICTOR is None:
         with _PREDICTOR_LOCK:
             if _PREDICTOR is None:
-                _PREDICTOR = Predictor()
+                if INDIAN_MODEL_PATH.is_file():
+                    _PREDICTOR = FallbackPredictor(INDIAN_MODEL_PATH, DEFAULT_MODEL_PATH)
+                else:
+                    _PREDICTOR = Predictor()
     return _PREDICTOR
 
 
