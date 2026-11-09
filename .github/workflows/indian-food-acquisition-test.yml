@@ -259,6 +259,8 @@ jobs:
           print(f"  images_downloaded: {downloaded}")
           print(f"  passing_integrity: {integrity}")
 
+          rows = report.get("rows", [])
+
           # Print per-row status for diagnosis
           for row in rows:
               status = row.get("acquire_status", "unknown")
@@ -280,8 +282,6 @@ jobs:
           if integrity != 1:
               print(f"FAIL: expected exactly 1 image passing integrity, got {integrity}")
               sys.exit(1)
-
-          rows = report.get("rows", [])
           if len(rows) != 1:
               print(f"FAIL: expected exactly 1 row in report, got {len(rows)}")
               sys.exit(1)
