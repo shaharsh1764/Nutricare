@@ -498,12 +498,23 @@ class FallbackPredictor:
         return self.fallback_path.is_file()
 
     def status(self) -> dict:
-        self._resolve()
+        """Report model status without loading any checkpoint.
+
+        Deliberately does *not* call ``_resolve()``: status must be a cheap,
+        side-effect-free probe. Loading the model happens lazily on first
+        ``predict()``. We report which model *would* serve based on file
+        existence, plus any metrics sidecar that is already on disk.
+        """
+        serving = None
+        if self.primary_path.is_file():
+            serving = "primary"
+        elif self.fallback_path.is_file():
+            serving = "fallback"
         info = {
             "model_path": str(
-                self.primary_path if self._serving == "primary" else self.fallback_path
+                self.primary_path if serving == "primary" else self.fallback_path
             ),
-            "serving": self._serving,
+            "serving": serving,
             "primary_present": self.primary_present,
             "fallback_present": self.fallback_present,
             "low_confidence_threshold": LOW_CONFIDENCE_THRESHOLD,
@@ -511,16 +522,10 @@ class FallbackPredictor:
             "single_label": True,
             "note": SINGLE_LABEL_NOTE,
         }
-        meta = {}
-        if self._serving == "primary" and self._primary is not None:
-            meta = dict(self._primary._meta)
-        elif self._serving == "fallback" and self._fallback is not None:
-            meta = dict(self._fallback._meta)
-        if meta:
-            info.update({k: v for k, v in meta.items() if v is not None})
+        # Attach metrics from the sidecar JSON if present (no torch needed).
         sidecar = (
             INDIAN_MODEL_METRICS
-            if self._serving == "primary"
+            if serving == "primary"
             else DEFAULT_MODEL_PATH.with_suffix(".metrics.json")
         )
         if sidecar.is_file():

@@ -286,7 +286,7 @@ def main() -> int:
         net.train() if training else net.eval()
         total, correct, loss_sum = 0, 0, 0.0
         with torch.set_grad_enabled(training):
-            for x, y in train_dl if training else _eval_loader():
+            for x, y in train_dl:
                 if training:
                     opt.zero_grad()
                 logits = net(x)
@@ -298,11 +298,6 @@ def main() -> int:
                 correct += (logits.argmax(1) == y).sum().item()
                 total += y.size(0)
         return loss_sum / max(total, 1), correct / max(total, 1)
-
-    eval_loader_holder = {"dl": None}
-
-    def _eval_loader():
-        return eval_loader_holder["dl"]
 
     def evaluate(loader) -> Tuple[float, float, List[int], List[int]]:
         net.eval()
@@ -328,7 +323,6 @@ def main() -> int:
         p.requires_grad = False
     opt1 = torch.optim.Adam(net.classifier.parameters(), lr=args.lr_head)
     for ep in range(1, args.warmup_epochs + 1):
-        eval_loader_holder["dl"] = train_dl
         tr_loss, tr_acc = run_epoch(opt1)
         _, va_acc, _, _ = evaluate(val_dl)
         history.append({"epoch": ep, "phase": "head", "train_loss": round(tr_loss, 4),
@@ -343,7 +337,6 @@ def main() -> int:
     best_val = -1.0
     best_state = None
     for ep in range(args.warmup_epochs + 1, args.epochs + 1):
-        eval_loader_holder["dl"] = train_dl
         tr_loss, tr_acc = run_epoch(opt2)
         sched.step()
         va_loss, va_acc, _, _ = evaluate(val_dl)

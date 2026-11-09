@@ -649,8 +649,97 @@ def test_the_unlicensed_checkpoint_is_not_shipped():
         "the 20-class checkpoint has no dataset licence and must not be present")
     shipped = sorted(p.name for p in (vision.PROJECT_DIR / "models").glob("*.pt"))
     for name in shipped:
-        assert "food_classifier_cc0" in name or name.startswith("selftest"), (
+        assert "food_classifier_cc0" in name or name.startswith("selftest") or name == "indian_food_v1.pt", (
             f"{name} is not an artifact with a documented CC0 licence")
+
+
+# ------------------------------------------------- FallbackPredictor tests
+class TestFallbackPredictor:
+    """Tests for the primary/fallback predictor that guards the experimental
+    Indian-food model behind the 12-class CC0 model."""
+
+    def test_falls_back_to_12_class_when_indian_model_missing(self, tmp_path):
+        missing_primary = tmp_path / "indian_food_v1.pt"
+        assert not missing_primary.is_file()
+        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
+        assert fp.primary_present is False
+        assert fp.fallback_present is True
+        assert fp.serving is None  # not resolved until predict() or status()
+
+    def test_status_reports_fallback_when_primary_missing(self, tmp_path):
+        missing_primary = tmp_path / "indian_food_v1.pt"
+        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
+        status = fp.status()
+        assert status["serving"] == "fallback"
+        assert status["primary_present"] is False
+        assert status["fallback_present"] is True
+        assert "food_classifier_cc0.pt" in status["model_path"]
+        # status must not load the model into memory (no side effect)
+        assert fp._primary is None
+        assert fp._fallback is None
+
+    def test_status_uses_fallback_metrics_sidecar(self, tmp_path):
+        missing_primary = tmp_path / "indian_food_v1.pt"
+        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
+        status = fp.status()
+        sidecar = vision.DEFAULT_MODEL_PATH.with_suffix(".metrics.json")
+        if sidecar.is_file():
+            import json
+            side = json.loads(sidecar.read_text(encoding="utf-8"))
+            test = side.get("test_metrics") or {}
+            assert status["test_accuracy"] == test.get("accuracy")
+            assert status["test_macro_f1"] == test.get("macro_f1")
+
+    def test_status_reports_primary_when_file_exists(self, tmp_path, monkeypatch):
+        fake_primary = tmp_path / "indian_food_v1.pt"
+        fake_primary.write_bytes(b"not a real checkpoint")
+        fp = vision.FallbackPredictor(fake_primary, vision.DEFAULT_MODEL_PATH)
+        status = fp.status()
+        assert status["serving"] == "primary"
+        assert status["primary_present"] is True
+        assert "indian_food_v1.pt" in status["model_path"]
+
+    def test_status_does_not_load_model_no_side_effect(self, tmp_path):
+        """status() must be a cheap probe — calling it must not load any
+        checkpoint into memory."""
+        missing_primary = tmp_path / "indian_food_v1.pt"
+        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
+        fp.status()
+        assert fp._primary is None
+        assert fp._fallback is None
+
+    def test_predict_raises_model_unavailable_when_both_missing(self, tmp_path):
+        missing_primary = tmp_path / "indian_food_v1.pt"
+        missing_fallback = tmp_path / "food_classifier_cc0.pt"
+        fp = vision.FallbackPredictor(missing_primary, missing_fallback)
+        assert fp.primary_present is False
+        assert fp.fallback_present is False
+        with pytest.raises(vision.ModelUnavailable):
+            fp.predict(make_png())
+
+    def test_get_predictor_returns_plain_predictor_when_indian_missing(
+        self, monkeypatch
+    ):
+        """When indian_food_v1.pt is absent, get_predictor() returns a plain
+        Predictor pointing at the 12-class CC0 model — not a FallbackPredictor."""
+        vision.reset_predictor()
+        monkeypatch.setenv("NUTRICARE_MODEL", str(vision.DEFAULT_MODEL_PATH))
+        p = vision.get_predictor()
+        assert isinstance(p, vision.Predictor)
+        assert not isinstance(p, vision.FallbackPredictor)
+        assert p.model_path == vision.DEFAULT_MODEL_PATH
+
+    def test_predictor_never_invents_predictions_when_no_model(self, tmp_path):
+        """A missing checkpoint means predict() raises ModelUnavailable —
+        never a fabricated answer."""
+        missing_primary = tmp_path / "indian_food_v1.pt"
+        missing_fallback = tmp_path / "food_classifier_cc0.pt"
+        fp = vision.FallbackPredictor(missing_primary, missing_fallback)
+        with pytest.raises(vision.ModelUnavailable):
+            fp.predict(make_png())
+
+
+# ------------------------------------------------- end of file
 
 
 def test_cc0_checkpoint_records_its_licence_provenance():
