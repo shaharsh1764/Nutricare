@@ -182,11 +182,10 @@ jobs:
                       "Accept": "image/*",
                   },
               )
-              # Pace requests: Wikimedia rate-limits rapid successive fetches
-              # from shared CI runner IPs. A short pause between downloads
-              # spaces out fetches without making the batch impractically slow;
-              # the 429 retry below handles any remaining rate limiting.
-              time.sleep(3)
+              # No pre-download pacing: the 429 retry below already handles
+              # Wikimedia rate limiting (proven on the single-image run).
+              # Pacing every download made batches impractically slow; the
+              # retry mechanism is sufficient and faster overall.
               try:
                   with urllib.request.urlopen(req, timeout=timeout) as response:
                       body = response.read()
@@ -218,7 +217,8 @@ jobs:
           out_dir = Path("data/v4/acquisition")
           images_dir = Path("data/v4/images")
 
-          # All seed classes, limit 6 per class (~35-40 images total)
+          # All seed classes, limit 3 per class (~21 images total)
+          # Smaller batch completes faster while still spanning multiple classes.
           seeds = load_seeds(seeds_path)
           target_classes = ["biryani", "dosa", "gulab_jamun", "idli", "jalebi", "naan", "samosa"]
           filtered = [s for s in seeds if s.get("class") in target_classes]
@@ -230,7 +230,7 @@ jobs:
               out_dir=out_dir,
               images_dir=images_dir,
               download=True,
-              limit_per_class=6,
+              limit_per_class=3,
               opener=verbose_opener,
           )
           print(json.dumps(report.get("totals", {}), indent=2))
