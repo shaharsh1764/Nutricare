@@ -158,6 +158,15 @@ jobs:
               f"licence={record['licence']} artist={record['artist']}")
           PY
 
+      - name: Diagnostic: check Wikimedia image HTTP status
+        id: diag-curl
+        run: |
+          echo "=== Wikimedia image HTTP status ==="
+          curl -s -D - -o /dev/null "https://upload.wikimedia.org/wikipedia/commons/6/61/Arabian_Camel_Meat_Biryani.JPG" || echo "curl failed with exit code $?"
+          echo ""
+          echo "=== Wikimedia metadata API HTTP status ==="
+          curl -s -D - -o /dev/null "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&titles=File:Biryani%20and%20tempting.jpg&iiprop=url|size|sha1|mime|extmetadata&format=json" || echo "curl failed with exit code $?"
+
       - name: Run single-image acquisition (acquire_v2.py pipeline)
         id: acquire
         run: |
