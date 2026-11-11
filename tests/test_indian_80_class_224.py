@@ -78,12 +78,26 @@ def test_experimental_checkpoint_exists():
 
 
 def test_experimental_checkpoint_sha256():
-    """SHA256 must match the recorded value from the training run."""
+    """SHA256 of the metadata-sanitised checkpoint, with provenance.
+
+    The original training-run checkpoint (SHA256 754b368c...) carried a
+    false embedded licence string. It was re-serialised with corrected
+    metadata only - weights bit-identical (state_dict hash and fixed-input
+    logits verified) - by training/sanitise_checkpoint_metadata.py. The
+    original hash must remain recorded in the metrics sidecar.
+    """
     actual = _sha256(EXPERIMENTAL_CKPT)
     expected = (
-        "754b368cdf084233db00f86fc50693d00d85a433a366a832187ab35063b833dc"
+        "b1e8187d45ad8f8cf6676c86350c08c8a231422d36cab71e152abba772b87068"
     )
     assert actual == expected, f"SHA256 mismatch: {actual} != {expected}"
+    import json as _json
+    metrics = _json.loads(EXPERIMENTAL_CKPT.with_suffix(".metrics.json")
+                          .read_text(encoding="utf-8"))
+    assert metrics["checkpoint_original_sha256"] == (
+        "754b368cdf084233db00f86fc50693d00d85a433a366a832187ab35063b833dc")
+    assert metrics["checkpoint_sanitised_sha256"] == expected
+    assert metrics["licence"].startswith("UNRESOLVED")
 
 
 def test_experimental_checkpoint_loads_through_predictor():
