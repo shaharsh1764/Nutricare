@@ -116,13 +116,17 @@ def _read_upload():
 
 @vision_api.post("/predict")
 def predict():
-    """Classify one photograph and attach nutrition estimates.
+    """Classify one photograph with BOTH models and attach nutrition.
 
-    Returns 503 with ``model_unavailable: true`` — never a fake prediction —
-    when no checkpoint is installed.
-
-    The ``model`` query parameter selects which checkpoint to use:
-    ``default`` (production) or ``experimental`` (80-class, 224x224).
+    Every scan runs the 12-class production model and the 80-class
+    experimental model on the same image; ``vision.predict_both_models``
+    combines them conservatively (raw confidences are never compared
+    across models — see its documented rules). The user does not select a
+    model: the legacy ``model`` query parameter and the session selection
+    are accepted for backward compatibility but no longer change which
+    models run. If one model is unavailable the other still answers; only
+    when both fail does this return 503 with ``model_unavailable: true`` —
+    never a fake prediction.
     """
     uid_conn = db.get_db()
     if _current_uid(uid_conn) is None:
@@ -148,13 +152,9 @@ def predict():
         except (TypeError, ValueError):
             return _err("grams must be a number")
 
-    # Model selection: explicit query param, then session, then default.
-    model_name = request.args.get("model")
-    if model_name not in ("default", "experimental"):
-        model_name = session.get("vision_model", "default")
-
+    # Dual-model scan: both checkpoints analyse the same validated image.
     try:
-        result = vision.get_predictor(model_name).predict(raw, top_k=top_k)
+        result = vision.predict_both_models(raw, top_k=top_k)
     except vision.ImageError as exc:
         return _err(str(exc))
     except vision.ModelUnavailable as exc:
@@ -162,7 +162,6 @@ def predict():
                     hint="Train or install a checkpoint with docs/MODEL.md. "
                          "NutriCare will not guess a food name.")
 
-    result["model"] = model_name
     result["candidates"] = food_recognition.predictions_with_nutrition(
         uid_conn, result, grams_value)
     return jsonify(result)

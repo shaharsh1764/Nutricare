@@ -125,9 +125,12 @@ def test_nutrition_lookup_is_keyed_by_checkpoint_slug(tmp_path, monkeypatch):
         assert resp.status_code == 200
         allowed = set(_checkpoint_classes())
         for candidate in resp.get_json()["candidates"]:
-            assert candidate["slug"] in allowed
             assert "nutrition" in candidate
             assert "nutrition_available" in candidate["nutrition"]
+            # Dual-model scan: candidates sourced from the experimental
+            # model must still be keyed by checkpoint slugs, never indices.
+            if "experimental" in candidate["source_models"]:
+                assert candidate["slug"] in allowed
     vision.reset_predictor()
 
 

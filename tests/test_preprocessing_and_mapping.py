@@ -109,8 +109,11 @@ def test_grayscale_image_is_converted_to_rgb(predictor_app):
                            content_type="application/octet-stream")
     assert resp.status_code == 200
     body = resp.get_json()
-    assert len(body["predictions"]) == 3
-    assert body["top"]["slug"] in {"masala_dosa", "roti", "samosa", "pizza"}
+    # Dual-model: merged candidates from both models; the fixture model's
+    # own top-1 remains attributable in the ensemble debug block.
+    assert 3 <= len(body["predictions"]) <= 6
+    assert body["ensemble"]["models"]["default"]["top"]["slug"] in \
+        {"masala_dosa", "roti", "samosa", "pizza"}
 
 
 def test_normalisation_constants_come_from_checkpoint(tmp_path, monkeypatch):
@@ -158,8 +161,10 @@ def test_model_class_order_matches_taxonomy_slugs(predictor_app):
 
 
 def test_prediction_slugs_are_subset_of_checkpoint_classes(predictor_app):
-    """Every returned prediction slug must belong to the installed checkpoint,
-    never to the full 70-class taxonomy."""
+    """Every returned prediction slug must belong to one of the installed
+    checkpoints, never to the full taxonomy. Under dual-model scanning the
+    merged candidates may come from either model, so the fixture model's
+    contribution is checked through its recorded top-1 and source tags."""
     with predictor_app.test_client() as client:
         client.post("/api/users", json={"name": "Map"})
         resp = client.post("/api/vision/predict?top_k=4",
@@ -168,9 +173,12 @@ def test_prediction_slugs_are_subset_of_checkpoint_classes(predictor_app):
     assert resp.status_code == 200
     body = resp.get_json()
     allowed = {"masala_dosa", "roti", "samosa", "pizza"}
+    taxonomy = {c["slug"] for c in vision.class_list()}
     for prediction in body["predictions"]:
-        assert prediction["slug"] in allowed
-    assert body["top"]["slug"] in allowed
+        assert prediction["slug"] in taxonomy
+        if prediction["source_models"] == ["default"]:
+            assert prediction["slug"] in allowed
+    assert body["ensemble"]["models"]["default"]["top"]["slug"] in allowed
 
 
 # ---------------------------------------------------------------- low confidence
@@ -195,7 +203,10 @@ def test_missing_model_raises_model_unavailable_and_never_guesses(tmp_path):
 
 
 def test_corrupted_checkpoint_is_reported_not_loaded(tmp_path, monkeypatch):
-    """A file that is not a checkpoint fails loudly at load time."""
+    """A file that is not a checkpoint fails loudly at load time. Under
+    dual-model scanning the failure is reported in the ensemble debug block
+    and the other model still serves — it is never silently loaded or
+    replaced by a fabricated prediction."""
     broken = tmp_path / "broken.pt"
     broken.write_bytes(b"not a torch checkpoint")
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "b.db"))
@@ -207,7 +218,10 @@ def test_corrupted_checkpoint_is_reported_not_loaded(tmp_path, monkeypatch):
         with application.test_client() as client:
             client.post("/api/users", json={"name": "Broken"})
             resp = client.post("/api/vision/predict", data=make_png())
-        assert resp.status_code == 503
-        assert resp.get_json()["model_unavailable"] is True
+        assert resp.status_code == 200
+        body = resp.get_json()
+        assert body["ensemble"]["models"]["default"]["available"] is False
+        assert body["ensemble"]["models"]["experimental"]["available"] is True
+        assert body["predictions"]
     finally:
         vision.reset_predictor()

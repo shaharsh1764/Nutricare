@@ -169,7 +169,14 @@ def test_status_reports_missing_model_without_crashing(client):
     assert "No trained checkpoint" in model["detail"]
 
 
-def test_predict_returns_503_and_never_fabricates(client, user):
+def test_predict_returns_503_and_never_fabricates(client, user, monkeypatch,
+                                                  tmp_path):
+    # Dual-model scanning: 503 is correct only when BOTH models are absent.
+    # The fixture hides the production checkpoint; hide the experimental one
+    # too, then the refusal must be total — no invented class names.
+    monkeypatch.setattr(vision, "EXPERIMENTAL_MODEL_PATH",
+                        tmp_path / "absent_experimental.pt")
+    vision.reset_predictor()
     resp = client.post("/api/vision/predict", data=make_png(),
                        content_type="application/octet-stream")
     assert resp.status_code == 503
@@ -177,6 +184,7 @@ def test_predict_returns_503_and_never_fabricates(client, user):
     assert body["model_unavailable"] is True
     assert "predictions" not in body          # no invented class names
     assert "confidence" not in json.dumps(body)
+    vision.reset_predictor()
 
 
 def test_predict_requires_an_active_user(client):
@@ -255,19 +263,29 @@ def test_predict_output_structure_is_correct(trained_app):
         assert resp.status_code == 200
         body = resp.get_json()
 
+    # Dual-model contract: ``predictions`` is a merged, deduplicated
+    # candidate list from BOTH models, not one softmax ranking (two models'
+    # scores are not comparable), so it is selected-first, not sorted.
     assert body["single_label"] is True
-    assert len(body["predictions"]) == 3
-    assert body["candidates"] and len(body["candidates"]) == 3
-    total = sum(p["confidence"] for p in body["predictions"])
-    assert 0 < total <= 1.0 + 1e-6            # softmax probabilities
-    assert body["predictions"] == sorted(
-        body["predictions"], key=lambda p: -p["confidence"])
+    assert body["model"] == "dual"
+    assert 3 <= len(body["predictions"]) <= 6     # <= top_k per model, merged
+    assert body["candidates"] and \
+        len(body["candidates"]) == len(body["predictions"])
+    keys = [p["canonical_key"] for p in body["predictions"]]
+    assert len(keys) == len(set(keys))            # deduplicated by food
     for prediction in body["predictions"]:
-        assert prediction["slug"] in {"masala_dosa", "roti", "samosa", "pizza"}
         assert 0.0 <= prediction["confidence"] <= 1.0
         assert "label" in prediction and "group" in prediction
+        assert prediction["source_models"]
     assert body["top"] == body["predictions"][0]
     assert body["image"]["width"] == 64
+    ens = body["ensemble"]
+    assert ens["models"]["default"]["available"] is True
+    assert ens["models"]["experimental"]["available"] is True
+    assert ens["selected_slug"] == body["top"]["slug"]
+    # The tiny fixture checkpoint really was one of the two models run.
+    assert ens["models"]["default"]["top"]["slug"] in \
+        {"masala_dosa", "roti", "samosa", "pizza"}
 
 
 def test_confidence_is_reported_and_low_confidence_flagged(trained_app):
@@ -284,10 +302,12 @@ def test_confidence_is_reported_and_low_confidence_flagged(trained_app):
 def test_top_k_is_clamped_and_validated(trained_app):
     with trained_app.test_client() as client:
         client.post("/api/users", json={"name": "K"})
+        # Dual-model: each model clamps to its own top-5, then lists merge.
         assert len(client.post("/api/vision/predict?top_k=99",
-                               data=make_png()).get_json()["predictions"]) <= 4
-        assert len(client.post("/api/vision/predict?top_k=bogus",
-                               data=make_png()).get_json()["predictions"]) == 3
+                               data=make_png()).get_json()["predictions"]) <= 10
+        bogus = client.post("/api/vision/predict?top_k=bogus",
+                            data=make_png()).get_json()["predictions"]
+        assert 3 <= len(bogus) <= 6     # invalid top_k falls back to 3/model
 
 
 def test_checkpoint_load_failure_is_reported_not_hidden(tmp_path, monkeypatch):
@@ -300,8 +320,14 @@ def test_checkpoint_load_failure_is_reported_not_hidden(tmp_path, monkeypatch):
     with application.test_client() as client:
         client.post("/api/users", json={"name": "Broken"})
         resp = client.post("/api/vision/predict", data=make_png())
-        assert resp.status_code == 503
-        assert resp.get_json()["model_unavailable"] is True
+        # Dual-model: the broken production checkpoint is recorded as
+        # unavailable and the experimental model still answers honestly.
+        assert resp.status_code == 200
+        body = resp.get_json()
+        assert body["ensemble"]["models"]["default"]["available"] is False
+        assert body["ensemble"]["models"]["experimental"]["available"] is True
+        assert body["ensemble"]["rule"] == "single_model_fallback"
+        assert body["predictions"]          # a real prediction, not a guess
     vision.reset_predictor()
 
 
@@ -553,12 +579,14 @@ def test_real_model_predicts_a_known_class_with_confidence(real_model_app):
                            content_type="application/octet-stream")
     assert resp.status_code == 200
     body = resp.get_json()
+    # Dual-model: merged candidates from both real checkpoints. The
+    # production model's own evidence stays attributable in the debug block.
     labels = [p["label"] for p in body["predictions"]]
-    assert len(labels) == 3
-    slugs = {p["slug"] for p in body["predictions"]}
-    assert slugs <= set(checkpoint["classes"])
-    total = sum(p["confidence"] for p in body["predictions"])
-    assert 0 < total <= 1.0 + 1e-6
+    assert 3 <= len(labels) <= 6
+    assert body["ensemble"]["models"]["default"]["top"]["slug"] in \
+        set(checkpoint["classes"])
+    for prediction in body["predictions"]:
+        assert 0.0 <= prediction["confidence"] <= 1.0
 
 
 def test_convert_refuses_to_guess_a_mismatched_backbone():

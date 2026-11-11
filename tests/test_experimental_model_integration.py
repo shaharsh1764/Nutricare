@@ -154,22 +154,31 @@ def test_api_status_experimental_missing_is_graceful(tmp_path, monkeypatch):
                        json={"model": "experimental"}).status_code == 400
     r = client.post("/api/vision/predict?model=experimental",
                     data=make_png(), content_type="application/octet-stream")
-    assert r.status_code == 503
+    # Dual-model: missing experimental checkpoint -> production still answers.
+    assert r.status_code == 200
+    body = r.get_json()
+    assert body["model"] == "dual"
+    assert body["ensemble"]["models"]["experimental"]["available"] is False
+    assert body["ensemble"]["models"]["default"]["available"] is True
 
 
-def test_api_prediction_uses_selected_model(tmp_path, monkeypatch):
+def test_api_prediction_runs_both_models(tmp_path, monkeypatch):
+    """Dual-model scanning replaced manual selection: the legacy ?model=
+    parameter is ignored and BOTH checkpoints evaluate every scan."""
     pytest.importorskip("torch")
     client = _client(tmp_path, monkeypatch)
     r = client.post("/api/vision/predict?model=experimental&top_k=3",
                     data=make_png(), content_type="application/octet-stream")
     assert r.status_code == 200
     body = r.get_json()
-    assert body["model"] == "experimental"
+    assert body["model"] == "dual"
     assert body["predictions"]
+    assert body["ensemble"]["models"]["default"]["available"] is True
+    assert body["ensemble"]["models"]["experimental"]["available"] is True
     r = client.post("/api/vision/predict?top_k=3",
                     data=make_png(), content_type="application/octet-stream")
     assert r.status_code == 200
-    assert r.get_json()["model"] == "default"  # no silent switch
+    assert r.get_json()["model"] == "dual"  # no silent single-model switch
 
 
 def test_api_models_endpoint_reports_session_selection(tmp_path, monkeypatch):

@@ -25,8 +25,6 @@ const SCAN = {
   candidates: [],
   manualValues: {},
   coverage: {},
-  models: [],
-  selectedModel: "default",
 };
 
 const SCAN_GROUPS = {
@@ -172,7 +170,9 @@ async function scanAnalyze() {
   form.append("image", SCAN.file);
   let res;
   try {
-    res = await fetch("/api/vision/predict?top_k=3&model=" + SCAN.selectedModel, { method: "POST", body: form });
+    /* No model choice: the server always runs both recognition models on
+       the same photo and returns the best-supported combined answer. */
+    res = await fetch("/api/vision/predict?top_k=3", { method: "POST", body: form });
   } catch {
     box.innerHTML = `<div class="empty-state"><b>Could not reach the server.</b>
       <p class="tiny muted mt8">Check your connection and try again.</p></div>`;
@@ -246,6 +246,11 @@ function scanShowResult() {
   const result = SCAN.result;
   const top = SCAN.candidates[0];
   const low = result.low_confidence;
+  const ensemble = result.ensemble || {};
+  const agreed = !!ensemble.agreement;
+  const disagreed = !agreed && ensemble.models
+    && ensemble.models.default && ensemble.models.default.available
+    && ensemble.models.experimental && ensemble.models.experimental.available;
 
   const alternatives = SCAN.candidates.slice(1).map((c) => `
     <button class="result-row" data-alt="${c.slug}" style="width:100%;text-align:left">
@@ -264,6 +269,7 @@ function scanShowResult() {
           <div class="row mt8" style="gap:6px">
             ${scanConfidencePill(top.confidence, low)}
             <span class="pill pill-slate">${esc(SCAN_GROUPS[top.group] || top.group)}</span>
+            ${agreed ? '<span class="pill pill-mint">✓ confirmed by both models</span>' : ""}
           </div>
         </div>
       </div>
@@ -271,7 +277,8 @@ function scanShowResult() {
     </div>
 
     ${low ? `<div class="scan-warn mt12">
-        <b>The model is not confident about this photo.</b>
+        <b>${disagreed ? "The recognition models disagree about this photo."
+                       : "The model is not confident about this photo."}</b>
         <p class="tiny mt8">Below ${Math.round(result.threshold * 100)}% confidence NutriCare
         will not claim to know the food. Please pick the right dish below, or enter it manually.</p>
       </div>` : ""}
@@ -519,22 +526,18 @@ function scanAskManualValues(cls) {
 /* ---------------------------------------------------------------- view */
 async function renderScanner() {
   let status = null;
-  try { status = await api("/vision/status?model=" + SCAN.selectedModel); } catch { /* offline */ }
-  const modelReady = !!(status && status.model && status.model.model_present);
+  try { status = await api("/vision/status"); } catch { /* offline */ }
+  /* Recognition is ready when at least one of the two models is installed;
+     every scan runs both and falls back to whichever one is available. */
+  const modelReady = !!((status && status.models
+    && status.models.some((m) => m.present))
+    || (status && status.model && status.model.model_present));
   if (!SCAN.allClasses) {
     try {
       const coverage = await api("/vision/classes");
       SCAN.allClasses = coverage.classes;
       SCAN.coverage = coverage;
     } catch { SCAN.allClasses = []; SCAN.coverage = {}; }
-  }
-  // Load available models for the selector (experimental model included).
-  if (!SCAN.models.length) {
-    try {
-      const modelsResp = await api("/vision/models");
-      SCAN.models = modelsResp.models || [];
-      if (modelsResp.selected) SCAN.selectedModel = modelsResp.selected;
-    } catch { SCAN.models = []; }
   }
   if (!SCAN.meal) SCAN.meal = "breakfast";
 
@@ -563,20 +566,8 @@ async function renderScanner() {
           ${modelReady ? "model installed" : "recognition off"}</span>
       </div>
 
-      <!-- Experimental model selector: clearly marked, never silent substitution -->
-      <div class="field mt12" style="margin:0">
-        <label class="label small">Recognition model</label>
-        <select id="scan-model-select" class="input" style="width:100%">
-          ${SCAN.models.map((m) => {
-            const selected = m.name === SCAN.selectedModel ? "selected" : "";
-            const disabled = m.present ? "" : "disabled";
-            const suffix = (m.experimental ? " \u2014 EXPERIMENTAL" : "")
-              + (m.present ? "" : " (unavailable on this server)");
-            return `<option value="${m.name}" ${selected} ${disabled}>${m.description}${suffix}</option>`;
-          }).join("")}
-        </select>
-        <div id="scan-model-note" class="tiny faint mt2"></div>
-      </div>
+      <p class="tiny faint mt12">Every photo is checked by both recognition models;
+      NutriCare shows the best-supported result — there is no model to choose.</p>
 
       <div class="row wrap" style="gap:10px">
         <button class="btn btn-deep" id="scan-camera">📷 Take Photo</button>
@@ -635,32 +626,6 @@ async function renderScanner() {
     e.target.value = "";
   };
 
-  const modelSelect = $("#scan-model-select");
-  const modelNote = $("#scan-model-note");
-  const showModelNote = () => {
-    if (!modelNote) return;
-    const m = SCAN.models.find((x) => x.name === SCAN.selectedModel);
-    if (!m) { modelNote.textContent = ""; return; }
-    modelNote.textContent = m.present ? (m.note || "")
-      : "This model is unavailable on this server; the default model will be used.";
-  };
-  showModelNote();
-  if (modelSelect) {
-    modelSelect.onchange = async (e) => {
-      const chosen = e.target.value;
-      try {
-        // Keep the API session selection in sync with the UI selection.
-        await api("/vision/select-model", { method: "POST", body: { model: chosen } });
-        SCAN.selectedModel = chosen;
-      } catch {
-        e.target.value = SCAN.selectedModel;  // server rejected it: revert
-        if (modelNote) modelNote.textContent = "That model is unavailable on this server.";
-        return;
-      }
-      SCAN.result = null;
-      showModelNote();
-    };
-  }
   if (SCAN.file && SCAN.previewUrl) {
     if (SCAN.result) scanShowResult();
     else scanShowPreview("selected photo");

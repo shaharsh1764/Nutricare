@@ -293,13 +293,17 @@ def test_end_to_end_prediction_with_experimental_model(tmp_path, monkeypatch):
         assert resp.status_code == 200
         assert resp.get_json()["selected"] == "experimental"
 
-        # Predict with the experimental model
+        # Dual-model scan: the production checkpoint is absent here, so the
+        # experimental model serves via single-model fallback.
         resp = client.post("/api/vision/predict?top_k=5",
                            data=make_png(),
                            content_type="application/octet-stream")
         assert resp.status_code == 200
         body = resp.get_json()
-        assert body["model"] == "experimental"
+        assert body["model"] == "dual"
+        assert body["ensemble"]["models"]["experimental"]["available"] is True
+        assert body["ensemble"]["models"]["default"]["available"] is False
+        assert body["ensemble"]["rule"] == "single_model_fallback"
         assert len(body["predictions"]) <= 5
         assert "low_confidence" in body
         assert "threshold" in body
@@ -499,7 +503,8 @@ def test_experimental_prediction_includes_nutrition(tmp_path, monkeypatch):
                            content_type="application/octet-stream")
         assert resp.status_code == 200
         body = resp.get_json()
-        assert body["model"] == "experimental"
+        assert body["model"] == "dual"
+        assert body["ensemble"]["models"]["experimental"]["available"] is True
 
         # Each candidate should have nutrition info (available or not)
         for candidate in body["candidates"]:
@@ -527,7 +532,13 @@ def test_default_model_classes_still_work(tmp_path, monkeypatch):
                            content_type="application/octet-stream")
         assert resp.status_code == 200
         body = resp.get_json()
-        assert len(body["predictions"]) <= 3
+        # Dual-model: merged candidates from both checkpoints (<=3 each).
+        assert len(body["predictions"]) <= 6
+        assert body["ensemble"]["models"]["default"]["available"] is True
+        assert body["ensemble"]["models"]["default"]["top"]["slug"] in \
+            {"chicken_biryani", "chole", "chomchom", "curd_dahi", "jalebi",
+             "kheer", "khichdi", "morog_polao", "pakora", "pani_puri",
+             "paratha_plain", "rasgulla"}
         assert "low_confidence" in body
 
         # All predicted slugs should be in the taxonomy
