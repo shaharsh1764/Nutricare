@@ -56,6 +56,22 @@ DEFAULT_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier_cc0.pt"
 # The first CC0 run (7 classes), kept for comparison. Not the default.
 PREVIOUS_CC0_MODEL_PATH = PROJECT_DIR / "models" / "food_classifier_cc0_7class.pt"
 
+# Experimental 80-class Indian-food model (224x224 input resolution).
+# The checkpoint lives INSIDE the repository so a fresh clone works anywhere
+# (including Windows); NUTRICARE_EXPERIMENTAL_MODEL overrides the location.
+# Measured performance (leakage-cleaned held-out test, 631 same-dataset
+# photographs; evaluation/stage_a_clean_baseline.json): Top-1 56.9%,
+# macro-F1 0.549 — EXPERIMENTAL ONLY, not production-ready, and NOT a claim
+# about real-world photographs. Its training images have no verified licence
+# (see Stage B licensing assessment in evaluation/stage_b/STAGE_B_PREPARATION.md).
+# Must NOT replace the 12-class CC0 default model.
+EXPERIMENTAL_MODEL_PATH = Path(
+    os.environ.get(
+        "NUTRICARE_EXPERIMENTAL_MODEL",
+        str(PROJECT_DIR / "models" / "v2" / "food_classifier_indian_80_224.pt"),
+    )
+)
+
 # The legacy 20-class checkpoint is NOT shipped. Its training images have no
 # licence anywhere in the chain (see docs/LICENSING_AUDIT.md), so it was removed
 # from this repository and from its git history rather than merely being made
@@ -241,11 +257,54 @@ class Predictor:
         self._meta: dict = {}
         self._load_error: str | None = None
         self._attempted = False
+        self._output_count: int | None = None
 
     # -- status ---------------------------------------------------------
     @property
     def available_path(self) -> bool:
         return self.model_path.is_file()
+
+    def _output_class_count(self) -> int | None:
+        """Number of output classes of THIS checkpoint (never the taxonomy size).
+
+        Resolution order: already-loaded classes; the metrics sidecar written
+        beside the checkpoint; finally the checkpoint file itself (metadata
+        read, model not built). Returns None when the count cannot be
+        established without loading — status then reports None rather than
+        inventing a number.
+        """
+        if self._classes:
+            return len(self._classes)
+        if self._output_count is not None:
+            return self._output_count
+        count = None
+        sidecar = self.model_path.with_suffix(".metrics.json")
+        if sidecar.is_file():
+            try:
+                meta = json.loads(sidecar.read_text(encoding="utf-8"))
+                for key in ("classes", "class_names", "num_classes"):
+                    value = meta.get(key)
+                    if isinstance(value, int):
+                        count = value
+                        break
+                    if isinstance(value, list):
+                        count = len(value)
+                        break
+            except Exception:
+                count = None
+        if count is None and self.available_path:
+            try:
+                import torch  # noqa: PLC0415  (optional dependency)
+
+                checkpoint = torch.load(self.model_path, map_location="cpu",
+                                        weights_only=False)
+                classes = checkpoint.get("classes") or checkpoint.get("class_names")
+                if classes is not None:
+                    count = len(classes)
+            except Exception:
+                count = None
+        self._output_count = count
+        return count
 
     def _read_sidecar(self) -> dict:
         """Training metadata next to the checkpoint, without importing torch.
@@ -281,7 +340,7 @@ class Predictor:
             "loaded": self._model is not None,
             "low_confidence_threshold": LOW_CONFIDENCE_THRESHOLD,
             "max_upload_bytes": MAX_UPLOAD_BYTES,
-            "classes": len(self._classes) if self._classes else len(class_list()),
+            "classes": self._output_class_count(),
             "single_label": True,
             "note": SINGLE_LABEL_NOTE,
         }
@@ -290,6 +349,14 @@ class Predictor:
             meta.update({k: v for k, v in self._meta.items() if v is not None})
         if meta:
             info.update({k: v for k, v in meta.items() if v is not None})
+        # The checkpoint's own output count wins over anything the sidecar
+        # or taxonomy might suggest; never report the taxonomy size (137)
+        # as the model's output size.
+        count = self._output_class_count()
+        if count is not None:
+            info["classes"] = count
+        elif not isinstance(info.get("classes"), int):
+            info["classes"] = None
         if self.available_path and not self._model and not self._attempted:
             info["detail"] = "Checkpoint found but not loaded yet; it loads on first use."
         if self._load_error:
@@ -547,28 +614,104 @@ class FallbackPredictor:
 
 
 # --------------------------------------------------------------- singleton
-_PREDICTOR: Predictor | FallbackPredictor | None = None
+_PREDICTORS: dict[str, Predictor | FallbackPredictor] = {}
 _PREDICTOR_LOCK = threading.Lock()
 
 
-def get_predictor() -> Predictor | FallbackPredictor:
-    global _PREDICTOR
-    if _PREDICTOR is None:
+def _create_default_predictor() -> Predictor | FallbackPredictor:
+    """Build the default production predictor (Indian model -> 12-class CC0 fallback).
+
+    Respects the NUTRICARE_MODEL environment variable so tests can point the
+    default model at an absent checkpoint.
+    """
+    if INDIAN_MODEL_PATH.is_file():
+        return FallbackPredictor(INDIAN_MODEL_PATH, DEFAULT_MODEL_PATH)
+    return Predictor()  # no args -> uses NUTRICARE_MODEL env or DEFAULT_MODEL_PATH
+
+
+def _create_experimental_predictor() -> Predictor:
+    """Build the experimental 80-class predictor (224x224 input).
+
+    Loaded only when explicitly requested. Never becomes the default.
+    Construction never raises: a missing/invalid checkpoint is reported
+    gracefully by ``status()`` and surfaces as ``ModelUnavailable`` (503)
+    only when a prediction is actually attempted.
+    """
+    return Predictor(EXPERIMENTAL_MODEL_PATH)
+
+
+def get_predictor(model_name: str = "default") -> Predictor | FallbackPredictor:
+    """Return the named predictor, loading it lazily on first use.
+
+    ``model_name`` is one of:
+      * ``"default"`` — the production default (12-class CC0 or Indian fallback)
+      * ``"experimental"`` — the 80-class Indian-food model (224x224)
+
+    Unknown names raise ``ValueError``. The caller is responsible for handling
+    ``ModelUnavailable`` when a checkpoint is missing.
+    """
+    if model_name not in ("default", "experimental"):
+        raise ValueError(f"Unknown model name: {model_name!r}")
+
+    global _PREDICTORS
+    if model_name not in _PREDICTORS:
         with _PREDICTOR_LOCK:
-            if _PREDICTOR is None:
-                if INDIAN_MODEL_PATH.is_file():
-                    _PREDICTOR = FallbackPredictor(INDIAN_MODEL_PATH, DEFAULT_MODEL_PATH)
+            if model_name not in _PREDICTORS:
+                if model_name == "default":
+                    _PREDICTORS[model_name] = _create_default_predictor()
                 else:
-                    _PREDICTOR = Predictor()
-    return _PREDICTOR
+                    _PREDICTORS[model_name] = _create_experimental_predictor()
+    return _PREDICTORS[model_name]
 
 
-def reset_predictor() -> None:
-    """Drop the cached model (used by tests and after installing a checkpoint)."""
-    global _PREDICTOR
+def get_available_models() -> list[dict]:
+    """Report status of all available models without loading any checkpoint.
+
+    Each entry describes whether the checkpoint file is present and whether
+    the model is experimental. Used by the UI to show an honest model selector.
+    """
+    default_path = INDIAN_MODEL_PATH if INDIAN_MODEL_PATH.is_file() else DEFAULT_MODEL_PATH
+    default_desc = ("Default production model (Indian-food model, 12-class CC0 fallback)"
+                    if INDIAN_MODEL_PATH.is_file() else
+                    "Default production model (12-class CC0)")
+    models = [
+        {
+            "name": "default",
+            "description": default_desc,
+            "path": str(default_path),
+            "present": default_path.is_file(),
+            "experimental": False,
+            "note": "Production default. Never replaced by the experimental model.",
+        },
+        {
+            "name": "experimental",
+            "description": "Experimental 80-class Indian-food model (224x224 input)",
+            "path": str(EXPERIMENTAL_MODEL_PATH),
+            "present": EXPERIMENTAL_MODEL_PATH.is_file(),
+            "experimental": True,
+            "note": "Experimental only — not production-validated. Measured Top-1 56.9% / "
+                    "macro-F1 0.549 on a leakage-cleaned held-out split of the SAME dataset "
+                    "(631 photographs; evaluation/stage_a_clean_baseline.json), not on "
+                    "real-world photographs. Training-image licence unresolved; internal use only.",
+        },
+    ]
+    return models
+
+
+def reset_predictor(model_name: str | None = None) -> None:
+    """Drop cached predictor(s).
+
+    When ``model_name`` is None, all cached predictors are dropped.
+    Used by tests and after installing a checkpoint.
+    """
+    global _PREDICTORS
     with _PREDICTOR_LOCK:
-        _PREDICTOR = None
+        if model_name is None:
+            _PREDICTORS.clear()
+        else:
+            _PREDICTORS.pop(model_name, None)
 
 
-def model_status() -> dict:
-    return get_predictor().status()
+def model_status(model_name: str = "default") -> dict:
+    """Non-throwing status for the named model."""
+    return get_predictor(model_name).status()

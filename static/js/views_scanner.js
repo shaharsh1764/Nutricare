@@ -25,6 +25,8 @@ const SCAN = {
   candidates: [],
   manualValues: {},
   coverage: {},
+  models: [],
+  selectedModel: "default",
 };
 
 const SCAN_GROUPS = {
@@ -170,7 +172,7 @@ async function scanAnalyze() {
   form.append("image", SCAN.file);
   let res;
   try {
-    res = await fetch("/api/vision/predict?top_k=3", { method: "POST", body: form });
+    res = await fetch("/api/vision/predict?top_k=3&model=" + SCAN.selectedModel, { method: "POST", body: form });
   } catch {
     box.innerHTML = `<div class="empty-state"><b>Could not reach the server.</b>
       <p class="tiny muted mt8">Check your connection and try again.</p></div>`;
@@ -517,7 +519,7 @@ function scanAskManualValues(cls) {
 /* ---------------------------------------------------------------- view */
 async function renderScanner() {
   let status = null;
-  try { status = await api("/vision/status"); } catch { /* offline */ }
+  try { status = await api("/vision/status?model=" + SCAN.selectedModel); } catch { /* offline */ }
   const modelReady = !!(status && status.model && status.model.model_present);
   if (!SCAN.allClasses) {
     try {
@@ -525,6 +527,14 @@ async function renderScanner() {
       SCAN.allClasses = coverage.classes;
       SCAN.coverage = coverage;
     } catch { SCAN.allClasses = []; SCAN.coverage = {}; }
+  }
+  // Load available models for the selector (experimental model included).
+  if (!SCAN.models.length) {
+    try {
+      const modelsResp = await api("/vision/models");
+      SCAN.models = modelsResp.models || [];
+      if (modelsResp.selected) SCAN.selectedModel = modelsResp.selected;
+    } catch { SCAN.models = []; }
   }
   if (!SCAN.meal) SCAN.meal = "breakfast";
 
@@ -551,6 +561,21 @@ async function renderScanner() {
         <span class="card-title">Scan your meal</span>
         <span class="pill ${modelReady ? "pill-mint" : "pill-amber"}">
           ${modelReady ? "model installed" : "recognition off"}</span>
+      </div>
+
+      <!-- Experimental model selector: clearly marked, never silent substitution -->
+      <div class="field mt12" style="margin:0">
+        <label class="label small">Recognition model</label>
+        <select id="scan-model-select" class="input" style="width:100%">
+          ${SCAN.models.map((m) => {
+            const selected = m.name === SCAN.selectedModel ? "selected" : "";
+            const disabled = m.present ? "" : "disabled";
+            const suffix = (m.experimental ? " \u2014 EXPERIMENTAL" : "")
+              + (m.present ? "" : " (unavailable on this server)");
+            return `<option value="${m.name}" ${selected} ${disabled}>${m.description}${suffix}</option>`;
+          }).join("")}
+        </select>
+        <div id="scan-model-note" class="tiny faint mt2"></div>
       </div>
 
       <div class="row wrap" style="gap:10px">
@@ -609,6 +634,33 @@ async function renderScanner() {
     if (file) scanSetFile(file, "uploaded photo");
     e.target.value = "";
   };
+
+  const modelSelect = $("#scan-model-select");
+  const modelNote = $("#scan-model-note");
+  const showModelNote = () => {
+    if (!modelNote) return;
+    const m = SCAN.models.find((x) => x.name === SCAN.selectedModel);
+    if (!m) { modelNote.textContent = ""; return; }
+    modelNote.textContent = m.present ? (m.note || "")
+      : "This model is unavailable on this server; the default model will be used.";
+  };
+  showModelNote();
+  if (modelSelect) {
+    modelSelect.onchange = async (e) => {
+      const chosen = e.target.value;
+      try {
+        // Keep the API session selection in sync with the UI selection.
+        await api("/vision/select-model", { method: "POST", body: { model: chosen } });
+        SCAN.selectedModel = chosen;
+      } catch {
+        e.target.value = SCAN.selectedModel;  // server rejected it: revert
+        if (modelNote) modelNote.textContent = "That model is unavailable on this server.";
+        return;
+      }
+      SCAN.result = null;
+      showModelNote();
+    };
+  }
   if (SCAN.file && SCAN.previewUrl) {
     if (SCAN.result) scanShowResult();
     else scanShowPreview("selected photo");
