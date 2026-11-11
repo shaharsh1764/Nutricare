@@ -1,0 +1,41 @@
+name: CI
+
+# Runs the complete test suite, including the ML-dependent checkpoint
+# loading and dual-model scanner tests. The 80-class checkpoint is
+# committed in this repository, so those tests genuinely execute here
+# (they do not skip). Local results are not CI results: the numbers that
+# count are the ones this workflow reports.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install web + test dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install CPU ML dependencies (repo requirements-ml.txt pins)
+        run: |
+          pip install --index-url https://download.pytorch.org/whl/cpu \
+            "torch>=2.0,<3" "torchvision>=0.15,<1"
+          pip install "Pillow>=10,<14"
+
+      - name: Run the full test suite
+        run: python -m pytest tests/ -q
+
+      - name: JavaScript syntax checks
+        run: |
+          for f in static/js/*.js; do node --check "$f"; done

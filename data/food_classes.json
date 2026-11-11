@@ -1011,7 +1011,7 @@
       "default_grams": 200,
       "nutrition_source": "dataset",
       "approx_note": "Recipe-derived (approximate): rice + chicken + ghee. Deliberately NOT mapped to 'Pulao, vegetable', which is a different dish.",
-      "notes": "Recognised by the CC0 model. Deliberately NOT mapped to 'Pulao, vegetable' (a different dish) — nutrition is a recipe-derived estimate of this pilaf (see approx_note)."
+      "notes": "Recognised by the CC0 model. Deliberately NOT mapped to 'Pulao, vegetable' (a different dish) \u2014 nutrition is a recipe-derived estimate of this pilaf (see approx_note)."
     },
     {
       "slug": "luchi",
@@ -1027,6 +1027,898 @@
       "nutrition_source": "dataset",
       "approx_note": "Closest documented item: luchi and puri are both deep-fried maida/atta breads. Values differ by flour and oil uptake.",
       "notes": "Not part of the CC0 12-class model (no Luchi folder in the source dataset); taxonomy entry only."
+    },
+    {
+      "slug": "biryani",
+      "label": "Biryani",
+      "group": "indian_rice",
+      "aliases": [
+        "biryani",
+        "biriyani",
+        "beriani"
+      ],
+      "food": "Chicken biryani",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": "Biryani varies by region, meat, and preparation. Closest documented entry is Chicken biryani.",
+      "notes": "Recognised by the experimental 80-class model. Nutrition mapped to Chicken biryani (recipe-derived)."
+    },
+    {
+      "slug": "chapati",
+      "label": "Chapati / Phulka",
+      "group": "indian_staple",
+      "aliases": [
+        "chapati",
+        "phulka",
+        "rotli",
+        "safati roti"
+      ],
+      "food": "Roti, whole wheat (cooked)",
+      "default_grams": 40,
+      "nutrition_source": "dataset",
+      "approx_note": null,
+      "notes": "Chapati and roti are the same whole-wheat flatbread; nutrition shared with roti entry."
+    },
+    {
+      "slug": "chana_masala",
+      "label": "Chana Masala / Chole",
+      "group": "indian_curry",
+      "aliases": [
+        "chana masala",
+        "chole",
+        "channa masala",
+        "chole masala"
+      ],
+      "food": "Chole / chana masala (prepared)",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": null,
+      "notes": "Direct match with documented Chole / chana masala (prepared) entry."
+    },
+    {
+      "slug": "cham_cham",
+      "label": "Cham Cham / Chomchom",
+      "group": "indian_snack",
+      "aliases": [
+        "cham cham",
+        "chom chom",
+        "chomchom"
+      ],
+      "food": "Chomchom (chhena sweet, prepared)",
+      "default_grams": 50,
+      "nutrition_source": "dataset",
+      "approx_note": "Cham cham and chomchom are the same chhena-based sweet (regional spelling). Values vary by syrup soak.",
+      "notes": "Same sweet as chomchom; nutrition shared. Recipe-derived estimate."
+    },
+    {
+      "slug": "kadhi_pakoda",
+      "label": "Kadhi Pakora",
+      "group": "indian_curry",
+      "aliases": [
+        "kadhi pakoda",
+        "kadhi pakora",
+        "kadhi with pakoras"
+      ],
+      "food": "Kadhi pakora (prepared)",
+      "default_grams": 180,
+      "nutrition_source": "dataset",
+      "approx_note": null,
+      "notes": "Direct match with documented Kadhi pakora (prepared) entry."
+    },
+    {
+      "slug": "lassi",
+      "label": "Lassi",
+      "group": "indian_snack",
+      "aliases": [
+        "lassi",
+        "sweet lassi",
+        "salted lassi"
+      ],
+      "food": "Lassi, sweet (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": null,
+      "notes": "Direct match with documented Lassi, sweet (prepared) entry."
+    },
+    {
+      "slug": "chak_hao_kheer",
+      "label": "Chak Hao Kheer",
+      "group": "indian_snack",
+      "aliases": [
+        "chak hao kheer",
+        "black rice kheer",
+        "chakhao kheer"
+      ],
+      "food": "Kheer, milk-rice (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": "Chak hao is black rice from Manipur; mapped to regular rice kheer. Nutrition differs due to rice variety.",
+      "notes": "APPROXIMATE: mapped to Kheer, milk-rice as closest documented entry. Black rice vs white rice changes nutrition values."
+    },
+    {
+      "slug": "doodhpak",
+      "label": "Doodhpak",
+      "group": "indian_snack",
+      "aliases": [
+        "doodhpak",
+        "doodh pak"
+      ],
+      "food": "Kheer, milk-rice (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": "Doodhpak is a Gujarati milk pudding similar to kheer but often thicker with nuts. Mapped to kheer as closest entry.",
+      "notes": "APPROXIMATE: mapped to Kheer, milk-rice as closest documented entry."
+    },
+    {
+      "slug": "navrattan_korma",
+      "label": "Navrattan Korma",
+      "group": "indian_curry",
+      "aliases": [
+        "navratan korma",
+        "navrattan korma",
+        "nine vegetable korma"
+      ],
+      "food": "Vegetable curry, mixed (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": "Navrattan korma is mixed vegetables in creamy cashew/yogurt sauce; mapped to mixed vegetable curry. Sauce differs (cream/cashew vs simple curry).",
+      "notes": "APPROXIMATE: mapped to Vegetable curry, mixed as closest documented entry."
+    },
+    {
+      "slug": "phirni",
+      "label": "Phirni / Firni",
+      "group": "indian_snack",
+      "aliases": [
+        "phirni",
+        "firni",
+        "kheer (ground rice)"
+      ],
+      "food": "Kheer, milk-rice (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": "Phirni is made with ground rice and served cold; mapped to kheer. Texture and rice preparation differ.",
+      "notes": "APPROXIMATE: mapped to Kheer, milk-rice as closest documented entry."
+    },
+    {
+      "slug": "adhirasam",
+      "label": "Adhirasam",
+      "group": "indian_snack",
+      "aliases": [
+        "adhirasam"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "aloo_matar",
+      "label": "Aloo Matar",
+      "group": "indian_curry",
+      "aliases": [
+        "aloo_matar"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "aloo_methi",
+      "label": "Aloo Methi",
+      "group": "indian_curry",
+      "aliases": [
+        "aloo_methi"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "aloo_shimla_mirch",
+      "label": "Aloo Shimla Mirch",
+      "group": "indian_curry",
+      "aliases": [
+        "aloo_shimla_mirch"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "aloo_tikki",
+      "label": "Aloo Tikki",
+      "group": "indian_snack",
+      "aliases": [
+        "aloo_tikki"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "anarsa",
+      "label": "Anarsa",
+      "group": "indian_snack",
+      "aliases": [
+        "anarsa"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "ariselu",
+      "label": "Ariselu",
+      "group": "indian_snack",
+      "aliases": [
+        "ariselu"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "bandar_laddu",
+      "label": "Bandar Laddu",
+      "group": "indian_snack",
+      "aliases": [
+        "bandar_laddu"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "basundi",
+      "label": "Basundi",
+      "group": "indian_snack",
+      "aliases": [
+        "basundi"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "boondi",
+      "label": "Boondi",
+      "group": "indian_snack",
+      "aliases": [
+        "boondi"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "butter_chicken",
+      "label": "Butter Chicken",
+      "group": "indian_curry",
+      "aliases": [
+        "butter_chicken"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "chhena_kheeri",
+      "label": "Chhena Kheeri",
+      "group": "indian_snack",
+      "aliases": [
+        "chhena_kheeri"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "chicken_razala",
+      "label": "Chicken Razala",
+      "group": "indian_curry",
+      "aliases": [
+        "chicken_razala"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "chicken_tikka",
+      "label": "Chicken Tikka",
+      "group": "indian_curry",
+      "aliases": [
+        "chicken_tikka"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "chicken_tikka_masala",
+      "label": "Chicken Tikka Masala",
+      "group": "indian_curry",
+      "aliases": [
+        "chicken_tikka_masala"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "chikki",
+      "label": "Chikki",
+      "group": "indian_snack",
+      "aliases": [
+        "chikki"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "daal_baati_churma",
+      "label": "Dal Baati Churma",
+      "group": "indian_staple",
+      "aliases": [
+        "daal_baati_churma"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "daal_puri",
+      "label": "Dal Puri",
+      "group": "indian_staple",
+      "aliases": [
+        "daal_puri"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "dharwad_pedha",
+      "label": "Dharwad Pedha",
+      "group": "indian_snack",
+      "aliases": [
+        "dharwad_pedha"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "double_ka_meetha",
+      "label": "Double Ka Meetha",
+      "group": "indian_snack",
+      "aliases": [
+        "double_ka_meetha"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "dum_aloo",
+      "label": "Dum Aloo",
+      "group": "indian_curry",
+      "aliases": [
+        "dum_aloo"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "gajar_ka_halwa",
+      "label": "Gajar Ka Halwa",
+      "group": "indian_snack",
+      "aliases": [
+        "gajar_ka_halwa"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "gavvalu",
+      "label": "Gavvalu",
+      "group": "indian_snack",
+      "aliases": [
+        "gavvalu"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "ghevar",
+      "label": "Ghevar",
+      "group": "indian_snack",
+      "aliases": [
+        "ghevar"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "gulab_jamun",
+      "label": "Gulab Jamun",
+      "group": "indian_snack",
+      "aliases": [
+        "gulab_jamun"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "imarti",
+      "label": "Imarti",
+      "group": "indian_snack",
+      "aliases": [
+        "imarti"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "kajjikaya",
+      "label": "Kajjikaya",
+      "group": "indian_snack",
+      "aliases": [
+        "kajjikaya"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "kakinada_khaja",
+      "label": "Kakinada Khaja",
+      "group": "indian_snack",
+      "aliases": [
+        "kakinada_khaja"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "kalakand",
+      "label": "Kalakand",
+      "group": "indian_snack",
+      "aliases": [
+        "kalakand"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "karela_bharta",
+      "label": "Karela Bharta",
+      "group": "indian_curry",
+      "aliases": [
+        "karela_bharta"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "kofta",
+      "label": "Kofta",
+      "group": "indian_curry",
+      "aliases": [
+        "kofta"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "kuzhi_paniyaram",
+      "label": "Kuzhi Paniyaram",
+      "group": "indian_breakfast",
+      "aliases": [
+        "kuzhi_paniyaram"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "ledikeni",
+      "label": "Ledikeni",
+      "group": "indian_snack",
+      "aliases": [
+        "ledikeni"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "litti_chokha",
+      "label": "Litti Chokha",
+      "group": "indian_staple",
+      "aliases": [
+        "litti_chokha"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "lyangcha",
+      "label": "Lyangcha",
+      "group": "indian_snack",
+      "aliases": [
+        "lyangcha"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "maach_jhol",
+      "label": "Maach Jhol",
+      "group": "indian_curry",
+      "aliases": [
+        "maach_jhol"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "makki_di_roti_sarson_da_saag",
+      "label": "Makki Di Roti Sarson Da Saag",
+      "group": "indian_staple",
+      "aliases": [
+        "makki_di_roti_sarson_da_saag"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "malapua",
+      "label": "Malapua",
+      "group": "indian_snack",
+      "aliases": [
+        "malapua"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "misi_roti",
+      "label": "Misi Roti",
+      "group": "indian_staple",
+      "aliases": [
+        "misi_roti"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "misti_doi",
+      "label": "Misti Doi",
+      "group": "indian_snack",
+      "aliases": [
+        "misti_doi"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "modak",
+      "label": "Modak",
+      "group": "indian_snack",
+      "aliases": [
+        "modak"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "mysore_pak",
+      "label": "Mysore Pak",
+      "group": "indian_snack",
+      "aliases": [
+        "mysore_pak"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "pithe",
+      "label": "Pithe",
+      "group": "indian_snack",
+      "aliases": [
+        "pithe"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "poornalu",
+      "label": "Poornalu",
+      "group": "indian_snack",
+      "aliases": [
+        "poornalu"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "pootharekulu",
+      "label": "Pootharekulu",
+      "group": "indian_snack",
+      "aliases": [
+        "pootharekulu"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "qubani_ka_meetha",
+      "label": "Qubani Ka Meetha",
+      "group": "indian_snack",
+      "aliases": [
+        "qubani_ka_meetha"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "rabri",
+      "label": "Rabri",
+      "group": "indian_snack",
+      "aliases": [
+        "rabri"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "ras_malai",
+      "label": "Ras Malai",
+      "group": "indian_snack",
+      "aliases": [
+        "ras_malai"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "sandesh",
+      "label": "Sandesh",
+      "group": "indian_snack",
+      "aliases": [
+        "sandesh"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "shankarpali",
+      "label": "Shankarpali",
+      "group": "indian_snack",
+      "aliases": [
+        "shankarpali"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "sheer_korma",
+      "label": "Sheer Korma",
+      "group": "indian_snack",
+      "aliases": [
+        "sheer_korma"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "sheera",
+      "label": "Sheera",
+      "group": "indian_snack",
+      "aliases": [
+        "sheera"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "shrikhand",
+      "label": "Shrikhand",
+      "group": "indian_snack",
+      "aliases": [
+        "shrikhand"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "sohan_halwa",
+      "label": "Sohan Halwa",
+      "group": "indian_snack",
+      "aliases": [
+        "sohan_halwa"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "sohan_papdi",
+      "label": "Sohan Papdi",
+      "group": "indian_snack",
+      "aliases": [
+        "sohan_papdi"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "sutar_feni",
+      "label": "Sutar Feni",
+      "group": "indian_snack",
+      "aliases": [
+        "sutar_feni"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+    },
+    {
+      "slug": "unni_appam",
+      "label": "Unni Appam",
+      "group": "indian_snack",
+      "aliases": [
+        "unni_appam"
+      ],
+      "food": null,
+      "default_grams": 100,
+      "nutrition_source": "unavailable",
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
     }
   ]
 }

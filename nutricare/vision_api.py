@@ -48,18 +48,60 @@ def _no_user():
 @vision_api.get("/status")
 def status():
     """Is a trained model installed? Used by the UI to be honest up front."""
+    model_name = request.args.get("model", "default")
+    if model_name not in ("default", "experimental"):
+        return _err("model must be 'default' or 'experimental'", 400)
     return jsonify({
-        "model": vision.model_status(),
+        "model": vision.model_status(model_name),
+        "models": vision.get_available_models(),
+        "selected": model_name,
         "estimate_note": vision.ESTIMATE_NOTE,
         "portion_note": vision.PORTION_NOTE,
         "single_label_note": vision.SINGLE_LABEL_NOTE,
     })
 
 
-@vision_api.get("/classes")
-def classes():
-    conn = db.get_db()
-    return jsonify(food_recognition.available_classes(conn))
+# ------------------------------------------------------------------ models
+@vision_api.get("/models")
+def models_list():
+    """List all available recognition models with their status.
+
+    Used by the UI to show an honest model selector. Never claims experimental
+    accuracy as production-ready.
+    """
+    selected = session.get("vision_model", "default")
+    if selected not in ("default", "experimental"):
+        selected = "default"
+    return jsonify({
+        "models": vision.get_available_models(),
+        "selected": selected,
+    })
+
+
+# ------------------------------------------------------------------ select-model
+@vision_api.post("/select-model")
+def select_model():
+    """Record the user's model choice in the session.
+
+    The choice persists for the session and is used by /api/vision/predict.
+    The default model is never silently replaced.
+    """
+    data = request.get_json(silent=True) or {}
+    model_name = str(data.get("model", "")).strip()
+    if model_name not in ("default", "experimental"):
+        return _err("model must be 'default' or 'experimental'", 400)
+
+    # Validate that the selected model is actually available before recording.
+    available = {m["name"]: m for m in vision.get_available_models()}
+    if model_name not in available or not available[model_name]["present"]:
+        return _err(f"Model {model_name!r} is not available on this server.", 400)
+
+    session["vision_model"] = model_name
+    return jsonify({
+        "selected": model_name,
+        "message": f"{model_name} model selected for this session.",
+        "experimental": model_name == "experimental",
+    })
 
 
 # ------------------------------------------------------------------ predict
@@ -74,10 +116,17 @@ def _read_upload():
 
 @vision_api.post("/predict")
 def predict():
-    """Classify one photograph and attach nutrition estimates.
+    """Classify one photograph with BOTH models and attach nutrition.
 
-    Returns 503 with ``model_unavailable: true`` — never a fake prediction —
-    when no checkpoint is installed.
+    Every scan runs the 12-class production model and the 80-class
+    experimental model on the same image; ``vision.predict_both_models``
+    combines them conservatively (raw confidences are never compared
+    across models — see its documented rules). The user does not select a
+    model: the legacy ``model`` query parameter and the session selection
+    are accepted for backward compatibility but no longer change which
+    models run. If one model is unavailable the other still answers; only
+    when both fail does this return 503 with ``model_unavailable: true`` —
+    never a fake prediction.
     """
     uid_conn = db.get_db()
     if _current_uid(uid_conn) is None:
@@ -103,8 +152,9 @@ def predict():
         except (TypeError, ValueError):
             return _err("grams must be a number")
 
+    # Dual-model scan: both checkpoints analyse the same validated image.
     try:
-        result = vision.get_predictor().predict(raw, top_k=top_k)
+        result = vision.predict_both_models(raw, top_k=top_k)
     except vision.ImageError as exc:
         return _err(str(exc))
     except vision.ModelUnavailable as exc:
@@ -115,6 +165,12 @@ def predict():
     result["candidates"] = food_recognition.predictions_with_nutrition(
         uid_conn, result, grams_value)
     return jsonify(result)
+
+
+@vision_api.get("/classes")
+def classes():
+    conn = db.get_db()
+    return jsonify(food_recognition.available_classes(conn))
 
 
 # ------------------------------------------------------------------ estimate
