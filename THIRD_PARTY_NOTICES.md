@@ -108,7 +108,21 @@ Practical consequence, stated plainly:
 - Anyone redistributing these models **commercially** should treat this as an
   unresolved chain-of-title question and obtain their own assurance.
 
-### 3b. `models/food_classifier_cc0.pt` — 12 classes — CC0-DECLARED (default model)
+### 3b. `models/v2/food_classifier_indian_80_224.pt` — 80 classes — RIGHTS UNRESOLVED
+
+This is the scanner's runtime **primary** checkpoint. It was trained from the
+3,997-image `SoumyaXD/Indian-Food-Classifier` snapshot. Those files are
+byte-identical to a 3,997-image subset of `gnpaone/Indian-food-classification`,
+whose README points to Kaggle `iamsouravbanerjee/indian-food-images-dataset`.
+Neither public repository access nor gnpaone's GPL-3.0 repository licence proves
+rights to the third-party photographs. SoumyaXD supplies no repository licence.
+
+**Status: internal experimental use only; do not redistribute.** The upstream
+image rights and Kaggle source terms were not independently verified. The model
+may be the primary runtime recognizer without being legally cleared; see
+`docs/MODEL.md` for the exact operational and legal limitations.
+
+### 3c. `models/food_classifier_cc0.pt` — 12 classes — CC0-DECLARED (technical fallback)
 
 | | |
 |---|---|
@@ -123,15 +137,17 @@ attribution. That is what the licence *says*; whether the dedicator had the
 authority to apply it to every image is the unverified part described above.
 Attribution is given here as good practice.
 
-This checkpoint is the **default** model shipped by the application.
+This checkpoint is the scanner's **technical fallback**. It runs only after a
+technical failure of the 80-class primary checkpoint; it is not used to replace
+a normal low-confidence primary prediction.
 
 **Caveat, stated plainly:** see "What CC0-declared does and does not mean"
 above. Chain-of-title is asserted by the publisher, not proven by us.
 
-### 3c. `models/food_classifier_cc0_7class.pt` — 7 classes — CC0-DECLARED (alternative)
+### 3d. `models/food_classifier_cc0_7class.pt` — 7 classes — CC0-DECLARED (alternative)
 
-The first CC0 run, kept for comparison and reachable with
-`NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt`.
+The first CC0 run, kept for comparison only. It is not selected by the scanner
+runtime policy.
 
 | | |
 |---|---|
@@ -140,7 +156,7 @@ The first CC0 run, kept for comparison and reachable with
 | Classes | chicken biryani, curd/dahi, jalebi, khichdi, pakora, pani puri, paratha |
 | Images used | 2,083 from the `Train/` split, mapped to 7 NutriCare classes |
 
-Same position as 3b, including the unverified-authority caveat.
+Same position as the 12-class CC0 checkpoint, including the unverified-authority caveat.
 
 ---
 

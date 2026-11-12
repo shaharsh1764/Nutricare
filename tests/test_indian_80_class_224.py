@@ -1,5 +1,5 @@
 """
-Integration tests for the experimental 80-class Indian-food recognition model
+Integration tests for NutriCare's primary 80-class Indian-food recognition model
 (224x224 input resolution, MobileNetV3 Small + ImageNet transfer learning).
 
 These tests exercise the real Predictor against the actual experimental
@@ -14,12 +14,12 @@ Coverage:
   - Top-k predictions are clamped and validated
   - Low-confidence rejection works (threshold 0.40)
   - Invalid and corrupted images are rejected
-  - Missing experimental checkpoint raises ModelUnavailable
-  - Default 12-class model remains unchanged
-  - Existing 12-class fallback remains functional
+  - Missing primary checkpoint raises ModelUnavailable
+  - The 12-class checkpoint remains unchanged and available as technical fallback
+  - Normal prediction uses the fixed primary/fallback policy, never a selector
 
-The experimental model is NOT the production default. These tests verify it
-can be optionally selected, not that it replaces anything.
+The 80-class checkpoint is the scanner primary. Its training-image rights remain
+unresolved and every returned food prediction remains unconfirmed.
 """
 
 from __future__ import annotations
@@ -259,30 +259,28 @@ def test_experimental_is_separate_from_default():
     assert _sha256(EXPERIMENTAL_CKPT) != _sha256(DEFAULT_CKPT)
 
 
-def test_experimental_not_automatically_default():
-    """get_predictor() with no arguments must return the default model, not
-    the experimental one."""
-    predictor = vision.get_predictor("default")
-    assert predictor.model_path != EXPERIMENTAL_CKPT
+def test_primary_predictor_uses_the_80_class_checkpoint():
+    predictor = vision.get_primary_predictor()
+    assert predictor.model_path == vision.PRIMARY_MODEL_PATH
+    assert predictor.model_path == EXPERIMENTAL_CKPT.resolve()
 
 
 # ------------------------------------------------------------------ 12-class fallback
-def test_twelve_class_fallback_remains_default():
-    """The 12-class fallback must remain the production default."""
+def test_twelve_class_technical_fallback_remains_available():
+    """The 12-class checkpoint is intact but is not normal scan priority."""
     fallback = Predictor(FALLBACK_CKPT)
     fallback._load()
     assert len(fallback._classes) == 12
     assert fallback._meta.get("input_size") == 224  # CC0 model uses 224
 
 
-def test_get_available_models_reports_experimental():
-    models = vision.get_available_models()
-    names = {m["name"] for m in models}
-    assert "default" in names
-    assert "experimental" in names
-    exp = [m for m in models if m["name"] == "experimental"][0]
-    assert exp["experimental"] is True
-    assert "EXPERIMENTAL" in str(m for m in models) or True  # just checking structure
+def test_available_models_report_fixed_primary_and_technical_fallback_roles():
+    models = {m["name"]: m for m in vision.get_available_models()}
+    assert models[vision.PRIMARY_MODEL_NAME]["classes"] == 80
+    assert models[vision.PRIMARY_MODEL_NAME]["role"] == "primary"
+    assert models[vision.FALLBACK_MODEL_NAME]["classes"] == 12
+    assert models[vision.FALLBACK_MODEL_NAME]["role"] == "technical_fallback"
+    assert all(m["selection_allowed"] is False for m in models.values())
 
 
 # ------------------------------------------------------------------ end-to-end via app
@@ -301,32 +299,20 @@ def test_end_to_end_prediction_with_experimental_model(tmp_path, monkeypatch):
         resp = client.post("/api/users", json={"name": "Scanner Tester"})
         assert resp.status_code == 201
 
-        # Select the experimental model
-        resp = client.post("/api/vision/select-model",
-                           json={"model": "experimental"})
-        assert resp.status_code == 200
-        assert resp.get_json()["selected"] == "experimental"
-
-        # Dual-model scan: the production checkpoint is absent here, so the
-        # experimental model serves via single-model fallback.
+        # The fixed runtime uses the 80-class primary model. The absent
+        # NUTRICARE_MODEL override affects only the technical fallback.
         resp = client.post("/api/vision/predict?top_k=5",
                            data=make_png(),
                            content_type="application/octet-stream")
         assert resp.status_code == 200
         body = resp.get_json()
-        assert body["model"] == "dual"
-        assert body["ensemble"]["models"]["experimental"]["available"] is True
-        assert body["ensemble"]["models"]["default"]["available"] is False
-        assert body["ensemble"]["rule"] == "single_model_fallback"
+        assert body["model"] == vision.PRIMARY_MODEL_NAME
+        assert body["recognition"]["fallback_used"] is False
+        assert body["recognition"]["prediction_unconfirmed"] is True
+        assert "ensemble" not in body
         assert len(body["predictions"]) <= 5
         assert "low_confidence" in body
         assert "threshold" in body
-
-        # Verify default model is still available
-        resp2 = client.post("/api/vision/select-model",
-                            json={"model": "default"})
-        assert resp2.status_code == 200
-        assert resp2.get_json()["selected"] == "default"
 
     vision.reset_predictor()
 
@@ -505,20 +491,15 @@ def test_experimental_prediction_includes_nutrition(tmp_path, monkeypatch):
     with application.test_client() as client:
         client.post("/api/users", json={"name": "E2E Nutrition Tester"})
 
-        # Select experimental model
-        resp = client.post("/api/vision/select-model",
-                           json={"model": "experimental"})
-        assert resp.status_code == 200
-
-        # Predict - we can't control which class the model picks,
-        # but we can verify the structure includes nutrition info
+        # Predict with the fixed 80-class primary. We cannot control the
+        # actual class, but every candidate still needs a nutrition response.
         resp = client.post("/api/vision/predict?top_k=5",
                            data=make_png(),
                            content_type="application/octet-stream")
         assert resp.status_code == 200
         body = resp.get_json()
-        assert body["model"] == "dual"
-        assert body["ensemble"]["models"]["experimental"]["available"] is True
+        assert body["model"] == vision.PRIMARY_MODEL_NAME
+        assert body["recognition"]["fallback_used"] is False
 
         # Each candidate should have nutrition info (available or not)
         for candidate in body["candidates"]:
@@ -535,6 +516,7 @@ def test_default_model_classes_still_work(tmp_path, monkeypatch):
 
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "vision_default.db"))
     monkeypatch.setenv("NUTRICARE_MODEL", str(FALLBACK_CKPT))
+    monkeypatch.setattr(vision, "PRIMARY_MODEL_PATH", tmp_path / "missing-primary.pt")
     vision.reset_predictor()
 
     application = create_app({"TESTING": True})
@@ -546,10 +528,12 @@ def test_default_model_classes_still_work(tmp_path, monkeypatch):
                            content_type="application/octet-stream")
         assert resp.status_code == 200
         body = resp.get_json()
-        # Dual-model: merged candidates from both checkpoints (<=3 each).
-        assert len(body["predictions"]) <= 6
-        assert body["ensemble"]["models"]["default"]["available"] is True
-        assert body["ensemble"]["models"]["default"]["top"]["slug"] in \
+        # Force a missing primary checkpoint so this is a genuine technical
+        # fallback test, not a selectable/default model test.
+        assert len(body["predictions"]) <= 3
+        assert body["model"] == vision.FALLBACK_MODEL_NAME
+        assert body["recognition"]["fallback_used"] is True
+        assert body["top"]["slug"] in \
             {"chicken_biryani", "chole", "chomchom", "curd_dahi", "jalebi",
              "kheer", "khichdi", "morog_polao", "pakora", "pani_puri",
              "paratha_plain", "rasgulla"}

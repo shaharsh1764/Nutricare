@@ -34,8 +34,9 @@ def make_png(width=64, height=64, colour=(180, 120, 60)):
 @pytest.fixture()
 def app(tmp_path, monkeypatch):
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "vision.db"))
-    # Isolation: never pick up a developer's real checkpoint.
-    monkeypatch.setenv("NUTRICARE_MODEL", str(tmp_path / "absent.pt"))
+    # Isolation: neither scanner-policy checkpoint may come from the repository.
+    monkeypatch.setattr(vision, "PRIMARY_MODEL_PATH", tmp_path / "absent-primary.pt")
+    monkeypatch.setenv("NUTRICARE_MODEL", str(tmp_path / "absent-fallback.pt"))
     vision.reset_predictor()
     application = create_app({"TESTING": True})
     yield application
@@ -171,11 +172,8 @@ def test_status_reports_missing_model_without_crashing(client):
 
 def test_predict_returns_503_and_never_fabricates(client, user, monkeypatch,
                                                   tmp_path):
-    # Dual-model scanning: 503 is correct only when BOTH models are absent.
-    # The fixture hides the production checkpoint; hide the experimental one
-    # too, then the refusal must be total — no invented class names.
-    monkeypatch.setattr(vision, "EXPERIMENTAL_MODEL_PATH",
-                        tmp_path / "absent_experimental.pt")
+    # The fixture hides both policy checkpoints, so the refusal must be total:
+    # no invented class names and no misleading confidence payload.
     vision.reset_predictor()
     resp = client.post("/api/vision/predict", data=make_png(),
                        content_type="application/octet-stream")
@@ -248,7 +246,7 @@ def trained_app(tmp_path, monkeypatch):
     slugs = ["masala_dosa", "roti", "samosa", "pizza"]
     _train_noise_checkpoint(checkpoint, slugs)
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "vision2.db"))
-    monkeypatch.setenv("NUTRICARE_MODEL", str(checkpoint))
+    monkeypatch.setattr(vision, "PRIMARY_MODEL_PATH", checkpoint)
     vision.reset_predictor()
     application = create_app({"TESTING": True})
     yield application
@@ -263,29 +261,22 @@ def test_predict_output_structure_is_correct(trained_app):
         assert resp.status_code == 200
         body = resp.get_json()
 
-    # Dual-model contract: ``predictions`` is a merged, deduplicated
-    # candidate list from BOTH models, not one softmax ranking (two models'
-    # scores are not comparable), so it is selected-first, not sorted.
+    # One normal scan has one ranking from the primary model. No ensemble
+    # candidates, agreement fields, or cross-model score comparisons exist.
     assert body["single_label"] is True
-    assert body["model"] == "dual"
-    assert 3 <= len(body["predictions"]) <= 6     # <= top_k per model, merged
+    assert body["model"] == vision.PRIMARY_MODEL_NAME
+    assert 1 <= len(body["predictions"]) <= 3
     assert body["candidates"] and \
         len(body["candidates"]) == len(body["predictions"])
-    keys = [p["canonical_key"] for p in body["predictions"]]
-    assert len(keys) == len(set(keys))            # deduplicated by food
     for prediction in body["predictions"]:
         assert 0.0 <= prediction["confidence"] <= 1.0
         assert "label" in prediction and "group" in prediction
-        assert prediction["source_models"]
+        assert prediction["slug"] in {"masala_dosa", "roti", "samosa", "pizza"}
     assert body["top"] == body["predictions"][0]
     assert body["image"]["width"] == 64
-    ens = body["ensemble"]
-    assert ens["models"]["default"]["available"] is True
-    assert ens["models"]["experimental"]["available"] is True
-    assert ens["selected_slug"] == body["top"]["slug"]
-    # The tiny fixture checkpoint really was one of the two models run.
-    assert ens["models"]["default"]["top"]["slug"] in \
-        {"masala_dosa", "roti", "samosa", "pizza"}
+    assert body["recognition"]["fallback_used"] is False
+    assert body["recognition"]["prediction_unconfirmed"] is True
+    assert "ensemble" not in body
 
 
 def test_confidence_is_reported_and_low_confidence_flagged(trained_app):
@@ -302,46 +293,45 @@ def test_confidence_is_reported_and_low_confidence_flagged(trained_app):
 def test_top_k_is_clamped_and_validated(trained_app):
     with trained_app.test_client() as client:
         client.post("/api/users", json={"name": "K"})
-        # Dual-model: each model clamps to its own top-5, then lists merge.
         assert len(client.post("/api/vision/predict?top_k=99",
-                               data=make_png()).get_json()["predictions"]) <= 10
+                               data=make_png()).get_json()["predictions"]) <= 5
         bogus = client.post("/api/vision/predict?top_k=bogus",
                             data=make_png()).get_json()["predictions"]
-        assert 3 <= len(bogus) <= 6     # invalid top_k falls back to 3/model
+        assert 1 <= len(bogus) <= 3     # invalid top_k falls back to 3
 
 
 def test_checkpoint_load_failure_is_reported_not_hidden(tmp_path, monkeypatch):
     broken = tmp_path / "broken.pt"
     broken.write_bytes(b"definitely not a torch checkpoint")
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "b.db"))
-    monkeypatch.setenv("NUTRICARE_MODEL", str(broken))
+    monkeypatch.setattr(vision, "PRIMARY_MODEL_PATH", broken)
+    monkeypatch.setenv("NUTRICARE_MODEL", str(vision.DEFAULT_MODEL_PATH))
     vision.reset_predictor()
     application = create_app({"TESTING": True})
     with application.test_client() as client:
         client.post("/api/users", json={"name": "Broken"})
         resp = client.post("/api/vision/predict", data=make_png())
-        # Dual-model: the broken production checkpoint is recorded as
-        # unavailable and the experimental model still answers honestly.
+        # A broken primary produces the documented technical fallback response.
         assert resp.status_code == 200
         body = resp.get_json()
-        assert body["ensemble"]["models"]["default"]["available"] is False
-        assert body["ensemble"]["models"]["experimental"]["available"] is True
-        assert body["ensemble"]["rule"] == "single_model_fallback"
+        assert body["model"] == vision.FALLBACK_MODEL_NAME
+        assert body["recognition"]["fallback_used"] is True
+        assert body["recognition"]["fallback_reason"] == "primary_unavailable"
         assert body["predictions"]          # a real prediction, not a guess
     vision.reset_predictor()
 
 
 def test_repeated_predictions_reuse_the_loaded_model(trained_app):
-    predictor = vision.get_predictor()
+    predictor = vision.get_primary_predictor()
     with trained_app.test_client() as client:
         client.post("/api/users", json={"name": "Cache"})
         for _ in range(3):
             assert client.post("/api/vision/predict",
                                data=make_png()).status_code == 200
         status = client.get("/api/vision/status").get_json()
-    assert vision.get_predictor() is predictor   # loaded once, not per request
-    assert status["model"]["loaded"] is True
-    assert status["model"]["trained_at"] == "2026-01-01T00:00:00"
+    assert vision.get_primary_predictor() is predictor   # loaded once, not per request
+    assert status["primary"]["loaded"] is True
+    assert status["primary"]["trained_at"] == "2026-01-01T00:00:00"
 
 
 # ---------------------------------------------------------------- nutrition
@@ -509,7 +499,8 @@ def test_healthz_still_works_and_existing_routes_untouched(client):
 
 
 # ---------------------------------------------------------------- real model
-REAL_MODEL = vision.DEFAULT_MODEL_PATH
+REAL_MODEL = vision.PRIMARY_MODEL_PATH
+FALLBACK_MODEL = vision.DEFAULT_MODEL_PATH
 
 
 @pytest.fixture()
@@ -518,7 +509,8 @@ def real_model_app(tmp_path, monkeypatch):
     if not REAL_MODEL.is_file():
         pytest.skip(f"no trained checkpoint installed ({REAL_MODEL.name})")
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "real.db"))
-    monkeypatch.setenv("NUTRICARE_MODEL", str(REAL_MODEL))
+    monkeypatch.setattr(vision, "PRIMARY_MODEL_PATH", REAL_MODEL)
+    monkeypatch.setenv("NUTRICARE_MODEL", str(FALLBACK_MODEL))
     vision.reset_predictor()
     application = create_app({"TESTING": True})
     yield application
@@ -531,25 +523,30 @@ def test_status_reports_metrics_from_the_training_sidecar(real_model_app):
         model = client.get("/api/vision/status").get_json()["model"]
     assert model["model_present"] is True
     sidecar = json.loads(REAL_MODEL.with_suffix(".metrics.json").read_text(encoding="utf-8"))
-    assert model["test_accuracy"] == sidecar["test_metrics"]["accuracy"]
+    metrics = sidecar.get("test_metrics") or sidecar.get("results")
+    assert model["test_accuracy"] == metrics.get("accuracy", metrics.get("test_accuracy"))
     assert model["architecture"] == sidecar["architecture"]
     # and it is a real, non-trivial result rather than a placeholder
     assert 0.0 < model["test_accuracy"] <= 1.0
     assert model["test_support"] >= 100
 
 
-def test_trained_flag_reflects_the_installed_checkpoint(real_model_app):
+def test_trained_flag_reflects_primary_sidecar_metadata_without_model_load(
+        real_model_app, monkeypatch):
+    def unexpected_load(self):
+        pytest.fail("/api/vision/classes must not load a checkpoint")
+
+    monkeypatch.setattr(vision.Predictor, "_load", unexpected_load)
     with real_model_app.test_client() as client:
         payload = client.get("/api/vision/classes").get_json()
     assert payload["model_installed"] is True
-    assert payload["trained_count"] > 0
+    assert payload["trained_count"] == 80
     trained = {c["slug"] for c in payload["classes"] if c["trained"]}
-    checkpoint = __import__("torch").load(REAL_MODEL, map_location="cpu",
-                                          weights_only=False)
-    assert trained == set(checkpoint["classes"])
+    metrics = json.loads(REAL_MODEL.with_suffix(".metrics.json").read_text(encoding="utf-8"))
+    assert trained == set(metrics["class_names"])
     assert len(trained) == payload["trained_count"]
-    # taxonomy entries without a trained class must not claim recognition
-    assert "biryani" not in trained or "chicken_biryani" in trained
+    # Taxonomy entries without a primary-trained class must not claim recognition.
+    assert "roti" not in trained
 
 
 def test_no_model_reports_zero_trained_classes(client, user):
@@ -579,12 +576,11 @@ def test_real_model_predicts_a_known_class_with_confidence(real_model_app):
                            content_type="application/octet-stream")
     assert resp.status_code == 200
     body = resp.get_json()
-    # Dual-model: merged candidates from both real checkpoints. The
-    # production model's own evidence stays attributable in the debug block.
     labels = [p["label"] for p in body["predictions"]]
-    assert 3 <= len(labels) <= 6
-    assert body["ensemble"]["models"]["default"]["top"]["slug"] in \
-        set(checkpoint["classes"])
+    assert 1 <= len(labels) <= 3
+    assert body["model"] == vision.PRIMARY_MODEL_NAME
+    assert body["recognition"]["fallback_used"] is False
+    assert body["top"]["slug"] in set(checkpoint["classes"])
     for prediction in body["predictions"]:
         assert 0.0 <= prediction["confidence"] <= 1.0
 
@@ -681,91 +677,7 @@ def test_the_unlicensed_checkpoint_is_not_shipped():
             f"{name} is not an artifact with a documented CC0 licence")
 
 
-# ------------------------------------------------- FallbackPredictor tests
-class TestFallbackPredictor:
-    """Tests for the primary/fallback predictor that guards the experimental
-    Indian-food model behind the 12-class CC0 model."""
-
-    def test_falls_back_to_12_class_when_indian_model_missing(self, tmp_path):
-        missing_primary = tmp_path / "indian_food_v1.pt"
-        assert not missing_primary.is_file()
-        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
-        assert fp.primary_present is False
-        assert fp.fallback_present is True
-        assert fp.serving is None  # not resolved until predict() or status()
-
-    def test_status_reports_fallback_when_primary_missing(self, tmp_path):
-        missing_primary = tmp_path / "indian_food_v1.pt"
-        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
-        status = fp.status()
-        assert status["serving"] == "fallback"
-        assert status["primary_present"] is False
-        assert status["fallback_present"] is True
-        assert "food_classifier_cc0.pt" in status["model_path"]
-        # status must not load the model into memory (no side effect)
-        assert fp._primary is None
-        assert fp._fallback is None
-
-    def test_status_uses_fallback_metrics_sidecar(self, tmp_path):
-        missing_primary = tmp_path / "indian_food_v1.pt"
-        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
-        status = fp.status()
-        sidecar = vision.DEFAULT_MODEL_PATH.with_suffix(".metrics.json")
-        if sidecar.is_file():
-            import json
-            side = json.loads(sidecar.read_text(encoding="utf-8"))
-            test = side.get("test_metrics") or {}
-            assert status["test_accuracy"] == test.get("accuracy")
-            assert status["test_macro_f1"] == test.get("macro_f1")
-
-    def test_status_reports_primary_when_file_exists(self, tmp_path, monkeypatch):
-        fake_primary = tmp_path / "indian_food_v1.pt"
-        fake_primary.write_bytes(b"not a real checkpoint")
-        fp = vision.FallbackPredictor(fake_primary, vision.DEFAULT_MODEL_PATH)
-        status = fp.status()
-        assert status["serving"] == "primary"
-        assert status["primary_present"] is True
-        assert "indian_food_v1.pt" in status["model_path"]
-
-    def test_status_does_not_load_model_no_side_effect(self, tmp_path):
-        """status() must be a cheap probe — calling it must not load any
-        checkpoint into memory."""
-        missing_primary = tmp_path / "indian_food_v1.pt"
-        fp = vision.FallbackPredictor(missing_primary, vision.DEFAULT_MODEL_PATH)
-        fp.status()
-        assert fp._primary is None
-        assert fp._fallback is None
-
-    def test_predict_raises_model_unavailable_when_both_missing(self, tmp_path):
-        missing_primary = tmp_path / "indian_food_v1.pt"
-        missing_fallback = tmp_path / "food_classifier_cc0.pt"
-        fp = vision.FallbackPredictor(missing_primary, missing_fallback)
-        assert fp.primary_present is False
-        assert fp.fallback_present is False
-        with pytest.raises(vision.ModelUnavailable):
-            fp.predict(make_png())
-
-    def test_get_predictor_returns_plain_predictor_when_indian_missing(
-        self, monkeypatch
-    ):
-        """When indian_food_v1.pt is absent, get_predictor() returns a plain
-        Predictor pointing at the 12-class CC0 model — not a FallbackPredictor."""
-        vision.reset_predictor()
-        monkeypatch.setenv("NUTRICARE_MODEL", str(vision.DEFAULT_MODEL_PATH))
-        p = vision.get_predictor()
-        assert isinstance(p, vision.Predictor)
-        assert not isinstance(p, vision.FallbackPredictor)
-        assert p.model_path == vision.DEFAULT_MODEL_PATH
-
-    def test_predictor_never_invents_predictions_when_no_model(self, tmp_path):
-        """A missing checkpoint means predict() raises ModelUnavailable —
-        never a fabricated answer."""
-        missing_primary = tmp_path / "indian_food_v1.pt"
-        missing_fallback = tmp_path / "food_classifier_cc0.pt"
-        fp = vision.FallbackPredictor(missing_primary, missing_fallback)
-        with pytest.raises(vision.ModelUnavailable):
-            fp.predict(make_png())
-
+# --------------------------------- recognition policy covered in test_dual_model_scan.py
 
 # ------------------------------------------------- end of file
 

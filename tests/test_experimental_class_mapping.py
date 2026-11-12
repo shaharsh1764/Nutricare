@@ -120,17 +120,19 @@ def test_nutrition_lookup_is_keyed_by_checkpoint_slug(tmp_path, monkeypatch):
     app = create_app({"TESTING": True})
     with app.test_client() as client:
         assert client.post("/api/users", json={"name": "Mapping Tester"}).status_code == 201
-        resp = client.post("/api/vision/predict?model=experimental&top_k=5",
+        resp = client.post("/api/vision/predict?top_k=5",
                            data=make_png(), content_type="application/octet-stream")
         assert resp.status_code == 200
+        body = resp.get_json()
+        assert body["model"] == vision.PRIMARY_MODEL_NAME
+        assert body["recognition"]["fallback_used"] is False
         allowed = set(_checkpoint_classes())
-        for candidate in resp.get_json()["candidates"]:
+        for candidate in body["candidates"]:
             assert "nutrition" in candidate
             assert "nutrition_available" in candidate["nutrition"]
-            # Dual-model scan: candidates sourced from the experimental
-            # model must still be keyed by checkpoint slugs, never indices.
-            if "experimental" in candidate["source_models"]:
-                assert candidate["slug"] in allowed
+            # The primary output is keyed by its checkpoint slug, never a
+            # position in NutriCare's broader taxonomy.
+            assert candidate["slug"] in allowed
     vision.reset_predictor()
 
 

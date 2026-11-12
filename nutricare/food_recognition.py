@@ -129,19 +129,14 @@ def predictions_with_nutrition(conn: sqlite3.Connection, result: dict,
 
 
 def trained_slugs() -> set[str] | None:
-    """Classes the installed checkpoint can actually predict.
+    """Classes covered by the installed 80-class primary checkpoint.
 
-    Returns None when no checkpoint is installed (the taxonomy is then only a
-    plan, not a claim). Never invents coverage.
+    Scanner setup needs this display metadata before a photograph is submitted.
+    Read the primary model's audited sidecar rather than constructing or loading
+    an inference checkpoint. In particular, never inspect the 12-class model:
+    it is reserved for a technical primary failure during ``vision.recognize``.
     """
-    predictor = vision.get_predictor()
-    if not predictor.available_path:
-        return None
-    try:
-        predictor._load()  # noqa: SLF001 - same package, intentional
-    except vision.ModelUnavailable:
-        return None
-    return {c["slug"] for c in predictor._classes}  # noqa: SLF001
+    return vision.primary_class_slugs()
 
 
 def available_classes(conn: sqlite3.Connection) -> dict:

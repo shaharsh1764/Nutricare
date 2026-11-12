@@ -170,8 +170,7 @@ async function scanAnalyze() {
   form.append("image", SCAN.file);
   let res;
   try {
-    /* No model choice: the server always runs both recognition models on
-       the same photo and returns the best-supported combined answer. */
+    /* The server uses its fixed 80-class-primary recognition policy. */
     res = await fetch("/api/vision/predict?top_k=3", { method: "POST", body: form });
   } catch {
     box.innerHTML = `<div class="empty-state"><b>Could not reach the server.</b>
@@ -246,12 +245,6 @@ function scanShowResult() {
   const result = SCAN.result;
   const top = SCAN.candidates[0];
   const low = result.low_confidence;
-  const ensemble = result.ensemble || {};
-  const agreed = !!ensemble.agreement;
-  const disagreed = !agreed && ensemble.models
-    && ensemble.models.default && ensemble.models.default.available
-    && ensemble.models.experimental && ensemble.models.experimental.available;
-
   const alternatives = SCAN.candidates.slice(1).map((c) => `
     <button class="result-row" data-alt="${c.slug}" style="width:100%;text-align:left">
       <span style="flex:1"><b class="small">${esc(c.label)}</b>
@@ -269,7 +262,6 @@ function scanShowResult() {
           <div class="row mt8" style="gap:6px">
             ${scanConfidencePill(top.confidence, low)}
             <span class="pill pill-slate">${esc(SCAN_GROUPS[top.group] || top.group)}</span>
-            ${agreed ? '<span class="pill pill-mint">✓ confirmed by both models</span>' : ""}
           </div>
         </div>
       </div>
@@ -277,8 +269,7 @@ function scanShowResult() {
     </div>
 
     ${low ? `<div class="scan-warn mt12">
-        <b>${disagreed ? "The recognition models disagree about this photo."
-                       : "The model is not confident about this photo."}</b>
+        <b>The model is not confident about this photo.</b>
         <p class="tiny mt8">Below ${Math.round(result.threshold * 100)}% confidence NutriCare
         will not claim to know the food. Please pick the right dish below, or enter it manually.</p>
       </div>` : ""}
@@ -527,8 +518,8 @@ function scanAskManualValues(cls) {
 async function renderScanner() {
   let status = null;
   try { status = await api("/vision/status"); } catch { /* offline */ }
-  /* Recognition is ready when at least one of the two models is installed;
-     every scan runs both and falls back to whichever one is available. */
+  /* Recognition uses an 80-class primary and only uses its 12-class model
+     after a technical primary failure. */
   const modelReady = !!((status && status.models
     && status.models.some((m) => m.present))
     || (status && status.model && status.model.model_present));
@@ -566,8 +557,9 @@ async function renderScanner() {
           ${modelReady ? "model installed" : "recognition off"}</span>
       </div>
 
-      <p class="tiny faint mt12">Every photo is checked by both recognition models;
-      NutriCare shows the best-supported result — there is no model to choose.</p>
+      <p class="tiny faint mt12">NutriCare uses its 80-class Indian food recognition model by default.
+      The older 12-class model is used only if the primary model encounters a technical
+      error. Predictions are suggestions and should be confirmed before logging.</p>
 
       <div class="row wrap" style="gap:10px">
         <button class="btn btn-deep" id="scan-camera">📷 Take Photo</button>
