@@ -26,7 +26,7 @@ async function renderDashboard() {
   const weekEmpty = report.per_day.every((d) => (d.logged_count || 0) === 0 && !d.water_ml);
 
   const macroCard = t ? `
-    <div class="card">
+    <div class="card audit-stat">
       <div class="card-head"><span class="card-title">Macro distribution</span>
         <span class="icon-pill tint-teal">${ICONS.tracker}</span></div>
     ${hBar("Protein", summary.totals.protein_g, t.protein_g, COLORS.protein,
@@ -35,7 +35,7 @@ async function renderDashboard() {
       `${fmt(summary.totals.carbs_g)}g / ${fmt(t.carbs_g)}g`)}
     ${hBar("Fat", summary.totals.fat_g, t.fat_g, COLORS.fat,
       `${fmt(summary.totals.fat_g)}g / ${fmt(t.fat_g)}g`)}
-    </div>` : `<div class="card"><div class="card-head"><span class="card-title">Macro distribution</span></div>
+    </div>` : `<div class="card audit-stat"><div class="card-head"><span class="card-title">Macro distribution</span></div>
       <p class="muted small">Complete your <a href="#/profile">health profile</a> to unlock personalised macro targets.</p></div>`;
 
   let cupsHtml = "";
@@ -47,13 +47,13 @@ async function renderDashboard() {
   const insights = dashboardInsights(summary, t);
 
   $("#view").innerHTML = `
-  <div class="card" style="background:var(--dashboard-gradient);border-color:var(--primary-border)">
+  <div class="card dashboard-hero" style="background:var(--dashboard-gradient);border-color:var(--primary-border)">
     <div class="row spread wrap">
       <div>
-        <div class="row" style="gap:8px"><span class="pill ${hasLogs ? "pill-mint" : "pill-slate"}">${hasLogs ? "SEMESTER ROUTINE" : "FRESH START"}</span>
+        <div class="row" style="gap:8px"><span class="pill ${hasLogs ? "pill-mint" : "pill-slate"}">${hasLogs ? "DAILY NUTRITION SUMMARY" : "FRESH START"}</span>
           <span class="tiny muted">${hasLogs ? "Updated just now" : "your account is empty — exactly as it should be"}</span></div>
-        <h2 style="font-size:30px;margin-top:8px">${hasLogs ? esc(greet) + ", " : "Welcome to NutriCare, "}${esc(name)} 👋</h2>
-        <p class="muted mt8" style="max-width:560px">
+        <h2 class="dashboard-title">${hasLogs ? esc(greet) + ", " : "Welcome to NutriCare, "}${esc(name)} 👋</h2>
+        <p class="muted mt8 dashboard-summary">
           ${hasLogs
             ? (t ? `You are <b style="color:var(--primary-deep)">${fmt(remaining)} kcal</b> away from your daily target.
                Hydration is at <b style="color:var(--sky)">${fmt(100 * summary.water_ml / summary.water_goal_ml)}%</b> of goal.`
@@ -61,7 +61,7 @@ async function renderDashboard() {
             : `Nothing is recorded yet — and <b>an empty log never means zero intake</b>, it simply means
                you haven't logged anything. Start with your first meal, or finish your profile first.`}</p>
       </div>
-      <div class="row wrap">
+      <div class="row wrap dashboard-actions">
         <button class="btn btn-ghost" id="quick-water">${ICONS.drop} Quick Water (+250ml)</button>
         <button class="btn btn-ghost" id="quick-symptoms">🩺 Check Symptoms</button>
         <button class="btn btn-ghost" id="quick-scan">${ICONS.scanner} Scan a meal</button>
@@ -70,8 +70,8 @@ async function renderDashboard() {
     </div>
   </div>
 
-  <div class="grid cols-4 mt16">
-    <div class="card">
+  <div class="grid cols-4 mt16 dashboard-metrics">
+    <div class="card audit-stat">
       <div class="card-head"><span class="card-title">Energy budget</span>
         <span class="icon-pill tint-teal">⚡</span></div>
       <div class="row spread">
@@ -87,7 +87,7 @@ async function renderDashboard() {
       <div class="bar mt12"><i style="width:${t ? Math.min(100, 100 * consumed / t.kcal) : 0}%;background:var(--primary-deep)"></i></div>
     </div>
     ${macroCard}
-    <div class="card">
+    <div class="card audit-stat">
       <div class="card-head"><span class="card-title">Hydration index</span>
         <span class="pill pill-amber">${cups}/${goalCups} cups</span></div>
       <div class="stat">${units === "imperial" ? fmt(summary.water_ml / 29.5735, 0) + "<small> oz</small>" : (summary.water_ml / 1000).toFixed(1) + "<small> L</small>"}<small> / ${units === "imperial" ? fmt(summary.water_goal_ml / 29.5735, 0) + " oz" : (summary.water_goal_ml / 1000).toFixed(1) + " L"}</small></div>
@@ -95,7 +95,7 @@ async function renderDashboard() {
             : summary.water_goal_ml - summary.water_ml > 0 ? UNITS.water(Math.max(0, summary.water_goal_ml - summary.water_ml), units) + " left to reach goal" : "Goal reached 🎉"}</p>
       <div class="row wrap mt12">${cupsHtml}</div>
     </div>
-    <div class="card">
+    <div class="card audit-stat">
       <div class="card-head"><span class="card-title">Biometrics & vitals</span>
         <span class="icon-pill tint-rose">♥</span></div>
       ${t ? `<div class="row spread small mt8"><span class="muted">BMR (Mifflin-St Jeor)</span><b>${fmt(t.bmr)} kcal</b></div>
@@ -107,9 +107,9 @@ async function renderDashboard() {
     </div>
   </div>
 
-  <div class="grid cols-21 mt16">
-    <div class="card">
-      <div class="card-head"><div><h3 style="font-size:17px">Today's Meals & Nutrition Log</h3>
+  <div class="grid cols-21 mt16 dashboard-journal">
+    <div class="card diary-card">
+      <div class="card-head"><div><h3 class="journal-heading">Today's Meals & Nutrition Log</h3>
         <p class="tiny muted mt8">Logged items are summed from the documented food dataset.</p></div>
         <button class="btn btn-soft btn-sm" id="goto-tracker">Open Tracker</button></div>
       ${dashboardMealList(summary)}
@@ -130,9 +130,9 @@ async function renderDashboard() {
     </div>
   </div>
 
-  <div class="card mt16">
+  <div class="card mt16 audit-chart">
     <div class="card-head spread"><div><span class="tiny muted" style="font-weight:700;letter-spacing:.08em">7-DAY TRAJECTORY</span>
-      <h3 style="font-size:17px">Weekly Caloric & Macro Balance</h3></div>
+      <h3 class="journal-heading">Weekly Caloric & Macro Balance</h3></div>
       <div class="legend"><span><span class="dot" style="background:${COLORS.protein}"></span>Protein</span>
       <span><span class="dot" style="background:${COLORS.carbs}"></span>Carbs</span>
       <span><span class="dot" style="background:${COLORS.fat}"></span>Fat</span></div></div>

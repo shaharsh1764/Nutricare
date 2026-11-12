@@ -12,6 +12,11 @@ const vm = require("vm");
 const BASE = process.argv[2] || "http://127.0.0.1:5000";
 const JS_DIR = path.join(__dirname, "..", "static", "js");
 const INDEX_TEMPLATE = fs.readFileSync(path.join(__dirname, "..", "templates", "index.html"), "utf8");
+const BRAND_MARK = path.join(__dirname, "..", "static", "images", "nutricare-mark.png");
+if (!fs.existsSync(BRAND_MARK) || !INDEX_TEMPLATE.includes("/static/images/nutricare-mark.png")) {
+  throw new Error("The supplied NutriCare brand mark must be available to the application shell");
+}
+console.log("PASS  D0 supplied NutriCare brand mark is wired into the application shell");
 const themeBootstrap = INDEX_TEMPLATE.indexOf("nutricare_theme");
 const stylesheetLink = INDEX_TEMPLATE.indexOf('/static/css/style.css');
 if (themeBootstrap < 0 || stylesheetLink < 0 || themeBootstrap > stylesheetLink) {
