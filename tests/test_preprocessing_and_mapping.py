@@ -68,7 +68,7 @@ def predictor_app(tmp_path, monkeypatch):
     slugs = ["masala_dosa", "roti", "samosa", "pizza"]
     _train_noise_checkpoint(checkpoint, slugs)
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "vision.db"))
-    monkeypatch.setenv("NUTRICARE_MODEL", str(checkpoint))
+    monkeypatch.setattr(vision, "PRIMARY_MODEL_PATH", checkpoint)
     vision.reset_predictor()
     from nutricare import create_app
     application = create_app({"TESTING": True})
@@ -79,7 +79,7 @@ def predictor_app(tmp_path, monkeypatch):
 # ---------------------------------------------------------------- preprocessing
 def test_transform_output_shape_and_channels(predictor_app):
     """The transform must yield a 3-channel 224x224 tensor (batch of 1)."""
-    predictor = vision.get_predictor()
+    predictor = vision.get_primary_predictor()
     predictor._load()
     from PIL import Image
     import io as _io
@@ -109,11 +109,10 @@ def test_grayscale_image_is_converted_to_rgb(predictor_app):
                            content_type="application/octet-stream")
     assert resp.status_code == 200
     body = resp.get_json()
-    # Dual-model: merged candidates from both models; the fixture model's
-    # own top-1 remains attributable in the ensemble debug block.
-    assert 3 <= len(body["predictions"]) <= 6
-    assert body["ensemble"]["models"]["default"]["top"]["slug"] in \
-        {"masala_dosa", "roti", "samosa", "pizza"}
+    assert 1 <= len(body["predictions"]) <= 3
+    assert body["model"] == vision.PRIMARY_MODEL_NAME
+    assert body["recognition"]["fallback_used"] is False
+    assert body["top"]["slug"] in {"masala_dosa", "roti", "samosa", "pizza"}
 
 
 def test_normalisation_constants_come_from_checkpoint(tmp_path, monkeypatch):
@@ -150,7 +149,7 @@ def test_predict_rejects_corrupted_image_bytes(predictor_app):
 def test_model_class_order_matches_taxonomy_slugs(predictor_app):
     """The index the model returns must map to the taxonomy slug in the same
     position as the checkpoint's ``classes`` list."""
-    predictor = vision.get_predictor()
+    predictor = vision.get_primary_predictor()
     predictor._load()
     checkpoint_slugs = predictor._classes  # list of {"slug": ..., ...}
     by_slug = vision.class_by_slug()
@@ -161,10 +160,8 @@ def test_model_class_order_matches_taxonomy_slugs(predictor_app):
 
 
 def test_prediction_slugs_are_subset_of_checkpoint_classes(predictor_app):
-    """Every returned prediction slug must belong to one of the installed
-    checkpoints, never to the full taxonomy. Under dual-model scanning the
-    merged candidates may come from either model, so the fixture model's
-    contribution is checked through its recorded top-1 and source tags."""
+    """Every returned prediction slug belongs to the primary checkpoint,
+    never to the broader taxonomy or a combined-model result."""
     with predictor_app.test_client() as client:
         client.post("/api/users", json={"name": "Map"})
         resp = client.post("/api/vision/predict?top_k=4",
@@ -174,11 +171,12 @@ def test_prediction_slugs_are_subset_of_checkpoint_classes(predictor_app):
     body = resp.get_json()
     allowed = {"masala_dosa", "roti", "samosa", "pizza"}
     taxonomy = {c["slug"] for c in vision.class_list()}
+    assert body["model"] == vision.PRIMARY_MODEL_NAME
+    assert body["recognition"]["fallback_used"] is False
     for prediction in body["predictions"]:
         assert prediction["slug"] in taxonomy
-        if prediction["source_models"] == ["default"]:
-            assert prediction["slug"] in allowed
-    assert body["ensemble"]["models"]["default"]["top"]["slug"] in allowed
+        assert prediction["slug"] in allowed
+    assert body["top"]["slug"] in allowed
 
 
 # ---------------------------------------------------------------- low confidence
@@ -202,15 +200,13 @@ def test_missing_model_raises_model_unavailable_and_never_guesses(tmp_path):
         predictor.predict(make_png())
 
 
-def test_corrupted_checkpoint_is_reported_not_loaded(tmp_path, monkeypatch):
-    """A file that is not a checkpoint fails loudly at load time. Under
-    dual-model scanning the failure is reported in the ensemble debug block
-    and the other model still serves — it is never silently loaded or
-    replaced by a fabricated prediction."""
+def test_corrupted_primary_checkpoint_uses_technical_fallback(tmp_path, monkeypatch):
+    """A corrupt primary checkpoint triggers the 12-class technical fallback."""
     broken = tmp_path / "broken.pt"
     broken.write_bytes(b"not a torch checkpoint")
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "b.db"))
-    monkeypatch.setenv("NUTRICARE_MODEL", str(broken))
+    monkeypatch.setattr(vision, "PRIMARY_MODEL_PATH", broken)
+    monkeypatch.setenv("NUTRICARE_MODEL", str(vision.DEFAULT_MODEL_PATH))
     vision.reset_predictor()
     from nutricare import create_app
     application = create_app({"TESTING": True})
@@ -220,8 +216,9 @@ def test_corrupted_checkpoint_is_reported_not_loaded(tmp_path, monkeypatch):
             resp = client.post("/api/vision/predict", data=make_png())
         assert resp.status_code == 200
         body = resp.get_json()
-        assert body["ensemble"]["models"]["default"]["available"] is False
-        assert body["ensemble"]["models"]["experimental"]["available"] is True
+        assert body["model"] == vision.FALLBACK_MODEL_NAME
+        assert body["recognition"]["fallback_used"] is True
+        assert body["recognition"]["fallback_reason"] == "primary_unavailable"
         assert body["predictions"]
     finally:
         vision.reset_predictor()

@@ -67,14 +67,15 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 | `nutricare/assistant.py` | Health Assistant rule engine + emergency red-flag screen |
 | `nutricare/db.py` | SQLite schema, seeding, purge |
 | `static/`, `templates/` | frontend (CSS design system, JS views, SVG charts) |
-| `data/foods.json` | food dataset (196 foods, per-100 g values) |
-| `data/food_classes.json` | AI Food Scanner class taxonomy (59 classes → dataset rows) |
+| `data/foods.json` | food dataset (203 foods, per-100 g values) |
+| `data/food_classes.json` | AI Food Scanner taxonomy and label-to-catalogue mappings (not every model label has nutrition) |
 | `nutricare/vision.py` | image validation + trained-model loading/inference |
 | `nutricare/food_recognition.py` | class → nutrition mapping and portion scaling |
 | `nutricare/vision_api.py` | `/api/vision/*` blueprint (status, predict, estimate, log) |
 | `training/` | dataset acquisition + reproducible training/evaluation scripts |
-| `models/food_classifier_cc0.pt` | **the default trained checkpoint** (6 MB, CC0-trained) + metrics + report |
-| `models/food_classifier_cc0_7class.pt` | alternative 7-class checkpoint, kept for comparison |
+| `models/v2/food_classifier_indian_80_224.pt` | 80-class scanner **primary** checkpoint (rights unresolved; internal experimental use only) |
+| `models/food_classifier_cc0.pt` | 12-class CC0-declared **technical fallback** checkpoint + metrics + report |
+| `models/food_classifier_cc0_7class.pt` | 7-class comparison checkpoint (not selected by scans) |
 | `docs/DATASET.md`, `docs/MODEL.md` | dataset licences, model card, training guide |
 | `data/SOURCES.md` | **documented sources** (USDA FoodData Central, IFCT 2017) + caveats |
 | `instance/nutricare.db` | **the database** (created on first run; delete to reset) |
@@ -220,88 +221,71 @@ via `facingMode: environment`; capture is `playsinline` for iOS.
 * **No fake predictions.** If no trained checkpoint is installed, the scanner says
   recognition is switched off and offers manual logging. `POST /api/vision/predict`
   returns **503** — never an invented food name, never a "demo" guess.
-* **No invented nutrition.** 36 of the 59 supported foods have documented dataset
-  entries. The other 23 are marked unavailable and you enter your own values.
+* **No invented nutrition.** A prediction receives numeric nutrition only when its
+  label maps to a documented catalogue food; otherwise NutriCare explicitly marks
+  nutrition unavailable instead of displaying a made-up value.
 * **No fake portion accuracy.** A photo cannot reveal weight; the default serving
   comes from the dataset and you adjust it. The UI says so next to the field.
 * **No single-label overreach.** The model identifies one dominant dish, not a
   whole thali. The API returns `single_label: true` and the UI explains it.
+* **No model ensemble.** Normal scans use the 80-class primary model only. The
+  12-class model is a technical fallback for a primary checkpoint/load/inference
+  failure, never a low-confidence substitute. Every prediction is unconfirmed.
 * **No photo retention.** Uploads are validated from magic bytes, held in memory
   for one request, never written to disk, never sent to a third party.
 
-### Supported foods
+### Recognition coverage and catalogue limits
 
-59 classes across Indian staples (roti/chapati, paratha, naan, rice, pulao,
-khichdi), Indian breakfast (idli, dosa, masala dosa, uttapam, poha, upma, vada,
-chole bhature), Indian curries (dal, dal tadka, rajma, chole, paneer dishes,
-aloo gobi, sambar, rasam, kadhi), Indian rice dishes (biryani, curd/lemon/tomato/
-fried rice), Indian snacks (samosa, pakora, dhokla, kachori, vada pav, pani puri,
-bhel puri) and international favourites (pizza, burger, sandwich, pasta, noodles,
-fries, fried chicken, momos, spring rolls, pancakes, salad). The full, editable
-list is `data/food_classes.json`.
+The primary checkpoint has 80 Indian-food outputs. Its class order is embedded in
+the checkpoint and verified against its sidecar; the broader taxonomy is not the
+model's output order. Catalogue coverage is intentionally separate: many primary
+labels still have no documented NutriCare nutrition row, and six current direct
+mappings require Phase 2 review. The scanner preserves the existing honest
+unavailable-nutrition path rather than inventing entries or values.
 
 ### Endpoints
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/api/vision/status` | Is a checkpoint installed? Honest detail message. |
-| GET | `/api/vision/classes` | 59 classes + whether nutrition is available. |
-| POST | `/api/vision/predict` | Multipart/raw image → ranked predictions + estimates. 503 if no model. |
-| POST | `/api/vision/estimate` | `{slug, grams}` → nutrients, range, source. |
+| GET | `/api/vision/status` | Fixed primary/fallback policy and lazy checkpoint status. |
+| GET | `/api/vision/classes` | Existing taxonomy and nutrition availability metadata. |
+| POST | `/api/vision/predict` | Multipart/raw image → one primary-model ranking, or technical fallback / 503. |
+| POST | `/api/vision/estimate` | `{slug, grams}` → documented nutrients or explicit unavailability. |
 | POST | `/api/vision/log` | `{slug, grams, meal}` → writes to the existing diary. |
+
+`GET /api/vision/models` is retained as a deprecated policy response. `POST
+/api/vision/select-model` now returns `410 Gone`; users and query parameters
+cannot choose a normal scan model.
 
 ### Model and training
 
-**Two real, trained models ship with this repository, both trained only on a
-dataset whose publisher declares CC0 1.0.** The default is
-`models/food_classifier_cc0.pt` (6.0 MB), MobileNetV3-Small fine-tuned on 2,573
-de-duplicated photographs across 12 Indian food classes.
+The scanner's **primary** is
+`models/v2/food_classifier_indian_80_224.pt`, an 80-class MobileNetV3-Small
+checkpoint. Its held-out same-dataset result is 56.72% accuracy, macro-F1
+0.5559, n=647. The model's raw confidence is not calibrated as correctness and
+all predicted foods remain unconfirmed.
 
-| Measured on a held-out test split | 12-class (default) | 7-class (alternative) |
-|---|---|---|
-| Test accuracy | **89.5%** | 86.1% (leak-free 85.4%) |
-| Test macro F1 | **0.905** | 0.872 |
-| Test images (never trained on) | 380 | 302 |
-| Classes | 12 | 7 |
-| Inference | CPU only, 16 ms median | CPU only, ≈35–60 ms |
-| Training-data licence | CC0 1.0, publisher-declared | CC0 1.0, publisher-declared |
-| Publisher's authority over each image | **not independently verified** | **not independently verified** |
+`models/food_classifier_cc0.pt` remains intact as a 12-class **technical
+fallback** (held-out accuracy 89.47%, macro-F1 0.9047, n=380). It is invoked
+only when the primary checkpoint is missing/unreadable, cannot initialise, or
+raises during inference; it is not run on every photo and does not take over for
+low confidence. The older 7-class CC0 checkpoint remains a comparison artifact,
+not a scan-time option.
 
-The default model supports: paratha, khichdi, chicken biryani, chole, curd/dahi,
-rasgulla, kheer, pani puri, pakora, chomchom, morog polao and jalebi. Anything
-else in the taxonomy is **not** recognised by photo — it can still be logged
-manually, and the UI only offers trained classes in the scanner. Three classes
-(chomchom, jalebi, kheer) have only 3–4 test images, so no accuracy claim is made
-for them. Full per-class results, confusion matrix and weak spots:
-**`docs/MODEL.md`**.
+### 80-class provenance and licensing
 
-`NUTRICARE_MODEL=models/food_classifier_cc0_7class.pt` selects the 7-class model.
+The 80-class checkpoint was trained from the 3,997-image
+`SoumyaXD/Indian-Food-Classifier` snapshot. Those image blobs are byte-identical
+to a 3,997-image subset in `gnpaone/Indian-food-classification`, whose README
+links a Kaggle dataset. This establishes provenance evidence, not permission:
+SoumyaXD has no repository licence, the gnpaone GPL-3.0 repository licence does
+not establish rights in third-party photos, and upstream image rights remain
+unverified.
 
-#### On the licensing of those two models — precisely
-
-The dataset they were trained on (`Ishmam97/Bangladeshi-Food-Dataset`) commits a
-CC0 1.0 Universal dedication. **What we verified is that declaration.** We did
-*not* verify that the publisher held the rights to every underlying photograph:
-its README says images were collected from "homes, restaurants, markets, and
-online platforms", and CC0 can only waive rights the dedicator actually holds.
-
-So: **the publisher declares CC0 1.0; underlying image ownership and the
-publisher's authority to dedicate those rights have not been independently
-verified.** That is a documented rights grant and a materially better position
-than an unlicensed scrape — it is not a guarantee that redistribution is lawful,
-and it does not mean legal risk is zero. Anyone redistributing these models
-commercially should treat the chain of title as unresolved and obtain their own
-assurance. Full discussion: `docs/MODEL.md` §10.6 and
-`docs/LICENSING_AUDIT.md` §5.2.
-
-**Not included: the earlier 20-class model.** It scored 81.4% but its training
-images (6,269 photographs from `dhruvk2002/food-classifier`) carry **no licence
-at all**, so it cannot be redistributed. It has been removed from this
-repository and from the branch history rather than shipped with a caveat. See
-`docs/LICENSING_AUDIT.md`.
-
-Which dishes can and cannot be recognised, and what would unblock the rest:
-**`docs/COVERAGE.md`**.
+**The 80-class model is not legally cleared. It is internal experimental use
+only; do not redistribute it or the source images.** The CC0-declared fallback
+also has an unresolved image-level chain-of-title caveat. Full policy, hashes,
+metrics, exact fallback conditions, and limitations are in **`docs/MODEL.md`**.
 
 Inference needs the optional ML dependencies:
 
@@ -312,20 +296,6 @@ python app.py
 
 Without them the app still boots and the scanner honestly reports that photo
 recognition is unavailable.
-
-The complete, reproducible pipeline is included and self-tested end to end:
-
-```bash
-python training/fetch_cc0_dataset.py                  # CC0 images (the shipped models)
-python training/train_food_classifier.py --self-test  # prove the pipeline (≈15 s)
-python training/train_food_classifier.py --data data/raw/cc0_food --epochs 22 \
-    --output models/food_classifier_cc0.pt
-pip install -r requirements-ml.txt                    # enable inference
-```
-
-Datasets, licences and the acquisition policy: **`docs/DATASET.md`**.
-Architecture, training config, evaluation method, installation and limitations:
-**`docs/MODEL.md`**.
 
 ### Privacy and safety notes
 

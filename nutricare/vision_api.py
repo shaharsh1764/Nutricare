@@ -47,61 +47,56 @@ def _no_user():
 # ------------------------------------------------------------------ status
 @vision_api.get("/status")
 def status():
-    """Is a trained model installed? Used by the UI to be honest up front."""
-    model_name = request.args.get("model", "default")
-    if model_name not in ("default", "experimental"):
-        return _err("model must be 'default' or 'experimental'", 400)
+    """Report the fixed 80-class-primary recognition policy without loading it."""
+    if request.args.get("model") is not None:
+        return _err(
+            "The model query parameter is no longer supported. Scans use the "
+            "fixed 80-class-primary policy with a 12-class technical fallback.",
+            400,
+            deprecated=True,
+        )
+    report = vision.recognition_status()
     return jsonify({
-        "model": vision.model_status(model_name),
+        # ``model`` remains as a compatibility summary for clients that only
+        # display one status card; it is always the 80-class primary status.
+        "model": report["primary"],
+        "primary": report["primary"],
+        "fallback": report["fallback"],
+        "policy": report["policy"],
         "models": vision.get_available_models(),
-        "selected": model_name,
         "estimate_note": vision.ESTIMATE_NOTE,
         "portion_note": vision.PORTION_NOTE,
         "single_label_note": vision.SINGLE_LABEL_NOTE,
+        "confidence_note": vision.CONFIDENCE_NOTE,
     })
 
 
-# ------------------------------------------------------------------ models
+# ------------------------------------------------------------------ legacy model endpoints
 @vision_api.get("/models")
 def models_list():
-    """List all available recognition models with their status.
-
-    Used by the UI to show an honest model selector. Never claims experimental
-    accuracy as production-ready.
-    """
-    selected = session.get("vision_model", "default")
-    if selected not in ("default", "experimental"):
-        selected = "default"
+    """Deprecated compatibility endpoint; it no longer exposes a selector."""
     return jsonify({
+        "deprecated": True,
+        "message": (
+            "Model selection is no longer supported. All scans use the fixed "
+            "80-class primary model; the 12-class model is technical fallback only."
+        ),
         "models": vision.get_available_models(),
-        "selected": selected,
+        "policy": vision.recognition_status()["policy"],
     })
 
 
-# ------------------------------------------------------------------ select-model
 @vision_api.post("/select-model")
 def select_model():
-    """Record the user's model choice in the session.
-
-    The choice persists for the session and is used by /api/vision/predict.
-    The default model is never silently replaced.
-    """
-    data = request.get_json(silent=True) or {}
-    model_name = str(data.get("model", "")).strip()
-    if model_name not in ("default", "experimental"):
-        return _err("model must be 'default' or 'experimental'", 400)
-
-    # Validate that the selected model is actually available before recording.
-    available = {m["name"]: m for m in vision.get_available_models()}
-    if model_name not in available or not available[model_name]["present"]:
-        return _err(f"Model {model_name!r} is not available on this server.", 400)
-
-    session["vision_model"] = model_name
-    return jsonify({
-        "selected": model_name,
-        "message": f"{model_name} model selected for this session.",
-        "experimental": model_name == "experimental",
-    })
+    """Refuse legacy per-session selection so it cannot contradict scan policy."""
+    return _err(
+        "Model selection is no longer supported. NutriCare always tries the "
+        "80-class primary model first and uses the 12-class model only after "
+        "a technical primary failure.",
+        410,
+        deprecated=True,
+        policy=vision.recognition_status()["policy"],
+    )
 
 
 # ------------------------------------------------------------------ predict
@@ -116,17 +111,14 @@ def _read_upload():
 
 @vision_api.post("/predict")
 def predict():
-    """Classify one photograph with BOTH models and attach nutrition.
+    """Classify one photograph with the fixed primary/fallback policy.
 
-    Every scan runs the 12-class production model and the 80-class
-    experimental model on the same image; ``vision.predict_both_models``
-    combines them conservatively (raw confidences are never compared
-    across models — see its documented rules). The user does not select a
-    model: the legacy ``model`` query parameter and the session selection
-    are accepted for backward compatibility but no longer change which
-    models run. If one model is unavailable the other still answers; only
-    when both fail does this return 503 with ``model_unavailable: true`` —
-    never a fake prediction.
+    Normal scans invoke only the 80-class Indian-food model. The 12-class
+    CC0-declared checkpoint is invoked only after a technical primary failure
+    (missing/unreadable checkpoint, initialisation failure, or inference
+    exception). Low confidence is returned as an unconfirmed prediction and
+    never triggers fallback. There is no ensemble, score comparison, or
+    session/query-parameter model selection.
     """
     uid_conn = db.get_db()
     if _current_uid(uid_conn) is None:
@@ -152,9 +144,10 @@ def predict():
         except (TypeError, ValueError):
             return _err("grams must be a number")
 
-    # Dual-model scan: both checkpoints analyse the same validated image.
+    # Fixed policy: 80-class primary only in normal operation; the helper
+    # invokes the 12-class checkpoint solely after a technical primary failure.
     try:
-        result = vision.predict_both_models(raw, top_k=top_k)
+        result = vision.recognize(raw, top_k=top_k)
     except vision.ImageError as exc:
         return _err(str(exc))
     except vision.ModelUnavailable as exc:
