@@ -198,6 +198,56 @@ def client(tmp_path, monkeypatch):
         yield test_client
 
 
+# -------------------------------------------------- scanner class metadata
+def test_classes_endpoint_reads_primary_sidecar_without_accessing_predictors(
+        client, monkeypatch):
+    """Class coverage must not start either model during scanner setup."""
+    calls = []
+
+    def unexpected_predictor_access(*args, **kwargs):
+        calls.append((args, kwargs))
+        pytest.fail("class metadata must not access an inference predictor")
+
+    monkeypatch.setattr(vision, "get_predictor", unexpected_predictor_access)
+    monkeypatch.setattr(vision, "get_primary_predictor", unexpected_predictor_access)
+    monkeypatch.setattr(vision, "get_fallback_predictor", unexpected_predictor_access)
+
+    response = client.get("/api/vision/classes")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert calls == []
+    assert body["model_installed"] is True
+    assert body["trained_count"] == 80
+    trained = {entry["slug"] for entry in body["classes"] if entry["trained"]}
+    assert {"biryani", "chapati", "chana_masala"} <= trained
+
+
+def test_normal_scanner_metadata_setup_leaves_both_checkpoints_unloaded(
+        client, monkeypatch):
+    """The status + classes requests made by renderScanner stay side-effect-free."""
+    vision.reset_predictor()
+    loads = []
+
+    def unexpected_load(self):
+        loads.append(self.model_path)
+        pytest.fail("scanner initialization must not load a checkpoint")
+
+    monkeypatch.setattr(vision.Predictor, "_load", unexpected_load)
+
+    status = client.get("/api/vision/status")
+    coverage = client.get("/api/vision/classes")
+
+    assert status.status_code == 200
+    assert coverage.status_code == 200
+    assert loads == []
+    primary = vision._PREDICTORS[vision.PRIMARY_MODEL_NAME]  # noqa: SLF001
+    fallback = vision._PREDICTORS[vision.FALLBACK_MODEL_NAME]  # noqa: SLF001
+    assert primary._model is None and primary._attempted is False  # noqa: SLF001
+    assert fallback._model is None and fallback._attempted is False  # noqa: SLF001
+    assert coverage.get_json()["trained_count"] == 80
+
+
 def test_api_normal_scan_runs_primary_only_and_attaches_nutrition(client, policy):
     primary, fallback = policy
     primary._result = make_result(("chana_masala", 0.81), ("jalebi", 0.08))

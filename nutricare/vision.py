@@ -548,6 +548,37 @@ def configured_fallback_model_path() -> Path:
     return Path(override) if override else DEFAULT_MODEL_PATH
 
 
+def primary_class_slugs() -> set[str] | None:
+    """Read installed-primary coverage from its sidecar without loading a model.
+
+    ``/api/vision/classes`` is requested while the scanner is rendered, before
+    a person has submitted a photograph. It must therefore not construct or
+    load either inference checkpoint merely to decorate taxonomy entries. The
+    primary checkpoint's adjacent metrics sidecar records its audited
+    ``class_names`` list, which is sufficient for this display-only coverage
+    metadata and does not import torch or read model weights.
+
+    ``None`` deliberately means coverage cannot be established honestly (the
+    primary checkpoint or valid sidecar is absent); callers must not substitute
+    the 12-class technical fallback's classes.
+    """
+    primary_path = configured_primary_model_path()
+    if not primary_path.is_file():
+        return None
+    sidecar = primary_path.with_suffix(".metrics.json")
+    try:
+        metadata = json.loads(sidecar.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    class_names = metadata.get("class_names")
+    if not isinstance(class_names, list) or not class_names:
+        return None
+    if not all(isinstance(slug, str) and slug for slug in class_names):
+        return None
+    slugs = set(class_names)
+    return slugs if len(slugs) == len(class_names) else None
+
+
 # --------------------------------------------------------------- singletons
 _PREDICTORS: dict[str, Predictor] = {}
 _PREDICTOR_LOCK = threading.Lock()

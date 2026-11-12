@@ -531,18 +531,22 @@ def test_status_reports_metrics_from_the_training_sidecar(real_model_app):
     assert model["test_support"] >= 100
 
 
-def test_trained_flag_reflects_the_installed_checkpoint(real_model_app):
+def test_trained_flag_reflects_primary_sidecar_metadata_without_model_load(
+        real_model_app, monkeypatch):
+    def unexpected_load(self):
+        pytest.fail("/api/vision/classes must not load a checkpoint")
+
+    monkeypatch.setattr(vision.Predictor, "_load", unexpected_load)
     with real_model_app.test_client() as client:
         payload = client.get("/api/vision/classes").get_json()
     assert payload["model_installed"] is True
-    assert payload["trained_count"] > 0
+    assert payload["trained_count"] == 80
     trained = {c["slug"] for c in payload["classes"] if c["trained"]}
-    checkpoint = __import__("torch").load(FALLBACK_MODEL, map_location="cpu",
-                                          weights_only=False)
-    assert trained == set(checkpoint["classes"])
+    metrics = json.loads(REAL_MODEL.with_suffix(".metrics.json").read_text(encoding="utf-8"))
+    assert trained == set(metrics["class_names"])
     assert len(trained) == payload["trained_count"]
-    # taxonomy entries without a trained class must not claim recognition
-    assert "biryani" not in trained or "chicken_biryani" in trained
+    # Taxonomy entries without a primary-trained class must not claim recognition.
+    assert "roti" not in trained
 
 
 def test_no_model_reports_zero_trained_classes(client, user):
