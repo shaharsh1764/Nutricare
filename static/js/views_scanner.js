@@ -1,13 +1,12 @@
-/* AI Food Scanner view — camera capture, upload, prediction, portion editing,
-   and logging into the EXISTING meal log.
+/* Food Scanner view — camera capture, upload, suggestion, portion editing,
+   and logging into the existing meal log.
 
    Honesty rules enforced in this file:
-   - There is no client-side "pretend" prediction. If the server reports
-     model_unavailable, the UI says photo recognition is switched off and
-     offers manual logging instead.
-   - Confidence is always shown but is never acceptance: every prediction asks
-     the user to confirm or correct it before nutrition/logging controls appear.
-   - Nutrition for class predictions comes from the server; catalogue corrections
+   - There is no client-side "pretend" suggestion. If the server cannot return
+     a suggestion, the UI offers manual food selection instead.
+   - Every food suggestion remains unconfirmed until the person confirms or
+     corrects it before nutrition/logging controls appear.
+   - Nutrition for suggested foods comes from the server; catalogue corrections
      use only their documented catalogue values, scaled by the chosen portion.
      Nothing is invented here.
    - The photo itself is sent once for analysis and never stored by the app.
@@ -68,6 +67,10 @@ function scanStopCamera() {
   if (video) { try { video.pause(); } catch { /* noop */ } }
 }
 
+function scanMarkDropActive(box) {
+  if (box && box.classList) box.classList.remove("scan-drop-empty");
+}
+
 function scanAccept(file) {
   const ok = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
   if (!ok.includes((file.type || "").toLowerCase())) {
@@ -96,6 +99,7 @@ function scanSetFile(file, sourceLabel) {
 function scanShowPreview(label) {
   const box = $("#scan-drop");
   if (!box) return;
+  scanMarkDropActive(box);
   box.innerHTML = `
     <img class="scan-preview" src="${SCAN.previewUrl}" alt="Selected meal photo">
     <div class="scan-preview-meta">
@@ -103,8 +107,8 @@ function scanShowPreview(label) {
       <span class="tiny muted">${esc(SCAN.file.name || "camera capture")} · ${fmt(SCAN.file.size / 1024)} KB</span>
     </div>
     <div class="row wrap mt12" style="justify-content:center">
-      <button class="btn btn-primary" id="scan-analyze">${ICONS.search} Analyze meal</button>
-      <button class="btn btn-ghost btn-sm" id="scan-change">Change image</button>
+      <button class="btn btn-primary" id="scan-analyze">${ICONS.search} Get food suggestion</button>
+      <button class="btn btn-ghost btn-sm" id="scan-change">Choose another photo</button>
       <button class="btn btn-ghost btn-sm" id="scan-retake">Retake photo</button>
       <button class="btn btn-ghost btn-sm" id="scan-remove">Remove</button>
     </div>`;
@@ -118,8 +122,8 @@ function scanShowPreview(label) {
 async function scanOpenCamera() {
   openModal(`
     <h3>Take a photo of your meal</h3>
-    <p class="tiny muted mt8">The photo is analysed on this server and is not stored.
-    If your browser blocks the camera, use “Upload image” instead.</p>
+    <p class="tiny muted mt8">Your photo is used to suggest a food and is not stored.
+    If your browser blocks the camera, use “Upload a photo” instead.</p>
     <div class="scan-cam-wrap mt12">
       <video id="scan-video" class="scan-video" autoplay playsinline muted></video>
       <p class="tiny muted" id="scan-cam-msg">Requesting camera permission…</p>
@@ -136,7 +140,7 @@ async function scanOpenCamera() {
   if (closeBtn) closeBtn.addEventListener("click", scanStopCamera);
 
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    msg.innerHTML = "<b>Camera not supported in this browser.</b> Use “Upload image” instead.";
+    msg.innerHTML = "<b>Camera is not supported in this browser.</b> Use “Upload a photo” instead.";
     return;
   }
   try {
@@ -153,7 +157,7 @@ async function scanOpenCamera() {
       ? "Camera permission was denied. You can allow it in your browser settings, or upload a photo instead."
       : err && err.name === "NotFoundError"
         ? "No camera was found on this device. Upload a photo instead."
-        : `Camera could not be started (${esc(err && err.name || "unknown error")}). Upload a photo instead.`;
+        : "Camera could not be started. Upload a photo instead.";
     msg.innerHTML = `<b>${reason}</b>`;
   }
 
@@ -177,17 +181,18 @@ async function scanOpenCamera() {
 async function scanAnalyze() {
   if (!SCAN.file) return;
   const box = $("#scan-drop");
+  scanMarkDropActive(box);
   box.innerHTML = `
-    <div class="scan-busy">
+    <div class="scan-busy" role="status" aria-live="polite">
       <div class="scan-spinner" aria-hidden="true"></div>
-      <b>Analyzing your meal…</b>
-      <p class="tiny muted mt8">Running the food-recognition model on your photo.</p>
+      <b>Looking at your meal…</b>
+      <p class="tiny muted mt8">We’ll suggest a food for you to check.</p>
     </div>`;
   const form = new FormData();
   form.append("image", SCAN.file);
   let res;
   try {
-    /* The server uses its fixed 80-class-primary recognition policy. */
+    /* The server retains its fixed primary/fallback recognition policy. */
     res = await fetch("/api/vision/predict?top_k=3", { method: "POST", body: form });
   } catch {
     box.innerHTML = `<div class="empty-state"><b>Could not reach the server.</b>
@@ -199,15 +204,13 @@ async function scanAnalyze() {
 
   if (res.status === 503) {
     box.innerHTML = `
-      <div class="empty-state">
-        <span style="font-size:28px">🔌</span>
-        <b>Photo recognition is not available right now.</b>
-        <p class="tiny muted mt8">${esc((data && data.error) || "No trained model is installed.")}</p>
-        <p class="tiny muted mt8">NutriCare will not guess a food name. You can still log this
-        meal by choosing the food yourself.</p>
+      <div class="scan-empty">
+        <span class="scan-empty-icon" aria-hidden="true">🍽</span>
+        <b>We can’t suggest a food from this photo right now.</b>
+        <p class="tiny muted mt8">You can still choose a food yourself and add this meal to your tracker.</p>
         <div class="row mt12" style="justify-content:center">
           <button class="btn btn-deep btn-sm" id="scan-manual">Choose food manually</button>
-          <button class="btn btn-ghost btn-sm" id="scan-retry">Try another photo</button>
+          <button class="btn btn-ghost btn-sm" id="scan-retry">Choose another photo</button>
         </div>
       </div>`;
     const m = $("#scan-manual");
@@ -218,9 +221,10 @@ async function scanAnalyze() {
     return;
   }
   if (!res.ok) {
-    box.innerHTML = `<div class="empty-state"><b>That photo could not be analysed.</b>
-      <p class="tiny muted mt8">${esc((data && data.error) || "Unknown error")}</p>
-      <button class="btn btn-ghost btn-sm mt12" id="scan-retry">Try another photo</button></div>`;
+    box.innerHTML = `<div class="scan-empty"><span class="scan-empty-icon" aria-hidden="true">📷</span>
+      <b>We couldn’t use that photo.</b>
+      <p class="tiny muted mt8">Try another clear photo of one dish, or choose the food yourself.</p>
+      <button class="btn btn-ghost btn-sm mt12" id="scan-retry">Choose another photo</button></div>`;
     const r = $("#scan-retry");
     if (r) r.onclick = () => { scanReset(); renderScanner(); };
     return;
@@ -232,13 +236,6 @@ async function scanAnalyze() {
   scanShowResult();
 }
 
-function scanConfidencePill(confidence, low) {
-  const pct = Math.round(confidence * 100);
-  if (low) return `<span class="pill pill-rose">${pct}% · not sure</span>`;
-  if (pct >= 70) return `<span class="pill pill-mint">${pct}% confident</span>`;
-  return `<span class="pill pill-amber">${pct}% confident</span>`;
-}
-
 /* Nutrition line for an alternative prediction.
    A missing dataset entry must NEVER render as "0 kcal" — that reads as a real
    measurement of zero energy. Genuine zeros (e.g. fat in jalebi's flour) are
@@ -246,7 +243,7 @@ function scanConfidencePill(confidence, low) {
 function scanAltNutrition(c) {
   const est = c && c.nutrition;
   if (!est || est.nutrition_available === false || !est.nutrients) {
-    return `${esc(c.label)} — no documented nutrition; you enter values yourself`;
+    return `${esc(c.label)} — nutrition information isn't available; you may need to enter it manually`;
   }
   // `grams` is top-level on the estimate payload; fall back through the
   // candidate itself for the alternatives list.
@@ -304,23 +301,22 @@ function scanShowConfirmation() {
       <div style="display:flex;gap:12px;align-items:flex-start">
         <img class="scan-thumb" src="${SCAN.previewUrl}" alt="Your meal">
         <div>
-          <div class="tiny muted">${low ? "Suggestion — low confidence" : "Food suggestion"}</div>
+          <div class="tiny muted">Suggested food</div>
           <h3 style="font-size:20px;margin-top:2px">${esc(top.label)}</h3>
-          <div class="row mt8" style="gap:6px">
-            ${scanConfidencePill(top.confidence, low)}
+          ${top.group ? `<div class="row mt8" style="gap:6px">
             <span class="pill pill-slate">${esc(SCAN_GROUPS[top.group] || top.group)}</span>
-          </div>
+          </div>` : ""}
         </div>
       </div>
       <button class="btn btn-ghost btn-sm" id="scan-change">Change image</button>
     </div>
     <div class="scan-warn mt16">
       <b>Is this the correct food?</b>
-      <p class="tiny mt8">A confidence score is not confirmation. Check the suggestion before using its nutrition information.</p>
-      ${low ? `<p class="tiny mt8">The model is below its ${Math.round((result.threshold || 0) * 100)}% confidence threshold. Please verify or correct this suggestion.</p>` : ""}
+      <p class="tiny mt8">Please check the suggestion before using its nutrition information.</p>
+      ${low ? `<p class="tiny mt8">This suggestion may not be right, so please double-check it or choose another food.</p>` : ""}
       <div class="row wrap mt12">
         <button class="btn btn-primary" id="scan-confirm-yes">Yes, correct</button>
-        <button class="btn btn-ghost" id="scan-confirm-no">No, incorrect</button>
+        <button class="btn btn-ghost" id="scan-confirm-no">No, choose another food</button>
       </div>
     </div>`;
   $("#scan-change").onclick = () => $("#scan-file").click();
@@ -335,19 +331,18 @@ function scanShowAlternatives() {
   box.innerHTML = `
     <div class="row spread wrap" style="align-items:flex-start">
       <div><div class="tiny muted">Choose the correct food</div>
-        <h3 style="font-size:20px;margin-top:2px">Other possible predictions</h3></div>
+        <h3 style="font-size:20px;margin-top:2px">Other suggestions</h3></div>
       <button class="btn btn-ghost btn-sm" id="scan-back-confirm">Back to suggestion</button>
     </div>
-    <p class="tiny muted mt8">Select an alternative below, or search the documented food catalogue.</p>
+    <p class="tiny muted mt8">Choose another suggestion below, or search the food catalogue.</p>
     ${alternatives.length ? `<div class="scan-alts mt12">${alternatives.map((c) => `
       <button class="result-row" data-scan-alternative="${esc(c.slug)}" style="width:100%;text-align:left">
         <span style="flex:1"><b class="small">${esc(c.label)}</b>
           <div class="tiny muted">${scanAltNutrition(c)}</div></span>
-        <span class="pill pill-slate">${Math.round(c.confidence * 100)}%</span>
-      </button>`).join("")}</div>` : `<div class="empty mt12">No alternative predictions were returned.</div>`}
+      </button>`).join("")}</div>` : `<div class="empty mt12">No other suggestions were returned.</div>`}
     <div class="row wrap mt16">
       <button class="btn btn-deep" id="scan-search-catalogue">${ICONS.search} Search food catalogue</button>
-      <button class="btn btn-ghost" id="scan-change">Change image</button>
+      <button class="btn btn-ghost" id="scan-change">Choose another photo</button>
     </div>`;
   $("#scan-back-confirm").onclick = scanShowConfirmation;
   $("#scan-change").onclick = () => $("#scan-file").click();
@@ -372,7 +367,7 @@ function scanShowSelectedFood() {
   const source = SCAN.selection && SCAN.selection.source === "prediction"
     ? "You confirmed this suggestion"
     : (SCAN.selection && SCAN.selection.source === "alternative"
-      ? "You selected this alternative"
+      ? "You chose another suggestion"
       : "You selected this food from the catalogue");
   box.innerHTML = `
     <div class="row spread wrap" style="align-items:flex-start">
@@ -381,10 +376,9 @@ function scanShowSelectedFood() {
         <div>
           <div class="tiny muted">${esc(source)}</div>
           <h3 style="font-size:20px;margin-top:2px">${esc(label)}</h3>
-          <div class="row mt8" style="gap:6px">
-            ${!isCatalogueFood && candidate ? scanConfidencePill(candidate.confidence, false) : ""}
-            ${group ? `<span class="pill pill-slate">${esc(SCAN_GROUPS[group] || group)}</span>` : ""}
-          </div>
+          ${group ? `<div class="row mt8" style="gap:6px">
+            <span class="pill pill-slate">${esc(SCAN_GROUPS[group] || group)}</span>
+          </div>` : ""}
         </div>
       </div>
       <button class="btn btn-ghost btn-sm" id="scan-change">Change image</button>
@@ -464,9 +458,9 @@ async function scanRenderNutrition() {
   try {
     est = await api("/vision/estimate", { method: "POST",
       body: { slug: SCAN.slug, grams: SCAN.grams } });
-  } catch (e) {
-    host.innerHTML = `<div class="empty-state"><b>Nutrition unavailable.</b>
-      <p class="tiny muted mt8">${esc(e.message)}</p></div>`;
+  } catch {
+    host.innerHTML = `<div class="empty-state"><b>Nutrition information is unavailable right now.</b>
+      <p class="tiny muted mt8">Try again or choose another food from the catalogue.</p></div>`;
     return;
   }
   SCAN.grams = est.grams;
@@ -477,10 +471,9 @@ async function scanRenderNutrition() {
   if (!est.nutrition_available || !n) {
     host.innerHTML = stepper + `
       <div class="scan-warn mt12">
-        <b>No documented nutrition for ${esc(est.label)}.</b>
-        <p class="tiny mt8">${esc(est.unavailable_reason || "This food has no dataset entry.")}</p>
-        <p class="tiny mt8">You can still log it by entering the values from your own
-        packaging or recipe when you add it to the log.</p>
+        <b>Nutrition information isn't available for ${esc(est.label)}.</b>
+        <p class="tiny mt8">Nutrition information is available for selected foods. If information isn't available for your selection, you may need to enter it manually.</p>
+        <p class="tiny mt8">Use the values from your packaging or recipe when you add this food to your tracker.</p>
       </div>`;
     bindStepper();
     return;
@@ -640,9 +633,8 @@ async function scanSave() {
 function scanAskManualValues(cls) {
   openModal(`
     <h3>Enter nutrition for ${esc(cls.label)}</h3>
-    <p class="tiny muted mt8">NutriCare has no documented dataset entry for this food, so it
-    cannot estimate it. Enter the values for the portion (${fmt(SCAN.grams)} g) from your
-    packaging, restaurant information or recipe.</p>
+    <p class="tiny muted mt8">Nutrition information isn't available for this food. Enter the values
+    for this portion (${fmt(SCAN.grams)} g) from your packaging, restaurant information or recipe.</p>
     <div class="grid cols-2 mt12">
       <div class="field"><span class="label">Calories (kcal) *</span>
         <input class="input" id="scan-kcal" type="number" min="0" step="1" placeholder="e.g. 250"></div>
@@ -672,98 +664,68 @@ function scanAskManualValues(cls) {
 
 /* ---------------------------------------------------------------- view */
 async function renderScanner() {
-  let status = null;
-  try { status = await api("/vision/status"); } catch { /* offline */ }
-  /* Recognition uses an 80-class primary and only uses its 12-class model
-     after a technical primary failure. */
-  const modelReady = !!((status && status.models
-    && status.models.some((m) => m.present))
-    || (status && status.model && status.model.model_present));
+  /* Class metadata is used only to guide the manual-nutrition path after a
+     person has chosen a food; it is never presented as model coverage. */
   if (!SCAN.allClasses) {
     try {
       const coverage = await api("/vision/classes");
-      SCAN.allClasses = coverage.classes;
+      SCAN.allClasses = coverage.classes || [];
       SCAN.coverage = coverage;
     } catch { SCAN.allClasses = []; SCAN.coverage = {}; }
   }
   if (!SCAN.meal) SCAN.meal = "breakfast";
 
-  const modelInstalled = !!SCAN.coverage.model_installed;
-  const trainedCount = SCAN.coverage.trained_count || 0;
-  const classesWithNutrition = (SCAN.allClasses || []).filter((c) => c.nutrition_available).length;
-  const trainedWithNutrition = (SCAN.allClasses || [])
-    .filter((c) => c.trained && c.nutrition_available).length;
-
   $("#view").innerHTML = `
   <div class="page-head">
-    <div><h2>AI Food Scanner</h2>
-      <p class="sub">Photograph your meal and let the recognition model identify it.
-      Nutrition is then looked up in the same documented food dataset the manual
-      logger uses — nothing is invented.</p></div>
+    <div><h2>Food Scanner</h2>
+      <p class="sub">Take a photo of your meal and discover its nutritional information.</p></div>
     <div class="row">
       <a class="btn btn-ghost btn-sm" href="#/tracker">${ICONS.tracker} Open tracker</a>
     </div>
   </div>
 
-  <div class="grid cols-21" style="align-items:start">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Scan your meal</span>
-        <span class="pill ${modelReady ? "pill-mint" : "pill-amber"}">
-          ${modelReady ? "model installed" : "recognition off"}</span>
+  <div class="grid cols-21 scan-layout" style="align-items:start">
+    <section class="card scan-capture-card" aria-labelledby="scan-capture-title">
+      <div class="scan-capture-intro">
+        <span class="scan-capture-icon" aria-hidden="true">📷</span>
+        <div><h3 id="scan-capture-title">Add a meal photo</h3>
+          <p class="small muted mt4">Start with one clear photo of one dish.</p></div>
       </div>
-
-      <p class="tiny faint mt12">NutriCare uses its 80-class Indian food recognition model by default.
-      The older 12-class model is used only if the primary model encounters a technical
-      error. Predictions are suggestions and should be confirmed before logging.</p>
-
-      <div class="row wrap" style="gap:10px">
-        <button class="btn btn-deep" id="scan-camera">📷 Take Photo</button>
-        <button class="btn btn-ghost" id="scan-upload">⬆ Upload Image</button>
+      <div class="scan-actions mt16">
+        <button class="btn btn-deep" id="scan-camera">📷 Take a photo</button>
+        <button class="btn btn-primary" id="scan-upload">⬆ Upload a photo</button>
         <input type="file" id="scan-file" accept="image/jpeg,image/png,image/webp"
                capture="environment" hidden>
       </div>
-      <p class="tiny muted mt8">JPG, PNG or WebP · up to 8 MB. Your photo is analysed on
-      this server and is never stored or sent to a third party.</p>
+      <p class="tiny muted mt12">JPG, PNG or WebP · up to 8 MB</p>
+      <p class="tiny faint mt4">Your photo is used to suggest a food and is not stored.</p>
 
-      <div id="scan-drop" class="scan-drop mt16">
-        <div class="empty-state">
-          <span style="font-size:30px">🍱</span>
-          <b>No photo yet</b>
-          <p class="tiny muted mt8">Take a photo of your plate or upload one you already have.</p>
+      <div id="scan-drop" class="scan-drop scan-drop-empty mt16">
+        <div class="scan-empty">
+          <span class="scan-empty-icon" aria-hidden="true">🍱</span>
+          <h3>Ready when you are</h3>
+          <p class="tiny muted mt8">Take a photo of one dish or choose a photo from your device.</p>
         </div>
       </div>
+    </section>
 
-      ${modelReady ? "" : `
-      <div class="scan-warn mt16">
-        <b>Photo recognition is switched off on this installation.</b>
-        <p class="tiny mt8">${esc((status && status.model && status.model.detail) || "")}</p>
-        <p class="tiny mt8">This is deliberate: NutriCare will not guess a food name.
-        Everything else — searching, portion entry and logging — works now.
-        See <code>docs/MODEL.md</code> to install a trained model.</p>
-      </div>`}
-    </div>
-
-    <div class="grid" style="gap:16px">
-      <div class="card">
-        <div class="card-head"><span class="card-title">How it works</span></div>
-        <div class="how-step"><b>1.</b> Take or upload a photo of one dish.</div>
-        <div class="how-step"><b>2.</b> The model ranks the most likely foods.</div>
-        <div class="how-step"><b>3.</b> Adjust the portion in grams.</div>
-        <div class="how-step"><b>4.</b> Pick Breakfast, Lunch, Snacks or Dinner.</div>
-        <div class="how-step"><b>5.</b> It appears in your tracker and dashboard.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="card-title">Coverage</span>
-          <span class="pill pill-slate">${modelInstalled
-            ? trainedCount + " recognisable"
-            : (SCAN.allClasses || []).length + " foods"}</span></div>
-        <p class="small muted">${modelInstalled
-          ? `The installed model recognises <b>${trainedCount}</b> foods; nutrition is documented for ${trainedWithNutrition} of them, and for the rest you enter values yourself.`
-          : `${classesWithNutrition} of ${(SCAN.allClasses || []).length} foods in the taxonomy have documented nutrition. No model is installed, so nothing is auto-recognised.`}</p>
-        <p class="tiny faint mt8">${esc((status && status.single_label_note) || "")}</p>
-      </div>
-    </div>
+    <aside class="grid" style="gap:16px">
+      <section class="card" aria-labelledby="scan-how-title">
+        <div class="card-head"><span class="card-title" id="scan-how-title">How it works</span></div>
+        <div class="how-step"><b>1.</b> Take a photo of one dish.</div>
+        <div class="how-step"><b>2.</b> We'll suggest what your food might be.</div>
+        <div class="how-step"><b>3.</b> Confirm or correct the suggested food.</div>
+        <div class="how-step"><b>4.</b> Enter your portion size.</div>
+        <div class="how-step"><b>5.</b> Choose your meal category.</div>
+        <div class="how-step"><b>6.</b> Review your nutrition information and add it to your tracker.</div>
+      </section>
+      <section class="card scan-help-card" aria-labelledby="scan-tips-title">
+        <div class="card-head"><span class="card-title" id="scan-tips-title">Helpful tips</span></div>
+        <p class="small muted">For the best results, photograph one dish at a time. If your plate contains several different dishes, add them separately.</p>
+        <div class="scan-help-divider"></div>
+        <p class="small muted">Nutrition information is available for selected foods. If information isn't available for your selection, you may need to enter it manually.</p>
+      </section>
+    </aside>
   </div>`;
 
   $("#scan-camera").onclick = scanOpenCamera;
