@@ -31,6 +31,10 @@ if (/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u.test(UI_SOURCE)) 
   throw new Error("The customer-facing application shell must use the shared SVG icon system, not emoji glyphs");
 }
 console.log("PASS  D1 customer-facing UI is emoji-free");
+if (INDEX_TEMPLATE.includes('id="top-date"')) {
+  throw new Error("The dashboard top bar must not render a separate date chip");
+}
+console.log("PASS  D2 dashboard top bar omits the date chip");
 
 /* ---------------- minimal DOM stub ---------------- */
 const registry = new Map();
@@ -156,6 +160,8 @@ const DRIVER = `
     && view().includes("Macronutrient allocation")
     && view().includes("TODAY'S TOTAL INTAKE")
     && view().includes("Calories &amp; macro distribution")
+    && view().includes("Export PDF")
+    && view().includes("/api/report.pdf")
     && view().includes("Meals recorded today")
     && view().includes("Micronutrient snapshot")
     && view().includes("NutriCare nutrition record"),

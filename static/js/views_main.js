@@ -53,6 +53,7 @@ async function renderDashboard() {
     <div class="audit-actions" aria-label="Quick actions">
       <button class="btn btn-soft" id="quick-water">${ICONS.drop} +250 ml water</button>
       <button class="btn btn-ghost" id="quick-log">${ICONS.plus} Log meals</button>
+      <a class="btn btn-ghost" href="/api/report.pdf" download>${ICONS.download} Export PDF</a>
       <a class="btn btn-ghost" href="/api/report.csv?days=7" download>${ICONS.download} Export CSV</a>
       <button class="btn btn-deep" id="quick-scan">${ICONS.scanner} Scan a meal</button>
     </div>
