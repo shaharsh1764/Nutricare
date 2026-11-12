@@ -557,8 +557,9 @@ async function renderScanner() {
           ${modelReady ? "model installed" : "recognition off"}</span>
       </div>
 
-      <p class="tiny faint mt12">Every photo is checked by both recognition models;
-      NutriCare shows the best-supported result — there is no model to choose.</p>
+      <p class="tiny faint mt12">NutriCare uses its 80-class Indian food recognition model by default.
+      The older 12-class model is used only if the primary model encounters a technical
+      error. Predictions are suggestions and should be confirmed before logging.</p>
 
       <div class="row wrap" style="gap:10px">
         <button class="btn btn-deep" id="scan-camera">📷 Take Photo</button>
