@@ -7,7 +7,7 @@
 "use strict";
 
 const S = { boot: null, trackerDate: null, reportDays: 7, lastMeal: "breakfast",
-  shellBuilt: false };
+  shellBuilt: false, onboardingActive: false };
 const LS_UID = "nutricare_uid";
 const LS_SIDE = "nutricare_side";
 
@@ -34,7 +34,7 @@ function currentRoute() {
 }
 
 async function refreshView() {
-  if (!S.boot || !S.boot.user) { await renderOnboarding(); return; }
+  if (S.onboardingActive || !S.boot || !S.boot.user) { await renderOnboarding(); return; }
   const key = currentRoute();
   $$(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.route === key));
   $("#crumb-page").textContent = ROUTES[key].title;
@@ -42,7 +42,7 @@ async function refreshView() {
   try {
     await ROUTES[key].render();
   } catch (e) {
-    $("#view").innerHTML = `<div class="card"><p style="color:#B91C1C">Failed to load view: ${esc(e.message)}</p>
+    $("#view").innerHTML = `<div class="card"><p style="color:var(--rose)">Failed to load view: ${esc(e.message)}</p>
       <p class="tiny muted mt8">Is the server still running? Try reloading.</p></div>`;
   }
 }
@@ -59,8 +59,8 @@ async function refreshSideGoal() {
   const pct = t ? Math.round(100 * summary.totals.kcal / t.kcal) : 0;
   $("#side-goal").innerHTML = `
     <div class="row spread"><span>Daily Goal</span><b>${t ? pct + "%" : "—"}</b></div>
-    <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:#0F766E"></i></div>
-    <p class="tiny mt8" style="color:#134E4A">${t
+    <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:var(--primary-deep)"></i></div>
+    <p class="tiny mt8" style="color:var(--primary-deep)">${t
       ? `${fmt(summary.totals.kcal)} of ${fmt(t.kcal)} kcal recorded`
       : summary.logged_count ? "Recorded intake — target not set" : "Empty log · guest mode ok"}</p>`;
   const name = S.boot.user ? S.boot.user.name : "Guest";
@@ -147,9 +147,11 @@ async function openUserModal() {
         ${u.id !== data.current ? `<button class="btn btn-soft btn-sm" data-switch="${u.id}">Switch</button>` : ""}
       </div>`).join("") || `<p class="small muted">No profiles yet.</p>`}
     </div>
-    <div class="field mt16"><span class="label">Add another local profile</span>
-      <div class="row"><input class="input" id="u-new-name" maxlength="60" placeholder="Name for the new profile">
-      <button class="btn btn-primary btn-sm" id="u-create">Create & switch</button></div></div>
+    <div class="selfcare-card mt16">
+      <b class="small">Add another local profile</b>
+      <p class="tiny muted mt8">Use the same guided setup as a first-time profile. It saves a separate profile and never changes this one.</p>
+      <button class="btn btn-primary btn-sm mt8" id="u-create">Start profile setup</button>
+    </div>
     <div class="row mt16" style="justify-content:space-between">
       <button class="btn btn-danger-soft btn-sm" id="u-delete">Delete current profile…</button>
       <button class="btn btn-ghost" data-close>Close</button>
@@ -160,13 +162,14 @@ async function openUserModal() {
     closeModal(); await afterUserChange();
   });
   $("#u-create").onclick = async () => {
-    const name = $("#u-new-name").value.trim();
-    if (!name) { toast("Enter a name for the new profile", true); return; }
-    try {
-      S.boot = await api("/users", { method: "POST", body: { name } });
-      lsSet(LS_UID, String(S.boot.user.id));
-      closeModal(); toast(`Empty account created for ${name}`); await afterUserChange();
-    } catch (e) { toast(e.message, true); }
+    /* New local accounts deliberately use the original first-launch wizard.
+       It performs the single user creation before writing the new session's
+       profile/settings, so no current profile can be overwritten. */
+    closeModal();
+    obResetState();
+    S.onboardingActive = true;
+    document.body.classList.add("no-shell");
+    await renderOnboarding();
   };
   $("#u-delete").onclick = async () => {
     const ok = await confirmModal("Delete this local profile?",
@@ -183,6 +186,7 @@ async function openUserModal() {
 }
 
 async function afterUserChange() {
+  S.onboardingActive = false;
   document.body.classList.remove("no-shell");
   ensureShell();
   refreshBanners();
@@ -199,6 +203,7 @@ async function enterAppFresh() {
 
 /* ---------------- boot: restore session, re-attach remembered profile ---------------- */
 async function boot() {
+  initializeTheme();
   S.boot = await api("/bootstrap");
   if (!S.boot.user) {
     // Refresh-safe recovery: re-attach the last local profile used in this

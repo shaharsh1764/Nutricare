@@ -49,7 +49,7 @@ async function renderSmartInsights(rootSel = "#insights-root") {
   const metrics = daily.metrics.map((m) => {
     const pctv = m.pct === null || m.pct === undefined ? null : Math.min(100, m.pct);
     const color = m.key === "protein_g" ? COLORS.protein : m.key === "carbs_g" ? COLORS.carbs
-      : m.key === "fat_g" ? COLORS.fat : m.key === "water_ml" ? "#0284C7" : "#0F766E";
+      : m.key === "fat_g" ? COLORS.fat : m.key === "water_ml" ? "var(--sky)" : "var(--primary-deep)";
     return `<div class="card insight-metric">
       <span class="tiny muted" style="font-weight:700">${esc(m.label)}</span>
       <div class="stat" style="font-size:22px">${fmt(m.value)}<small> / ${
@@ -101,11 +101,11 @@ async function renderSmartInsights(rootSel = "#insights-root") {
       <div class="row wrap mt12">${wk.top_foods.map((f) =>
         `<span class="pill pill-slate">${esc(f.name)} ×${f.times}</span>`).join("")}</div>
       ${(weekly.comparison && weekly.comparison.rows.length) ? `
-        <div class="form-section mt12"><b class="tiny" style="color:#0F766E">VS PREVIOUS WEEK</b>
+        <div class="form-section mt12"><b class="tiny" style="color:var(--primary-deep)">VS PREVIOUS WEEK</b>
         ${weekly.comparison.rows.map((r) => `<div class="row spread small mt8">
           <span class="muted">${esc(r.metric)}</span>
           <b>${fmt(r.previous)} → ${fmt(r.current)} ${esc(r.unit)}
-            <span style="color:${r.direction === "up" ? "#B45309" : r.direction === "down" ? "#0F766E" : "#64748B"}">${
+            <span style="color:${r.direction === "up" ? "var(--amber)" : r.direction === "down" ? "var(--primary-deep)" : "var(--muted)"}">${
               r.delta_pct === null ? "n/a" : (r.delta_pct > 0 ? "+" : "") + r.delta_pct + "%"}</span></b>
         </div>`).join("")}
         <p class="tiny faint mt8">${esc(weekly.comparison.note)}</p></div>`
@@ -123,7 +123,7 @@ async function renderSmartInsights(rootSel = "#insights-root") {
       zero — log meals and the weekly picture builds from real data only.</p></div>`;
 
   root.innerHTML = `
-  <div class="card" style="background:linear-gradient(120deg,#F0FDFA,#F8FAFC);border-color:#CCFBF1">
+  <div class="card" style="background:var(--insight-gradient);border-color:var(--primary-border)">
     <div class="card-head spread"><div>
       <h3 style="font-size:17px">Smart Nutrition Insights</h3>
       <p class="tiny muted mt8">Every number below comes from your own logged meals and water —
@@ -131,7 +131,7 @@ async function renderSmartInsights(rootSel = "#insights-root") {
         daily.personalized ? " · targets are estimates from your profile" : ""}</p></div>
       <span class="pill ${daily.personalized ? "pill-teal" : "pill-amber"}">${
         daily.personalized ? "Personalised (estimates)" : "Non-personalised"}</span></div>
-    ${!daily.personalized ? `<p class="tiny mt8" style="color:#92400E">${esc(daily.limitation_note)}
+    ${!daily.personalized ? `<p class="tiny mt8" style="color:var(--amber-ink)">${esc(daily.limitation_note)}
       </p>` : ""}
     <div class="metric-grid mt12">${metrics}</div>
     <div class="insight-grid mt16">${insightCards}</div>

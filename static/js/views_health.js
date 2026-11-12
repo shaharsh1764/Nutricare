@@ -85,8 +85,8 @@ async function renderProfile() {
           <textarea class="input" id="p-history" rows="3" maxlength="500" placeholder="Optional — only what you want the assistant to keep in mind.">${esc(p.medical_history || "")}</textarea></div>
         <p class="tiny muted">Optional fields. Leave blank if you prefer — the app works without them.</p>
       </div>
-      <div class="card" style="border-color:#FCA5A5;background:#FFF7F7">
-        <div class="card-head"><span class="card-title" style="color:#B91C1C">Data control</span>
+      <div class="card" style="border-color:var(--rose-border);background:var(--warning-bg)">
+        <div class="card-head"><span class="card-title" style="color:var(--rose)">Data control</span>
           <span class="icon-pill tint-rose">${ICONS.shield}</span></div>
         <p class="small muted">Delete every meal, water log, symptom assessment and profile detail from the
         database. The food dataset itself is kept (it is not personal data).</p>
@@ -148,7 +148,7 @@ async function renderAssistant() {
     <span class="icon-pill tint-teal" style="width:38px;height:38px">${ICONS.shield}</span>
     <div>
       <div class="row wrap" style="gap:8px">
-        <b class="small" style="color:#0F766E">MEDICAL SAFETY & EVIDENCE FRAMEWORK</b>
+        <b class="small" style="color:var(--primary-deep)">MEDICAL SAFETY & EVIDENCE FRAMEWORK</b>
         <span class="pill pill-slate">${esc(S.boot.assistant.engine)}</span>
         <span class="pill pill-amber">Limited offline engine — no AI API call</span>
       </div>
@@ -285,7 +285,7 @@ async function renderAssistant() {
         const result = await api("/assistant/assess", { method: "POST", body: payload });
         renderAssessment(result);
       } catch (e) {
-        $("#a-result").innerHTML = `<div class="card"><p class="small" style="color:#B91C1C">${esc(e.message)}</p></div>`;
+        $("#a-result").innerHTML = `<div class="card"><p class="small" style="color:var(--rose)">${esc(e.message)}</p></div>`;
       }
     });
   });
@@ -306,7 +306,7 @@ function renderAssessment(r) {
       </div>
       <div class="small mt12"><span class="tiny muted">WARNING SIGNS TICKED</span><br>
         ${(facts.warning_signs_selected || []).length
-          ? `<b style="color:#B91C1C">${esc((facts.warning_signs_selected || []).join(" · "))}</b>`
+          ? `<b style="color:var(--rose)">${esc((facts.warning_signs_selected || []).join(" · "))}</b>`
           : "none selected"}</div>
       ${facts.notes ? `<div class="small mt12"><span class="tiny muted">YOUR NOTES</span><br>${esc(facts.notes)}</div>` : ""}
     </div>`;
@@ -314,21 +314,21 @@ function renderAssessment(r) {
   const emergencyTop = r.triage === "emergency" ? `
     <div class="emergency-banner mt16">
       <div class="row" style="gap:10px"><span class="icon-pill tint-rose" style="width:38px;height:38px">${ICONS.alert}</span>
-        <b style="color:#991B1B;font-size:15px">EMERGENCY WARNING FLAGS — ACT NOW</b></div>
-      <ul class="tight mt12" style="color:#7F1D1D">${r.red_flags.map((f) =>
+        <b style="color:var(--rose-ink);font-size:15px">EMERGENCY WARNING FLAGS — ACT NOW</b></div>
+      <ul class="tight mt12" style="color:var(--rose-deep)">${r.red_flags.map((f) =>
         `<li><b>${esc(f.label)}</b>${f.action ? ` — ${esc(f.action)}` : ""}</li>`).join("")}</ul>
-      ${r.emergency_actions.map((a) => `<p class="small mt8" style="color:#7F1D1D"><b>${esc(a)}</b></p>`).join("")}
-      <p class="tiny mt12" style="color:#991B1B">This screen runs independently of the rest of the
+      ${r.emergency_actions.map((a) => `<p class="small mt8" style="color:var(--rose-deep)"><b>${esc(a)}</b></p>`).join("")}
+      <p class="tiny mt12" style="color:var(--rose-ink)">This screen runs independently of the rest of the
       assessment and is never suppressed by an otherwise low-risk pattern. Do not wait for the
       sections below.</p>
     </div>` : r.triage === "urgent_same_day" ? `
-    <div class="emergency-banner mt16" style="border-color:#FCD34D;border-left-color:#D97706;background:#FFFBEB">
-      <b style="color:#92400E">High severity reported — seek same-day medical evaluation.</b>
-      <p class="small mt8" style="color:#92400E">No emergency warning signs were ticked or detected,
+    <div class="emergency-banner mt16" style="border-color:var(--amber-strong-border);border-left-color:var(--amber);background:var(--amber-soft)">
+      <b style="color:var(--amber-ink)">High severity reported — seek same-day medical evaluation.</b>
+      <p class="small mt8" style="color:var(--amber-ink)">No emergency warning signs were ticked or detected,
       but severity ≥ 8/10 deserves an in-person check today (campus health centre or a clinician).</p>
     </div>` : `
-    <div class="poss-card mt16" style="border-left:5px solid #10B981">
-      <div class="row spread"><b class="small" style="color:#047857">Warning-sign check completed — none triggered</b>
+    <div class="poss-card mt16" style="border-left:5px solid var(--emerald-bright)">
+      <div class="row spread"><b class="small" style="color:var(--success)">Warning-sign check completed — none triggered</b>
       <span class="pill pill-mint">Non-emergency pattern</span></div>
       <p class="tiny muted mt8">Independent screen result: ${r.red_flags.length} warning sign(s)
       ticked or detected in text. This does not mean "nothing is wrong" — it means no automatic
@@ -341,9 +341,9 @@ function renderAssessment(r) {
     <div class="card mt16">
       <div class="card-head"><h3 style="font-size:16px">Possible explanations — general education, not a diagnosis</h3>
         <span class="tiny muted">keyword-selected entries</span></div>
-      ${(r.caution_notes || []).length ? `<div class="selfcare-card" style="background:var(--amber-soft);border-color:#FDE68A">
-        <b class="tiny" style="color:#92400E">READ FIRST — HOW TO INTERPRET THIS SECTION</b>
-        <ul class="tight small mt8" style="color:#78350F">${r.caution_notes.map((c) => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
+      ${(r.caution_notes || []).length ? `<div class="selfcare-card" style="background:var(--amber-soft);border-color:var(--amber-border)">
+        <b class="tiny" style="color:var(--amber-ink)">READ FIRST — HOW TO INTERPRET THIS SECTION</b>
+        <ul class="tight small mt8" style="color:var(--amber-ink)">${r.caution_notes.map((c) => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
       <div class="grid mt12" style="gap:10px">
         ${r.possibilities.map((p, i) => `<div class="poss-card">
           <div class="row spread"><b class="small">${i + 1}. ${esc(p.title)}</b>
@@ -351,7 +351,7 @@ function renderAssessment(r) {
           <p class="small muted mt8">${esc(p.detail)}</p></div>`).join("")}
       </div>
       ${r.context_notes.length ? `<div class="selfcare-card mt12">
-        <b class="tiny" style="color:#0F766E">FROM YOUR PROFILE (your own reported context)</b>
+        <b class="tiny" style="color:var(--primary-deep)">FROM YOUR PROFILE (your own reported context)</b>
         <ul class="tight small muted">${r.context_notes.map((c) => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
     </div>
     <div class="card mt16">
@@ -373,6 +373,6 @@ function renderAssessment(r) {
       <div class="mt12"><span class="label">General references</span>
         <ul class="tight tiny muted">${r.references.map((ref) =>
           `<li>${esc(ref.name)} — <a href="${esc(ref.url)}" target="_blank" rel="noopener">${esc(ref.url)}</a></li>`).join("")}</ul></div>
-      <p class="tiny mt12" style="color:#B45309;background:var(--amber-soft);padding:8px 10px;border-radius:8px">${esc(r.disclaimer)}</p>
+      <p class="tiny mt12" style="color:var(--amber);background:var(--amber-soft);padding:8px 10px;border-radius:8px">${esc(r.disclaimer)}</p>
     </div>`;
 }
