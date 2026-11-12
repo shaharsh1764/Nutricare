@@ -29,6 +29,77 @@ const prettyDate = (iso) => {
   return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
 };
 
+/* ---------------- application theme ----------------
+   Theme is intentionally device/browser-wide rather than profile-specific:
+   local profiles organise health data, while display comfort belongs to the
+   person using this browser. The tiny inline head script applies this same
+   preference before the stylesheet paints; these helpers keep it in sync once
+   the app is running. */
+const THEME_STORAGE_KEY = "nutricare_theme";
+const THEMES = ["light", "dark"];
+
+function storedTheme() {
+  try {
+    const value = localStorage.getItem(THEME_STORAGE_KEY);
+    return THEMES.includes(value) ? value : null;
+  } catch { return null; }
+}
+
+function systemTheme() {
+  try {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark" : "light";
+  } catch { return "light"; }
+}
+
+function currentTheme() {
+  const active = document.documentElement && document.documentElement.dataset
+    ? document.documentElement.dataset.theme : null;
+  return THEMES.includes(active) ? active : (storedTheme() || systemTheme());
+}
+
+function syncThemeControls() {
+  ["light", "dark"].forEach((theme) => {
+    const control = $(`#s-theme-${theme}`);
+    if (!control) return;
+    const selected = currentTheme() === theme;
+    control.setAttribute("aria-pressed", selected ? "true" : "false");
+    control.classList.toggle("active", selected);
+  });
+}
+
+function applyTheme(theme, persist = false) {
+  const next = THEMES.includes(theme) ? theme : systemTheme();
+  const root = document.documentElement;
+  if (root) {
+    if (root.dataset) root.dataset.theme = next;
+    if (root.style) root.style.colorScheme = next;
+  }
+  if (persist) {
+    try { localStorage.setItem(THEME_STORAGE_KEY, next); } catch { /* private mode */ }
+  }
+  syncThemeControls();
+  return next;
+}
+
+function initializeTheme() {
+  return applyTheme(storedTheme() || systemTheme());
+}
+
+function setTheme(theme) {
+  return applyTheme(theme, true);
+}
+
+/* Follow a system change only until the person makes an explicit choice. */
+try {
+  const themeMedia = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+  if (themeMedia && themeMedia.addEventListener) {
+    themeMedia.addEventListener("change", (event) => {
+      if (!storedTheme()) applyTheme(event.matches ? "dark" : "light");
+    });
+  }
+} catch { /* matchMedia is optional */ }
+
 /* ---------------- API client ---------------- */
 async function api(path, { method = "GET", body } = {}) {
   const options = { method, headers: { "Content-Type": "application/json" } };
@@ -131,4 +202,6 @@ const ICONS = {
   shield: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   alert: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
   download: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+  sun: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+  moon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A8.5 8.5 0 1111.2 3 6.7 6.7 0 0021 12.8z"/></svg>',
 };

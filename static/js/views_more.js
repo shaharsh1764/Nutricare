@@ -47,7 +47,7 @@ async function renderReports() {
     const ok = upper ? val <= max : pct >= 80;
     return `<div class="mt12"><div class="row spread small"><b>${label}</b>
       <span class="pill ${ok ? "pill-mint" : "pill-amber"}">${pct}%${upper ? " of limit" : ""}</span></div>
-      <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:${ok ? "#047857" : "#D97706"}"></i></div>
+      <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:${ok ? "var(--success)" : "var(--amber)"}"></i></div>
       <div class="tiny muted mt8">avg ${fmt(val, 1)}${unit} / day vs ${fmt(max)}${unit}</div></div>`;
   }).join("") : `<p class="small muted">Complete your profile to compare against reference intakes.</p>`;
 
@@ -57,8 +57,8 @@ async function renderReports() {
     <div class="card"><div class="card-head"><span class="card-title">Avg daily intake</span><span class="icon-pill tint-teal">⚡</span></div>
       <div class="stat">${fmt(avg.kcal)}<small> kcal/day</small></div>
       <p class="tiny muted mt8">${t ? `${Math.round(100 * avg.kcal / t.kcal)}% of ${fmt(t.kcal)} kcal target` : "no target set"}</p>
-      <div class="bar mt8"><i style="width:${t ? Math.min(100, 100 * avg.kcal / t.kcal) : 0}%;background:#0F766E"></i></div></div>
-    <div class="card"><div class="card-head"><span class="card-title">Macro compliance</span><span class="icon-pill tint-mint" style="background:#D1FAE5;color:#047857">✓</span></div>
+      <div class="bar mt8"><i style="width:${t ? Math.min(100, 100 * avg.kcal / t.kcal) : 0}%;background:var(--primary-deep)"></i></div></div>
+    <div class="card"><div class="card-head"><span class="card-title">Macro compliance</span><span class="icon-pill tint-mint" style="background:var(--success-soft);color:var(--success)">✓</span></div>
       <div class="stat">${adherence ?? "—"}<small> /100</small></div>
       <p class="tiny muted mt8">Weighted attainment of protein / carb / fat gram targets</p></div>
     <div class="card"><div class="card-head"><span class="card-title">Average hydration</span><span class="icon-pill tint-sky">${ICONS.drop}</span></div>
@@ -112,13 +112,25 @@ async function renderReports() {
 async function renderSettings() {
   const p = S.boot.profile;
   const set = S.boot.settings;
+  const theme = currentTheme();
   $("#view").innerHTML = `
   <div class="page-head"><div><h2>Account & Application Settings</h2>
-    <p class="sub">Units, calculation model, hydration goal, privacy switches and data controls.
+    <p class="sub">Appearance, units, calculation model, hydration goal, privacy switches and data controls.
     Secrets (if any) live in environment variables, never in the UI.</p></div></div>
 
   <div class="grid cols-2" style="align-items:start">
     <div class="grid" style="gap:16px">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Appearance</span><span class="icon-pill tint-teal">${ICONS.sun}</span></div>
+        <p class="small muted">Choose the display that feels most comfortable. This preference is remembered in this browser and stays the same when switching local profiles.</p>
+        <div class="theme-options mt12" role="group" aria-label="Colour theme">
+          <button class="theme-choice ${theme === "light" ? "active" : ""}" id="s-theme-light" type="button" aria-pressed="${theme === "light"}">
+            <span class="theme-icon">${ICONS.sun}</span><span><b>Light mode</b><small>Bright, clean workspace</small></span></button>
+          <button class="theme-choice ${theme === "dark" ? "active" : ""}" id="s-theme-dark" type="button" aria-pressed="${theme === "dark"}">
+            <span class="theme-icon">${ICONS.moon}</span><span><b>Dark mode</b><small>Comfortable in low light</small></span></button>
+        </div>
+        <p class="tiny faint mt12">If you have not chosen a mode, NutriCare follows your operating system preference.</p>
+      </div>
       <div class="card">
         <div class="card-head"><span class="card-title">Units & measurement</span><span class="icon-pill tint-teal">📏</span></div>
         <div class="grid cols-2">
@@ -179,8 +191,8 @@ async function renderSettings() {
         multi-user protection would require authentication this project deliberately does not claim.</p>
         <button class="btn btn-ghost btn-sm mt12" id="s-users">Manage local profiles</button>
       </div>
-      <div class="card" style="border-color:#FCA5A5;background:#FFF7F7">
-        <div class="card-head"><span class="card-title" style="color:#B91C1C">Danger zone: deletion & purge</span>
+      <div class="card" style="border-color:var(--rose-border);background:var(--warning-bg)">
+        <div class="card-head"><span class="card-title" style="color:var(--rose)">Danger zone: deletion & purge</span>
           <span class="icon-pill tint-rose">${ICONS.alert}</span></div>
         <p class="small muted">Permanently delete all personal entries: biometric records, symptom
         assessments, meal and hydration logs. The action cannot be reversed.</p>
@@ -194,6 +206,14 @@ async function renderSettings() {
       </div>
     </div>
   </div>`;
+
+  ["light", "dark"].forEach((choice) => {
+    const button = $(`#s-theme-${choice}`);
+    if (button) button.onclick = () => {
+      setTheme(choice);
+      toast(`${choice === "dark" ? "Dark" : "Light"} mode enabled`);
+    };
+  });
 
   $("#s-save-units").onclick = async () => {
     try {

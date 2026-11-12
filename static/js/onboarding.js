@@ -94,9 +94,9 @@ async function renderOnboarding() {
             never prescribes.</p></div>
         </div>
         <div id="ob-existing"></div>
-        <div class="selfcare-card mt12" style="background:var(--amber-soft);border-color:#FDE68A">
-          <b class="tiny" style="color:#92400E">BEFORE YOU START — HONEST STORAGE NOTES</b>
-          <ul class="tight tiny mt8" style="color:#78350F">
+        <div class="selfcare-card mt12" style="background:var(--amber-soft);border-color:var(--amber-border)">
+          <b class="tiny" style="color:var(--amber-ink)">BEFORE YOU START — HONEST STORAGE NOTES</b>
+          <ul class="tight tiny mt8" style="color:var(--amber-ink)">
             <li>Everything stays in a local database on this device. There are <b>no passwords and no
             encryption</b>: local profiles organise data, they do not secure it.</li>
             <li>Anyone using this browser can switch local profiles — do not store sensitive
@@ -117,7 +117,7 @@ async function renderOnboarding() {
       const slot = $("#ob-existing");
       if (!slot || !(data.users || []).length || OB.step !== 1) return;
       slot.innerHTML = `<div class="selfcare-card mt12">
-        <b class="tiny" style="color:#0F766E">WELCOME BACK — LOCAL PROFILES FOUND ON THIS DEVICE</b>
+        <b class="tiny" style="color:var(--primary-deep)">WELCOME BACK — LOCAL PROFILES FOUND ON THIS DEVICE</b>
         <p class="tiny muted mt8">Continue with an existing profile to keep its saved records
         (starting over would create a separate empty profile):</p>
         <div class="row wrap mt8">${data.users.slice(0, 6).map((u) =>
@@ -227,7 +227,7 @@ async function renderOnboarding() {
             <input class="input" id="ob-water" type="number" min="500" max="6000" step="100" value="${esc(OB.data.water)}"></div>
         </div>
       </fieldset>
-      <div class="selfcare-card"><b class="tiny" style="color:#0F766E">WHAT WILL BE STORED LOCALLY</b>
+      <div class="selfcare-card"><b class="tiny" style="color:var(--primary-deep)">WHAT WILL BE STORED LOCALLY</b>
         <p class="tiny muted mt8">A local profile with your name and whatever you chose above, plus
         empty meal / water / symptom logs. Targets (if computable) are labelled estimates you can
         edit any time in My Profile or Settings.</p></div>

@@ -1,22 +1,23 @@
 /* Tiny dependency-free SVG chart builders. */
 "use strict";
 
-const COLORS = { protein: "#047857", carbs: "#2DD4BF", fat: "#0284C7",
-  goal: "#94A3B8", water: "#0EA5E9" };
+/* CSS variables keep SVG charts legible as the active application theme changes. */
+const COLORS = { protein: "var(--success)", carbs: "var(--carb)", fat: "var(--fat)",
+  goal: "var(--faint)", water: "var(--sky)" };
 
 /* Progress ring (0..1) */
-function ringChart(pct, { size = 108, stroke = 11, color = "#0D9488", label = "", sub = "" } = {}) {
+function ringChart(pct, { size = 108, stroke = 11, color = "var(--primary)", label = "", sub = "" } = {}) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(1, pct));
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img">
-    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="#F1F5F9" stroke-width="${stroke}"/>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--chart-track)" stroke-width="${stroke}"/>
     <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
       stroke-linecap="round" stroke-dasharray="${c * clamped} ${c}"
       transform="rotate(-90 ${size / 2} ${size / 2})"/>
     <text x="50%" y="${sub ? "47%" : "53%"}" text-anchor="middle" font-size="${size / 5.2}"
-      font-weight="800" fill="#0F172A">${esc(label)}</text>
-    ${sub ? `<text x="50%" y="63%" text-anchor="middle" font-size="${size / 10.5}" fill="#64748B">${esc(sub)}</text>` : ""}
+      font-weight="800" fill="var(--ink)">${esc(label)}</text>
+    ${sub ? `<text x="50%" y="63%" text-anchor="middle" font-size="${size / 10.5}" fill="var(--chart-label)">${esc(sub)}</text>` : ""}
   </svg>`;
 }
 
@@ -42,14 +43,14 @@ function stackedWeekChart(perDay, goalKcal) {
     const label = isToday ? "Today" : new Date(d.date + "T00:00:00")
       .toLocaleDateString("en-IN", { weekday: "short" });
     bars += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle" font-size="10.5"
-      font-weight="${isToday ? 800 : 600}" fill="${isToday ? "#0F766E" : "#64748B"}">${label}</text>`;
+      font-weight="${isToday ? 800 : 600}" fill="${isToday ? "var(--chart-today)" : "var(--chart-label)"}">${label}</text>`;
   });
   const goalY = y(goalKcal || 0);
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">
     ${bars}
     ${goalKcal ? `<line x1="6" x2="${W - 6}" y1="${goalY}" y2="${goalY}" stroke="${COLORS.goal}"
       stroke-dasharray="5 5" stroke-width="1.4"/>
-    <text x="${W - 6}" y="${goalY - 5}" text-anchor="end" font-size="10" fill="#64748B">Goal ${fmt(goalKcal)} kcal</text>` : ""}
+    <text x="${W - 6}" y="${goalY - 5}" text-anchor="end" font-size="10" fill="var(--chart-label)">Goal ${fmt(goalKcal)} kcal</text>` : ""}
   </svg>`;
 }
 
@@ -67,10 +68,10 @@ function barsChart(perDay, goalKcal, valueKey = "kcal") {
     const isToday = i === perDay.length - 1;
     const dt = new Date(d.date + "T00:00:00");
     out += `<rect x="${x}" y="${H - padB - h}" width="${bw}" height="${Math.max(h, 1)}" rx="4"
-      fill="${isToday ? "#5EEAD4" : "#0F766E"}"/>`;
+      fill="${isToday ? "var(--chart-highlight)" : "var(--chart-today)"}"/>`;
     const label = n > 14 ? (i % Math.ceil(n / 10) === 0 ? `${dt.getDate()}/${dt.getMonth() + 1}` : "")
       : `${dt.toLocaleDateString("en-IN", { weekday: "short" })} ${dt.getDate()}`;
-    out += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle" font-size="9.5" fill="#64748B">${label}</text>`;
+    out += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle" font-size="9.5" fill="var(--chart-label)">${label}</text>`;
   });
   const goalY = H - padB - ((goalKcal || 0) / maxVal) * (H - padB - padT);
   if (goalKcal) {
@@ -94,8 +95,8 @@ function donutChart(segments, centerLabel, centerSub) {
   });
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img">
     ${rings}
-    <text x="50%" y="48%" text-anchor="middle" font-size="24" font-weight="800" fill="#0F172A">${esc(centerLabel)}</text>
-    <text x="50%" y="61%" text-anchor="middle" font-size="10.5" fill="#64748B">${esc(centerSub)}</text>
+    <text x="50%" y="48%" text-anchor="middle" font-size="24" font-weight="800" fill="var(--ink)">${esc(centerLabel)}</text>
+    <text x="50%" y="61%" text-anchor="middle" font-size="10.5" fill="var(--chart-label)">${esc(centerSub)}</text>
   </svg>`;
 }
 

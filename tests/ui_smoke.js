@@ -11,6 +11,13 @@ const vm = require("vm");
 
 const BASE = process.argv[2] || "http://127.0.0.1:5000";
 const JS_DIR = path.join(__dirname, "..", "static", "js");
+const INDEX_TEMPLATE = fs.readFileSync(path.join(__dirname, "..", "templates", "index.html"), "utf8");
+const themeBootstrap = INDEX_TEMPLATE.indexOf("nutricare_theme");
+const stylesheetLink = INDEX_TEMPLATE.indexOf('/static/css/style.css');
+if (themeBootstrap < 0 || stylesheetLink < 0 || themeBootstrap > stylesheetLink) {
+  throw new Error("Theme bootstrap must run before the stylesheet to prevent a startup flash");
+}
+console.log("PASS  T0 no-flash theme bootstrap precedes the stylesheet");
 const FILES = ["util.js", "charts.js", "onboarding.js", "views_main.js",
   "views_health.js", "views_more.js", "views_insights.js", "views_scanner.js",
   "app.js"];
@@ -32,6 +39,7 @@ function makeEl(sel) {
 }
 const documentStub = {
   body: null,
+  documentElement: null,
   querySelector(sel) {
     if (!registry.has(sel)) registry.set(sel, makeEl(sel));
     return registry.get(sel);
@@ -41,6 +49,7 @@ const documentStub = {
   createElement: () => makeEl("created"),
 };
 documentStub.body = makeEl("body");
+documentStub.documentElement = makeEl("html");
 const bodyClasses = new Set();
 documentStub.body.classList = {
   add: (...cs) => cs.forEach((c) => bodyClasses.add(c)),
@@ -53,7 +62,11 @@ documentStub.body.classList = {
 };
 const windowStub = {
   addEventListener() {},
-  matchMedia: (q) => ({ matches: globalThis.__mqMatches === true, media: q, addEventListener() {} }),
+  matchMedia: (q) => ({
+    matches: q.includes("prefers-color-scheme") ? globalThis.__prefersDark === true : globalThis.__mqMatches === true,
+    media: q,
+    addEventListener() {},
+  }),
 };
 const locationStub = { hash: "#/dashboard", href: "" };
 const storage = new Map();
@@ -94,6 +107,22 @@ const DRIVER = `
   const set = (sel, v) => { el(sel).value = v; };
   const click = (sel) => { const b = el(sel); return b.onclick({ currentTarget: b, preventDefault() {} }); };
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  /* ---- T: theme follows the OS until explicitly chosen, then persists ---- */
+  console.log("T: light and dark theme preference…");
+  storage.delete("nutricare_theme"); globalThis.__prefersDark = true;
+  document.documentElement.dataset.theme = "";
+  initializeTheme();
+  assert(currentTheme() === "dark", "T1 no saved theme follows dark operating-system preference");
+  setTheme("light");
+  assert(currentTheme() === "light" && storage.get("nutricare_theme") === "light",
+    "T2 explicit light selection is stored browser-wide");
+  document.documentElement.dataset.theme = "";  // simulate a fresh page before boot
+  initializeTheme();
+  assert(currentTheme() === "light", "T3 saved theme is restored on a simulated refresh");
+  setTheme("dark");
+  assert(currentTheme() === "dark" && document.documentElement.style.colorScheme === "dark",
+    "T4 explicit dark selection updates the document colour scheme");
 
   /* ---- A: new visitor sees onboarding; skip opens working guest dashboard ---- */
   console.log("A: skip onboarding -> guest dashboard…");
@@ -226,6 +255,20 @@ const DRIVER = `
   assert(S.boot.user.id === existingId && S.boot.profile.weight_kg === 61.5
     && (await (await fetch("BASE" + "/api/meals")).json()).logged_count === existingMealCount,
   "O6 switching back restores the existing account without overwriting it");
+  assert(currentTheme() === "dark", "O7 switching accounts does not reset the browser theme");
+
+  location.hash = "#/settings"; await refreshView();
+  assert(view().includes("Appearance") && view().includes("Light mode") && view().includes("Dark mode"),
+    "T5 settings exposes accessible sun and moon appearance controls");
+  click("#s-theme-light");
+  assert(currentTheme() === "light" && storage.get("nutricare_theme") === "light",
+    "T6 settings switches to and persists light mode");
+  await refreshView();
+  assert(view().includes('id="s-theme-light" type="button" aria-pressed="true"'),
+    "T7 refreshed settings retains the active light-mode control");
+  click("#s-theme-dark");
+  assert(currentTheme() === "dark" && storage.get("nutricare_theme") === "dark",
+    "T8 settings switches back to dark mode without profile writes");
 
   /* ---- H: navigation + interactive controls across all views ---- */
   console.log("H: navigation and controls…");

@@ -41,13 +41,13 @@ async function renderDashboard() {
   let cupsHtml = "";
   for (let i = 0; i < goalCups; i++) {
     cupsHtml += `<span class="icon-pill ${i < cups ? "tint-sky" : ""}"
-      style="${i < cups ? "" : "background:#F1F5F9;color:#94A3B8"}">${ICONS.cup}</span>`;
+      style="${i < cups ? "" : "background:var(--surface-subtle);color:var(--faint)"}">${ICONS.cup}</span>`;
   }
 
   const insights = dashboardInsights(summary, t);
 
   $("#view").innerHTML = `
-  <div class="card" style="background:linear-gradient(120deg,#F0FDFA,#EFF6FF);border-color:#CCFBF1">
+  <div class="card" style="background:var(--dashboard-gradient);border-color:var(--primary-border)">
     <div class="row spread wrap">
       <div>
         <div class="row" style="gap:8px"><span class="pill ${hasLogs ? "pill-mint" : "pill-slate"}">${hasLogs ? "SEMESTER ROUTINE" : "FRESH START"}</span>
@@ -55,8 +55,8 @@ async function renderDashboard() {
         <h2 style="font-size:30px;margin-top:8px">${hasLogs ? esc(greet) + ", " : "Welcome to NutriCare, "}${esc(name)} 👋</h2>
         <p class="muted mt8" style="max-width:560px">
           ${hasLogs
-            ? (t ? `You are <b style="color:#0F766E">${fmt(remaining)} kcal</b> away from your daily target.
-               Hydration is at <b style="color:#0284C7">${fmt(100 * summary.water_ml / summary.water_goal_ml)}%</b> of goal.`
+            ? (t ? `You are <b style="color:var(--primary-deep)">${fmt(remaining)} kcal</b> away from your daily target.
+               Hydration is at <b style="color:var(--sky)">${fmt(100 * summary.water_ml / summary.water_goal_ml)}%</b> of goal.`
                  : "Log meals to build your record — then complete your profile for personalised targets.")
             : `Nothing is recorded yet — and <b>an empty log never means zero intake</b>, it simply means
                you haven't logged anything. Start with your first meal, or finish your profile first.`}</p>
@@ -76,7 +76,7 @@ async function renderDashboard() {
         <span class="icon-pill tint-teal">⚡</span></div>
       <div class="row spread">
         <div><div class="stat">${fmt(consumed)}<small> / ${t ? fmt(t.kcal) : "—"} kcal</small></div>
-          <p class="tiny mt8" style="color:${t ? "#047857" : "#B45309"};font-weight:700">${
+          <p class="tiny mt8" style="color:${t ? "var(--success)" : "var(--amber)"};font-weight:700">${
             t ? fmt(remaining) + " kcal remaining today (estimate-based target)"
               : "target not configured yet"}</p>
           ${summary.logged_count === 0 ? `<p class="tiny faint mt8">0 kcal <b>recorded</b> — nothing logged yet.
@@ -84,7 +84,7 @@ async function renderDashboard() {
         ${t ? ringChart(consumed / t.kcal, { label: `${Math.round(100 * consumed / t.kcal)}%`, sub: "of goal" })
             : `<span class="pill pill-amber">Set profile<br>for target</span>`}
       </div>
-      <div class="bar mt12"><i style="width:${t ? Math.min(100, 100 * consumed / t.kcal) : 0}%;background:#0F766E"></i></div>
+      <div class="bar mt12"><i style="width:${t ? Math.min(100, 100 * consumed / t.kcal) : 0}%;background:var(--primary-deep)"></i></div>
     </div>
     ${macroCard}
     <div class="card">
@@ -120,8 +120,8 @@ async function renderDashboard() {
           <span class="pill pill-slate">General tips</span></div>
         <div class="grid" style="gap:10px">${insights}</div>
       </div>
-      <div class="card" style="background:linear-gradient(135deg,#EEF2FF,#F0FDFA)">
-        <div class="row" style="gap:8px;color:#0F766E;font-weight:800;font-size:12px">${ICONS.shield} HEALTH ASSISTANT</div>
+      <div class="card" style="background:var(--assistant-gradient)">
+        <div class="row" style="gap:8px;color:var(--primary-deep);font-weight:800;font-size:12px">${ICONS.shield} HEALTH ASSISTANT</div>
         <h3 style="font-size:18px;margin-top:8px">Feeling off today?</h3>
         <p class="muted small mt8">Answer a short structured questionnaire. The assistant explains
           <i>possible</i> everyday causes, general self-care, and emergency warning signs — it never diagnoses.</p>
@@ -144,7 +144,7 @@ async function renderDashboard() {
       : stackedWeekChart(report.per_day, t ? t.kcal : null)}
     <div class="row spread mt8"><span class="small muted">Weekly target adherence:
       <b>${weekEmpty ? "no logged days yet" : adherencePct(report, t)}</b></span>
-      <a class="small" style="color:#0F766E;font-weight:700" href="#/reports">Full Analytics Report →</a></div>
+      <a class="small" style="color:var(--primary-deep);font-weight:700" href="#/reports">Full Analytics Report →</a></div>
   </div>
 
   <div id="insights-root" class="mt16"></div>`;
@@ -352,9 +352,9 @@ function mealSection(meal, entries, t) {
       <span class="icon-pill ${meta.tint}">${meta.icon}</span>
       <div style="flex:1"><b>${meta.label}</b>
         <span class="pill pill-slate" style="margin-left:6px">${entries.length} logged</span></div>
-      <span class="small muted"><b style="color:#0F172A">${fmt(kcal)}</b> kcal ·
+      <span class="small muted"><b style="color:var(--ink)">${fmt(kcal)}</b> kcal ·
         <span style="color:${COLORS.protein}">${fmt(p, 1)}g P</span> ·
-        <span style="color:#0D9488">${fmt(c, 1)}g C</span> ·
+        <span style="color:var(--primary)">${fmt(c, 1)}g C</span> ·
         <span style="color:${COLORS.fat}">${fmt(f, 1)}g F</span></span>
     </div>
     <div class="meal-rows">

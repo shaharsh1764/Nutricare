@@ -42,7 +42,7 @@ async function refreshView() {
   try {
     await ROUTES[key].render();
   } catch (e) {
-    $("#view").innerHTML = `<div class="card"><p style="color:#B91C1C">Failed to load view: ${esc(e.message)}</p>
+    $("#view").innerHTML = `<div class="card"><p style="color:var(--rose)">Failed to load view: ${esc(e.message)}</p>
       <p class="tiny muted mt8">Is the server still running? Try reloading.</p></div>`;
   }
 }
@@ -59,8 +59,8 @@ async function refreshSideGoal() {
   const pct = t ? Math.round(100 * summary.totals.kcal / t.kcal) : 0;
   $("#side-goal").innerHTML = `
     <div class="row spread"><span>Daily Goal</span><b>${t ? pct + "%" : "—"}</b></div>
-    <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:#0F766E"></i></div>
-    <p class="tiny mt8" style="color:#134E4A">${t
+    <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:var(--primary-deep)"></i></div>
+    <p class="tiny mt8" style="color:var(--primary-deep)">${t
       ? `${fmt(summary.totals.kcal)} of ${fmt(t.kcal)} kcal recorded`
       : summary.logged_count ? "Recorded intake — target not set" : "Empty log · guest mode ok"}</p>`;
   const name = S.boot.user ? S.boot.user.name : "Guest";
@@ -203,6 +203,7 @@ async function enterAppFresh() {
 
 /* ---------------- boot: restore session, re-attach remembered profile ---------------- */
 async function boot() {
+  initializeTheme();
   S.boot = await api("/bootstrap");
   if (!S.boot.user) {
     // Refresh-safe recovery: re-attach the last local profile used in this
