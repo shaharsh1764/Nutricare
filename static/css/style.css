@@ -121,22 +121,54 @@ button{font-family:inherit}
 .tiny{font-size:11px} .small{font-size:12px}
 .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
 
-/* ---------------- editorial dashboard ---------------- */
-.dashboard-hero{padding:28px;position:relative;overflow:hidden}
-.dashboard-hero:after{content:"";position:absolute;right:-44px;bottom:-80px;width:230px;height:230px;border:1px solid var(--primary-border);border-radius:50%;opacity:.72}
-.dashboard-hero > *{position:relative;z-index:1}
-.dashboard-title{font-size:42px;line-height:1.02;margin-top:10px;max-width:650px}
-.dashboard-summary{max-width:580px;font-size:13px;line-height:1.65}
-.dashboard-actions{align-items:flex-start;justify-content:flex-end}
-.audit-stat{min-height:194px;background:var(--card)}
-.dashboard-metrics .audit-stat:first-child{border-top:3px solid var(--primary)}
-.dashboard-metrics .audit-stat:nth-child(3){border-top:3px solid var(--emerald)}
-.dashboard-metrics .audit-stat:nth-child(4){border-top:3px solid var(--fat)}
-.journal-heading{font-family:var(--font-editorial);font-size:22px;font-weight:500;letter-spacing:-.02em}
-.diary-card{background:var(--surface)}
-.audit-chart{background:var(--surface)}
+/* ---------------- nutritional audit dashboard ---------------- */
+.audit-header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:end;padding:4px 0 18px;border-bottom:1px solid var(--line)}
+.audit-eyebrow,.audit-section-kicker{display:block;color:var(--emerald);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.audit-header h2{margin-top:7px;max-width:700px;font-size:46px;line-height:1.02;color:var(--ink)}
+.audit-header h2 span{display:block}
+.audit-subject{max-width:720px;margin-top:12px;color:var(--muted);font-size:13px}
+.audit-actions{display:flex;max-width:390px;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+.audit-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+.audit-stat-card{min-width:0;padding:15px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.audit-stat-card:first-child{border-top:3px solid var(--primary)}
+.audit-card-label{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.audit-card-label span{color:var(--emerald);font-size:15px}
+.audit-energy-content{display:flex;align-items:center;gap:12px;min-height:112px}
+.audit-side-reading{display:grid;gap:2px;min-width:0}
+.audit-side-reading b{font-size:18px;font-variant-numeric:tabular-nums}
+.audit-side-reading span{font-size:11px;font-weight:700;color:var(--ink-subtle)}
+.audit-side-reading small{font-size:10px;color:var(--muted)}
+.audit-energy-number{display:grid;place-items:center;width:104px;height:104px;border:9px solid var(--primary-border);border-radius:50%;font-size:23px;font-weight:800;line-height:1;text-align:center}
+.audit-energy-number small{margin-top:4px;font-size:9px;font-weight:700;color:var(--muted)}
+.audit-rule{height:1px;margin:10px 0;background:var(--line)}
+.audit-macro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;min-height:112px;padding-top:17px}
+.audit-macro-cell{position:relative;display:grid;align-content:start;gap:2px;padding:9px 6px 7px;background:var(--surface-muted);border:1px solid var(--line);border-radius:4px}
+.audit-macro-cell b{font-size:16px;font-variant-numeric:tabular-nums}.audit-macro-cell small{font-size:9px;color:var(--muted)}
+.audit-macro-label{font-size:9px;color:var(--muted);font-weight:800;text-transform:uppercase}
+.audit-macro-dot{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%}
+.audit-hydration-reading{display:flex;align-items:baseline;gap:5px;min-height:64px;padding-top:21px}.audit-hydration-reading b{font-size:27px;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.audit-hydration-reading span{font-size:12px;color:var(--muted);font-weight:700}
+.audit-water-track{height:8px;overflow:hidden;background:var(--surface-subtle);border-radius:4px}.audit-water-track i{display:block;height:100%;background:var(--emerald);border-radius:inherit}
+.audit-water-meta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:10px;color:var(--muted)}.audit-water-meta b{color:var(--emerald)}
+.audit-target-row{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:10.5px}.audit-target-row b{font-size:11px;text-align:right;font-variant-numeric:tabular-nums}.audit-target-row span{color:var(--muted)}
+.audit-workspace{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(300px,.88fr);gap:16px;margin-top:16px;align-items:start}
+.audit-main-column,.audit-side-column{display:grid;gap:16px;min-width:0}.audit-side-column{align-content:start}
+.audit-section-head{align-items:flex-start;margin-bottom:12px}.audit-section-head h3,.audit-care-card h3{margin-top:4px;font-family:var(--font-editorial);font-size:24px;font-weight:500;line-height:1.05;letter-spacing:-.02em}
+.audit-status-stack{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}
+.audit-timeline-card,.audit-log-card{background:var(--surface)}
+.audit-chart-shell{min-height:236px;padding:14px 12px;background:var(--surface-muted);border:1px solid var(--line)}
+.audit-chart-shell .empty-state{height:205px;background:transparent;border-color:var(--line-strong)}
+.audit-chart-foot{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-size:11px;color:var(--muted)}.audit-chart-foot a{font-weight:800;text-decoration:none}
+.audit-log-card{padding-bottom:8px}.audit-meal-list .meal-row{padding:14px 0}.audit-meal-list .meal-row .icon-pill{width:32px;height:32px}.audit-meal-list .meal-row .nm{font-size:13px}.audit-meal-list .meal-row .meta{font-size:10.5px}
+.audit-micro-card{background:var(--surface)}.audit-micro-card .bar{height:5px}.audit-micro-card .row.spread.mt12{padding-top:2px}
+.audit-insights-card{background:var(--surface-muted)}.audit-insights-card .selfcare-card{background:var(--surface);padding:11px;border-radius:4px}
+.audit-care-card{background:var(--primary);color:var(--on-primary)}.audit-care-card .audit-section-kicker{color:var(--mint)}.audit-care-card h3{margin-top:7px}.audit-care-card .muted{color:var(--on-primary);opacity:.78}.audit-care-card .btn-ghost{background:var(--on-primary);border-color:var(--on-primary);color:var(--primary-deep)}
+.audit-smart-root{margin-top:16px}.audit-footer{display:flex;align-items:center;gap:12px;margin-top:16px;padding:16px 18px;background:var(--surface-muted);border:1px solid var(--line);color:var(--ink-subtle);font-size:11px}.audit-footer > svg{color:var(--emerald);flex:none}.audit-footer b{font-size:12px}.audit-footer p{margin-top:2px;color:var(--muted)}.audit-footer > .tiny{margin-left:auto;color:var(--muted)}
 .onb-brand-mark{width:52px;height:52px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:var(--surface);flex:none}
 .onb-brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
+@media(max-width:1180px){.audit-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-workspace{grid-template-columns:1fr}.audit-side-column{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-care-card{grid-column:span 2}}
+@media(max-width:860px){.audit-header{grid-template-columns:1fr;gap:18px}.audit-actions{justify-content:flex-start;max-width:none}.audit-header h2{font-size:39px}.audit-side-column{grid-template-columns:1fr}.audit-care-card{grid-column:auto}}
+@media(max-width:560px){.audit-stat-grid{grid-template-columns:1fr}.audit-header h2{font-size:34px}.audit-actions .btn{flex:1 1 calc(50% - 8px);justify-content:center}.audit-energy-content{min-height:98px}.audit-chart-foot{align-items:flex-start;flex-direction:column}.audit-footer{align-items:flex-start;flex-wrap:wrap}.audit-footer > .tiny{width:100%;margin-left:28px}.audit-status-stack{justify-content:flex-start}}
+
 .row{display:flex;align-items:center;gap:10px}
 .spread{justify-content:space-between}
 .wrap{flex-wrap:wrap}

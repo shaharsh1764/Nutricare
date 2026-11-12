@@ -147,6 +147,12 @@ const DRIVER = `
     assert(S.boot.user.id > 0, "A2b guest profile created (device had none)");
   }
   assert(view().includes("Energy budget"), "A3 guest dashboard renders");
+  assert(view().includes("Daily Nutritional Audit")
+    && view().includes("Macronutrient allocation")
+    && view().includes("Micronutrient snapshot")
+    && view().includes("Meals recorded today")
+    && view().includes("NutriCare nutrition record"),
+  "A3b audit dashboard layout renders with real nutrition sections");
   assert(el("#nav-links").innerHTML.includes('data-route="tracker"'), "A4 sidebar nav built after skip");
   assert(typeof el("#quick-water").onclick === "function", "A5 dashboard water button bound");
   assert(typeof el("#quick-log").onclick === "function", "A6 dashboard log-food button bound");
