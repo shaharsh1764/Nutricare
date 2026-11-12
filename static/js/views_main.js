@@ -2,10 +2,10 @@
 "use strict";
 
 const MEAL_META = {
-  breakfast: { label: "Breakfast", icon: "🌅", tint: "tint-amber" },
-  lunch: { label: "Lunch", icon: "☀️", tint: "tint-teal" },
-  dinner: { label: "Dinner", icon: "🌙", tint: "tint-sky" },
-  snacks: { label: "Snacks & Beverages", icon: "🍎", tint: "tint-rose" },
+  breakfast: { label: "Breakfast", icon: ICONS.meal, tint: "tint-amber" },
+  lunch: { label: "Lunch", icon: ICONS.meal, tint: "tint-teal" },
+  dinner: { label: "Dinner", icon: ICONS.meal, tint: "tint-sky" },
+  snacks: { label: "Snacks & Beverages", icon: ICONS.meal, tint: "tint-rose" },
 };
 
 /* ============================================================ DASHBOARD */
@@ -14,11 +14,9 @@ async function renderDashboard() {
   const t = summary.targets;
   const profile = summary.profile || {};
   const name = (S.boot.user && S.boot.user.name) || "there";
-  const greet = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
   const consumed = summary.totals.kcal;
   const remaining = t ? Math.max(0, t.kcal - consumed) : 0;
   const units = profile.units || "metric";
-  const hasLogs = summary.logged_count > 0 || summary.water_ml > 0;
   const weekEmpty = report.per_day.every((d) => (d.logged_count || 0) === 0 && !d.water_ml);
   const waterPct = summary.water_goal_ml ? Math.round(100 * summary.water_ml / summary.water_goal_ml) : 0;
   const profileLine = [
@@ -62,7 +60,7 @@ async function renderDashboard() {
 
   <section class="audit-stat-grid" aria-label="Daily nutrition summary">
     <article class="audit-stat-card audit-energy-card">
-      <div class="audit-card-label">Energy budget · daily intake <span aria-hidden="true">◌</span></div>
+      <div class="audit-card-label">Energy budget · daily intake <span aria-hidden="true">${ICONS.dashboard}</span></div>
       <div class="audit-energy-content">
         ${t ? ringChart(consumed / t.kcal, { size: 104, stroke: 9, label: fmt(consumed), sub: `of ${fmt(t.kcal)} kcal` })
           : `<div class="audit-energy-number">${fmt(consumed)}<small> kcal logged</small></div>`}
@@ -74,24 +72,28 @@ async function renderDashboard() {
     </article>
 
     <article class="audit-stat-card">
-      <div class="audit-card-label">Macronutrient allocation <span aria-hidden="true">◒</span></div>
+      <div class="audit-card-label">Macronutrient allocation <span aria-hidden="true">${ICONS.reports}</span></div>
       <div class="audit-macro-grid">${macroCells}</div>
       <div class="audit-rule"></div>
       <p class="tiny muted">${t ? `Protein target: ${fmt(t.protein_g)} g · balanced across your logged meals.` : "Targets appear after you complete your profile."}</p>
     </article>
 
     <article class="audit-stat-card">
-      <div class="audit-card-label">Hydration balance <span aria-hidden="true">◈</span></div>
-      <div class="audit-hydration-reading"><b>${units === "imperial" ? fmt(summary.water_ml / 29.5735, 0) + " oz" : (summary.water_ml / 1000).toFixed(1) + " L"}</b>
-        <span>/ ${units === "imperial" ? fmt(summary.water_goal_ml / 29.5735, 0) + " oz" : (summary.water_goal_ml / 1000).toFixed(1) + " L"}</span></div>
-      <div class="audit-water-track" aria-label="${waterPct}% of hydration goal"><i style="width:${Math.min(100, waterPct)}%"></i></div>
-      <div class="audit-water-meta"><span>${waterPct}% of goal</span><b>${Math.max(0, summary.water_goal_ml - summary.water_ml) ? UNITS.water(Math.max(0, summary.water_goal_ml - summary.water_ml), units) + " to go" : "Goal reached"}</b></div>
+      <div class="audit-card-label">Hydration balance <span aria-hidden="true">${ICONS.drop}</span></div>
+      <div class="audit-hydration-content">
+        <div><div class="audit-hydration-reading"><b>${units === "imperial" ? fmt(summary.water_ml / 29.5735, 0) + " oz" : (summary.water_ml / 1000).toFixed(1) + " L"}</b>
+          <span>/ ${units === "imperial" ? fmt(summary.water_goal_ml / 29.5735, 0) + " oz" : (summary.water_goal_ml / 1000).toFixed(1) + " L"}</span></div>
+          <div class="audit-water-meta"><span>${waterPct}% of goal</span><b>${Math.max(0, summary.water_goal_ml - summary.water_ml) ? UNITS.water(Math.max(0, summary.water_goal_ml - summary.water_ml), units) + " to go" : "Goal reached"}</b></div></div>
+        <div class="audit-water-meter" role="progressbar" aria-label="Hydration goal progress" aria-valuemin="0" aria-valuemax="${summary.water_goal_ml}" aria-valuenow="${Math.min(summary.water_ml, summary.water_goal_ml)}" aria-valuetext="${waterPct}% of hydration goal">
+          <i style="height:0"></i>
+        </div>
+      </div>
       <div class="audit-rule"></div>
       <p class="tiny muted">${summary.water_ml ? "Hydration is based on the water you have logged today." : "Start with one glass when you are ready."}</p>
     </article>
 
     <article class="audit-stat-card">
-      <div class="audit-card-label">Personal targets <span aria-hidden="true">↗</span></div>
+      <div class="audit-card-label">Personal targets <span aria-hidden="true">${ICONS.profile}</span></div>
       ${t ? `<div class="audit-target-row"><span>BMR (Mifflin-St Jeor)</span><b>${fmt(t.bmr)} kcal</b></div>
       <div class="audit-target-row"><span>Daily energy target</span><b>${fmt(t.kcal)} kcal</b></div>
       <div class="audit-target-row"><span>Activity</span><b>${esc(profile.activity || "not set")}</b></div>`
@@ -103,19 +105,13 @@ async function renderDashboard() {
 
   <section class="audit-workspace">
     <div class="audit-main-column">
-      <article class="card audit-timeline-card">
-        <div class="card-head audit-section-head"><div><span class="audit-section-kicker">7-DAY OVERVIEW</span>
-          <h3>Intake trajectory &amp; macro balance</h3>
-          <p class="tiny muted mt8">Your recorded nutrition across the last seven days.</p></div>
-          <div class="audit-status-stack"><span class="pill pill-mint">${report.per_day.filter((d) => d.logged_count).length} logged days</span>
+      <article class="card audit-today-card">
+        <div class="card-head audit-section-head"><div><span class="audit-section-kicker">TODAY'S TOTAL INTAKE</span>
+          <h3>Calories &amp; macro distribution</h3>
+          <p class="tiny muted mt8">Your logged energy and macronutrients, grouped by meal.</p></div>
+          <div class="audit-status-stack"><span class="pill pill-mint">${summary.logged_count} logged ${summary.logged_count === 1 ? "entry" : "entries"}</span>
             ${t ? `<span class="pill pill-slate">Target ${fmt(t.kcal)} kcal</span>` : ""}</div></div>
-        <div class="audit-chart-shell">${weekEmpty ? `<div class="empty-state"><span style="font-size:30px">📊</span>
-          <b>Your trend will appear after your first logged day.</b>
-          <p class="tiny muted mt8">NutriCare only charts food you have actually recorded.</p>
-          <button class="btn btn-soft btn-sm mt12" id="empty-log-cta">${ICONS.plus} Log your first meal</button></div>`
-          : stackedWeekChart(report.per_day, t ? t.kcal : null)}</div>
-        <div class="audit-chart-foot"><span>Weekly target adherence: <b>${weekEmpty ? "no logged days yet" : adherencePct(report, t)}</b></span>
-          <a href="#/reports">Open detailed reports →</a></div>
+        ${todayIntakeChart(summary, t)}
       </article>
 
       <article class="card audit-log-card">
@@ -156,6 +152,15 @@ async function renderDashboard() {
     <p>Your dashboard is built from the meals and water you log. Nutrition targets remain estimates, not medical advice.</p></div>
     <span class="tiny">Data sources shown with food entries</span></footer>`;
 
+  /* Insert at zero then raise on the next frame so the vertical meter visibly
+     fills when this live dashboard is rendered. */
+  const fillWaterMeter = () => {
+    const fill = $(".audit-water-meter i");
+    if (fill) fill.style.height = `${Math.min(100, waterPct)}%`;
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(fillWaterMeter);
+  else setTimeout(fillWaterMeter, 0);
+
   $("#quick-water").onclick = async () => {
     await api("/water", { method: "POST", body: { amount_ml: 250 } });
     toast("+250 ml water logged"); renderDashboard();
@@ -165,12 +170,14 @@ async function renderDashboard() {
   const quickScan = $("#quick-scan");
   if (quickScan) quickScan.onclick = () => location.hash = "#/scanner";
   $("#goto-tracker").onclick = () => location.hash = "#/tracker";
-  const emptyCta = $("#empty-log-cta");
-  if (emptyCta) emptyCta.onclick = () => openFoodSearchModal("breakfast");
   bindMealRowButtons();
   /* Smart Nutrition Insights renders into #insights-root with independent
-     loading, empty, and error states so it cannot block the dashboard. */
-  if (typeof renderSmartInsights === "function") renderSmartInsights();
+     loading, empty, and error states so it cannot block the dashboard. The
+     seven-day chart is supplied as its immediate prelude to sit above the
+     weekly summary rather than interrupting today's intake and meal log. */
+  if (typeof renderSmartInsights === "function") {
+    renderSmartInsights("#insights-root", weeklyTrajectoryCard(report, t, weekEmpty));
+  }
 }
 
 function adherencePct(report, targets) {
@@ -181,28 +188,105 @@ function adherencePct(report, targets) {
   return `${Math.round(100 * within / days.length)}% of logged days within ±15%`;
 }
 
+function weeklyTrajectoryCard(report, targets, weekEmpty) {
+  const loggedDays = report.per_day.filter((d) => d.logged_count).length;
+  return `<article class="card audit-timeline-card">
+    <div class="card-head audit-section-head"><div><span class="audit-section-kicker">7-DAY OVERVIEW</span>
+      <h3>Intake trajectory &amp; macro balance</h3>
+      <p class="tiny muted mt8">Your recorded nutrition across the last seven days.</p></div>
+      <div class="audit-status-stack"><span class="pill pill-mint">${loggedDays} logged days</span>
+        ${targets ? `<span class="pill pill-slate">Target ${fmt(targets.kcal)} kcal</span>` : ""}</div></div>
+    <div class="audit-chart-shell">${weekEmpty ? `<div class="empty-state"><span class="audit-empty-icon" aria-hidden="true">${ICONS.reports}</span>
+      <b>Your trend will appear after your first logged day.</b>
+      <p class="tiny muted mt8">NutriCare only charts food you have actually recorded.</p>
+      <a class="btn btn-soft btn-sm mt12" href="#/tracker">${ICONS.plus} Log your first meal</a></div>`
+      : stackedWeekChart(report.per_day, targets ? targets.kcal : null)}</div>
+    <div class="audit-chart-foot"><span>Weekly target adherence: <b>${weekEmpty ? "no logged days yet" : adherencePct(report, targets)}</b></span>
+      <a href="#/reports">Open detailed reports →</a></div>
+  </article>`;
+}
+
+function todayIntakeChart(summary, targets) {
+  const rows = Object.keys(MEAL_META).map((meal) => {
+    const entries = (summary.meals && summary.meals[meal]) || [];
+    return {
+      meal,
+      label: MEAL_META[meal].label,
+      count: entries.length,
+      kcal: entries.reduce((sum, entry) => sum + Number(entry.nutrients.kcal || 0), 0),
+      protein: entries.reduce((sum, entry) => sum + Number(entry.nutrients.protein_g || 0), 0),
+      carbs: entries.reduce((sum, entry) => sum + Number(entry.nutrients.carbs_g || 0), 0),
+      fat: entries.reduce((sum, entry) => sum + Number(entry.nutrients.fat_g || 0), 0),
+    };
+  });
+  const hasEntries = rows.some((row) => row.count > 0);
+  if (!hasEntries) {
+    return `<div class="empty-state audit-today-empty"><span class="audit-empty-icon" aria-hidden="true">${ICONS.meal}</span>
+      <b>Nothing logged today yet.</b>
+      <p class="tiny muted mt8">Add a meal to see its calories and macro distribution here.</p>
+      <a class="btn btn-soft btn-sm mt12" href="#/tracker">${ICONS.plus} Log your first meal</a></div>`;
+  }
+
+  const maxKcal = Math.max(1, targets ? Number(targets.kcal || 0) : 0, ...rows.map((row) => row.kcal));
+  const bar = (row) => {
+    const macroParts = [
+      { cls: "protein", label: "Protein", energy: row.protein * 4 },
+      { cls: "carbs", label: "Carbohydrates", energy: row.carbs * 4 },
+      { cls: "fat", label: "Fat", energy: row.fat * 9 },
+    ];
+    const macroEnergy = macroParts.reduce((sum, part) => sum + part.energy, 0);
+    const scale = macroEnergy > row.kcal && macroEnergy ? row.kcal / macroEnergy : 1;
+    let bottom = 0;
+    const segments = macroParts.map((part) => {
+      const energy = part.energy * scale;
+      const height = 100 * energy / maxKcal;
+      const segment = height ? `<i class="audit-intake-segment ${part.cls}" style="height:${height.toFixed(3)}%;bottom:${bottom.toFixed(3)}%" title="${part.label}: ${fmt(energy)} kcal"></i>` : "";
+      bottom += height;
+      return segment;
+    }).join("");
+    const remainingEnergy = Math.max(0, row.kcal - macroEnergy * scale);
+    const remainingHeight = 100 * remainingEnergy / maxKcal;
+    const other = remainingHeight ? `<i class="audit-intake-segment other" style="height:${remainingHeight.toFixed(3)}%;bottom:${bottom.toFixed(3)}%" title="Other documented energy: ${fmt(remainingEnergy)} kcal"></i>` : "";
+    return `<div class="audit-intake-column">
+      <b>${fmt(row.kcal)}<small> kcal</small></b>
+      <div class="audit-intake-track" aria-label="${row.label}: ${fmt(row.kcal)} kilocalories, ${fmt(row.protein, 1)} grams protein, ${fmt(row.carbs, 1)} grams carbohydrates, ${fmt(row.fat, 1)} grams fat">${segments}${other}</div>
+      <span>${row.label}</span><small>${row.count} ${row.count === 1 ? "entry" : "entries"}</small>
+    </div>`;
+  };
+  return `<div class="audit-today-chart">
+    <div class="audit-macro-legend" aria-label="Macronutrient colour legend"><span><i class="protein"></i>Protein</span>
+      <span><i class="carbs"></i>Carbs</span><span><i class="fat"></i>Fat</span></div>
+    <div class="audit-intake-bars">${rows.map(bar).join("")}</div>
+    <div class="audit-today-totals"><span><i class="protein"></i><b>${fmt(summary.totals.protein_g, 1)} g</b> protein</span>
+      <span><i class="carbs"></i><b>${fmt(summary.totals.carbs_g, 1)} g</b> carbs</span>
+      <span><i class="fat"></i><b>${fmt(summary.totals.fat_g, 1)} g</b> fat</span>
+      <span class="audit-total-energy"><b>${fmt(summary.totals.kcal)} kcal</b> total energy</span></div>
+    <p class="tiny faint mt12">Bars show logged calories by meal. Colours show the documented energy contribution of protein, carbohydrates, and fat.</p>
+  </div>`;
+}
+
 function dashboardInsights(summary, t) {
   if (summary.logged_count === 0 && summary.water_ml === 0) {
-    return [`<div class="selfcare-card"><div class="row" style="gap:8px"><span>🌱</span>
+    return [`<div class="selfcare-card"><div class="row" style="gap:8px"><span class="audit-insight-icon">${ICONS.leaf}</span>
       <b class="small">Start here</b></div>
       <p class="tiny muted mt8">Your account is genuinely empty. Log your first meal in the tracker,
       add water as you drink it, and this panel will switch to observations based only on your own data.</p></div>`];
   }
   const tips = [];
   if (summary.water_ml < summary.water_goal_ml * 0.6) {
-    tips.push(["💧", "Hydration pace", `You're at ${fmt(100 * summary.water_ml / summary.water_goal_ml)}% of your fluid goal. Spreading sips across the afternoon is a common general strategy.`]);
+    tips.push([ICONS.drop, "Hydration pace", `You're at ${fmt(100 * summary.water_ml / summary.water_goal_ml)}% of your fluid goal. Spreading sips across the afternoon is a common general strategy.`]);
   } else {
-    tips.push(["💧", "Hydration on track", "Nice — your logged intake is above 60% of goal with the day still running."]);
+    tips.push([ICONS.drop, "Hydration on track", "Nice — your logged intake is above 60% of goal with the day still running."]);
   }
   if (t && summary.totals.protein_g < t.protein_g * 0.6) {
-    tips.push(["🥚", "Protein pacing", "Protein is behind target. Curd, dal, eggs, paneer or grilled chicken at the next meal are common whole-food options."]);
+    tips.push([ICONS.meal, "Protein pacing", "Protein is behind target. Curd, dal, eggs, paneer or grilled chicken at the next meal are common whole-food options."]);
   }
   if (t && summary.totals.fat_g > t.fat_g) {
-    tips.push(["🥑", "Fat over goal", "Today's fat is above target — mostly a heads-up for meal planning, not a problem in itself."]);
+    tips.push([ICONS.reports, "Fat over goal", "Today's fat is above target — mostly a heads-up for meal planning, not a problem in itself."]);
   }
-  tips.push(["🥦", "Fiber check", "Reports tracks your daily fiber against a 28 g reference. Whole grains, dal and vegetables are the usual contributors."]);
+  tips.push([ICONS.leaf, "Fiber check", "Reports tracks your daily fiber against a 28 g reference. Whole grains, dal and vegetables are the usual contributors."]);
   return tips.map(([icon, title, body]) => `
-    <div class="selfcare-card"><div class="row" style="gap:8px"><span>${icon}</span>
+    <div class="selfcare-card"><div class="row" style="gap:8px"><span class="audit-insight-icon">${icon}</span>
     <b class="small">${esc(title)}</b></div><p class="tiny muted mt8">${esc(body)}</p></div>`).join("");
 }
 
@@ -276,7 +360,7 @@ async function renderTracker() {
         <button class="btn btn-soft btn-sm mt12" id="add-custom">${ICONS.plus} Add custom / manual item</button>
       </div>
       ${meals.logged_count === 0 ? `<div class="empty-state mt16">
-        <span style="font-size:30px">🍽</span><b>Your food log for ${prettyDate(date)} is empty.</b>
+        <span class="audit-empty-icon" aria-hidden="true">${ICONS.meal}</span><b>Your food log for ${prettyDate(date)} is empty.</b>
         <p class="tiny muted mt8">Empty means "nothing recorded", not "nothing eaten". Search the food
         database or add a custom item to start tracking this day.</p>
         <div class="row mt12" style="justify-content:center">
@@ -339,7 +423,7 @@ function microPanel(totals, micro) {
     const pct = Math.round(100 * val / max);
     const badge = isUpper
       ? (val <= max ? `<span class="pill pill-mint">within limit</span>` : `<span class="pill pill-rose">over limit</span>`)
-      : (pct >= 100 ? `<span class="pill pill-mint">${pct}% ✓</span>` : `<span class="pill pill-slate">${pct}%</span>`);
+      : (pct >= 100 ? `<span class="pill pill-mint">${pct}%</span>` : `<span class="pill pill-slate">${pct}%</span>`);
     return `<div class="row spread mt12 small"><div><b>${label}</b>
       <div class="tiny muted">${fmt(val, 1)}${unit} / ${fmt(max)}${unit}${isUpper ? " (upper limit)" : ""}</div></div>${badge}</div>
       <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:${color}"></i></div>`;

@@ -232,7 +232,7 @@ async function renderOnboarding() {
         empty meal / water / symptom logs. Targets (if computable) are labelled estimates you can
         edit any time in My Profile or Settings.</p></div>
       <div class="row mt20 wrap">
-        <button class="btn btn-deep" id="ob-finish">Save & open my dashboard ✓</button>
+        <button class="btn btn-deep" id="ob-finish">Save & open my dashboard</button>
         <button class="btn btn-ghost" id="ob-back">Back</button>
         <button class="btn btn-ghost" id="ob-skip">Skip — open guest dashboard</button>
       </div>

@@ -130,7 +130,7 @@ async function scanOpenCamera() {
     </div>
     <div class="row mt16" style="justify-content:flex-end">
       <button class="btn btn-ghost" data-close>Cancel</button>
-      <button class="btn btn-primary" id="scan-shutter" disabled>📸 Capture</button>
+      <button class="btn btn-primary" id="scan-shutter" disabled>${ICONS.scanner} Capture</button>
     </div>`);
 
   const video = $("#scan-video");
@@ -205,7 +205,7 @@ async function scanAnalyze() {
   if (res.status === 503) {
     box.innerHTML = `
       <div class="scan-empty">
-        <span class="scan-empty-icon" aria-hidden="true">🍽</span>
+        <span class="scan-empty-icon" aria-hidden="true">${ICONS.meal}</span>
         <b>We can’t suggest a food from this photo right now.</b>
         <p class="tiny muted mt8">You can still choose a food yourself and add this meal to your tracker.</p>
         <div class="row mt12" style="justify-content:center">
@@ -221,7 +221,7 @@ async function scanAnalyze() {
     return;
   }
   if (!res.ok) {
-    box.innerHTML = `<div class="scan-empty"><span class="scan-empty-icon" aria-hidden="true">📷</span>
+    box.innerHTML = `<div class="scan-empty"><span class="scan-empty-icon" aria-hidden="true">${ICONS.scanner}</span>
       <b>We couldn’t use that photo.</b>
       <p class="tiny muted mt8">Try another clear photo of one dish, or choose the food yourself.</p>
       <button class="btn btn-ghost btn-sm mt12" id="scan-retry">Choose another photo</button></div>`;
@@ -687,13 +687,13 @@ async function renderScanner() {
   <div class="grid cols-21 scan-layout" style="align-items:start">
     <section class="card scan-capture-card" aria-labelledby="scan-capture-title">
       <div class="scan-capture-intro">
-        <span class="scan-capture-icon" aria-hidden="true">📷</span>
+        <span class="scan-capture-icon" aria-hidden="true">${ICONS.scanner}</span>
         <div><h3 id="scan-capture-title">Add a meal photo</h3>
           <p class="small muted mt4">Start with one clear photo of one dish.</p></div>
       </div>
       <div class="scan-actions mt16">
-        <button class="btn btn-deep" id="scan-camera">📷 Take a photo</button>
-        <button class="btn btn-primary" id="scan-upload">⬆ Upload a photo</button>
+        <button class="btn btn-deep" id="scan-camera">${ICONS.scanner} Take a photo</button>
+        <button class="btn btn-primary" id="scan-upload">${ICONS.upload} Upload a photo</button>
         <input type="file" id="scan-file" accept="image/jpeg,image/png,image/webp"
                capture="environment" hidden>
       </div>
@@ -702,7 +702,7 @@ async function renderScanner() {
 
       <div id="scan-drop" class="scan-drop scan-drop-empty mt16">
         <div class="scan-empty">
-          <span class="scan-empty-icon" aria-hidden="true">🍱</span>
+          <span class="scan-empty-icon" aria-hidden="true">${ICONS.meal}</span>
           <h3>Ready when you are</h3>
           <p class="tiny muted mt8">Take a photo of one dish or choose a photo from your device.</p>
         </div>

@@ -26,6 +26,11 @@ console.log("PASS  T0 no-flash theme bootstrap precedes the stylesheet");
 const FILES = ["util.js", "charts.js", "onboarding.js", "views_main.js",
   "views_health.js", "views_more.js", "views_insights.js", "views_scanner.js",
   "app.js"];
+const UI_SOURCE = [INDEX_TEMPLATE, ...FILES.map((file) => fs.readFileSync(path.join(JS_DIR, file), "utf8"))].join("\n");
+if (/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u.test(UI_SOURCE)) {
+  throw new Error("The customer-facing application shell must use the shared SVG icon system, not emoji glyphs");
+}
+console.log("PASS  D1 customer-facing UI is emoji-free");
 
 /* ---------------- minimal DOM stub ---------------- */
 const registry = new Map();
@@ -149,10 +154,12 @@ const DRIVER = `
   assert(view().includes("Energy budget"), "A3 guest dashboard renders");
   assert(view().includes("Daily Nutritional Audit")
     && view().includes("Macronutrient allocation")
-    && view().includes("Micronutrient snapshot")
+    && view().includes("TODAY'S TOTAL INTAKE")
+    && view().includes("Calories &amp; macro distribution")
     && view().includes("Meals recorded today")
+    && view().includes("Micronutrient snapshot")
     && view().includes("NutriCare nutrition record"),
-  "A3b audit dashboard layout renders with real nutrition sections");
+  "A3b audit dashboard layout renders with today total and real nutrition sections");
   assert(el("#nav-links").innerHTML.includes('data-route="tracker"'), "A4 sidebar nav built after skip");
   assert(typeof el("#quick-water").onclick === "function", "A5 dashboard water button bound");
   assert(typeof el("#quick-log").onclick === "function", "A6 dashboard log-food button bound");
@@ -374,6 +381,10 @@ const DRIVER = `
   await boot(); location.hash = "#/dashboard"; await refreshView(); await sleep(700);
   assert(el("#insights-root").innerHTML.includes("Smart Nutrition Insights"), "K3 insights survive refresh");
   assert(el("#insights-root").innerHTML.length > 100, "K4 insights content populated");
+  const orderedInsights = el("#insights-root").innerHTML;
+  assert(orderedInsights.indexOf("Intake trajectory") >= 0
+    && orderedInsights.indexOf("Intake trajectory") < orderedInsights.indexOf("Weekly summary"),
+  "K5 seven-day trajectory is directly before the weekly summary");
 
   /* ---- L: Food Scanner (camera, upload, suggestion, portion, log) ----
      The recognition service can be absent in CI. The UI stays helpful without
