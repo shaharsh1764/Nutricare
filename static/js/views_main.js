@@ -402,18 +402,22 @@ function mealOptions(selected) {
     `<option value="${key}" ${key === selected ? "selected" : ""}>${m.label}</option>`).join("");
 }
 
-function openFoodSearchModal(meal, presetFood = null) {
+/* If `onSelect` is supplied this remains a documented-food picker: it never
+   writes a meal. Callers (the scanner correction flow) receive the selected
+   food and portion, then show their own final review before saving. */
+function openFoodSearchModal(meal, presetFood = null, onSelect = null) {
   S.lastMeal = meal;
+  const pickerOnly = typeof onSelect === "function";
   openModal(`
-    <h3>Add food to ${MEAL_META[meal].label}</h3>
-    <p class="tiny muted">Pick a food, then set the portion. Nutrition is computed per-gram from the dataset.</p>
+    <h3>${pickerOnly ? "Search documented food catalogue" : `Add food to ${MEAL_META[meal].label}`}</h3>
+    <p class="tiny muted">Pick a food, then set the portion. Nutrition is computed per-gram from the documented dataset.</p>
     <div class="searchbox mt12" style="max-width:none;border-radius:12px">${ICONS.search}
       <input id="m-search" placeholder="Search foods…" autocomplete="off"></div>
     <div id="m-results" style="max-height:220px;overflow:auto"></div>
     <div id="m-portion" class="mt12" style="display:${presetFood ? "block" : "none"}">
       <div class="field"><span class="label">Selected food</span><b id="m-food-name" class="small"></b></div>
-      <div class="grid cols-3">
-        <div class="field"><span class="label">Meal</span><select class="select" id="m-meal">${mealOptions(meal)}</select></div>
+      <div class="grid ${pickerOnly ? "cols-2" : "cols-3"}">
+        ${pickerOnly ? "" : `<div class="field"><span class="label">Meal</span><select class="select" id="m-meal">${mealOptions(meal)}</select></div>`}
         <div class="field"><span class="label">Quantity</span><input class="input" id="m-qty" type="number" min="0.01" step="0.25" value="1"></div>
         <div class="field"><span class="label">Unit</span><select class="select" id="m-unit">
           <option value="serving">serving</option><option value="g">grams</option></select></div>
@@ -421,7 +425,7 @@ function openFoodSearchModal(meal, presetFood = null) {
       <p class="small muted" id="m-preview"></p>
       <div class="row mt16" style="justify-content:flex-end">
         <button class="btn btn-ghost" data-close>Cancel</button>
-        <button class="btn btn-primary" id="m-save">${ICONS.plus} Add to log</button></div>
+        <button class="btn btn-primary" id="m-save">${pickerOnly ? "Use this food" : `${ICONS.plus} Add to log`}</button></div>
     </div>`);
   let food = presetFood;
   const search = $("#m-search");
@@ -456,6 +460,12 @@ function openFoodSearchModal(meal, presetFood = null) {
     if (!food) { toast("Select a food from the search results first", true); return; }
     const qty = parseFloat($("#m-qty").value);
     if (!(qty > 0)) { toast("Quantity must be greater than 0", true); return; }
+    const grams = $("#m-unit").value === "serving" ? qty * food.serving_g : qty;
+    if (pickerOnly) {
+      closeModal();
+      onSelect(food, grams);
+      return;
+    }
     try {
       await api("/meals", { method: "POST", body: {
         date: S.trackerDate || S.boot.today, meal: $("#m-meal").value,

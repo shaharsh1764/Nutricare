@@ -5,11 +5,11 @@
    - There is no client-side "pretend" prediction. If the server reports
      model_unavailable, the UI says photo recognition is switched off and
      offers manual logging instead.
-   - Confidence is always shown. Below the server-provided threshold the result
-     is presented as "not sure" and the user is asked to pick the food
-     themselves rather than being handed a confident-looking guess.
-   - Nutrition numbers displayed always come from the server (dataset values
-     scaled by the portion the user chose). Nothing is invented here.
+   - Confidence is always shown but is never acceptance: every prediction asks
+     the user to confirm or correct it before nutrition/logging controls appear.
+   - Nutrition for class predictions comes from the server; catalogue corrections
+     use only their documented catalogue values, scaled by the chosen portion.
+     Nothing is invented here.
    - The photo itself is sent once for analysis and never stored by the app.
 */
 "use strict";
@@ -19,10 +19,14 @@ const SCAN = {
   previewUrl: null,
   result: null,
   slug: null,
+  catalogueFood: null,
   grams: null,
+  defaultGrams: null,
   meal: null,
   stream: null,
   candidates: [],
+  selection: null,
+  confirmed: false,
   manualValues: {},
   coverage: {},
 };
@@ -37,11 +41,22 @@ const SCAN_GROUPS = {
 };
 
 /* ---------------------------------------------------------------- helpers */
+function scanClearSelection() {
+  SCAN.slug = null;
+  SCAN.catalogueFood = null;
+  SCAN.grams = null;
+  SCAN.defaultGrams = null;
+  SCAN.selection = null;
+  SCAN.confirmed = false;
+  SCAN.manualValues = {};
+}
+
 function scanReset() {
   if (SCAN.previewUrl) { try { URL.revokeObjectURL(SCAN.previewUrl); } catch { /* noop */ } }
   scanStopCamera();
   SCAN.file = null; SCAN.previewUrl = null; SCAN.result = null;
-  SCAN.slug = null; SCAN.grams = null; SCAN.candidates = []; SCAN.manualValues = {};
+  SCAN.candidates = [];
+  scanClearSelection();
 }
 
 function scanStopCamera() {
@@ -73,6 +88,8 @@ function scanSetFile(file, sourceLabel) {
   SCAN.file = file;
   SCAN.previewUrl = URL.createObjectURL(file);
   SCAN.result = null;
+  SCAN.candidates = [];
+  scanClearSelection();
   scanShowPreview(sourceLabel || "Selected photo");
 }
 
@@ -194,7 +211,8 @@ async function scanAnalyze() {
         </div>
       </div>`;
     const m = $("#scan-manual");
-    if (m) m.onclick = () => { closeModal(); openFoodSearchModal(SCAN.meal || "lunch"); };
+    if (m) m.onclick = () => openFoodSearchModal(
+      SCAN.meal || "lunch", null, scanSelectCatalogueFood);
     const r = $("#scan-retry");
     if (r) r.onclick = () => { scanReset(); renderScanner(); };
     return;
@@ -210,11 +228,7 @@ async function scanAnalyze() {
 
   SCAN.result = data;
   SCAN.candidates = data.candidates || [];
-  const top = data.candidates && data.candidates[0];
-  if (top) {
-    SCAN.slug = top.slug;
-    SCAN.grams = (top.nutrition && top.nutrition.grams) || 100;
-  }
+  scanClearSelection();
   scanShowResult();
 }
 
@@ -240,24 +254,57 @@ function scanAltNutrition(c) {
   return `${fmt(est.nutrients.kcal)} kcal at ${fmt(grams)} g`;
 }
 
-function scanShowResult() {
-  const box = $("#scan-drop");
-  const result = SCAN.result;
-  const top = SCAN.candidates[0];
-  const low = result.low_confidence;
-  const alternatives = SCAN.candidates.slice(1).map((c) => `
-    <button class="result-row" data-alt="${c.slug}" style="width:100%;text-align:left">
-      <span style="flex:1"><b class="small">${esc(c.label)}</b>
-        <div class="tiny muted">${scanAltNutrition(c)}</div></span>
-      <span class="pill pill-slate">${Math.round(c.confidence * 100)}%</span>
-    </button>`).join("");
+function scanSelectClass(candidate, source) {
+  if (!candidate || !candidate.slug) return;
+  SCAN.slug = candidate.slug;
+  SCAN.catalogueFood = null;
+  SCAN.defaultGrams = (candidate.nutrition &&
+    (candidate.nutrition.default_grams || candidate.nutrition.grams)) || 100;
+  SCAN.grams = SCAN.defaultGrams;
+  SCAN.selection = { source, label: candidate.label || candidate.slug };
+  SCAN.confirmed = true;
+  SCAN.manualValues = {};
+  scanShowResult();
+}
 
+function scanSelectCatalogueFood(food, selectedGrams = null) {
+  if (!food || !food.id) return;
+  SCAN.slug = null;
+  SCAN.catalogueFood = food;
+  SCAN.defaultGrams = Number(food.serving_g) || 100;
+  SCAN.grams = Number(selectedGrams) || SCAN.defaultGrams;
+  SCAN.selection = { source: "catalogue", label: food.name };
+  SCAN.confirmed = true;
+  SCAN.manualValues = {};
+  scanShowResult();
+}
+
+function scanShowResult() {
+  if (SCAN.confirmed) {
+    scanShowSelectedFood();
+  } else {
+    scanShowConfirmation();
+  }
+}
+
+function scanShowConfirmation() {
+  const box = $("#scan-drop");
+  const result = SCAN.result || {};
+  const top = SCAN.candidates[0];
+  if (!box || !top) {
+    if (box) box.innerHTML = `<div class="empty-state"><b>No food suggestion was returned.</b>
+      <button class="btn btn-ghost btn-sm mt12" id="scan-choose-food">Choose food manually</button></div>`;
+    const choose = $("#scan-choose-food");
+    if (choose) choose.onclick = scanShowAlternatives;
+    return;
+  }
+  const low = result.low_confidence;
   box.innerHTML = `
     <div class="row spread wrap" style="align-items:flex-start">
       <div style="display:flex;gap:12px;align-items:flex-start">
         <img class="scan-thumb" src="${SCAN.previewUrl}" alt="Your meal">
         <div>
-          <div class="tiny muted">${low ? "Best guess — low confidence" : "Food identified"}</div>
+          <div class="tiny muted">${low ? "Suggestion — low confidence" : "Food suggestion"}</div>
           <h3 style="font-size:20px;margin-top:2px">${esc(top.label)}</h3>
           <div class="row mt8" style="gap:6px">
             ${scanConfidencePill(top.confidence, low)}
@@ -267,46 +314,151 @@ function scanShowResult() {
       </div>
       <button class="btn btn-ghost btn-sm" id="scan-change">Change image</button>
     </div>
+    <div class="scan-warn mt16">
+      <b>Is this the correct food?</b>
+      <p class="tiny mt8">A confidence score is not confirmation. Check the suggestion before using its nutrition information.</p>
+      ${low ? `<p class="tiny mt8">The model is below its ${Math.round((result.threshold || 0) * 100)}% confidence threshold. Please verify or correct this suggestion.</p>` : ""}
+      <div class="row wrap mt12">
+        <button class="btn btn-primary" id="scan-confirm-yes">Yes, correct</button>
+        <button class="btn btn-ghost" id="scan-confirm-no">No, incorrect</button>
+      </div>
+    </div>`;
+  $("#scan-change").onclick = () => $("#scan-file").click();
+  $("#scan-confirm-yes").onclick = () => scanSelectClass(top, "prediction");
+  $("#scan-confirm-no").onclick = scanShowAlternatives;
+}
 
-    ${low ? `<div class="scan-warn mt12">
-        <b>The model is not confident about this photo.</b>
-        <p class="tiny mt8">Below ${Math.round(result.threshold * 100)}% confidence NutriCare
-        will not claim to know the food. Please pick the right dish below, or enter it manually.</p>
-      </div>` : ""}
+function scanShowAlternatives() {
+  const box = $("#scan-drop");
+  if (!box) return;
+  const alternatives = SCAN.candidates.slice(1);
+  box.innerHTML = `
+    <div class="row spread wrap" style="align-items:flex-start">
+      <div><div class="tiny muted">Choose the correct food</div>
+        <h3 style="font-size:20px;margin-top:2px">Other possible predictions</h3></div>
+      <button class="btn btn-ghost btn-sm" id="scan-back-confirm">Back to suggestion</button>
+    </div>
+    <p class="tiny muted mt8">Select an alternative below, or search the documented food catalogue.</p>
+    ${alternatives.length ? `<div class="scan-alts mt12">${alternatives.map((c) => `
+      <button class="result-row" data-scan-alternative="${esc(c.slug)}" style="width:100%;text-align:left">
+        <span style="flex:1"><b class="small">${esc(c.label)}</b>
+          <div class="tiny muted">${scanAltNutrition(c)}</div></span>
+        <span class="pill pill-slate">${Math.round(c.confidence * 100)}%</span>
+      </button>`).join("")}</div>` : `<div class="empty mt12">No alternative predictions were returned.</div>`}
+    <div class="row wrap mt16">
+      <button class="btn btn-deep" id="scan-search-catalogue">${ICONS.search} Search food catalogue</button>
+      <button class="btn btn-ghost" id="scan-change">Change image</button>
+    </div>`;
+  $("#scan-back-confirm").onclick = scanShowConfirmation;
+  $("#scan-change").onclick = () => $("#scan-file").click();
+  $("#scan-search-catalogue").onclick = () => openFoodSearchModal(
+    SCAN.meal || "breakfast", null, scanSelectCatalogueFood);
+  $$("[data-scan-alternative]").forEach((button) => {
+    button.onclick = () => scanSelectClass(
+      SCAN.candidates.find((candidate) => candidate.slug === button.dataset.scanAlternative),
+      "alternative");
+  });
+}
 
-    ${alternatives ? `<div class="mt16">
-      <span class="label">Other possible predictions</span>
-      <div class="scan-alts">${alternatives}</div>
-      <p class="tiny faint mt8">Wrong food? Tap another suggestion to use its nutrition instead.</p>
-    </div>` : ""}
-
+function scanShowSelectedFood() {
+  const box = $("#scan-drop");
+  if (!box || !SCAN.confirmed) return;
+  const candidate = SCAN.candidates.find((item) => item.slug === SCAN.slug);
+  const isCatalogueFood = !!SCAN.catalogueFood;
+  const label = isCatalogueFood ? SCAN.catalogueFood.name
+    : (candidate && candidate.label) || SCAN.slug;
+  const group = isCatalogueFood ? SCAN.catalogueFood.grp
+    : (candidate && candidate.group);
+  const source = SCAN.selection && SCAN.selection.source === "prediction"
+    ? "You confirmed this suggestion"
+    : (SCAN.selection && SCAN.selection.source === "alternative"
+      ? "You selected this alternative"
+      : "You selected this food from the catalogue");
+  box.innerHTML = `
+    <div class="row spread wrap" style="align-items:flex-start">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <img class="scan-thumb" src="${SCAN.previewUrl}" alt="Your meal">
+        <div>
+          <div class="tiny muted">${esc(source)}</div>
+          <h3 style="font-size:20px;margin-top:2px">${esc(label)}</h3>
+          <div class="row mt8" style="gap:6px">
+            ${!isCatalogueFood && candidate ? scanConfidencePill(candidate.confidence, false) : ""}
+            ${group ? `<span class="pill pill-slate">${esc(SCAN_GROUPS[group] || group)}</span>` : ""}
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="scan-change">Change image</button>
+    </div>
     <div class="mt16" id="scan-nutrition"></div>
-
     <div class="row wrap mt16" style="justify-content:space-between">
-      <button class="btn btn-ghost btn-sm" id="scan-pick">Use a different food</button>
+      <button class="btn btn-ghost btn-sm" id="scan-pick">Choose a different food</button>
       <div class="row">
-        <button class="btn btn-ghost" id="scan-remove">Remove</button>
+        <button class="btn btn-ghost btn-sm" id="scan-remove">Remove</button>
         <button class="btn btn-primary" id="scan-log">${ICONS.plus} Add to meal log</button>
       </div>
     </div>`;
-
-  if ($("#scan-change")) $("#scan-change").onclick = () => $("#scan-file").click();
-  if ($("#scan-remove")) $("#scan-remove").onclick = () => { scanReset(); renderScanner(); };
-  $("#scan-pick").onclick = () => openVisionPicker();
+  $("#scan-change").onclick = () => $("#scan-file").click();
+  $("#scan-remove").onclick = () => { scanReset(); renderScanner(); };
+  $("#scan-pick").onclick = scanShowAlternatives;
   $("#scan-log").onclick = scanAskMeal;
-  $$("[data-alt]").forEach((b) => b.onclick = () => {
-    SCAN.slug = b.dataset.alt;
-    const picked = SCAN.candidates.find((c) => c.slug === b.dataset.alt);
-    SCAN.grams = (picked.nutrition && picked.nutrition.grams) || SCAN.grams;
-    scanShowResult();
-  });
   scanRenderNutrition();
 }
 
-/* Portion editor + nutrient table. All numbers come from /api/vision/estimate. */
+/* Portion editor + nutrient table. Class selections use /vision/estimate;
+   catalogue corrections use the documented food record returned by /foods. */
+function scanPortionEditor(defaultGrams, note) {
+  return `
+    <div class="scan-portion">
+      <div class="field" style="margin:0">
+        <span class="label">Portion weight (grams)</span>
+        <div class="row" style="gap:8px">
+          <button class="btn btn-ghost btn-sm" data-step="-10" aria-label="decrease">−</button>
+          <input class="input" id="scan-grams" type="number" min="1" max="3000" step="5"
+                 value="${fmt(SCAN.grams)}" style="width:110px;text-align:center">
+          <button class="btn btn-ghost btn-sm" data-step="10" aria-label="increase">+</button>
+          <button class="btn btn-soft btn-sm" data-step="reset">Reset to ${fmt(defaultGrams)} g</button>
+        </div>
+      </div>
+      <p class="tiny faint mt8">${esc(note || "Documented portion information.")}</p>
+    </div>`;
+}
+
+function scanRenderCatalogueNutrition(host) {
+  const food = SCAN.catalogueFood;
+  if (!food) return;
+  const grams = Math.max(1, Math.min(3000, Number(SCAN.grams) || SCAN.defaultGrams || 100));
+  SCAN.grams = grams;
+  const scale = grams / 100;
+  const value = (field) => {
+    const raw = food[field];
+    return raw === null || raw === undefined || raw === "" ? NaN : Number(raw) * scale;
+  };
+  const rows = [
+    ["Calories", value("kcal"), "kcal", 0],
+    ["Protein", value("protein_g"), "g", 1],
+    ["Carbohydrates", value("carbs_g"), "g", 1],
+    ["Total fat", value("fat_g"), "g", 1],
+    ["Dietary fibre", value("fiber_g"), "g", 1],
+    ["Calcium", value("calcium_mg"), "mg", 0],
+    ["Iron", value("iron_mg"), "mg", 1],
+  ].filter(([, amount]) => Number.isFinite(amount)).map(([label, amount, unit, dp]) => `
+    <div class="row spread small" style="padding:7px 0;border-bottom:1px solid var(--line)">
+      <span class="muted">${label}</span><b>${fmt(amount, dp)} ${unit}</b></div>`).join("");
+  host.innerHTML = scanPortionEditor(SCAN.defaultGrams || 100,
+    `${food.serving_desc || "Documented serving"} · values scale from the food catalogue.`) + `
+    <div class="row spread mt12">
+      <span class="card-title">Documented nutrition</span>
+      <span class="pill pill-slate">${fmt(grams)} g portion</span>
+    </div>
+    <div class="mt8">${rows}</div>
+    <p class="tiny faint mt8">Source: ${esc(food.source || "documented food catalogue")} · ${esc(food.name)}</p>`;
+  bindStepper();
+}
+
 async function scanRenderNutrition() {
   const host = $("#scan-nutrition");
-  if (!host || !SCAN.slug) return;
+  if (!host || (!SCAN.slug && !SCAN.catalogueFood)) return;
+  if (SCAN.catalogueFood) { scanRenderCatalogueNutrition(host); return; }
   host.innerHTML = `<p class="muted small">Calculating nutrition…</p>`;
   let est;
   try {
@@ -318,22 +470,9 @@ async function scanRenderNutrition() {
     return;
   }
   SCAN.grams = est.grams;
+  SCAN.defaultGrams = est.default_grams || SCAN.defaultGrams || 100;
   const n = est.nutrients;
-
-  const stepper = `
-    <div class="scan-portion">
-      <div class="field" style="margin:0">
-        <span class="label">Portion weight (grams)</span>
-        <div class="row" style="gap:8px">
-          <button class="btn btn-ghost btn-sm" data-step="-10" aria-label="decrease">−</button>
-          <input class="input" id="scan-grams" type="number" min="1" max="3000" step="5"
-                 value="${est.grams}" style="width:110px;text-align:center">
-          <button class="btn btn-ghost btn-sm" data-step="10" aria-label="increase">+</button>
-          <button class="btn btn-soft btn-sm" data-step="reset">Reset to ${fmt(est.default_grams)} g</button>
-        </div>
-      </div>
-      <p class="tiny faint mt8">${esc(est.portion_note)}</p>
-    </div>`;
+  const stepper = scanPortionEditor(SCAN.defaultGrams, est.portion_note);
 
   if (!est.nutrition_available || !n) {
     host.innerHTML = stepper + `
@@ -386,57 +525,33 @@ function bindStepper() {
   input.onchange = () => apply(parseFloat(input.value) || SCAN.grams);
   $$("[data-step]").forEach((b) => b.onclick = () => {
     const step = b.dataset.step;
-    if (step === "reset") { apply(SCAN.result ? SCAN.candidates
-      .find((c) => c.slug === SCAN.slug).nutrition.default_grams : 100); return; }
+    if (step === "reset") { apply(SCAN.defaultGrams || 100); return; }
     apply((SCAN.grams || 0) + Number(step));
   });
 }
 
-/* Pick a different food from the full class list (the "model was wrong" path). */
-function openVisionPicker() {
-  const groups = {};
-  const modelInstalled = !!SCAN.coverage.model_installed;
-  /* Only offer foods the model can actually recognise. Showing all 65 taxonomy
-     entries would imply support the checkpoint does not have. Without a model,
-     everything is a manual entry and the full list is legitimate. */
-  const all = (SCAN.allClasses || []).filter((c) => !modelInstalled || c.trained);
-  all.forEach((c) => { (groups[c.group] = groups[c.group] || []).push(c); });
-  openModal(`
-    <h3>Which food is this?</h3>
-    <p class="tiny muted mt8">Pick the correct dish. Nutrition comes from the same
-    documented dataset the manual logger uses.</p>
-    <div class="mt12" style="max-height:52vh;overflow:auto">
-      ${Object.entries(SCAN_GROUPS).map(([key, label]) => {
-        const items = (groups[key] || []).map((c) => `
-          <button class="result-row" data-pick="${c.slug}" style="width:100%;text-align:left">
-            <span style="flex:1"><b class="small">${esc(c.label)}</b>
-              <div class="tiny muted">${c.nutrition_available
-                ? "nutrition available" : "no dataset entry — enter values yourself"}</div></span>
-            ${c.nutrition_available ? '<span class="pill pill-teal">select</span>'
-              : '<span class="pill pill-amber">manual</span>'}
-          </button>`).join("");
-        return items ? `<div class="mt12"><span class="label">${esc(label)}</span>${items}</div>` : "";
-      }).join("")}
-    </div>
-    <div class="row mt16" style="justify-content:flex-end">
-      <button class="btn btn-ghost" data-close>Cancel</button></div>`);
-  $$("[data-pick]").forEach((b) => b.onclick = async () => {
-    const slug = b.dataset.pick;
-    const cls = (SCAN.allClasses || []).find((c) => c.slug === slug);
-    SCAN.slug = slug;
-    SCAN.grams = (cls && cls.default_grams) || 100;
-    SCAN.candidates = [{ slug, label: cls ? cls.label : slug, group: cls ? cls.group : "",
-      confidence: 0, confidence_pct: 0 }];
-    closeModal();
-    scanShowResult();
-  });
+/* ---------------------------------------------------------------- meal + save */
+function scanNeedsManualValues() {
+  if (!SCAN.slug) return false;
+  const cls = (SCAN.allClasses || []).find((c) => c.slug === SCAN.slug);
+  return !!(cls && !cls.nutrition_available);
 }
 
-/* ---------------------------------------------------------------- meal + save */
+function scanSelectedLabel() {
+  if (SCAN.catalogueFood) return SCAN.catalogueFood.name;
+  const candidate = SCAN.candidates.find((item) => item.slug === SCAN.slug);
+  const cls = (SCAN.allClasses || []).find((item) => item.slug === SCAN.slug);
+  return (candidate && candidate.label) || (cls && cls.label) || SCAN.slug || "this food";
+}
+
 function scanAskMeal() {
+  if (!SCAN.confirmed || (!SCAN.slug && !SCAN.catalogueFood)) {
+    toast("Confirm or choose a food before adding it to your meal log", true);
+    return;
+  }
   openModal(`
     <h3>When did you have this meal?</h3>
-    <p class="tiny muted mt8">Choose a meal category to add it to your food diary.</p>
+    <p class="tiny muted mt8">Choose a meal category, then review the completed entry before it is saved.</p>
     <div class="seg mt16">
       ${Object.entries(MEAL_META).map(([key, m]) => `
         <button class="tile tile-btn" data-meal="${key}">
@@ -448,31 +563,72 @@ function scanAskMeal() {
   $$("[data-meal]").forEach((b) => b.onclick = () => {
     SCAN.meal = b.dataset.meal;
     closeModal();
-    scanSave();
+    scanConfirmSave();
   });
 }
 
+function scanConfirmSave() {
+  if (!SCAN.confirmed || !SCAN.meal || (!SCAN.slug && !SCAN.catalogueFood)) return;
+  if (scanNeedsManualValues() && SCAN.manualValues.custom_kcal === undefined) {
+    const cls = (SCAN.allClasses || []).find((item) => item.slug === SCAN.slug);
+    scanAskManualValues(cls);
+    return;
+  }
+  const category = MEAL_META[SCAN.meal];
+  openModal(`
+    <h3>Confirm meal entry</h3>
+    <p class="tiny muted mt8">Review this completed entry. It will not be added until you confirm.</p>
+    <div class="selfcare-card mt12">
+      <b>${esc(scanSelectedLabel())}</b>
+      <p class="tiny muted mt8">${fmt(SCAN.grams)} g · ${esc(category.label)}</p>
+    </div>
+    <div class="row mt16" style="justify-content:flex-end">
+      <button class="btn btn-ghost" data-close>Back</button>
+      <button class="btn btn-primary" id="scan-final-save">Confirm & add to ${esc(category.label)}</button>
+    </div>`);
+  $("#scan-final-save").onclick = () => scanSave();
+}
+
 async function scanSave() {
+  if (!SCAN.confirmed || (!SCAN.slug && !SCAN.catalogueFood)) {
+    toast("Confirm or choose a food before saving", true);
+    return;
+  }
   if (!SCAN.meal) { scanAskMeal(); return; }
-  const cls = (SCAN.allClasses || []).find((c) => c.slug === SCAN.slug);
-  const needsManual = cls && !cls.nutrition_available;
-  const body = {
-    slug: SCAN.slug,
-    grams: SCAN.grams,
-    meal: SCAN.meal,
-    date: S.trackerDate || S.boot.today,
-  };
+  const needsManual = scanNeedsManualValues();
   if (needsManual) {
     const values = SCAN.manualValues || {};
-    if (values.custom_kcal === undefined) { scanAskManualValues(cls); return; }
-    Object.assign(body, values);
+    if (values.custom_kcal === undefined) {
+      const cls = (SCAN.allClasses || []).find((item) => item.slug === SCAN.slug);
+      scanAskManualValues(cls);
+      return;
+    }
   }
   try {
-    const res = await api("/vision/log", { method: "POST", body });
-    toast(`Added to ${MEAL_META[SCAN.meal].label} · ${fmt(res.totals.kcal)} kcal logged today`);
+    let saved;
+    if (SCAN.catalogueFood) {
+      saved = await api("/meals", { method: "POST", body: {
+        date: S.trackerDate || S.boot.today,
+        meal: SCAN.meal,
+        food_id: SCAN.catalogueFood.id,
+        quantity: SCAN.grams,
+        unit: "g",
+      } });
+    } else {
+      const body = {
+        slug: SCAN.slug,
+        grams: SCAN.grams,
+        meal: SCAN.meal,
+        date: S.trackerDate || S.boot.today,
+      };
+      if (needsManual) Object.assign(body, SCAN.manualValues);
+      saved = await api("/vision/log", { method: "POST", body });
+    }
+    closeModal();
     const meal = SCAN.meal;
+    const kcal = saved && saved.totals ? ` · ${fmt(saved.totals.kcal)} kcal logged today` : "";
+    toast(`Saved to ${meal === "snacks" ? "Snacks" : MEAL_META[meal].label}${kcal}`);
     scanReset();
-    toast(`Saved to ${meal === "snacks" ? "Snacks" : MEAL_META[meal].label}`);
     await refreshSideGoal();
     await refreshView();
   } catch (e) {
@@ -510,7 +666,7 @@ function scanAskManualValues(cls) {
       custom_fat_g: parseFloat($("#scan-fat").value) || undefined,
     };
     closeModal();
-    await scanSave();
+    scanConfirmSave();
   };
 }
 

@@ -191,6 +191,42 @@ const DRIVER = `
   await boot();
   assert(S.boot.profile.weight_kg === 61.5, "D2 edit persists after refresh");
 
+  /* ---- O: account switcher launches the shared full onboarding wizard ---- */
+  console.log("O: new account uses shared onboarding and stays isolated…");
+  const existingId = S.boot.user.id;
+  const existingMealCount = (await (await fetch("BASE" + "/api/meals")).json()).logged_count;
+  await openUserModal();
+  assert(el("#modal-root").innerHTML.includes("Start profile setup")
+    && !el("#modal-root").innerHTML.includes("u-new-name"),
+  "O1 account switcher replaces name-only creation with guided setup");
+  await click("#u-create");
+  assert(S.onboardingActive && bodyClasses.has("no-shell") && view().includes("Start setup"),
+    "O2 new account opens the same first-launch wizard");
+  click("#ob-start");
+  set("#ob-name", "Asha"); set("#ob-age", "29"); set("#ob-sex", "female");
+  set("#ob-height", "162"); set("#ob-weight", "57.5"); set("#ob-activity", "active");
+  set("#ob-prefs", "lactose-free"); click("#ob-next");
+  OB.consent.allergies = true; OB.consent.medications = true; OB.consent.history = true;
+  set("#ob-allergies", "soy"); set("#ob-meds", "Vitamin D3");
+  set("#ob-history", "Seasonal migraines"); click("#ob-next");
+  set("#ob-goal", "mild_gain"); set("#ob-macro", "high_protein"); set("#ob-water", "3200");
+  await click("#ob-finish"); await sleep(500);
+  assert(S.boot.user && S.boot.user.name === "Asha" && !S.onboardingActive,
+    "O3 finished wizard creates and opens the new account");
+  assert(S.boot.profile.age === 29 && S.boot.profile.dietary_prefs.includes("lactose-free")
+    && S.boot.profile.allergies.includes("soy") && S.boot.profile.medications.includes("Vitamin D3")
+    && S.boot.profile.medical_history === "Seasonal migraines"
+    && S.boot.profile.goal === "mild_gain" && S.boot.profile.macro_model === "high_protein"
+    && S.boot.settings.water_goal_ml === 3200,
+  "O4 full optional onboarding data is saved to the new account");
+  assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === 0,
+    "O5 new account starts with an isolated empty meal log");
+  S.boot = await api("/users/switch", { method: "POST", body: { id: existingId } });
+  lsSetLocalUid(); await afterUserChange();
+  assert(S.boot.user.id === existingId && S.boot.profile.weight_kg === 61.5
+    && (await (await fetch("BASE" + "/api/meals")).json()).logged_count === existingMealCount,
+  "O6 switching back restores the existing account without overwriting it");
+
   /* ---- H: navigation + interactive controls across all views ---- */
   console.log("H: navigation and controls…");
   for (const [hash, marker] of [["#/tracker", "Nutrition Tracker"], ["#/profile", "Biometrics"],
@@ -384,6 +420,66 @@ const DRIVER = `
     "L24 camera capture still bound after the sidebar change");
   assert(typeof el("#scan-upload").onclick === "function",
     "L25 upload still bound after the sidebar change");
+
+  /* ---- M: recognition always waits for confirmation / correction / final save ---- */
+  console.log("M: scanner confirmation and catalogue correction…");
+  const scannerBefore = (await (await fetch("BASE" + "/api/meals")).json()).logged_count;
+  SCAN.previewUrl = "data:image/png;base64,preview";
+  SCAN.result = { low_confidence: false, threshold: 0.55 };
+  SCAN.candidates = [
+    { slug: "roti", label: "Roti", group: "indian_staple", confidence: 0.92,
+      nutrition: { grams: 40, default_grams: 40, nutrition_available: true } },
+    { slug: "masala_dosa", label: "Masala dosa", group: "indian_breakfast", confidence: 0.06,
+      nutrition: { grams: 150, default_grams: 150, nutrition_available: true } },
+  ];
+  scanClearSelection(); scanShowResult();
+  assert(el("#scan-drop").innerHTML.includes("Is this the correct food?")
+    && el("#scan-drop").innerHTML.includes("Yes, correct")
+    && el("#scan-drop").innerHTML.includes("No, incorrect"),
+  "M1 prediction is presented as an explicit Yes/No confirmation");
+  await sleep(100);
+  assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore,
+    "M2 prediction and confidence alone never write a meal");
+  click("#scan-confirm-yes"); await sleep(100);
+  assert(SCAN.confirmed && SCAN.slug === "roti" && el("#scan-drop").innerHTML.includes("Add to meal log"),
+    "M3 Yes accepts the prediction and opens portion/category workflow without logging");
+  assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore,
+    "M4 accepting the prediction still does not write a meal");
+
+  scanClearSelection(); scanShowResult(); click("#scan-confirm-no");
+  assert(el("#scan-drop").innerHTML.includes("Other possible predictions")
+    && el("#scan-drop").innerHTML.includes("Search food catalogue"),
+  "M5 No reveals alternatives and a documented-food catalogue search");
+  scanSelectClass(SCAN.candidates[1], "alternative"); await sleep(100);
+  assert(SCAN.confirmed && SCAN.slug === "masala_dosa"
+    && el("#scan-drop").innerHTML.includes("You selected this alternative"),
+  "M6 choosing a model alternative uses it only after the correction choice");
+
+  openFoodSearchModal("lunch", null, () => {});
+  set("#m-search", "roti"); await el("#m-search").oninput();
+  assert(el("#modal-root").innerHTML.includes("Search documented food catalogue")
+    && el("#m-results").innerHTML.includes(roti.name),
+  "M7 catalogue search returns documented foods without logging itself");
+  let cataloguePicked = null;
+  openFoodSearchModal("lunch", roti, (foodChoice, grams) => {
+    cataloguePicked = { foodChoice, grams }; scanSelectCatalogueFood(foodChoice, grams);
+  });
+  assert(el("#modal-root").innerHTML.includes("Use this food")
+    && !el("#modal-root").innerHTML.includes("Add to log"),
+  "M8 catalogue selection stays separate from saving");
+  set("#m-qty", "1"); set("#m-unit", "serving"); await click("#m-save");
+  assert(cataloguePicked && SCAN.catalogueFood.id === roti.id && SCAN.confirmed
+    && el("#scan-nutrition").innerHTML.includes("Documented nutrition"),
+  "M9 documented catalogue selection retains portioned nutrition in the scanner");
+  SCAN.meal = "lunch"; scanConfirmSave();
+  assert(el("#modal-root").innerHTML.includes("Confirm meal entry")
+    && el("#modal-root").innerHTML.includes("It will not be added until you confirm"),
+  "M10 meal category leads to an explicit final confirmation");
+  assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore,
+    "M11 no scanner meal is saved before the final confirmation");
+  await click("#scan-final-save"); await sleep(400);
+  assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore + 1,
+    "M12 final confirmation saves the documented catalogue entry exactly once");
 
   /* ---- N: missing nutrition must never render as 0 kcal ---- */
   const altNoData = scanAltNutrition({ label: "Paneer Butter Masala",

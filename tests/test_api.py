@@ -122,6 +122,48 @@ def test_switching_profiles_is_explicit_and_scoped(client):
     assert client.get("/api/meals").get_json()["logged_count"] == 1
 
 
+def test_completed_new_account_onboarding_is_isolated_from_current_profile(client):
+    """The shared wizard creates first, then writes every optional answer only
+    to that new session. Switching back must restore the prior profile unchanged."""
+    new_user(client, "Existing", age=42, sex="male", height_cm=177,
+             weight_kg=81, activity="light")
+    first_id = client.get("/api/bootstrap").get_json()["user"]["id"]
+    client.put("/api/profile", json={"dietary_prefs": ["vegetarian"],
+                                      "allergies": ["peanuts"]})
+    client.put("/api/settings", json={"water_goal_ml": 2100})
+    food = client.get("/api/foods?q=roti").get_json()["foods"][0]
+    assert client.post("/api/meals", json={"meal": "lunch", "food_id": food["id"],
+                                            "quantity": 1, "unit": "serving"}).status_code == 201
+
+    # Equivalent to finishOnboardingSubmit(): POST /users commits and changes
+    # the local session before the wizard sends its profile/settings writes.
+    created = client.post("/api/users", json={"name": "New Wizard Profile"})
+    assert created.status_code == 201
+    second_id = created.get_json()["user"]["id"]
+    complete = {
+        "age": 27, "sex": "female", "height_cm": 164, "weight_kg": 58.5,
+        "activity": "active", "goal": "mild_gain", "macro_model": "high_protein",
+        "dietary_prefs": ["lactose-free"], "allergies": ["soy"],
+        "medications": ["Vitamin D3"], "medical_history": "Seasonal migraines",
+    }
+    assert client.put("/api/profile", json=complete).status_code == 200
+    assert client.put("/api/settings", json={"water_goal_ml": 3200}).status_code == 200
+
+    second = client.get("/api/bootstrap").get_json()
+    assert second["user"]["id"] == second_id
+    assert {key: second["profile"][key] for key in complete} == complete
+    assert second["settings"]["water_goal_ml"] == 3200
+    assert client.get("/api/meals").get_json()["logged_count"] == 0
+
+    assert client.post("/api/users/switch", json={"id": first_id}).status_code == 200
+    restored = client.get("/api/bootstrap").get_json()
+    assert restored["profile"]["age"] == 42
+    assert restored["profile"]["dietary_prefs"] == ["vegetarian"]
+    assert restored["profile"]["allergies"] == ["peanuts"]
+    assert restored["settings"]["water_goal_ml"] == 2100
+    assert client.get("/api/meals").get_json()["logged_count"] == 1
+
+
 def test_delete_user_removes_only_that_users_data(app):
     a, b = app.test_client(), app.test_client()
     if True:
