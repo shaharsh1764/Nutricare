@@ -32,6 +32,7 @@ function makeEl(sel) {
     classList: { toggle() {}, add() {}, remove() {}, contains: () => false },
     addEventListener(type, fn) { this.handlers[type] = fn; },
     removeEventListener() {}, appendChild() {}, remove() {}, focus() {},
+    click() { this.clicked = true; },
     querySelectorAll: () => [],
     setAttribute(k, v) { this[k] = String(v); },
     onclick: null, oninput: null, onchange: null,
@@ -363,11 +364,10 @@ const DRIVER = `
   assert(el("#insights-root").innerHTML.includes("Smart Nutrition Insights"), "K3 insights survive refresh");
   assert(el("#insights-root").innerHTML.length > 100, "K4 insights content populated");
 
-  /* ---- L: AI Food Scanner (camera, upload, prediction, portion, log) ----
-     The ML checkpoint is absent in CI by design, so this workflow asserts the
-     HONEST path: a clear "recognition off" state and zero invented food names.
-     Behaviour with a real checkpoint is covered by tests/test_vision_inference.py. */
-  console.log("L: AI Food Scanner view…");
+  /* ---- L: Food Scanner (camera, upload, suggestion, portion, log) ----
+     The recognition service can be absent in CI. The UI stays helpful without
+     exposing implementation details, while API coverage verifies its honesty. */
+  console.log("L: Food Scanner view…");
   cookieJar.clear(); storage.delete("nutricare_uid");
   await boot();
   if (!S.boot.user) { await click("#ob-skip-all"); await sleep(400); }
@@ -376,51 +376,66 @@ const DRIVER = `
   /* The scanner is reached from the Dashboard ("Scan a Meal"), not the sidebar.
      The route must still work when navigated to directly. */
   assert(!el("#nav-links").innerHTML.includes('data-route="scanner"'),
-    "L1 AI Food Scanner is NOT in the sidebar");
+    "L1 Food Scanner is not in the sidebar");
   assert(el("#nav-links").innerHTML.includes('data-route="tracker"'),
     "L1b other sidebar items are untouched");
-  assert(view().includes("AI Food Scanner"), "L2 scanner view renders");
-  assert(view().includes("Take Photo"), "L3 camera capture option present");
-  assert(view().includes("Upload Image"), "L4 upload option present");
+  assert(view().includes("Food Scanner")
+    && view().includes("Take a photo of your meal and discover its nutritional information.")
+    && el("#crumb-page").textContent === "Food Scanner",
+    "L2 welcoming scanner introduction and breadcrumb render");
+  assert(view().includes("Take a photo"), "L3 camera capture option present");
+  assert(view().includes("Upload a photo"), "L4 upload option present");
   assert(!!el("#scan-file")
-    && view().includes('accept="image/jpeg,image/png,image/webp"'),
-    "L5 file input accepts JPG/PNG/WebP");
-  assert(view().includes("never stored") || view().includes("not stored"),
-    "L6 privacy statement about photos present");
-  assert(typeof el("#scan-camera").onclick === "function", "L7 camera button bound");
-  assert(typeof el("#scan-upload").onclick === "function", "L8 upload button bound");
+    && view().includes('accept="image/jpeg,image/png,image/webp"')
+    && view().includes("JPG, PNG or WebP · up to 8 MB"),
+    "L5 image formats and upload limit are visible");
+  assert(view().includes("Ready when you are") && (view().includes("not stored")),
+    "L6 welcoming empty state and photo privacy message render");
+  assert(view().includes("Take a photo of one dish.")
+    && view().includes("Confirm or correct the suggested food.")
+    && view().includes("Review your nutrition information and add it to your tracker."),
+    "L7 user-centred six-step guidance renders");
+  assert(view().includes("For the best results, photograph one dish at a time. If your plate contains several different dishes, add them separately.")
+    && view().includes("Nutrition information is available for selected foods. If information isn't available for your selection, you may need to enter it manually."),
+    "L8 scanner limitations and nutrition coverage are clear");
+  assert(!/(80-class|12-class|model installed|primary model|fallback model|checkpoint|classifier|ranking|inference|technical model coverage)/i.test(view()),
+    "L9 scanner introduction hides recognition infrastructure details");
+  assert(typeof el("#scan-camera").onclick === "function", "L10 camera capture action bound");
+  await click("#scan-camera");
+  assert(el("#modal-root").innerHTML.includes("Take a photo of your meal")
+    && el("#scan-cam-msg").innerHTML.includes("Camera is not supported"),
+    "L10b camera action opens a clear capture fallback");
+  closeModal();
+  assert(typeof el("#scan-upload").onclick === "function", "L11 upload action bound");
+  click("#scan-upload");
+  assert(el("#scan-file").clicked === true, "L12 upload action opens the photo chooser");
 
   const visionStatus = await (await fetch("BASE" + "/api/vision/status")).json();
   const modelReady = !!(visionStatus.model && visionStatus.model.model_present);
-  if (modelReady) {
-    assert(!view().includes("Photo recognition is switched off"),
-      "L9 model installed -> no 'switched off' warning");
-  } else {
-    assert(view().includes("Photo recognition is switched off"),
-      "L9 no checkpoint -> UI states recognition is off (no fake AI)");
-    /* a genuinely valid 16x16 PNG, so validation passes and the model check runs */
+  if (!modelReady) {
+    /* a genuinely valid 16x16 PNG, so validation passes and the service check runs */
     const VALID_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR4nGM4UWFDEmIY1TCqYfhqAACRKnwQyeK93QAAAABJRU5ErkJggg==", "base64");
     const pred = await fetch("BASE" + "/api/vision/predict", {
       method: "POST", headers: { "Content-Type": "application/octet-stream" },
       body: VALID_PNG });
-    assert(pred.status === 503, "L10 predict honestly returns 503 when no model exists");
+    assert(pred.status === 503, "L13 unavailable suggestions return an honest service response");
     const body = await pred.json();
     assert(body.model_unavailable === true && !body.predictions,
-      "L11 no predictions are fabricated without a trained model");
+      "L14 unavailable suggestions never fabricate a food name");
   }
 
   /* portion adjustment + nutrition come from the documented dataset */
   const dosa = await (await fetch("BASE" + "/api/vision/estimate", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ slug: "masala_dosa", grams: 150 }) })).json();
-  assert(dosa.nutrients && dosa.nutrients.kcal > 0, "L12 nutrition resolved from dataset");
+  assert(dosa.nutrients && dosa.nutrients.kcal > 0, "L15 nutrition resolved from dataset");
   const bigger = await (await fetch("BASE" + "/api/vision/estimate", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ slug: "masala_dosa", grams: 300 }) })).json();
   assert(Math.abs(bigger.nutrients.kcal - 2 * dosa.nutrients.kcal) < 0.6,
-    "L13 nutrients scale proportionally with portion size");
+    "L16 nutrients scale proportionally with portion size");
   assert(!!dosa.range && dosa.range.kcal_low < dosa.nutrients.kcal,
-    "L14 uncertainty band shown, not hidden");
+    "L17 uncertainty band shown, not hidden");
 
   /* meal-category selection for all four categories + real persistence */
   const beforeCount = (await (await fetch("BASE" + "/api/meals")).json()).logged_count;
@@ -428,41 +443,41 @@ const DRIVER = `
     const res = await fetch("BASE" + "/api/vision/log", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug: "roti", grams: 40, meal }) });
-    assert(res.status === 201, "L15 " + meal + " logged via the scanner endpoint");
+    assert(res.status === 201, "L18 " + meal + " logged via the scanner endpoint");
   }
   const after = await (await fetch("BASE" + "/api/meals")).json();
-  assert(after.logged_count === beforeCount + 4, "L16 scanned meals persisted to the diary");
+  assert(after.logged_count === beforeCount + 4, "L19 scanned meals persisted to the diary");
   assert(["breakfast", "lunch", "snacks", "dinner"].every((m) =>
     after.meals[m].some((e) => e.display_name.includes("Roti"))),
-    "L17 all four meal categories accepted and grouped correctly");
+    "L20 all four meal categories accepted and grouped correctly");
 
   const summaryAfter = await (await fetch("BASE" + "/api/summary")).json();
   assert(summaryAfter.totals.kcal >= dosa.nutrients.kcal,
-    "L18 existing dashboard totals reflect scanned meals");
+    "L21 existing dashboard totals reflect scanned meals");
 
   await boot(); location.hash = "#/tracker"; await refreshView(); await sleep(400);
-  assert(view().includes("Roti"), "L19 scanned meal visible in the tracker log");
+  assert(view().includes("Roti"), "L22 scanned meal visible in the tracker log");
 
   /* missing meal category is refused */
   const noMeal = await fetch("BASE" + "/api/vision/log", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ slug: "roti", grams: 40 }) });
-  assert(noMeal.status === 400, "L20 meal category is required before saving");
+  assert(noMeal.status === 400, "L23 meal category is required before saving");
 
   location.hash = "#/dashboard"; await refreshView(); await sleep(600);
   assert(typeof el("#quick-scan").onclick === "function",
-    "L21 dashboard exposes the scanner entry point");
+    "L24 dashboard exposes the scanner entry point");
   /* the dashboard button must actually open the scanner route */
   el("#quick-scan").onclick();
   await sleep(50);
-  assert(location.hash === "#/scanner", "L22 Scan a Meal opens the scanner route");
+  assert(location.hash === "#/scanner", "L25 Scan a Meal opens the scanner route");
   await refreshView(); await sleep(400);
-  assert(view().includes("AI Food Scanner"),
-    "L23 scanner renders when opened from the dashboard");
+  assert(view().includes("Food Scanner"),
+    "L26 scanner renders when opened from the dashboard");
   assert(typeof el("#scan-camera").onclick === "function",
-    "L24 camera capture still bound after the sidebar change");
+    "L27 camera capture still bound after the sidebar change");
   assert(typeof el("#scan-upload").onclick === "function",
-    "L25 upload still bound after the sidebar change");
+    "L28 upload still bound after the sidebar change");
 
   /* ---- M: recognition always waits for confirmation / correction / final save ---- */
   console.log("M: scanner confirmation and catalogue correction…");
@@ -478,57 +493,59 @@ const DRIVER = `
   scanClearSelection(); scanShowResult();
   assert(el("#scan-drop").innerHTML.includes("Is this the correct food?")
     && el("#scan-drop").innerHTML.includes("Yes, correct")
-    && el("#scan-drop").innerHTML.includes("No, incorrect"),
-  "M1 prediction is presented as an explicit Yes/No confirmation");
+    && el("#scan-drop").innerHTML.includes("No, choose another food"),
+  "M1 suggestion is presented as an explicit confirmation choice");
+  assert(!el("#scan-drop").innerHTML.includes("% confident"),
+    "M2 confirmation keeps implementation scores out of the user interface");
   await sleep(100);
   assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore,
-    "M2 prediction and confidence alone never write a meal");
+    "M3 a suggestion alone never writes a meal");
   click("#scan-confirm-yes"); await sleep(100);
   assert(SCAN.confirmed && SCAN.slug === "roti" && el("#scan-drop").innerHTML.includes("Add to meal log"),
-    "M3 Yes accepts the prediction and opens portion/category workflow without logging");
+    "M4 Yes accepts the suggestion and opens portion/category workflow without logging");
   assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore,
-    "M4 accepting the prediction still does not write a meal");
+    "M5 accepting the suggestion still does not write a meal");
 
   scanClearSelection(); scanShowResult(); click("#scan-confirm-no");
-  assert(el("#scan-drop").innerHTML.includes("Other possible predictions")
+  assert(el("#scan-drop").innerHTML.includes("Other suggestions")
     && el("#scan-drop").innerHTML.includes("Search food catalogue"),
-  "M5 No reveals alternatives and a documented-food catalogue search");
+  "M6 correction reveals other suggestions and a food catalogue search");
   scanSelectClass(SCAN.candidates[1], "alternative"); await sleep(100);
   assert(SCAN.confirmed && SCAN.slug === "masala_dosa"
-    && el("#scan-drop").innerHTML.includes("You selected this alternative"),
-  "M6 choosing a model alternative uses it only after the correction choice");
+    && el("#scan-drop").innerHTML.includes("You chose another suggestion"),
+  "M7 choosing another suggestion uses it only after the correction choice");
 
   openFoodSearchModal("lunch", null, () => {});
   set("#m-search", "roti"); await el("#m-search").oninput();
   assert(el("#modal-root").innerHTML.includes("Search documented food catalogue")
     && el("#m-results").innerHTML.includes(roti.name),
-  "M7 catalogue search returns documented foods without logging itself");
+  "M8 catalogue search returns documented foods without logging itself");
   let cataloguePicked = null;
   openFoodSearchModal("lunch", roti, (foodChoice, grams) => {
     cataloguePicked = { foodChoice, grams }; scanSelectCatalogueFood(foodChoice, grams);
   });
   assert(el("#modal-root").innerHTML.includes("Use this food")
     && !el("#modal-root").innerHTML.includes("Add to log"),
-  "M8 catalogue selection stays separate from saving");
+  "M9 catalogue selection stays separate from saving");
   set("#m-qty", "1"); set("#m-unit", "serving"); await click("#m-save");
   assert(cataloguePicked && SCAN.catalogueFood.id === roti.id && SCAN.confirmed
     && el("#scan-nutrition").innerHTML.includes("Documented nutrition"),
-  "M9 documented catalogue selection retains portioned nutrition in the scanner");
+  "M10 documented catalogue selection retains portioned nutrition in the scanner");
   SCAN.meal = "lunch"; scanConfirmSave();
   assert(el("#modal-root").innerHTML.includes("Confirm meal entry")
     && el("#modal-root").innerHTML.includes("It will not be added until you confirm"),
-  "M10 meal category leads to an explicit final confirmation");
+  "M11 meal category leads to an explicit final confirmation");
   assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore,
-    "M11 no scanner meal is saved before the final confirmation");
+    "M12 no scanner meal is saved before the final confirmation");
   await click("#scan-final-save"); await sleep(400);
   assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore + 1,
-    "M12 final confirmation saves the documented catalogue entry exactly once");
+    "M13 final confirmation saves the documented catalogue entry exactly once");
 
   /* ---- N: missing nutrition must never render as 0 kcal ---- */
   const altNoData = scanAltNutrition({ label: "Paneer Butter Masala",
     confidence: 0.31, nutrition: { nutrition_available: false, nutrients: null } });
-  assert(altNoData.includes("no documented nutrition"),
-    "N1 alternative prediction with no data says so instead of showing a number");
+  assert(altNoData.includes("nutrition information isn\'t available"),
+    "N1 unavailable nutrition explains that manual entry may be needed");
   assert(!/\b0\s*kcal/.test(altNoData),
     "N2 missing nutrition never renders as 0 kcal");
   assert(!/\d\s*kcal/.test(altNoData),

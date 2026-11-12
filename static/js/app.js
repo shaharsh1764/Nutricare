@@ -17,7 +17,7 @@ const ROUTES = {
   /* The scanner is reachable from the Dashboard ("Scan a Meal"), not from the
      sidebar. `nav: false` keeps the route (so #/scanner still works) while
      omitting it from the navigation list. */
-  scanner: { title: "AI Food Scanner", render: renderScanner, nav: false },
+  scanner: { title: "Food Scanner", render: renderScanner, nav: false },
   profile: { title: "My Profile", render: renderProfile },
   assistant: { title: "Health Assistant", render: renderAssistant },
   reports: { title: "Reports", render: renderReports },

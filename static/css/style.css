@@ -356,10 +356,22 @@ body.side-rail .side-toggle-btn{position:static;margin:0}
 }
 @media(max-width:640px){.metric-grid{grid-template-columns:1fr}}
 
-/* ---------------- AI Food Scanner (feature-specific only) ---------------- */
+/* ---------------- Food Scanner (feature-specific only) ---------------- */
+.scan-capture-card{border-color:var(--primary-border)}
+.scan-capture-intro{display:flex;align-items:center;gap:12px}
+.scan-capture-intro h3{font-size:18px}
+.scan-capture-icon,.scan-empty-icon{display:grid;place-items:center;flex:none;border-radius:14px;background:var(--primary-soft);color:var(--primary-deep)}
+.scan-capture-icon{width:42px;height:42px;font-size:21px}
+.scan-actions{display:flex;flex-wrap:wrap;gap:10px}
+.scan-actions .btn{justify-content:center}
 .scan-drop{border:1.5px dashed var(--line-strong);border-radius:var(--r-card);
   background:var(--surface-muted);padding:18px;min-height:220px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;text-align:center}
+.scan-drop-empty{border-color:var(--primary-border);background:var(--primary-soft)}
+.scan-empty{display:flex;max-width:330px;flex-direction:column;align-items:center;gap:4px}
+.scan-empty-icon{width:58px;height:58px;margin-bottom:5px;font-size:28px}
+.scan-empty h3{font-size:16px}
+.scan-help-divider{height:1px;background:var(--line);margin:14px 0}
 .scan-preview{max-width:100%;max-height:300px;border-radius:12px;display:block;
   box-shadow:var(--shadow-sm)}
 .scan-preview-meta{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;
@@ -390,4 +402,9 @@ body.side-rail .side-toggle-btn{position:static;margin:0}
 @media(max-width:860px){
   .scan-preview{max-height:220px}
   .scan-thumb{width:56px;height:56px}
+}
+@media(max-width:520px){
+  .scan-actions{display:grid;grid-template-columns:1fr}
+  .scan-actions .btn{width:100%}
+  .scan-drop{min-height:190px}
 }
