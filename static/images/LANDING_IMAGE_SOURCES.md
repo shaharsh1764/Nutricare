@@ -2,9 +2,8 @@
 
 The landing page uses real stock photography, not generated imagery.
 
-- `landing-cooking.jpg` — Pexels search result, photograph of an Indian woman cooking paratha:
-  <https://www.pexels.com/search/indian%20woman%20in%20kitchen/> (image ID in the
-  downloaded Pexels URL: `9346161`).
+- `landing-cooking.jpg` — Pexels photograph of vegetables cooking in a pan on a stovetop:
+  <https://www.pexels.com/photo/cooking-vegetables-on-a-pot-and-pan-15257786/>.
 - `landing-thali.jpg` — Pexels image-search result, traditional Indian thali with naan:
   <https://www.pexels.com/photo/traditional-indian-thali-meal-with-naan-bread-29148133/>.
 

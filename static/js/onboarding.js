@@ -111,8 +111,8 @@ async function renderOnboarding() {
             <p class="landing-local-note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> Local profiles organise records on this device. They are not password-protected or encrypted.</p>
           </div>
           <figure class="landing-hero-media">
-            <img src="/static/images/landing-cooking.jpg" alt="A woman cooking paratha in a home kitchen" fetchpriority="high">
-            <div class="landing-photo-caption">A daily record starts with the meals you actually make.</div>
+            <img src="/static/images/landing-cooking.jpg" alt="Vegetables cooking in a pan on a stovetop" fetchpriority="high">
+            <div class="landing-photo-caption">A daily record starts with the meal in front of you.</div>
             <figcaption>Editorial photograph. NutriCare does not identify, weigh, or calculate this pictured meal.</figcaption>
           </figure>
         </section>
@@ -203,7 +203,7 @@ async function renderOnboarding() {
         <div class="landing-footer-inner">
           <div class="landing-brand landing-footer-brand"><span class="landing-brand-mark"><img src="/static/images/nutricare-mark.png" alt=""></span><span><b>NutriCare</b><small>NOURISHMENT JOURNAL</small></span></div>
           <p>Food, hydration, and health notes remain separate for each local profile. No account sign-in is required.</p>
-          <p class="landing-photo-credits">Real editorial photography from <a href="https://www.pexels.com/photo/9346161/" target="_blank" rel="noreferrer">Pexels</a> and <a href="https://www.pexels.com/photo/traditional-indian-thali-meal-with-naan-bread-29148133/" target="_blank" rel="noreferrer">Pexels</a>.</p>
+          <p class="landing-photo-credits">Real editorial photography from <a href="https://www.pexels.com/photo/cooking-vegetables-on-a-pot-and-pan-15257786/" target="_blank" rel="noreferrer">Pexels</a> and <a href="https://www.pexels.com/photo/traditional-indian-thali-meal-with-naan-bread-29148133/" target="_blank" rel="noreferrer">Pexels</a>.</p>
         </div>
       </footer>
     </div>`;
