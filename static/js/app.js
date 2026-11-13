@@ -82,10 +82,13 @@ function ensureShell() {
     location.hash = "#/" + b.dataset.route;   // navigates only — never collapses the rail
     if (typeof setDrawer === "function") setDrawer(false);  // close drawer (mobile) after choosing
   });
-  $("#top-search").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { location.hash = "#/tracker"; setTimeout(() => {
-      const input = $("#food-search"); if (input) { input.value = e.target.value; input.oninput(); } }, 250); }
-  });
+  const topThemeToggle = $("#top-theme-toggle");
+  if (topThemeToggle) {
+    topThemeToggle.onclick = () => {
+      setTheme(currentTheme() === "dark" ? "light" : "dark");
+    };
+    syncThemeControls();
+  }
   $("#user-chip").onclick = openUserModal;
   $("#demo-clear").onclick = async () => {
     const ok = await confirmModal("Clear demo data?",

@@ -483,13 +483,34 @@ async function runFoodSearch(q) {
       <span class="pill pill-mint">+ Add</span>
     </div>`).join("") + `</div>`;
   $$(".result-row", box).forEach((row) => row.onclick = () =>
-    openFoodSearchModal(S.lastMeal || "breakfast", JSON.parse(row.dataset.food)));
+    chooseMealForFood(JSON.parse(row.dataset.food)));
 }
 
 /* ---------------- modals ---------------- */
 function mealOptions(selected) {
   return Object.entries(MEAL_META).map(([key, m]) =>
     `<option value="${key}" ${key === selected ? "selected" : ""}>${m.label}</option>`).join("");
+}
+
+/* A catalogue result never assumes a meal category. The person makes this
+   choice before the portion form opens; Skip simply closes the flow and writes
+   nothing to the food log. */
+function chooseMealForFood(food) {
+  openModal(`
+    <h3>Add ${esc(food.name)} to a meal</h3>
+    <p class="tiny muted mt8">Choose when you had it. You will review the portion before anything is added to your log.</p>
+    <div class="tile-grid mt16 meal-choice-grid" role="group" aria-label="Choose meal category">
+      ${Object.entries(MEAL_META).map(([meal, meta]) => `<button class="tile-btn" type="button" data-meal-choice="${meal}">
+        <span class="meal-choice-icon ${meta.tint}" aria-hidden="true">${meta.icon}</span>
+        <b>${meal === "snacks" ? "Snacks" : meta.label}</b></button>`).join("")}
+    </div>
+    <div class="row mt20" style="justify-content:flex-end">
+      <button class="btn btn-ghost" type="button" data-close>Skip for now</button></div>`);
+  $$("[data-meal-choice]").forEach((button) => button.onclick = () => {
+    const meal = button.dataset.mealChoice;
+    closeModal();
+    openFoodSearchModal(meal, food);
+  });
 }
 
 /* If `onSelect` is supplied this remains a documented-food picker: it never

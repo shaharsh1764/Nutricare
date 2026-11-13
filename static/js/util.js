@@ -59,13 +59,21 @@ function currentTheme() {
 }
 
 function syncThemeControls() {
+  const activeTheme = currentTheme();
   ["light", "dark"].forEach((theme) => {
     const control = $(`#s-theme-${theme}`);
     if (!control) return;
-    const selected = currentTheme() === theme;
+    const selected = activeTheme === theme;
     control.setAttribute("aria-pressed", selected ? "true" : "false");
     control.classList.toggle("active", selected);
   });
+  const topToggle = $("#top-theme-toggle");
+  if (topToggle) {
+    const next = activeTheme === "dark" ? "light" : "dark";
+    topToggle.setAttribute("aria-label", `Switch to ${next} mode`);
+    topToggle.setAttribute("title", `Switch to ${next} mode`);
+    topToggle.setAttribute("aria-pressed", activeTheme === "dark" ? "true" : "false");
+  }
 }
 
 function applyTheme(theme, persist = false) {

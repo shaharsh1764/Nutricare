@@ -35,6 +35,15 @@ if (INDEX_TEMPLATE.includes('id="top-date"')) {
   throw new Error("The dashboard top bar must not render a separate date chip");
 }
 console.log("PASS  D2 dashboard top bar omits the date chip");
+if (INDEX_TEMPLATE.includes('id="top-search"') || !INDEX_TEMPLATE.includes('id="top-theme-toggle"')) {
+  throw new Error("The shell must omit the global search field and include the top-bar theme switch");
+}
+const TRACKER_SOURCE = fs.readFileSync(path.join(JS_DIR, "views_main.js"), "utf8");
+if (!TRACKER_SOURCE.includes("chooseMealForFood") || !TRACKER_SOURCE.includes("data-meal-choice")
+    || !TRACKER_SOURCE.includes("Skip for now")) {
+  throw new Error("Adding a documented food must ask for a meal category with a skip option");
+}
+console.log("PASS  D3 global search removed, theme switch and meal chooser are wired");
 
 /* ---------------- minimal DOM stub ---------------- */
 const registry = new Map();
@@ -167,6 +176,12 @@ const DRIVER = `
     && view().includes("NutriCare nutrition record"),
   "A3b audit dashboard layout renders with today total and real nutrition sections");
   assert(el("#nav-links").innerHTML.includes('data-route="tracker"'), "A4 sidebar nav built after skip");
+  assert(typeof el("#top-theme-toggle").onclick === "function", "A4b top-bar theme switch is bound");
+  const themeBeforeTopToggle = currentTheme();
+  await click("#top-theme-toggle");
+  assert(currentTheme() !== themeBeforeTopToggle
+    && el("#top-theme-toggle")["aria-pressed"] === (currentTheme() === "dark" ? "true" : "false"),
+  "A4c top-bar theme switch changes and labels the active theme");
   assert(typeof el("#quick-water").onclick === "function", "A5 dashboard water button bound");
   assert(typeof el("#quick-log").onclick === "function", "A6 dashboard log-food button bound");
   const preSummary = await (await fetch("BASE" + "/api/summary")).json();
@@ -249,6 +264,7 @@ const DRIVER = `
   console.log("O: new account uses shared onboarding and stays isolated…");
   const existingId = S.boot.user.id;
   const existingMealCount = (await (await fetch("BASE" + "/api/meals")).json()).logged_count;
+  const themeBeforeAccountSwitch = currentTheme();
   await openUserModal();
   assert(el("#modal-root").innerHTML.includes("Start profile setup")
     && !el("#modal-root").innerHTML.includes("u-new-name"),
@@ -280,7 +296,7 @@ const DRIVER = `
   assert(S.boot.user.id === existingId && S.boot.profile.weight_kg === 61.5
     && (await (await fetch("BASE" + "/api/meals")).json()).logged_count === existingMealCount,
   "O6 switching back restores the existing account without overwriting it");
-  assert(currentTheme() === "dark", "O7 switching accounts does not reset the browser theme");
+  assert(currentTheme() === themeBeforeAccountSwitch, "O7 switching accounts does not reset the browser theme");
 
   location.hash = "#/settings"; await refreshView();
   assert(view().includes("Appearance") && view().includes("Light mode") && view().includes("Dark mode"),
@@ -307,6 +323,13 @@ const DRIVER = `
   assert(typeof el("#day-prev").onclick === "function"
     && typeof el("#day-next").onclick === "function", "H1 tracker date nav bound");
   assert(typeof el("#add-custom").onclick === "function", "H2 custom-item button bound");
+  chooseMealForFood({ id: 1, name: "Sample documented food" });
+  const mealChooser = el("#modal-root").innerHTML;
+  assert(mealChooser.includes("Breakfast") && mealChooser.includes("Lunch")
+    && mealChooser.includes("Dinner") && mealChooser.includes("Snacks")
+    && mealChooser.includes("Skip for now") && mealChooser.includes("data-meal-choice"),
+  "H2b catalogue add asks for meal category or skip before logging");
+  closeModal();
   location.hash = "#/settings"; await refreshView();
   assert(typeof el("#s-save-units").onclick === "function", "H3 settings save bound");
   assert(typeof el("#s-users").onclick === "function", "H4 profile manager bound");
