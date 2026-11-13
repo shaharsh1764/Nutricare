@@ -20,7 +20,7 @@ async function renderReports() {
   </div>`;
   if (!r.logged_days) {
     $("#view").innerHTML = rangeHead + `
-      <div class="empty-state" style="padding:48px 26px"><span style="font-size:36px">📈</span>
+      <div class="empty-state" style="padding:48px 26px"><span class="audit-empty-icon" aria-hidden="true">${ICONS.reports}</span>
         <b style="font-size:16px">No logged days in this window yet.</b>
         <p class="small muted mt8" style="max-width:460px">Reports stay empty until real data exists —
         showing averages of nothing would be misleading, and an empty log is never treated as
@@ -54,17 +54,17 @@ async function renderReports() {
   $("#view").innerHTML = rangeHead + `
 
   <div class="grid cols-4">
-    <div class="card"><div class="card-head"><span class="card-title">Avg daily intake</span><span class="icon-pill tint-teal">⚡</span></div>
+    <div class="card"><div class="card-head"><span class="card-title">Avg daily intake</span><span class="icon-pill tint-teal">${ICONS.dashboard}</span></div>
       <div class="stat">${fmt(avg.kcal)}<small> kcal/day</small></div>
       <p class="tiny muted mt8">${t ? `${Math.round(100 * avg.kcal / t.kcal)}% of ${fmt(t.kcal)} kcal target` : "no target set"}</p>
       <div class="bar mt8"><i style="width:${t ? Math.min(100, 100 * avg.kcal / t.kcal) : 0}%;background:var(--primary-deep)"></i></div></div>
-    <div class="card"><div class="card-head"><span class="card-title">Macro compliance</span><span class="icon-pill tint-mint" style="background:var(--success-soft);color:var(--success)">✓</span></div>
+    <div class="card"><div class="card-head"><span class="card-title">Macro compliance</span><span class="icon-pill tint-mint" style="background:var(--success-soft);color:var(--success)">${ICONS.shield}</span></div>
       <div class="stat">${adherence ?? "—"}<small> /100</small></div>
       <p class="tiny muted mt8">Weighted attainment of protein / carb / fat gram targets</p></div>
     <div class="card"><div class="card-head"><span class="card-title">Average hydration</span><span class="icon-pill tint-sky">${ICONS.drop}</span></div>
       <div class="stat">${fmt(avg.water_ml)}<small> ml/day</small></div>
       <p class="tiny muted mt8">${Math.round(100 * avg.water_ml / (S.boot.settings.water_goal_ml || 2800))}% of fluid goal</p></div>
-    <div class="card"><div class="card-head"><span class="card-title">Meal consistency</span><span class="icon-pill tint-amber">🍽</span></div>
+    <div class="card"><div class="card-head"><span class="card-title">Meal consistency</span><span class="icon-pill tint-amber">${ICONS.meal}</span></div>
       <div class="stat">${r.meal_consistency_pct}%<small> of days</small></div>
       <p class="tiny muted mt8">Days with ≥ 3 distinct meal categories logged</p></div>
   </div>
@@ -132,7 +132,7 @@ async function renderSettings() {
         <p class="tiny faint mt12">If you have not chosen a mode, NutriCare follows your operating system preference.</p>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">Units & measurement</span><span class="icon-pill tint-teal">📏</span></div>
+        <div class="card-head"><span class="card-title">Units & measurement</span><span class="icon-pill tint-teal">${ICONS.settings}</span></div>
         <div class="grid cols-2">
           <div class="field"><span class="label">Unit system</span>
             <select class="select" id="s-units">
@@ -184,7 +184,7 @@ async function renderSettings() {
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">Local profiles & identity limits</span>
-          <span class="icon-pill tint-sky">👤</span></div>
+          <span class="icon-pill tint-sky">${ICONS.user}</span></div>
         <p class="small muted">NutriCare has <b>no passwords and no encryption</b>. Profiles keep
         records separate on this device and let household members share one install, but anyone with
         access to this browser can switch profiles. That is organisation, not security — real

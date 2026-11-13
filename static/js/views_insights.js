@@ -7,7 +7,7 @@
    calls renderSmartInsights(). */
 "use strict";
 
-async function renderSmartInsights(rootSel = "#insights-root") {
+async function renderSmartInsights(rootSel = "#insights-root", weeklyPrelude = "") {
   const root = $(rootSel);
   if (!root) return;
   root.innerHTML = `<div class="card"><p class="muted small">Loading Smart Nutrition Insights
@@ -19,9 +19,10 @@ async function renderSmartInsights(rootSel = "#insights-root") {
     root.innerHTML = `<div class="card"><div class="card-head"><span class="card-title">Smart
       Nutrition Insights</span><span class="pill pill-rose">Could not load</span></div>
       <p class="small muted">${esc(e.message)}</p>
-      <button class="btn btn-soft btn-sm mt12" id="insights-retry">Try again</button></div>`;
+      <button class="btn btn-soft btn-sm mt12" id="insights-retry">Try again</button></div>
+      ${weeklyPrelude ? `<div class="mt16">${weeklyPrelude}</div>` : ""}`;
     const retry = $("#insights-retry");
-    if (retry) retry.onclick = () => renderSmartInsights(rootSel);
+    if (retry) retry.onclick = () => renderSmartInsights(rootSel, weeklyPrelude);
     return;
   }
 
@@ -31,13 +32,17 @@ async function renderSmartInsights(rootSel = "#insights-root") {
       <div class="card-head"><div><h3 style="font-size:17px">Smart Nutrition Insights</h3>
         <p class="tiny muted mt8">Built only from your real records — never from invented data.</p></div>
         <span class="pill pill-slate">Nothing to analyse yet</span></div>
-      <div class="empty-state"><span style="font-size:30px">🔎</span>
+      <div class="empty-state"><span class="audit-empty-icon" aria-hidden="true">${ICONS.search}</span>
         <b>No insights yet — and that is the honest answer.</b>
         <p class="tiny muted mt8">Insights compare your logged meals and water against your
         targets/references. An empty log never means zero intake, so nothing is guessed.
         Log your first meal and this section fills with observations about your own data.</p>
         <button class="btn btn-soft btn-sm mt12" id="insights-log-cta">${ICONS.plus} Log food</button></div>
-    </div>`;
+    </div>
+    ${weeklyPrelude ? `<div class="mt16">${weeklyPrelude}</div>` : ""}
+    <div class="card mt16"><div class="card-head"><span class="card-title">Weekly summary</span></div>
+      <p class="small muted">No records in the last 7 days. Missing days are never averaged as
+      zero — log meals and the weekly picture builds from real data only.</p></div>`;
     const cta = $("#insights-log-cta");
     if (cta) cta.onclick = () => { location.hash = "#/tracker"; };
     return;
@@ -137,5 +142,6 @@ async function renderSmartInsights(rootSel = "#insights-root") {
     <div class="insight-grid mt16">${insightCards}</div>
     <p class="tiny faint mt12">${esc(daily.disclaimer)}</p>
   </div>
+  ${weeklyPrelude ? `<div class="mt16">${weeklyPrelude}</div>` : ""}
   <div class="mt16">${weeklyCard}</div>`;
 }

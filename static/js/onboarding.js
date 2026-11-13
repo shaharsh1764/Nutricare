@@ -80,9 +80,9 @@ async function renderOnboarding() {
   if (OB.step === 1) {
     view.innerHTML = `<div class="onb">
       <div class="onb-card">
-        <div class="row" style="gap:12px"><span class="icon-pill tint-teal" style="width:44px;height:44px">🥗</span>
-          <div><h2 style="font-size:26px">Welcome to NutriCare</h2>
-          <p class="tiny muted" style="letter-spacing:.08em;font-weight:700">HEALTH & NUTRITION OS</p></div></div>
+        <div class="row" style="gap:12px"><span class="onb-brand-mark"><img src="/static/images/nutricare-mark.png" alt="NutriCare"></span>
+          <div><h2 class="editorial-heading" style="font-size:32px">Welcome to NutriCare</h2>
+          <p class="tiny muted" style="letter-spacing:.08em;font-weight:700">NOURISHMENT JOURNAL</p></div></div>
         <p class="small muted mt12">NutriCare does two things:</p>
         <div class="grid cols-2 mt12">
           <div class="selfcare-card"><b class="small">1 · Tracks your nutrition</b>
@@ -232,7 +232,7 @@ async function renderOnboarding() {
         empty meal / water / symptom logs. Targets (if computable) are labelled estimates you can
         edit any time in My Profile or Settings.</p></div>
       <div class="row mt20 wrap">
-        <button class="btn btn-deep" id="ob-finish">Save & open my dashboard ✓</button>
+        <button class="btn btn-deep" id="ob-finish">Save & open my dashboard</button>
         <button class="btn btn-ghost" id="ob-back">Back</button>
         <button class="btn btn-ghost" id="ob-skip">Skip — open guest dashboard</button>
       </div>

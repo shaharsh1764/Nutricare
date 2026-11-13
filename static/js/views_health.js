@@ -22,7 +22,7 @@ async function renderProfile() {
   <div class="grid cols-2" style="align-items:start">
     <div class="card">
       <div class="card-head"><span class="card-title">1 · Biometrics & energy</span>
-        <span class="icon-pill tint-teal">📐</span></div>
+        <span class="icon-pill tint-teal">${ICONS.profile}</span></div>
       <div class="grid cols-2">
         <div class="field"><span class="label">Display name</span><input class="input" id="p-name" value="${esc(S.boot.user ? S.boot.user.name : "")}" maxlength="60">
           <p class="form-hint">Stored only in this device's local database.</p></div>
@@ -69,7 +69,7 @@ async function renderProfile() {
     <div class="grid" style="gap:16px">
       <div class="card">
         <div class="card-head"><span class="card-title">2 · Dietary preferences & allergies</span>
-          <span class="icon-pill tint-amber">🥗</span></div>
+          <span class="icon-pill tint-amber">${ICONS.leaf}</span></div>
         <div class="field"><span class="label">Dietary preferences (comma separated)</span>
           <input class="input" id="p-prefs" value="${esc((p.dietary_prefs || []).join(", "))}" placeholder="Vegetarian, nut-friendly…"></div>
         <div class="field"><span class="label">Allergies / intolerances (comma separated)</span>
@@ -78,7 +78,7 @@ async function renderProfile() {
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">3 · Medications & history</span>
-          <span class="icon-pill tint-rose">💊</span></div>
+          <span class="icon-pill tint-rose">${ICONS.capsule}</span></div>
         <div class="field"><span class="label">Current medications / supplements (comma separated)</span>
           <input class="input" id="p-meds" value="${esc((p.medications || []).join(", "))}" placeholder="Vitamin D3…"></div>
         <div class="field"><span class="label">Relevant medical history (optional, free text)</span>
@@ -229,7 +229,7 @@ async function renderAssistant() {
       </fieldset>
 
       <button type="submit" class="btn btn-deep" style="width:100%;justify-content:center"
-        id="a-run">🩺 Analyze Symptoms & Generate Guidance</button>
+        id="a-run">${ICONS.assistant} Analyze Symptoms & Generate Guidance</button>
       <p class="tiny faint mt8" style="text-align:center">Private & local · rule-based engine ·
         zero third-party data sharing</p>
     </form>
@@ -364,7 +364,7 @@ function renderAssessment(r) {
     </div>
     <div class="card mt16">
       <div class="card-head"><h3 style="font-size:16px">When to seek professional medical care</h3>
-        <span class="icon-pill tint-rose">🚩</span></div>
+        <span class="icon-pill tint-rose">${ICONS.alert}</span></div>
       <ul class="tight small muted">${r.seek_care.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>
     </div>
     <div class="card mt16">

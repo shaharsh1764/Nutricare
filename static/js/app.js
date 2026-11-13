@@ -12,16 +12,16 @@ const LS_UID = "nutricare_uid";
 const LS_SIDE = "nutricare_side";
 
 const ROUTES = {
-  dashboard: { title: "Dashboard", render: renderDashboard },
-  tracker: { title: "Nutrition Tracker", render: renderTracker },
+  dashboard: { title: "Dashboard", navLabel: "Overview / today's intake", render: renderDashboard },
+  tracker: { title: "Nutrition Tracker", navLabel: "Meal log & food analysis", render: renderTracker },
   /* The scanner is reachable from the Dashboard ("Scan a Meal"), not from the
      sidebar. `nav: false` keeps the route (so #/scanner still works) while
      omitting it from the navigation list. */
   scanner: { title: "Food Scanner", render: renderScanner, nav: false },
-  profile: { title: "My Profile", render: renderProfile },
-  assistant: { title: "Health Assistant", render: renderAssistant },
-  reports: { title: "Reports", render: renderReports },
-  settings: { title: "Settings", render: renderSettings },
+  profile: { title: "My Profile", navLabel: "Biometrics & vitals", render: renderProfile },
+  assistant: { title: "Health Assistant", navLabel: "Health assistant", render: renderAssistant },
+  reports: { title: "Reports", navLabel: "Macro & nutrient reports", render: renderReports },
+  settings: { title: "Settings", navLabel: "Preferences & settings", render: renderSettings },
 };
 
 const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -76,16 +76,19 @@ function ensureShell() {
   S.shellBuilt = true;
   $("#nav-links").innerHTML = Object.entries(ROUTES)
     .filter(([, r]) => r.nav !== false).map(([key, r]) => `
-    <button class="nav-item" data-route="${key}" aria-label="${r.title}">
-      ${ICONS[key]}<span class="nav-text">${r.title}</span></button>`).join("");
+    <button class="nav-item" data-route="${key}" aria-label="${r.navLabel || r.title}">
+      ${ICONS[key]}<span class="nav-text">${r.navLabel || r.title}</span></button>`).join("");
   $$(".nav-item").forEach((b) => b.onclick = () => {
     location.hash = "#/" + b.dataset.route;   // navigates only — never collapses the rail
     if (typeof setDrawer === "function") setDrawer(false);  // close drawer (mobile) after choosing
   });
-  $("#top-search").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { location.hash = "#/tracker"; setTimeout(() => {
-      const input = $("#food-search"); if (input) { input.value = e.target.value; input.oninput(); } }, 250); }
-  });
+  const topThemeToggle = $("#top-theme-toggle");
+  if (topThemeToggle) {
+    topThemeToggle.onclick = () => {
+      setTheme(currentTheme() === "dark" ? "light" : "dark");
+    };
+    syncThemeControls();
+  }
   $("#user-chip").onclick = openUserModal;
   $("#demo-clear").onclick = async () => {
     const ok = await confirmModal("Clear demo data?",
@@ -150,7 +153,7 @@ async function openUserModal() {
     <div class="selfcare-card mt16">
       <b class="small">Add another local profile</b>
       <p class="tiny muted mt8">Use the same guided setup as a first-time profile. It saves a separate profile and never changes this one.</p>
-      <button class="btn btn-primary btn-sm mt8" id="u-create">Start profile setup</button>
+      <button class="btn btn-primary btn-sm mt8" id="u-create">Create a new profile</button>
     </div>
     <div class="row mt16" style="justify-content:space-between">
       <button class="btn btn-danger-soft btn-sm" id="u-delete">Delete current profile…</button>

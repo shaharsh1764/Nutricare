@@ -12,6 +12,11 @@ const vm = require("vm");
 const BASE = process.argv[2] || "http://127.0.0.1:5000";
 const JS_DIR = path.join(__dirname, "..", "static", "js");
 const INDEX_TEMPLATE = fs.readFileSync(path.join(__dirname, "..", "templates", "index.html"), "utf8");
+const BRAND_MARK = path.join(__dirname, "..", "static", "images", "nutricare-mark.png");
+if (!fs.existsSync(BRAND_MARK) || !INDEX_TEMPLATE.includes("/static/images/nutricare-mark.png")) {
+  throw new Error("The supplied NutriCare brand mark must be available to the application shell");
+}
+console.log("PASS  D0 supplied NutriCare brand mark is wired into the application shell");
 const themeBootstrap = INDEX_TEMPLATE.indexOf("nutricare_theme");
 const stylesheetLink = INDEX_TEMPLATE.indexOf('/static/css/style.css');
 if (themeBootstrap < 0 || stylesheetLink < 0 || themeBootstrap > stylesheetLink) {
@@ -21,6 +26,24 @@ console.log("PASS  T0 no-flash theme bootstrap precedes the stylesheet");
 const FILES = ["util.js", "charts.js", "onboarding.js", "views_main.js",
   "views_health.js", "views_more.js", "views_insights.js", "views_scanner.js",
   "app.js"];
+const UI_SOURCE = [INDEX_TEMPLATE, ...FILES.map((file) => fs.readFileSync(path.join(JS_DIR, file), "utf8"))].join("\n");
+if (/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u.test(UI_SOURCE)) {
+  throw new Error("The customer-facing application shell must use the shared SVG icon system, not emoji glyphs");
+}
+console.log("PASS  D1 customer-facing UI is emoji-free");
+if (INDEX_TEMPLATE.includes('id="top-date"')) {
+  throw new Error("The dashboard top bar must not render a separate date chip");
+}
+console.log("PASS  D2 dashboard top bar omits the date chip");
+if (INDEX_TEMPLATE.includes('id="top-search"') || !INDEX_TEMPLATE.includes('id="top-theme-toggle"')) {
+  throw new Error("The shell must omit the global search field and include the top-bar theme switch");
+}
+const TRACKER_SOURCE = fs.readFileSync(path.join(JS_DIR, "views_main.js"), "utf8");
+if (!TRACKER_SOURCE.includes("chooseMealForFood") || !TRACKER_SOURCE.includes("data-meal-choice")
+    || !TRACKER_SOURCE.includes("Skip for now")) {
+  throw new Error("Adding a documented food must ask for a meal category with a skip option");
+}
+console.log("PASS  D3 global search removed, theme switch and meal chooser are wired");
 
 /* ---------------- minimal DOM stub ---------------- */
 const registry = new Map();
@@ -142,7 +165,23 @@ const DRIVER = `
     assert(S.boot.user.id > 0, "A2b guest profile created (device had none)");
   }
   assert(view().includes("Energy budget"), "A3 guest dashboard renders");
+  assert(view().includes("Daily Nutritional Audit")
+    && view().includes("Macronutrient allocation")
+    && view().includes("TODAY'S TOTAL INTAKE")
+    && view().includes("Calories &amp; macro distribution")
+    && view().includes("Export PDF")
+    && view().includes("/api/report.pdf")
+    && view().includes("Meals recorded today")
+    && view().includes("Micronutrient snapshot")
+    && view().includes("NutriCare nutrition record"),
+  "A3b audit dashboard layout renders with today total and real nutrition sections");
   assert(el("#nav-links").innerHTML.includes('data-route="tracker"'), "A4 sidebar nav built after skip");
+  assert(typeof el("#top-theme-toggle").onclick === "function", "A4b top-bar theme switch is bound");
+  const themeBeforeTopToggle = currentTheme();
+  await click("#top-theme-toggle");
+  assert(currentTheme() !== themeBeforeTopToggle
+    && el("#top-theme-toggle")["aria-pressed"] === (currentTheme() === "dark" ? "true" : "false"),
+  "A4c top-bar theme switch changes and labels the active theme");
   assert(typeof el("#quick-water").onclick === "function", "A5 dashboard water button bound");
   assert(typeof el("#quick-log").onclick === "function", "A6 dashboard log-food button bound");
   const preSummary = await (await fetch("BASE" + "/api/summary")).json();
@@ -225,8 +264,9 @@ const DRIVER = `
   console.log("O: new account uses shared onboarding and stays isolated…");
   const existingId = S.boot.user.id;
   const existingMealCount = (await (await fetch("BASE" + "/api/meals")).json()).logged_count;
+  const themeBeforeAccountSwitch = currentTheme();
   await openUserModal();
-  assert(el("#modal-root").innerHTML.includes("Start profile setup")
+  assert(el("#modal-root").innerHTML.includes("Create a new profile")
     && !el("#modal-root").innerHTML.includes("u-new-name"),
   "O1 account switcher replaces name-only creation with guided setup");
   await click("#u-create");
@@ -256,7 +296,7 @@ const DRIVER = `
   assert(S.boot.user.id === existingId && S.boot.profile.weight_kg === 61.5
     && (await (await fetch("BASE" + "/api/meals")).json()).logged_count === existingMealCount,
   "O6 switching back restores the existing account without overwriting it");
-  assert(currentTheme() === "dark", "O7 switching accounts does not reset the browser theme");
+  assert(currentTheme() === themeBeforeAccountSwitch, "O7 switching accounts does not reset the browser theme");
 
   location.hash = "#/settings"; await refreshView();
   assert(view().includes("Appearance") && view().includes("Light mode") && view().includes("Dark mode"),
@@ -283,6 +323,13 @@ const DRIVER = `
   assert(typeof el("#day-prev").onclick === "function"
     && typeof el("#day-next").onclick === "function", "H1 tracker date nav bound");
   assert(typeof el("#add-custom").onclick === "function", "H2 custom-item button bound");
+  chooseMealForFood({ id: 1, name: "Sample documented food" });
+  const mealChooser = el("#modal-root").innerHTML;
+  assert(mealChooser.includes("Breakfast") && mealChooser.includes("Lunch")
+    && mealChooser.includes("Dinner") && mealChooser.includes("Snacks")
+    && mealChooser.includes("Skip for now") && mealChooser.includes("data-meal-choice"),
+  "H2b catalogue add asks for meal category or skip before logging");
+  closeModal();
   location.hash = "#/settings"; await refreshView();
   assert(typeof el("#s-save-units").onclick === "function", "H3 settings save bound");
   assert(typeof el("#s-users").onclick === "function", "H4 profile manager bound");
@@ -363,6 +410,10 @@ const DRIVER = `
   await boot(); location.hash = "#/dashboard"; await refreshView(); await sleep(700);
   assert(el("#insights-root").innerHTML.includes("Smart Nutrition Insights"), "K3 insights survive refresh");
   assert(el("#insights-root").innerHTML.length > 100, "K4 insights content populated");
+  const orderedInsights = el("#insights-root").innerHTML;
+  assert(orderedInsights.indexOf("Intake trajectory") >= 0
+    && orderedInsights.indexOf("Intake trajectory") < orderedInsights.indexOf("Weekly summary"),
+  "K5 seven-day trajectory is directly before the weekly summary");
 
   /* ---- L: Food Scanner (camera, upload, suggestion, portion, log) ----
      The recognition service can be absent in CI. The UI stays helpful without
@@ -450,6 +501,8 @@ const DRIVER = `
   assert(["breakfast", "lunch", "snacks", "dinner"].every((m) =>
     after.meals[m].some((e) => e.display_name.includes("Roti"))),
     "L20 all four meal categories accepted and grouped correctly");
+  assert(Object.keys(after.meals).join(",") === "breakfast,lunch,snacks,dinner",
+    "L20b food-log categories stay in breakfast, lunch, snacks, dinner order");
 
   const summaryAfter = await (await fetch("BASE" + "/api/summary")).json();
   assert(summaryAfter.totals.kcal >= dosa.nutrients.kcal,

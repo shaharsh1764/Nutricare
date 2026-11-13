@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 
 from flask import Blueprint, jsonify, request, session, Response
 
-from . import assistant, db, insights, nutrition
+from . import assistant, db, insights, nutrition, pdf_report
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -647,6 +647,45 @@ def report_csv():
     return Response(buf.getvalue(), mimetype="text/csv",
                     headers={"Content-Disposition":
                              f'attachment; filename="nutricare-report-{days}d.csv"'})
+
+
+@api.get("/report.pdf")
+def report_pdf():
+    """Download one honest, printable record for the selected day (today by default)."""
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    try:
+        day = v_date(request.args.get("date", db.today()))
+    except ValueError as exc:
+        return err(str(exc))
+
+    user = db.get_user(conn, uid) or {"name": "Local profile"}
+    profile = db.get_profile(conn, uid)
+    settings = db.get_settings(conn, uid)
+    entries = day_rows(conn, uid, day)
+    grouped = {meal: [] for meal in db.MEALS}
+    for entry in entries:
+        grouped.setdefault(entry["meal"], []).append(entry)
+    totals = nutrition.sum_nutrients([entry["nutrients"] for entry in entries])
+    water_ml = conn.execute(
+        "SELECT SUM(amount_ml) t FROM water_logs WHERE user_id = ? AND date = ?", (uid, day)
+    ).fetchone()["t"] or 0
+    foods = [dict(row) for row in conn.execute("SELECT * FROM foods ORDER BY id")]
+    targets = targets_for(profile, settings)
+    daily = insights.daily_payload(
+        date=day, entries=entries, totals=totals, water_ml=water_ml,
+        water_goal_ml=settings["water_goal_ml"], targets=targets, profile=profile, foods=foods,
+    )
+    pdf_bytes = pdf_report.build_daily_report_pdf(
+        user=user, day=day, grouped_meals=grouped, totals=totals, water_ml=water_ml,
+        water_goal_ml=settings["water_goal_ml"], targets=targets, daily_insights=daily,
+    )
+    return Response(pdf_bytes, mimetype="application/pdf", headers={
+        "Content-Disposition": f'attachment; filename="nutricare-daily-record-{day}.pdf"',
+        "Content-Length": str(len(pdf_bytes)),
+    })
 
 
 @api.get("/export.json")

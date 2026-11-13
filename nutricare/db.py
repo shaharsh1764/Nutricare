@@ -79,7 +79,9 @@ DEFAULT_SETTINGS = {
     "demo_mode": "0",
 }
 
-MEALS = ("breakfast", "lunch", "dinner", "snacks")
+# Canonical presentation and API order: daytime meals progress from breakfast
+# through lunch and snacks to dinner. Stored rows use these stable string keys.
+MEALS = ("breakfast", "lunch", "snacks", "dinner")
 
 
 def db_path() -> Path:

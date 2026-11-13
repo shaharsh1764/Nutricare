@@ -227,6 +227,13 @@ def test_meal_validation_rejects_bad_input(client):
                                            "quantity": 1, "unit": "serving"}).status_code == 400
 
 
+def test_meal_categories_have_canonical_day_order(client):
+    new_user(client, "Meal ordering")
+    expected = ["breakfast", "lunch", "snacks", "dinner"]
+    assert list(client.get("/api/meals").get_json()["meals"]) == expected
+    assert list(client.get("/api/summary").get_json()["meals"]) == expected
+
+
 def test_water_log_and_summary(client):
     new_user(client, "Hydro", **FULL_PROFILE)
     assert client.post("/api/water", json={"amount_ml": 500}).status_code == 201
@@ -257,6 +264,17 @@ def test_report_and_csv_export(client):
     assert report["averages"]["kcal"] == 100  # averaged over LOGGED days only
     csv_text = client.get("/api/report.csv?days=7").get_data(as_text=True)
     assert csv_text.startswith("date,meal,food") and "Test item" in csv_text
+    pdf = client.get("/api/report.pdf")
+    assert pdf.status_code == 200 and pdf.mimetype == "application/pdf"
+    assert pdf.data.startswith(b"%PDF-")
+    assert b"Daily nutrition record" in pdf.data
+    assert b"Today's intake graph" in pdf.data
+    assert b"Micronutrient snapshot" in pdf.data
+    assert b"Meals logged today" in pdf.data
+    assert b"Nutrition observations & recommendations" in pdf.data
+    assert b"Test item" in pdf.data
+    assert "nutricare-daily-record-" in pdf.headers["Content-Disposition"]
+    assert client.get("/api/report.pdf?date=2026-99-99").status_code == 400
     assert client.get("/api/report?days=500").status_code == 400
 
 
