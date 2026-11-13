@@ -85,7 +85,7 @@ button{font-family:inherit}
 .searchbox{flex:1;max-width:420px;display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 12px;color:var(--faint)}
 .searchbox input{border:none;outline:none;flex:1;font:inherit;color:var(--ink);background:none}
 .top-right{margin-left:auto;display:flex;gap:10px;align-items:center}
-.top-theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border:1px solid var(--line);background:var(--surface);color:var(--primary-deep)}.top-theme-toggle:hover{background:var(--primary-soft);color:var(--primary)}.top-theme-toggle .ico-moon{display:none}html[data-theme="dark"] .top-theme-toggle .ico-sun{display:none}html[data-theme="dark"] .top-theme-toggle .ico-moon{display:block}
+.top-theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border:1px solid var(--line);background:var(--surface);color:var(--primary-deep)}.top-theme-toggle:hover{background:var(--primary-soft);color:var(--primary)}.top-theme-toggle .ico-sun{display:none}html[data-theme="dark"] .top-theme-toggle .ico-sun{display:block}html[data-theme="dark"] .top-theme-toggle .ico-moon{display:none}
 .date-chip{display:flex;gap:8px;align-items:center;background:var(--surface-muted);border:1px solid var(--line);border-radius:4px;padding:7px 10px;font-size:12px;font-weight:700}
 .user-chip{display:flex;gap:10px;align-items:center}
 .avatar{width:34px;height:34px;border-radius:4px;background:var(--primary);color:var(--avatar-ink);display:grid;place-items:center;font-weight:800;font-size:13px}
