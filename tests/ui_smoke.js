@@ -501,6 +501,8 @@ const DRIVER = `
   assert(["breakfast", "lunch", "snacks", "dinner"].every((m) =>
     after.meals[m].some((e) => e.display_name.includes("Roti"))),
     "L20 all four meal categories accepted and grouped correctly");
+  assert(Object.keys(after.meals).join(",") === "breakfast,lunch,snacks,dinner",
+    "L20b food-log categories stay in breakfast, lunch, snacks, dinner order");
 
   const summaryAfter = await (await fetch("BASE" + "/api/summary")).json();
   assert(summaryAfter.totals.kcal >= dosa.nutrients.kcal,

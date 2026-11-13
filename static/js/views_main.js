@@ -1,11 +1,14 @@
 /* Dashboard + Nutrition Tracker views. */
 "use strict";
 
+/* Canonical UI order follows the day: breakfast, lunch, snacks, then dinner.
+   API payload order is normalised separately, but views also use this map so a
+   legacy or externally-built payload cannot shuffle the food log. */
 const MEAL_META = {
   breakfast: { label: "Breakfast", icon: ICONS.meal, tint: "tint-amber" },
   lunch: { label: "Lunch", icon: ICONS.meal, tint: "tint-teal" },
-  dinner: { label: "Dinner", icon: ICONS.meal, tint: "tint-sky" },
   snacks: { label: "Snacks & Beverages", icon: ICONS.meal, tint: "tint-rose" },
+  dinner: { label: "Dinner", icon: ICONS.meal, tint: "tint-sky" },
 };
 
 /* ============================================================ DASHBOARD */
@@ -292,7 +295,8 @@ function dashboardInsights(summary, t) {
 }
 
 function dashboardMealList(summary) {
-  const blocks = Object.entries(summary.meals).map(([meal, entries]) => {
+  const blocks = Object.keys(MEAL_META).map((meal) => {
+    const entries = (summary.meals && summary.meals[meal]) || [];
     const meta = MEAL_META[meal];
     const kcal = entries.reduce((s, e) => s + e.nutrients.kcal, 0);
     if (!entries.length) {
@@ -370,7 +374,7 @@ async function renderTracker() {
           <button class="btn btn-ghost btn-sm" id="empty-add-custom">Add custom item</button>
         </div></div>` : ""}
       <div class="mt16" id="meal-sections">
-        ${Object.entries(meals.meals).map(([meal, entries]) => mealSection(meal, entries, t)).join("")}
+        ${Object.keys(MEAL_META).map((meal) => mealSection(meal, (meals.meals && meals.meals[meal]) || [], t)).join("")}
       </div>
     </div>
     <div class="grid" style="gap:16px;position:sticky;top:76px">

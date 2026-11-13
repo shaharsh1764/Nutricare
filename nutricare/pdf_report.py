@@ -37,7 +37,7 @@ TERRACOTTA = colors.HexColor("#C2612D")
 SKY = colors.HexColor("#476553")
 WHITE = colors.white
 
-MEAL_ORDER = ("breakfast", "lunch", "dinner", "snacks")
+MEAL_ORDER = ("breakfast", "lunch", "snacks", "dinner")
 MEAL_LABELS = {
     "breakfast": "Breakfast",
     "lunch": "Lunch",

@@ -17,7 +17,9 @@ def create_app(test_config: dict | None = None) -> Flask:
                 template_folder=str(Path(__file__).parent.parent / "templates"),
                 static_folder=str(Path(__file__).parent.parent / "static"))
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-insecure-key")
-    app.config["JSON_SORT_KEYS"] = False
+    # Flask 3's JSON provider owns sorting; preserve deliberate response order
+    # (notably breakfast → lunch → snacks → dinner) for API consumers too.
+    app.json.sort_keys = False
     # Lax keeps the local-profile session across refreshes and same-site
     # navigation (the default None is rejected by browsers without Secure).
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"

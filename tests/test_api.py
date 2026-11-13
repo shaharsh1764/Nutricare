@@ -227,6 +227,13 @@ def test_meal_validation_rejects_bad_input(client):
                                            "quantity": 1, "unit": "serving"}).status_code == 400
 
 
+def test_meal_categories_have_canonical_day_order(client):
+    new_user(client, "Meal ordering")
+    expected = ["breakfast", "lunch", "snacks", "dinner"]
+    assert list(client.get("/api/meals").get_json()["meals"]) == expected
+    assert list(client.get("/api/summary").get_json()["meals"]) == expected
+
+
 def test_water_log_and_summary(client):
     new_user(client, "Hydro", **FULL_PROFILE)
     assert client.post("/api/water", json={"amount_ml": 500}).status_code == 201
