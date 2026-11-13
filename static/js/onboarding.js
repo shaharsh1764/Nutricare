@@ -77,52 +77,163 @@ function obValidateStep4() {
 
 async function renderOnboarding() {
   const view = $("#view");
+  document.body.classList.toggle("landing-active", OB.step === 1);
   if (OB.step === 1) {
-    view.innerHTML = `<div class="onb">
-      <div class="onb-card">
-        <div class="row" style="gap:12px"><span class="onb-brand-mark"><img src="/static/images/nutricare-mark.png" alt="NutriCare"></span>
-          <div><h2 class="editorial-heading" style="font-size:32px">Welcome to NutriCare</h2>
-          <p class="tiny muted" style="letter-spacing:.08em;font-weight:700">NOURISHMENT JOURNAL</p></div></div>
-        <p class="small muted mt12">NutriCare does two things:</p>
-        <div class="grid cols-2 mt12">
-          <div class="selfcare-card"><b class="small">1 · Tracks your nutrition</b>
-            <p class="tiny muted mt8">Log meals and water, see calories and macros against a
-            personalised <i>estimate</i>, and export your own data as CSV/JSON.</p></div>
-          <div class="selfcare-card"><b class="small">2 · Offers general health information</b>
-            <p class="tiny muted mt8">A structured symptom checklist with emergency warning-sign
-            screening and educational self-care info. It never diagnoses, never gives odds,
-            never prescribes.</p></div>
+    const nextAppearance = currentTheme() === "dark" ? "light" : "dark";
+    view.innerHTML = `<div class="landing">
+      <header class="landing-nav" aria-label="NutriCare welcome">
+        <div class="landing-nav-inner">
+          <a class="landing-brand" href="#landing-top" aria-label="NutriCare welcome page">
+            <span class="landing-brand-mark"><img src="/static/images/nutricare-mark.png" alt=""></span>
+            <span><b>NutriCare</b><small>NOURISHMENT JOURNAL</small></span>
+          </a>
+          <div class="landing-nav-actions">
+            <a class="landing-nav-link" href="#landing-details">How it works</a>
+            <button class="landing-theme-toggle" id="ob-theme-toggle" type="button"
+              aria-label="Switch to ${nextAppearance} appearance" title="Switch to ${nextAppearance} appearance">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+              <span id="ob-theme-label">Switch to ${nextAppearance} appearance</span>
+            </button>
+          </div>
         </div>
-        <div id="ob-existing"></div>
-        <div class="selfcare-card mt12" style="background:var(--amber-soft);border-color:var(--amber-border)">
-          <b class="tiny" style="color:var(--amber-ink)">BEFORE YOU START — HONEST STORAGE NOTES</b>
-          <ul class="tight tiny mt8" style="color:var(--amber-ink)">
-            <li>Everything stays in a local database on this device. There are <b>no passwords and no
-            encryption</b>: local profiles organise data, they do not secure it.</li>
-            <li>Anyone using this browser can switch local profiles — do not store sensitive
-            details on a shared machine.</li>
-            <li>New accounts start <b>completely empty</b>: no sample meals, no fake totals.</li>
-          </ul></div>
-        <div class="row mt20 wrap">
-          <button class="btn btn-deep" id="ob-start">Start setup →</button>
-          <button class="btn btn-ghost" id="ob-skip-all">Skip for now — open guest dashboard</button>
+      </header>
+
+      <main id="landing-top">
+        <section class="landing-hero" aria-labelledby="landing-title">
+          <div class="landing-hero-copy">
+            <p class="landing-kicker"><span aria-hidden="true"></span> A local journal for everyday nourishment</p>
+            <h1 id="landing-title">Keep the nutrition record that fits your real day.</h1>
+            <p class="landing-lede">NutriCare helps you log meals and water, review the calories and nutrients attached to what you record, and keep your own data close at hand. Personal targets appear only when you provide the details needed for an estimate.</p>
+            <div class="landing-hero-actions">
+              <button class="btn btn-deep landing-primary-action" id="ob-start">Create a new profile</button>
+              <button class="btn btn-ghost landing-secondary-action" id="ob-skip-all">Open guest dashboard</button>
+            </div>
+            <p class="landing-local-note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> Local profiles organise records on this device. They are not password-protected or encrypted.</p>
+          </div>
+          <figure class="landing-hero-media">
+            <img src="/static/images/landing-cooking.jpg" alt="A woman cooking paratha in a home kitchen" fetchpriority="high">
+            <div class="landing-photo-caption">A daily record starts with the meals you actually make.</div>
+            <figcaption>Editorial photograph. NutriCare does not identify, weigh, or calculate this pictured meal.</figcaption>
+          </figure>
+        </section>
+
+        <section class="landing-start-panel" aria-labelledby="landing-start-title">
+          <div>
+            <p class="landing-section-kicker">Start with what you need</p>
+            <h2 id="landing-start-title">Use a profile for saved preferences, or begin as a guest.</h2>
+          </div>
+          <div class="landing-start-copy">
+            <p>A profile can hold the optional details you choose to add. Guest mode still lets you log food, water, reports, and health-assistant entries; it simply leaves personal targets off until enough profile details are available.</p>
+            <a href="#landing-details">See what NutriCare records <span aria-hidden="true">→</span></a>
+          </div>
+        </section>
+
+        <div id="ob-existing" class="landing-existing-slot" aria-live="polite"></div>
+
+        <section class="landing-details" id="landing-details" aria-labelledby="landing-details-title">
+          <div class="landing-section-intro">
+            <p class="landing-section-kicker">Useful, clear, and limited on purpose</p>
+            <h2 id="landing-details-title">A journal for information you can check.</h2>
+            <p>Every feature is designed around an explicit record, a stated calculation, or a clear limit. NutriCare does not fill an empty log with sample intake or turn a missing detail into a health claim.</p>
+          </div>
+          <div class="landing-feature-grid">
+            <article class="landing-feature-card">
+              <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v7a4 4 0 004 4h1V3"/><path d="M7 3v11"/><path d="M14 3v8a3 3 0 003 3h1V3"/><path d="M18 14v7"/></svg></span>
+              <h3>Record meals and water</h3>
+              <p>Organise food into Breakfast, Lunch, Snacks, and Dinner; search the documented catalogue or add a custom item, then log hydration alongside it.</p>
+            </article>
+            <article class="landing-feature-card">
+              <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
+              <h3>Review recorded nutrition</h3>
+              <p>Daily and weekly views derive calories, macros, hydration, and a tracked micronutrient subset from your saved entries. Calculated calorie and macro targets are labelled estimates.</p>
+            </article>
+            <article class="landing-feature-card">
+              <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14a2 2 0 002-2v-3"/><path d="M3 16v3a2 2 0 002 2"/></svg></span>
+              <h3>Export what you entered</h3>
+              <p>Download a daily PDF nutrition record, a food-log CSV, or a complete JSON export of the current local profile whenever you need a copy.</p>
+            </article>
+            <article class="landing-feature-card">
+              <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-2h6l2 2h3v12H4z"/><circle cx="12" cy="13" r="3"/></svg></span>
+              <h3>Confirm photo suggestions</h3>
+              <p>The food scanner suggests one dominant dish from a photo, then asks you to confirm it, set a portion, and choose a meal. It names unavailable nutrition instead of inventing it.</p>
+            </article>
+            <article class="landing-feature-card">
+              <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M8 12h8M12 8v8"/></svg></span>
+              <h3>Use a safety-led health assistant</h3>
+              <p>A structured symptom check screens for emergency warning signs and offers general education. It never diagnoses, gives odds, or prescribes treatment.</p>
+            </article>
+            <article class="landing-feature-card">
+              <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></span>
+              <h3>Keep the limits visible</h3>
+              <p>Profiles are local rather than secure accounts. Anyone using this browser can switch them, so avoid sensitive details on a shared device.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="landing-method" aria-labelledby="landing-method-title">
+          <figure class="landing-method-photo">
+            <img src="/static/images/landing-thali.jpg" alt="An Indian thali with rice, curry, and flatbread">
+            <figcaption>Editorial photograph. Portions and recipes vary; log the food and amount you actually had.</figcaption>
+          </figure>
+          <div class="landing-method-copy">
+            <p class="landing-section-kicker">Documented sources, explained limits</p>
+            <h2 id="landing-method-title">Nutrition values are useful only when their basis is clear.</h2>
+            <p>NutriCare’s built-in food catalogue records values per 100 g and distinguishes raw, cooked, and prepared states where documented. Its sources are identified in the product data, including IFCT 2017 and USDA FoodData Central.</p>
+            <ul class="landing-method-list">
+              <li><b>Recipe variation is real.</b> Prepared dishes can vary by ingredients, oil, brand, and serving size. Approximate and recipe-derived values are marked as such.</li>
+              <li><b>Targets are estimates, not instructions.</b> When enough optional profile fields are supplied, NutriCare uses a stated Mifflin–St Jeor calculation and the activity level you select.</li>
+              <li><b>Micronutrient coverage is focused.</b> Reports track fiber, sodium, potassium, calcium, and iron rather than claiming a complete clinical analysis.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="landing-safety" aria-labelledby="landing-safety-title">
+          <div>
+            <p class="landing-section-kicker">Read before you add sensitive details</p>
+            <h2 id="landing-safety-title">NutriCare supports a personal record. It is not a medical service.</h2>
+          </div>
+          <div class="landing-safety-copy">
+            <p>Use urgent local services for emergency symptoms. For individual dietary, medical, or medication decisions, speak with a qualified clinician or dietitian.</p>
+            <p>Only add optional health context if you are comfortable keeping it in a local, unencrypted profile on this device.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="landing-footer">
+        <div class="landing-footer-inner">
+          <div class="landing-brand landing-footer-brand"><span class="landing-brand-mark"><img src="/static/images/nutricare-mark.png" alt=""></span><span><b>NutriCare</b><small>NOURISHMENT JOURNAL</small></span></div>
+          <p>Food, hydration, and health notes remain separate for each local profile. No account sign-in is required.</p>
+          <p class="landing-photo-credits">Real editorial photography from <a href="https://www.pexels.com/photo/9346161/" target="_blank" rel="noreferrer">Pexels</a> and <a href="https://www.pexels.com/photo/traditional-indian-thali-meal-with-naan-bread-29148133/" target="_blank" rel="noreferrer">Pexels</a>.</p>
         </div>
-      </div></div>`;
+      </footer>
+    </div>`;
     $("#ob-start").onclick = () => { OB.step = 2; renderOnboarding(); };
     $("#ob-skip-all").onclick = (e) => withBusy(e.currentTarget,
       () => obEnterGuest(),
       "Guest dashboard ready — add a profile anytime for personal targets.");
-    // progressive: inject "continue as" cards without blocking first paint
+    $("#ob-theme-toggle").onclick = () => {
+      const next = currentTheme() === "dark" ? "light" : "dark";
+      setTheme(next);
+      const label = $("#ob-theme-label");
+      const button = $("#ob-theme-toggle");
+      const future = next === "dark" ? "light" : "dark";
+      if (label) label.textContent = `Switch to ${future} appearance`;
+      if (button) {
+        button.setAttribute("aria-label", `Switch to ${future} appearance`);
+        button.setAttribute("title", `Switch to ${future} appearance`);
+      }
+    };
+    // Progressive: returning profiles are offered without delaying the landing page.
     api("/users").then((data) => {
       const slot = $("#ob-existing");
       if (!slot || !(data.users || []).length || OB.step !== 1) return;
-      slot.innerHTML = `<div class="selfcare-card mt12">
-        <b class="tiny" style="color:var(--primary-deep)">WELCOME BACK — LOCAL PROFILES FOUND ON THIS DEVICE</b>
-        <p class="tiny muted mt8">Continue with an existing profile to keep its saved records
-        (starting over would create a separate empty profile):</p>
-        <div class="row wrap mt8">${data.users.slice(0, 6).map((u) =>
-          `<button class="btn btn-soft btn-sm ob-continue" data-uid="${u.id}">Continue as ${esc(u.name)}</button>`).join("")}</div>
-      </div>`;
+      slot.innerHTML = `<section class="landing-existing" aria-labelledby="landing-existing-title">
+        <div><p class="landing-section-kicker">Welcome back</p><h2 id="landing-existing-title">Continue with a saved local profile.</h2></div>
+        <div><p>Your saved records stay with the profile you choose. Starting a new profile creates a separate, empty record.</p>
+          <div class="landing-profile-buttons">${data.users.slice(0, 6).map((u) =>
+            `<button class="btn btn-soft ob-continue" data-uid="${u.id}">Continue as ${esc(u.name)}</button>`).join("")}</div>
+        </div>
+      </section>`;
       $$(".ob-continue").forEach((b) => b.onclick = async (e) => {
         await withBusy(e.currentTarget, async () => {
           S.boot = await api("/users/switch", { method: "POST", body: { id: Number(b.dataset.uid) } });
@@ -130,7 +241,7 @@ async function renderOnboarding() {
           await enterAppFresh();
         });
       });
-    }).catch(() => { /* offline: skip the welcome-back card */ });
+    }).catch(() => { /* Offline: the new-profile and guest paths still work. */ });
     return;
   }
 
