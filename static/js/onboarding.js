@@ -94,6 +94,10 @@ async function renderOnboarding() {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
               <span id="ob-theme-label">Switch to ${nextAppearance} appearance</span>
             </button>
+            <div class="landing-account-actions">
+              <button class="btn btn-deep landing-primary-action" id="ob-start">Create a new profile</button>
+              <button class="btn btn-ghost landing-secondary-action" id="ob-skip-all">Open guest dashboard</button>
+            </div>
           </div>
         </div>
       </header>
@@ -104,10 +108,6 @@ async function renderOnboarding() {
             <p class="landing-kicker"><span aria-hidden="true"></span> A local journal for everyday nourishment</p>
             <h1 id="landing-title">Keep the nutrition record that fits your real day.</h1>
             <p class="landing-lede">NutriCare helps you log meals and water, review the calories and nutrients attached to what you record, and keep your own data close at hand. Personal targets appear only when you provide the details needed for an estimate.</p>
-            <div class="landing-hero-actions">
-              <button class="btn btn-deep landing-primary-action" id="ob-start">Create a new profile</button>
-              <button class="btn btn-ghost landing-secondary-action" id="ob-skip-all">Open guest dashboard</button>
-            </div>
             <p class="landing-local-note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> Local profiles organise records on this device. They are not password-protected or encrypted.</p>
           </div>
           <figure class="landing-hero-media">

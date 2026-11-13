@@ -31,13 +31,15 @@ if (/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u.test(UI_SOURCE)) 
   throw new Error("The customer-facing application shell must use the shared SVG icon system, not emoji glyphs");
 }
 console.log("PASS  D1 customer-facing UI is emoji-free");
+const ONBOARDING_SOURCE = fs.readFileSync(path.join(JS_DIR, "onboarding.js"), "utf8");
 const LANDING_PHOTOS = ["landing-cooking.jpg", "landing-thali.jpg"];
 if (!LANDING_PHOTOS.every((file) => fs.existsSync(path.join(__dirname, "..", "static", "images", file)))
-    || !fs.readFileSync(path.join(JS_DIR, "onboarding.js"), "utf8").includes("Keep the nutrition record that fits your real day.")
-    || !fs.readFileSync(path.join(JS_DIR, "onboarding.js"), "utf8").includes("not password-protected or encrypted")) {
-  throw new Error("The first-run landing page must include its real local photography and honest privacy notice");
+    || !ONBOARDING_SOURCE.includes("Keep the nutrition record that fits your real day.")
+    || !ONBOARDING_SOURCE.includes("not password-protected or encrypted")
+    || ONBOARDING_SOURCE.indexOf("landing-account-actions") > ONBOARDING_SOURCE.indexOf("landing-hero")) {
+  throw new Error("The first-run landing page must include its photos, top-right account actions, and honest storage notice");
 }
-console.log("PASS  D1b first-run landing uses local editorial photos and accurate storage limits");
+console.log("PASS  D1b first-run landing uses local editorial photos, top-right actions, and accurate storage limits");
 if (INDEX_TEMPLATE.includes('id="top-date"')) {
   throw new Error("The dashboard top bar must not render a separate date chip");
 }

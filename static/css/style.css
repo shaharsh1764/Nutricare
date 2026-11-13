@@ -494,7 +494,9 @@ body.no-shell.landing-active{background:var(--canvas)}
 .landing-brand-mark img{display:block;width:100%;height:100%;object-fit:cover}
 .landing-brand b{display:block;font-family:var(--font-editorial);font-size:25px;font-weight:500;line-height:.92;letter-spacing:-.035em;color:var(--primary-deep)}
 .landing-brand small{display:block;margin-top:5px;font-size:8px;line-height:1;letter-spacing:.14em;font-weight:800;color:var(--emerald)}
-.landing-nav-actions{display:flex;align-items:center;gap:18px}
+.landing-nav-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.landing-account-actions{display:flex;align-items:center;gap:8px}
+.landing-account-actions .btn{min-height:42px;padding:10px 15px;white-space:nowrap}
 .landing-nav-link{font-size:12px;font-weight:800;text-decoration:none;color:var(--ink-subtle)}
 .landing-nav-link:hover{color:var(--primary-deep)}
 .landing-theme-toggle{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 10px;border:1px solid var(--line-strong);border-radius:var(--r-ctl);color:var(--primary-deep);background:var(--surface);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
@@ -506,9 +508,8 @@ body.no-shell.landing-active{background:var(--canvas)}
 .landing-kicker span{display:block;width:8px;height:8px;border-radius:50%;background:var(--emerald)}
 .landing-hero h1{max-width:680px;margin-top:18px;color:var(--ink);font-family:var(--font-editorial);font-size:clamp(46px,5.2vw,72px);font-weight:500;line-height:.97;letter-spacing:-.055em}
 .landing-lede{max-width:610px;margin-top:22px;color:var(--ink-subtle);font-size:16px;line-height:1.75}
-.landing-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:29px}
-.landing-primary-action,.landing-secondary-action{min-height:46px;padding:11px 16px;font-size:12px}
-.landing-local-note{display:flex;align-items:flex-start;gap:8px;max-width:580px;margin-top:20px;color:var(--muted);font-size:11.5px;line-height:1.55}
+.landing-primary-action,.landing-secondary-action{font-size:12px}
+.landing-local-note{display:flex;align-items:flex-start;gap:8px;max-width:580px;margin-top:27px;color:var(--muted);font-size:11.5px;line-height:1.55}
 .landing-local-note svg{flex:none;margin-top:1px;color:var(--emerald)}
 .landing-hero-media{position:relative;min-height:590px;margin:0;overflow:hidden;border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface-muted)}
 .landing-hero-media:after{content:"";position:absolute;inset:40% 0 0;background:linear-gradient(180deg,transparent,rgba(7,37,23,.7));pointer-events:none}
@@ -557,13 +558,14 @@ html[data-theme="dark"] .landing-safety-copy{color:rgba(238,245,239,.8)}
 .landing-footer-brand{align-self:start}.landing-footer-brand b{font-size:22px}
 .landing-footer p{color:var(--muted);font-size:10.5px;line-height:1.55}.landing-photo-credits{text-align:right}.landing-photo-credits a{font-weight:800;color:var(--primary-deep)}
 @media(max-width:960px){
+  .landing-nav-link{display:none}.landing-theme-toggle{width:36px;height:36px;justify-content:center;padding:0}.landing-theme-toggle span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .landing-hero{grid-template-columns:minmax(0,1fr) minmax(300px,.72fr);gap:34px}.landing-hero h1{font-size:clamp(43px,6vw,61px)}.landing-hero-media,.landing-hero-media img{min-height:510px}.landing-start-panel,.landing-existing,.landing-section-intro,.landing-safety{gap:28px}.landing-section-intro{grid-template-columns:1fr 1fr;column-gap:35px}.landing-method{gap:38px}.landing-method h2{font-size:36px}.landing-feature-card{padding:20px}.landing-footer-inner{grid-template-columns:auto 1fr}.landing-photo-credits{text-align:left;grid-column:2}
 }
 @media(max-width:700px){
   .landing-nav-inner,.landing-hero,.landing-start-panel,.landing-existing,.landing-details,.landing-method,.landing-safety,.landing-footer-inner{width:min(100% - 32px,560px)}
-  .landing-nav-inner{min-height:68px}.landing-nav-link{display:none}.landing-nav-actions{gap:0}.landing-theme-toggle{width:36px;height:36px;justify-content:center;padding:0}.landing-theme-toggle span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .landing-nav-inner{min-height:68px;padding:10px 0;flex-wrap:wrap}.landing-nav-actions{width:100%;gap:8px}.landing-account-actions{flex:1;justify-content:flex-end;gap:7px}.landing-account-actions .btn{min-height:36px;padding:8px 9px;font-size:10px;justify-content:center}
   .landing-brand-mark{width:36px;height:36px}.landing-brand b{font-size:23px}
-  .landing-hero{grid-template-columns:1fr;margin-top:0}.landing-hero-copy{padding:53px 0 28px}.landing-hero h1{font-size:clamp(42px,13vw,59px)}.landing-lede{font-size:14px;line-height:1.72}.landing-hero-actions{width:100%;margin-top:24px}.landing-hero-actions .btn{flex:1 1 100%;justify-content:center}
+  .landing-hero{grid-template-columns:1fr;margin-top:0}.landing-hero-copy{padding:53px 0 28px}.landing-hero h1{font-size:clamp(42px,13vw,59px)}.landing-lede{font-size:14px;line-height:1.72}
   .landing-hero-media,.landing-hero-media img{min-height:430px}.landing-photo-caption{right:16px;bottom:44px;left:16px;font-size:25px}
   .landing-start-panel,.landing-existing,.landing-section-intro,.landing-method,.landing-safety{grid-template-columns:1fr}.landing-start-panel,.landing-existing{padding:23px 20px}.landing-start-panel h2{font-size:29px}.landing-existing h2{font-size:25px}.landing-details{margin-top:72px}.landing-section-intro{margin-bottom:24px}.landing-details h2{font-size:38px}.landing-feature-grid{grid-template-columns:1fr}.landing-feature-card{min-height:0;padding:20px}.landing-feature-card h3{margin-top:22px}
   .landing-method{margin-top:72px}.landing-method-photo,.landing-method-photo img{min-height:370px}.landing-method-copy{padding:0}.landing-method h2{font-size:36px}.landing-safety{gap:22px;margin-top:72px;padding:28px 22px}.landing-safety h2{font-size:33px}.landing-footer{margin-top:72px}.landing-footer-inner{grid-template-columns:1fr;gap:14px;padding:25px 0 28px}.landing-photo-credits{grid-column:auto}
