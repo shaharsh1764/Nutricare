@@ -153,7 +153,7 @@ async function openUserModal() {
     <div class="selfcare-card mt16">
       <b class="small">Add another local profile</b>
       <p class="tiny muted mt8">Use the same guided setup as a first-time profile. It saves a separate profile and never changes this one.</p>
-      <button class="btn btn-primary btn-sm mt8" id="u-create">Start profile setup</button>
+      <button class="btn btn-primary btn-sm mt8" id="u-create">Create a new profile</button>
     </div>
     <div class="row mt16" style="justify-content:space-between">
       <button class="btn btn-danger-soft btn-sm" id="u-delete">Delete current profile…</button>

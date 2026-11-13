@@ -266,7 +266,7 @@ const DRIVER = `
   const existingMealCount = (await (await fetch("BASE" + "/api/meals")).json()).logged_count;
   const themeBeforeAccountSwitch = currentTheme();
   await openUserModal();
-  assert(el("#modal-root").innerHTML.includes("Start profile setup")
+  assert(el("#modal-root").innerHTML.includes("Create a new profile")
     && !el("#modal-root").innerHTML.includes("u-new-name"),
   "O1 account switcher replaces name-only creation with guided setup");
   await click("#u-create");
