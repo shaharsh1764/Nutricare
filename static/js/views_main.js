@@ -56,8 +56,6 @@ async function renderDashboard() {
     <div class="audit-actions" aria-label="Quick actions">
       <button class="btn btn-soft" id="quick-water">${ICONS.drop} +250 ml water</button>
       <button class="btn btn-ghost" id="quick-log">${ICONS.plus} Log meals</button>
-      <a class="btn btn-ghost" href="/api/report.pdf" download>${ICONS.download} Export PDF</a>
-      <a class="btn btn-ghost" href="/api/report.csv?days=7" download>${ICONS.download} Export CSV</a>
       <button class="btn btn-deep" id="quick-scan">${ICONS.scanner} Scan a meal</button>
     </div>
   </section>
@@ -114,7 +112,12 @@ async function renderDashboard() {
           <h3>Calories &amp; macro distribution</h3>
           <p class="tiny muted mt8">Your logged energy and macronutrients, grouped by meal.</p></div>
           <div class="audit-status-stack"><span class="pill pill-mint">${summary.logged_count} logged ${summary.logged_count === 1 ? "entry" : "entries"}</span>
-            ${t ? `<span class="pill pill-slate">Target ${fmt(t.kcal)} kcal</span>` : ""}</div></div>
+            ${t ? `<span class="pill pill-slate">Target ${fmt(t.kcal)} kcal</span>` : ""}
+            <div class="audit-section-actions" aria-label="Download today's nutrition record">
+              <a class="btn btn-ghost btn-sm" href="/api/report.pdf" download>${ICONS.download} Export PDF</a>
+              <a class="btn btn-ghost btn-sm" href="/api/report.csv?days=1" download>${ICONS.download} Export CSV</a>
+            </div>
+          </div></div>
         ${todayIntakeChart(summary, t)}
       </article>
 

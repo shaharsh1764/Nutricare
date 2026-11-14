@@ -111,8 +111,9 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 
 ## 6. First run, empty states & demo mode
 
-* A brand-new install shows the **onboarding wizard** (welcome → about you →
-  consent-based optional fields → optional goals). Only the display name is
+* A brand-new install shows the **onboarding wizard**: a welcome page followed
+  by focused screens for display name, age, formula input, height, weight,
+  activity, optional context, and optional goals. Only the display name is
   required; everything else can be skipped and finished later in Health Profile.
   Entered values are preserved across Back/Next, and required-field and range
   checks (age 10–120, height 50–250 cm, weight 20–300 kg) block advancing with
@@ -177,7 +178,7 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
 
 * **No authentication, no encryption, no network security** — local profiles only (§7).
   Do not store sensitive health details on a shared machine.
-* PDF export buttons from the mockups are replaced by CSV/JSON export + browser print.
+* Exports are records of what was logged: a detailed daily PDF, a selected 7/30/90-day PDF summary, CSV meal rows, and a complete JSON export. They do not add missing meals or clinical interpretation.
 * No barcode scanning, no Apple Health / dining-hall sync (mockup decoration only).
 * Profile form inputs are metric; imperial units apply to *displayed* values.
 * Micronutrient coverage is a 5-nutrient subset, clearly labelled in the UI.

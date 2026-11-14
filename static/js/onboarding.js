@@ -1,4 +1,4 @@
-/* First-run onboarding wizard (4 steps).
+/* First-run onboarding wizard (a focused, one-question-at-a-time flow).
 
    Fixes baked in:
    * entered values survive Back/Next (OB.data), so nothing is lost or re-typed;
@@ -20,59 +20,98 @@ const OB = {
 };
 
 const OB_ACTIVITY = [
-  ["sedentary", "Mostly sitting (desk study)"],
-  ["light", "Light exercise 1-3 days/week"],
-  ["moderate", "Moderate exercise 3-5 days/week"],
-  ["active", "Hard exercise 6-7 days/week"],
-  ["very_active", "Physical job + training"],
+  ["sedentary", "Mostly sitting", "Seated work or study; little planned activity."],
+  ["light", "Lightly active", "Easy movement or exercise 1–3 days each week."],
+  ["moderate", "Moderately active", "Regular movement or exercise 3–5 days each week."],
+  ["active", "Very active", "Hard exercise most days of the week."],
+  ["very_active", "Physical work + training", "A physically demanding job alongside regular training."],
 ];
 
-/* read the visible inputs of the current step into OB.data (preservation) */
+// These are optional, user-controlled labels only. They are not diagnoses,
+// allergy-safety checks, or inputs NutriCare uses to direct care or targets.
+const OB_CONTEXT_OPTIONS = {
+  prefs: ["Vegetarian", "Vegan", "Egg-free", "Lactose-free", "Gluten-free"],
+  allergies: ["Milk", "Egg", "Peanuts", "Tree nuts", "Soy", "Wheat / gluten", "Fish", "Shellfish", "Sesame"],
+  meds: ["Vitamin D3", "Vitamin B12", "Iron", "Calcium", "Omega-3", "Other medication"],
+  history: ["Diabetes", "Pre-diabetes", "High cholesterol", "High blood pressure", "PCOS", "Thyroid condition",
+    "Physical injury", "High stress or anxiety", "Sleep concerns", "Depression", "Anger concerns", "Loneliness", "Relationship stress"],
+};
+
+// The welcome page is separate. These eight screens collect only the profile
+// information NutriCare can actually store and explain each optional input.
+const OB_TOTAL_STEPS = 9;
+
+/* Read the active screen before moving. Values live in OB.data so Back/Next
+   never discards a response. */
 function obRead() {
-  const v = (sel) => { const el = $(sel); return el ? el.value : OB.data[sel]; };
-  if (OB.step === 2) {
-    OB.data.name = v("#ob-name"); OB.data.age = v("#ob-age"); OB.data.sex = v("#ob-sex");
-    OB.data.height = v("#ob-height"); OB.data.weight = v("#ob-weight");
-    OB.data.activity = v("#ob-activity"); OB.data.prefs = v("#ob-prefs");
-  } else if (OB.step === 3) {
-    OB.data.allergies = v("#ob-allergies"); OB.data.meds = v("#ob-meds");
-    OB.data.history = v("#ob-history");
-  } else if (OB.step === 4) {
-    OB.data.goal = v("#ob-goal"); OB.data.macro = v("#ob-macro"); OB.data.water = v("#ob-water");
-  }
-}
-
-/* inline validation with a visible message; returns true when the step is ok */
-function obValidateStep2() {
-  const d = OB.data;
-  const problems = [];
-  if (!d.name.trim()) problems.push("Display name is required (or choose “Skip for now”).");
-  const range = (label, value, lo, hi) => {
-    if (value !== "" && value !== null && value !== undefined) {
-      const n = Number(value);
-      if (isNaN(n) || n < lo || n > hi) problems.push(`${label} must be between ${lo} and ${hi}, or left blank.`);
-    }
+  const value = (selector, key) => {
+    const field = $(selector);
+    return field ? field.value : OB.data[key];
   };
-  range("Age", d.age, 10, 120);
-  range("Height", d.height, 50, 250);
-  range("Weight", d.weight, 20, 300);
-  const box = $("#ob-err");
-  if (box) {
-    box.hidden = problems.length === 0;
-    box.innerHTML = problems.map((p) => `<div>• ${esc(p)}</div>`).join("");
+  if (OB.step === 2) OB.data.name = value("#ob-name", "name");
+  if (OB.step === 3) OB.data.age = value("#ob-age", "age");
+  if (OB.step === 4) OB.data.sex = value("#ob-sex", "sex");
+  if (OB.step === 5) OB.data.height = value("#ob-height", "height");
+  if (OB.step === 6) OB.data.weight = value("#ob-weight", "weight");
+  if (OB.step === 7) OB.data.activity = value("#ob-activity", "activity");
+  if (OB.step === 8) {
+    OB.data.prefs = value("#ob-prefs", "prefs");
+    OB.data.allergies = value("#ob-allergies", "allergies");
+    OB.data.meds = value("#ob-meds", "meds");
+    OB.data.history = value("#ob-history", "history");
   }
+  if (OB.step === 9) {
+    OB.data.goal = value("#ob-goal", "goal");
+    OB.data.macro = value("#ob-macro", "macro");
+    OB.data.water = value("#ob-water", "water");
+  }
+}
+
+function obShowProblems(problems) {
+  const box = $("#ob-err");
+  if (!box) return problems.length === 0;
+  box.hidden = problems.length === 0;
+  box.innerHTML = problems.map((problem) => `<div>• ${esc(problem)}</div>`).join("");
   return problems.length === 0;
 }
 
-function obValidateStep4() {
+function obRangeProblem(label, value, minimum, maximum) {
+  if (value === "" || value === null || value === undefined) return null;
+  const number = Number(value);
+  return isNaN(number) || number < minimum || number > maximum
+    ? `${label} must be between ${minimum} and ${maximum}, or left blank.` : null;
+}
+
+function obValidateCurrent() {
   const problems = [];
-  const w = Number(OB.data.water);
-  if (OB.data.water !== "" && (isNaN(w) || w < 500 || w > 6000)) {
-    problems.push("Water goal must be between 500 and 6000 ml, or left blank.");
+  if (OB.step === 2 && !OB.data.name.trim()) {
+    problems.push("Display name is required (or choose “Skip setup”).");
   }
-  const box = $("#ob-err");
-  if (box) { box.hidden = problems.length === 0; box.innerHTML = problems.map((p) => `<div>• ${esc(p)}</div>`).join(""); }
-  return problems.length === 0;
+  if (OB.step === 3) {
+    const problem = obRangeProblem("Age", OB.data.age, 10, 120); if (problem) problems.push(problem);
+  }
+  if (OB.step === 5) {
+    const problem = obRangeProblem("Height", OB.data.height, 50, 250); if (problem) problems.push(problem);
+  }
+  if (OB.step === 6) {
+    const problem = obRangeProblem("Weight", OB.data.weight, 20, 300); if (problem) problems.push(problem);
+  }
+  if (OB.step === 9) {
+    const problem = obRangeProblem("Water goal", OB.data.water, 500, 6000); if (problem) problems.push(problem);
+  }
+  return obShowProblems(problems);
+}
+
+function obValidateAll() {
+  const problems = [];
+  if (!OB.data.name.trim()) problems.push("Display name is required.");
+  [["Age", OB.data.age, 10, 120], ["Height", OB.data.height, 50, 250],
+    ["Weight", OB.data.weight, 20, 300], ["Water goal", OB.data.water, 500, 6000]]
+    .forEach(([label, value, minimum, maximum]) => {
+      const problem = obRangeProblem(label, value, minimum, maximum);
+      if (problem) problems.push(problem);
+    });
+  return obShowProblems(problems);
 }
 
 async function renderOnboarding() {
@@ -245,152 +284,404 @@ async function renderOnboarding() {
     return;
   }
 
+  renderProfileWizard();
+}
+
+function renderProfileWizard() {
   if (OB.step === 2) {
-    view.innerHTML = `<div class="onb">
-      <div class="onb-card">
-        ${obHeader(2)}
-        <div class="ob-error" id="ob-err" hidden role="alert"></div>
-        <fieldset class="form-section"><legend>About you</legend>
-          <div class="grid cols-2">
-            <div class="field"><span class="label">Display name *</span>
-              <input class="input" id="ob-name" maxlength="60" value="${esc(OB.data.name)}"
-                placeholder="How should NutriCare greet you?" autocomplete="off"></div>
-            <div class="field"><span class="label">Age (years, optional)</span>
-              <input class="input" id="ob-age" type="number" min="10" max="120" value="${esc(OB.data.age)}" placeholder="e.g. 20"></div>
-            <div class="field"><span class="label">Sex for formulas (optional)</span>
-              <select class="select" id="ob-sex"><option value="">Prefer not to say</option>
-                <option value="female" ${OB.data.sex === "female" ? "selected" : ""}>Female</option>
-                <option value="male" ${OB.data.sex === "male" ? "selected" : ""}>Male</option>
-                <option value="other" ${OB.data.sex === "other" ? "selected" : ""}>Other / intersex</option></select>
-              <p class="form-hint">Used only inside the standard Mifflin-St Jeor formula.
-              “Prefer not to say” uses a documented midpoint constant.</p></div>
-            <div class="field"><span class="label">Height (cm, optional)</span>
-              <input class="input" id="ob-height" type="number" min="50" max="250" step="0.1" value="${esc(OB.data.height)}"></div>
-            <div class="field"><span class="label">Weight (kg, optional)</span>
-              <input class="input" id="ob-weight" type="number" min="20" max="300" step="0.1" value="${esc(OB.data.weight)}"></div>
-            <div class="field"><span class="label">Activity level</span>
-              <select class="select" id="ob-activity">${OB_ACTIVITY.map(([v, l]) =>
-                `<option value="${v}" ${OB.data.activity === v ? "selected" : ""}>${l}</option>`).join("")}</select></div>
-          </div>
-          <div class="field"><span class="label">Dietary preferences (optional, comma separated)</span>
-            <input class="input" id="ob-prefs" value="${esc(OB.data.prefs)}" placeholder="Vegetarian, nut-friendly, lactose-free…"></div>
-        </fieldset>
-        <p class="form-hint">* only the name is required. Everything else can be added later from
-        My Profile — the food tracker works without any of it.</p>
-        ${obNav()}
-      </div></div>`;
-    obBindNav(() => { obRead(); return obValidateStep2(); });
+    obWizardPage({
+      eyebrow: "Profile setup",
+      title: "What should we call you?",
+      description: "This is the only detail needed to create a local profile. You can add or change the rest later.",
+      content: `<label class="ob-field-label" for="ob-name">Display name</label>
+        <input class="ob-large-input" id="ob-name" maxlength="60" value="${esc(OB.data.name)}"
+          placeholder="Your name" autocomplete="off">`,
+      validate: obValidateCurrent,
+    });
     return;
   }
 
   if (OB.step === 3) {
-    view.innerHTML = `<div class="onb">
-      <div class="onb-card">
-        ${obHeader(3)}
-        <p class="small muted">These three are <b>optional and consent-based</b>. NutriCare never
-        requires medical details, and the nutrition tracker works fully without them. They are only
-        used as context reminders you control (for example, the Health Assistant shows your allergy
-        notes back to you).</p>
-        ${obConsent("allergies", "Allergies & intolerances",
-          "Helps you spot relevant context when logging foods or checking symptoms.",
-          `<input class="input" id="ob-allergies" value="${esc(OB.data.allergies)}" placeholder="e.g. lactose intolerance, peanuts">`)}
-        ${obConsent("medications", "Current medications / supplements",
-          "Shown back to you as your own context; the app never advises on medications.",
-          `<input class="input" id="ob-meds" value="${esc(OB.data.meds)}" placeholder="e.g. Vitamin D3">`)}
-        ${obConsent("history", "Relevant medical history",
-          "Free text you control. Leave off if you prefer — nothing is inferred from its absence.",
-          `<textarea class="input" id="ob-history" rows="3" maxlength="500">${esc(OB.data.history)}</textarea>`)}
-        ${obNav()}
-      </div></div>`;
-    $$(".ob-consent").forEach((t) => {
-      t.checked = OB.consent[t.dataset.consent];
-      const box = $(`#ob-box-${t.dataset.consent}`);
-      if (box) box.style.display = t.checked ? "block" : "none";
-      t.onchange = () => {
-        OB.consent[t.dataset.consent] = t.checked;
-        const b2 = $(`#ob-box-${t.dataset.consent}`);
-        if (b2) b2.style.display = t.checked ? "block" : "none";
-      };
+    obWizardPage({
+      eyebrow: "Optional profile detail",
+      title: "What is your age?",
+      description: "Age is used only when all formula inputs are present to calculate a labelled energy estimate.",
+      content: obWheelField("ob-age", "Age in years", OB.data.age, "years", 10, 120, 1, 30),
+      validate: obValidateCurrent,
+      bind: obBindNumberWheels,
     });
-    obBindNav(() => { obRead(); return true; });
     return;
   }
 
-  view.innerHTML = `<div class="onb">
-    <div class="onb-card">
-      ${obHeader(4)}
-      <div class="ob-error" id="ob-err" hidden role="alert"></div>
-      <fieldset class="form-section"><legend>Nutrition goals (optional)</legend>
-        <div class="grid cols-2">
-          <div class="field"><span class="label">Goal</span>
-            <select class="select" id="ob-goal">
-              <option value="maintain" ${OB.data.goal === "maintain" ? "selected" : ""}>Maintain weight (default)</option>
-              <option value="mild_loss" ${OB.data.goal === "mild_loss" ? "selected" : ""}>Mild loss (−300 kcal) — my choice</option>
-              <option value="mild_gain" ${OB.data.goal === "mild_gain" ? "selected" : ""}>Mild gain (+300 kcal) — my choice</option></select>
-            <p class="form-hint">NutriCare never recommends weight loss or restrictive diets.
-            Loss/gain appear only because you can choose them.</p></div>
-          <div class="field"><span class="label">Macro model</span>
-            <select class="select" id="ob-macro">
-              <option value="balanced" ${OB.data.macro === "balanced" ? "selected" : ""}>Balanced 40/25/35</option>
-              <option value="high_protein" ${OB.data.macro === "high_protein" ? "selected" : ""}>Higher protein 30/35/35</option>
-              <option value="low_carb" ${OB.data.macro === "low_carb" ? "selected" : ""}>Lower carb 25/35/40</option></select></div>
-          <div class="field"><span class="label">Daily water goal (ml)</span>
-            <input class="input" id="ob-water" type="number" min="500" max="6000" step="100" value="${esc(OB.data.water)}"></div>
-        </div>
-      </fieldset>
-      <div class="selfcare-card"><b class="tiny" style="color:var(--primary-deep)">WHAT WILL BE STORED LOCALLY</b>
-        <p class="tiny muted mt8">A local profile with your name and whatever you chose above, plus
-        empty meal / water / symptom logs. Targets (if computable) are labelled estimates you can
-        edit any time in My Profile or Settings.</p></div>
-      <div class="row mt20 wrap">
-        <button class="btn btn-deep" id="ob-finish">Save & open my dashboard</button>
-        <button class="btn btn-ghost" id="ob-back">Back</button>
-        <button class="btn btn-ghost" id="ob-skip">Skip — open guest dashboard</button>
+  if (OB.step === 4) {
+    obWizardPage({
+      eyebrow: "Optional formula input",
+      title: "Which formula input should we use?",
+      description: "Female and male select the standard Mifflin–St Jeor constants. Prefer not to say uses its documented midpoint; this does not describe your gender.",
+      content: `<input id="ob-sex" type="hidden" value="${esc(OB.data.sex)}">
+        <div class="ob-choice-grid" role="group" aria-label="Sex for energy formula">
+          ${obFormulaChoice("female", "Female", "Uses the female formula constant")}
+          ${obFormulaChoice("male", "Male", "Uses the male formula constant")}
+          ${obFormulaChoice("other", "Prefer not to say", "Uses the documented midpoint")}
+        </div>`,
+      validate: obValidateCurrent,
+      bind: () => obBindChoiceButtons(".ob-sex-choice", "#ob-sex"),
+    });
+    return;
+  }
+
+  if (OB.step === 5) {
+    obWizardPage({
+      eyebrow: "Optional profile detail",
+      title: "How tall are you?",
+      description: "Enter your height in centimetres. This stays editable in My Profile.",
+      content: obWheelField("ob-height", "Height in centimetres", OB.data.height, "cm", 50, 250, 1, 170),
+      validate: obValidateCurrent,
+      bind: obBindNumberWheels,
+    });
+    return;
+  }
+
+  if (OB.step === 6) {
+    obWizardPage({
+      eyebrow: "Optional profile detail",
+      title: "What is your current weight?",
+      description: "Enter kilograms if you want an energy estimate. NutriCare does not calculate or claim an ideal weight range.",
+      content: obWheelField("ob-weight", "Current weight in kilograms", OB.data.weight, "kg", 20, 300, 0.1, 70),
+      validate: obValidateCurrent,
+      bind: obBindNumberWheels,
+    });
+    return;
+  }
+
+  if (OB.step === 7) {
+    obWizardPage({
+      eyebrow: "Daily routine",
+      title: "How active are you most weeks?",
+      description: "Choose the description closest to your usual routine. You can update it later; it is only used for an optional energy estimate.",
+      content: `<input id="ob-activity" type="hidden" value="${esc(OB.data.activity)}">
+        <div class="ob-activity-list" role="group" aria-label="Activity level">
+          ${OB_ACTIVITY.map(([value, title, detail]) => obActivityChoice(value, title, detail)).join("")}
+        </div>`,
+      validate: obValidateCurrent,
+      bind: () => obBindChoiceButtons(".ob-activity-choice", "#ob-activity"),
+    });
+    return;
+  }
+
+  if (OB.step === 8) {
+    obWizardPage({
+      eyebrow: "Optional context",
+      title: "Anything you want your journal to remember?",
+      description: "Dietary preferences can help filter food suggestions. Health notes are off by default and are never required for logging food or water.",
+      content: `<div class="ob-context-intro"><p>Choose a common option or add your own. Food suggestions and health notes remain separate; review every food before relying on it.</p></div>
+        <div class="ob-compact-field ob-context-field"><label class="ob-field-label" for="ob-prefs">Dietary preferences</label>
+          ${obContextChoices("prefs", "ob-prefs", OB.data.prefs, OB_CONTEXT_OPTIONS.prefs)}
+          <input class="input" id="ob-prefs" value="${esc(OB.data.prefs)}" placeholder="Add another preference, then separate with a comma">
+          <p>Optional. Your selections and custom entries are saved as your own notes.</p></div>
+        <div class="ob-consent-stack">
+          ${obConsent("allergies", "Allergies & intolerances",
+            "Select a note you want stored locally. NutriCare does not certify food as safe.",
+            "ob-allergies", OB.data.allergies, OB_CONTEXT_OPTIONS.allergies,
+            "Add another allergy or intolerance")}
+          ${obConsent("medications", "Medications / supplements",
+            "Optional personal context only. NutriCare never advises on medications.",
+            "ob-meds", OB.data.meds, OB_CONTEXT_OPTIONS.meds,
+            "Add another medication or supplement")}
+          ${obConsent("history", "Relevant health notes",
+            "Optional notes you choose to keep. They do not direct care, goals, or diagnoses.",
+            "ob-history", OB.data.history, OB_CONTEXT_OPTIONS.history,
+            "Add another health note", true)}
+        </div>`,
+      validate: obValidateCurrent,
+      bind: () => { obBindContextChoices(); obBindContextInputs(); },
+    });
+    return;
+  }
+
+  obWizardPage({
+    eyebrow: "Optional targets",
+    title: "Set the starting preferences you want.",
+    description: "These settings stay editable. Any target NutriCare can calculate is an estimate, not medical advice.",
+    content: `<div class="ob-goal-fields">
+      <div class="ob-compact-field"><label class="ob-field-label" for="ob-goal">Goal</label>
+        <select class="select" id="ob-goal">
+          <option value="maintain" ${OB.data.goal === "maintain" ? "selected" : ""}>Maintain weight (default)</option>
+          <option value="mild_loss" ${OB.data.goal === "mild_loss" ? "selected" : ""}>Mild loss (−300 kcal) — my choice</option>
+          <option value="mild_gain" ${OB.data.goal === "mild_gain" ? "selected" : ""}>Mild gain (+300 kcal) — my choice</option>
+        </select></div>
+      <div class="ob-compact-field"><label class="ob-field-label" for="ob-macro">Macro model</label>
+        <select class="select" id="ob-macro">
+          <option value="balanced" ${OB.data.macro === "balanced" ? "selected" : ""}>Balanced 40/25/35</option>
+          <option value="high_protein" ${OB.data.macro === "high_protein" ? "selected" : ""}>Higher protein 30/35/35</option>
+          <option value="low_carb" ${OB.data.macro === "low_carb" ? "selected" : ""}>Lower carb 25/35/40</option>
+        </select></div>
+      <div class="ob-compact-field"><label class="ob-field-label" for="ob-water">Daily water goal</label>
+        <div class="ob-unit-input"><input class="input" id="ob-water" type="number" min="500" max="6000" step="100" value="${esc(OB.data.water)}"><span>ml</span></div>
+        <p>Optional. Enter 500–6000 ml, or leave it blank.</p></div>
       </div>
-    </div></div>`;
-  $("#ob-back").onclick = () => { obRead(); OB.step = 3; renderOnboarding(); };
-  $("#ob-finish").onclick = (e) => withBusy(e.currentTarget,
-    () => collectAndSubmit(false), "Profile saved — welcome to your dashboard!");
-  $("#ob-skip").onclick = (e) => withBusy(e.currentTarget,
+      <div class="ob-storage-note"><b>Stored locally</b><span>Your profile keeps only the information you choose above, plus empty meal, water, and health-assistant records. Local profiles are not password-protected or encrypted.</span></div>`,
+    validate: () => obValidateCurrent() && obValidateAll(),
+    final: true,
+  });
+}
+
+function obWizardPage({ eyebrow, title, description, content, validate, bind, final = false }) {
+  const view = $("#view");
+  const primaryLabel = final ? "Save and open dashboard" : "Next";
+  view.innerHTML = `<div class="onb onb-wizard">
+    <div class="ob-wizard-card">
+      <div class="ob-wizard-top">
+        ${obProgress()}
+        <button class="ob-skip-setup" type="button" id="ob-skip">Skip setup</button>
+      </div>
+      <section class="ob-question" aria-labelledby="ob-question-title">
+        <p class="ob-question-kicker">${esc(eyebrow)}</p>
+        <h2 id="ob-question-title">${esc(title)}</h2>
+        <p class="ob-question-description">${esc(description)}</p>
+        <div class="ob-error" id="ob-err" hidden role="alert"></div>
+        <div class="ob-question-content">${content}</div>
+      </section>
+      ${obWizardNav(primaryLabel)}
+    </div>
+  </div>`;
+  if (bind) bind();
+  obBindWizard(validate, final);
+}
+
+function obProgress() {
+  const current = OB.step - 1;
+  return `<div class="ob-progress-wrap"><div class="ob-progress" role="progressbar" aria-valuemin="1" aria-valuemax="${OB_TOTAL_STEPS - 1}" aria-valuenow="${current}" aria-label="Profile setup step ${current} of ${OB_TOTAL_STEPS - 1}">
+    ${Array.from({ length: OB_TOTAL_STEPS - 1 }, (_, index) => `<i class="${index < current ? "done" : ""}${index + 1 === current ? " current" : ""}" aria-hidden="true"></i>`).join("")}
+  </div><span>Step ${current} of ${OB_TOTAL_STEPS - 1}</span></div>`;
+}
+
+function obWizardNav(primaryLabel) {
+  return `<footer class="ob-wizard-footer">
+    <button class="ob-footer-action ob-footer-back" id="ob-back" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Back</button>
+    <button class="ob-footer-action ob-footer-next" id="ob-next" type="button">${esc(primaryLabel)}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+  </footer>`;
+}
+
+function obWheelNumber(value, step) {
+  return step < 1 ? Number(value).toFixed(1) : String(Math.round(Number(value)));
+}
+
+function obWheelRows(current, minimum, maximum, step, selected) {
+  return [-2, -1, 0, 1, 2].map((offset) => {
+    const value = Math.max(minimum, Math.min(maximum, current + offset * step));
+    const kind = offset === 0 ? (selected ? "is-selected" : "is-suggested") : `is-offset-${Math.abs(offset)}`;
+    return `<span class="ob-wheel-value ${kind}" aria-hidden="true">${obWheelNumber(value, step)}</span>`;
+  }).join("");
+}
+
+function obWheelArrow(direction) {
+  const path = direction < 0 ? "m14 6-6 6 6 6" : "m10 6 6 6-6 6";
+  return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`;
+}
+
+function obWheelField(id, label, value, unit, minimum, maximum, step, fallback) {
+  const selected = value !== "" && value !== null && value !== undefined;
+  const current = selected ? Number(value) : fallback;
+  const selectedText = selected ? `Selected ${obWheelNumber(current, step)} ${unit}` : `No ${label.toLowerCase()} selected`;
+  return `<div class="ob-wheel-field">
+    <span class="ob-field-label" id="${id}-label">${esc(label)} <em>optional</em></span>
+    <input id="${id}" type="hidden" value="${selected ? esc(value) : ""}">
+    <div class="ob-wheel-shell">
+      <button class="ob-wheel-arrow" type="button" data-wheel-for="${id}" data-wheel-change="-1" aria-label="Decrease ${esc(label)}">${obWheelArrow(-1)}</button>
+      <div class="ob-wheel-picker" id="${id}-wheel" tabindex="0" role="spinbutton" aria-labelledby="${id}-label" aria-describedby="${id}-hint" aria-valuemin="${minimum}" aria-valuemax="${maximum}" aria-valuenow="${current}" aria-valuetext="${esc(selectedText)}"
+        data-number-wheel data-input="${id}" data-minimum="${minimum}" data-maximum="${maximum}" data-step="${step}" data-fallback="${fallback}" data-unit="${esc(unit)}" data-label="${esc(label.toLowerCase())}">
+        <div class="ob-wheel-values" id="${id}-values">${obWheelRows(current, minimum, maximum, step, selected)}</div>
+      </div>
+      <button class="ob-wheel-arrow" type="button" data-wheel-for="${id}" data-wheel-change="1" aria-label="Increase ${esc(label)}">${obWheelArrow(1)}</button>
+    </div>
+    <div class="ob-wheel-actions"><small id="${id}-hint">Use the arrows, swipe the wheel, or use the arrow keys. Leave it untouched to keep this detail blank.</small>
+      <span class="ob-wheel-unit" aria-hidden="true">${esc(unit)}</span>
+      <button class="ob-wheel-clear" id="${id}-clear" type="button" ${selected ? "" : "hidden"}>Clear</button></div>
+  </div>`;
+}
+
+function obBindNumberWheels() {
+  $$("[data-number-wheel]").forEach((wheel) => {
+    const input = $(`#${wheel.dataset.input}`);
+    if (!input) return;
+    const minimum = Number(wheel.dataset.minimum);
+    const maximum = Number(wheel.dataset.maximum);
+    const step = Number(wheel.dataset.step);
+    const fallback = Number(wheel.dataset.fallback);
+    const factor = 10 ** ((String(step).split(".")[1] || "").length);
+    const current = () => input.value === "" ? fallback : Number(input.value);
+    const selected = () => input.value !== "";
+    const redraw = () => {
+      const value = current();
+      const rows = $(`#${input.id}-values`);
+      const clear = $(`#${input.id}-clear`);
+      if (rows) rows.innerHTML = obWheelRows(value, minimum, maximum, step, selected());
+      if (clear) clear.hidden = !selected();
+      wheel.setAttribute("aria-valuenow", String(value));
+      wheel.setAttribute("aria-valuetext", selected()
+        ? `Selected ${obWheelNumber(value, step)} ${wheel.dataset.unit}`
+        : `No ${wheel.dataset.label} selected. Choose a value or continue without it.`);
+    };
+    const change = (direction) => {
+      const next = Math.max(minimum, Math.min(maximum,
+        Math.round((current() + direction * step) * factor) / factor));
+      input.value = obWheelNumber(next, step);
+      redraw();
+    };
+    $$(`[data-wheel-for="${input.id}"]`).forEach((button) => {
+      button.onclick = () => change(Number(button.dataset.wheelChange));
+    });
+    wheel.onkeydown = (event) => {
+      if (["ArrowUp", "ArrowRight"].includes(event.key)) { event.preventDefault(); change(1); }
+      if (["ArrowDown", "ArrowLeft"].includes(event.key)) { event.preventDefault(); change(-1); }
+      if (event.key === "Home") { event.preventDefault(); input.value = obWheelNumber(minimum, step); redraw(); }
+      if (event.key === "End") { event.preventDefault(); input.value = obWheelNumber(maximum, step); redraw(); }
+    };
+    wheel.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      change(event.deltaY > 0 ? -1 : 1);
+    }, { passive: false });
+    let startY = null;
+    wheel.addEventListener("pointerdown", (event) => { startY = event.clientY; });
+    wheel.addEventListener("pointerup", (event) => {
+      if (startY === null) return;
+      const distance = event.clientY - startY;
+      startY = null;
+      if (Math.abs(distance) >= 20) change(distance < 0 ? 1 : -1);
+    });
+    const clear = $(`#${input.id}-clear`);
+    if (clear) clear.onclick = () => { input.value = ""; redraw(); wheel.focus(); };
+    redraw();
+  });
+}
+
+function obFormulaChoice(value, title, detail) {
+  const selected = OB.data.sex === value;
+  return `<button class="ob-select-card ob-sex-choice ${selected ? "selected" : ""}" type="button" data-ob-value="${value}" aria-pressed="${selected ? "true" : "false"}">
+    <span class="ob-choice-glyph" aria-hidden="true">${value === "female"
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="5"/><path d="M12 14v8M8.5 18H15.5"/></svg>`
+      : value === "male" ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="15" r="5"/><path d="m12.5 11.5 6-6M14.5 5.5h4v4"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="10" r="5"/><path d="M12 15v7M8.5 18H15.5"/></svg>`}</span>
+    <b>${esc(title)}</b><small>${esc(detail)}</small></button>`;
+}
+
+function obActivityChoice(value, title, detail) {
+  const selected = OB.data.activity === value;
+  return `<button class="ob-activity-choice ${selected ? "selected" : ""}" type="button" data-ob-value="${value}" aria-pressed="${selected ? "true" : "false"}">
+    <span class="ob-activity-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18h14"/><path d="M7 14h10"/><path d="M9 10h6"/><path d="M12 4v6"/></svg></span><span><b>${esc(title)}</b><small>${esc(detail)}</small></span>
+  </button>`;
+}
+
+function obBindChoiceButtons(selector, inputSelector) {
+  $$(selector).forEach((button) => button.onclick = () => {
+    const input = $(inputSelector);
+    if (input) input.value = button.dataset.obValue;
+    obRead();
+    renderOnboarding();
+  });
+}
+
+function obContextTokens(value) {
+  return String(value || "").split(",").map((item) => item.trim()).filter(Boolean);
+}
+
+function obContextChoices(field, inputId, value, options, consentKey = "") {
+  const selected = obContextTokens(value).map((item) => item.toLocaleLowerCase());
+  const hasSelection = selected.length > 0;
+  const choice = (item) => selected.includes(item.toLocaleLowerCase());
+  return `<div class="ob-context-choices" role="group" aria-label="Common ${esc(field === "prefs" ? "dietary preferences" : field)}">
+    ${field !== "prefs" ? `<button class="ob-context-chip ob-context-none ${hasSelection ? "" : "selected"}" type="button" data-context-input="${inputId}" data-context-field="${field}" data-context-consent="${consentKey}" data-context-none="true" aria-pressed="${hasSelection ? "false" : "true"}">None</button>` : ""}
+    ${options.map((item) => `<button class="ob-context-chip ${choice(item) ? "selected" : ""}" type="button" data-context-input="${inputId}" data-context-field="${field}" data-context-consent="${consentKey}" data-context-value="${esc(item)}" aria-pressed="${choice(item) ? "true" : "false"}">${esc(item)}</button>`).join("")}
+  </div>`;
+}
+
+function obContextValue(key) {
+  return key === "prefs" ? OB.data.prefs : key === "allergies" ? OB.data.allergies
+    : key === "medications" ? OB.data.meds : OB.data.history;
+}
+
+function obSetContextValue(key, value) {
+  if (key === "prefs") OB.data.prefs = value;
+  if (key === "allergies") OB.data.allergies = value;
+  if (key === "medications") OB.data.meds = value;
+  if (key === "history") OB.data.history = value;
+}
+
+function obEnableConsent(key) {
+  if (key) OB.consent[key] = true;
+}
+
+function obBindContextChoices() {
+  $$(".ob-context-chip").forEach((button) => button.onclick = () => {
+    obRead();
+    const field = button.dataset.contextField;
+    const input = $(`#${button.dataset.contextInput}`);
+    const value = input ? input.value : obContextValue(field);
+    let values = obContextTokens(value);
+    if (button.dataset.contextNone === "true") values = [];
+    else {
+      const option = button.dataset.contextValue;
+      const index = values.findIndex((item) => item.toLocaleLowerCase() === option.toLocaleLowerCase());
+      if (index >= 0) values.splice(index, 1); else values.push(option);
+    }
+    const next = values.join(", ");
+    if (input) input.value = next;
+    obSetContextValue(field, next);
+    obEnableConsent(button.dataset.contextConsent);
+    $$(`.ob-context-chip[data-context-input="${button.dataset.contextInput}"]`).forEach((chip) => {
+      const isNone = chip.dataset.contextNone === "true";
+      const isSelected = isNone ? values.length === 0
+        : values.some((item) => item.toLocaleLowerCase() === chip.dataset.contextValue.toLocaleLowerCase());
+      chip.classList.toggle("selected", isSelected);
+      chip.setAttribute("aria-pressed", String(isSelected));
+    });
+  });
+}
+
+function obBindContextInputs() {
+  $$(".ob-context-custom").forEach((input) => {
+    const consentKey = input.dataset.contextConsent;
+    const enable = () => {
+      if (input.value.trim()) obEnableConsent(consentKey);
+    };
+    input.oninput = enable;
+    input.onchange = enable;
+  });
+}
+
+function obConsent(key, title, why, inputId, value, options, placeholder, multiline = false) {
+  const input = multiline
+    ? `<textarea class="input ob-context-custom" id="${inputId}" data-context-consent="${key}" rows="3" maxlength="500" placeholder="${esc(placeholder)}">${esc(value)}</textarea>`
+    : `<input class="input ob-context-custom" id="${inputId}" data-context-consent="${key}" value="${esc(value)}" placeholder="${esc(placeholder)}">`;
+  return `<section class="ob-consent-card" aria-labelledby="ob-consent-title-${key}">
+    <div class="ob-consent-heading"><b id="ob-consent-title-${key}">${esc(title)}</b><p>${esc(why)}</p></div>
+    ${obContextChoices(key === "medications" ? "medications" : key, inputId, value, options, key)}
+    <div class="ob-consent-input">${input}
+      <p>Choosing a preset or typing your own note means you choose to store it in this local profile.</p></div>
+  </section>`;
+}
+
+function obBindWizard(validate, final = false) {
+  $("#ob-back").onclick = () => { obRead(); OB.step = Math.max(1, OB.step - 1); renderOnboarding(); };
+  $("#ob-skip").onclick = (event) => withBusy(event.currentTarget,
     () => collectAndSubmit(true), "Guest dashboard ready — add a profile anytime.");
+  $("#ob-next").onclick = (event) => {
+    obRead();
+    if (!validate()) return;
+    if (final) {
+      withBusy(event.currentTarget, () => collectAndSubmit(false), "Profile saved — welcome to your dashboard!");
+      return;
+    }
+    OB.step = Math.min(OB_TOTAL_STEPS, OB.step + 1);
+    renderOnboarding();
+  };
 }
 
 function lsSetLocalUid() {
   if (S.boot && S.boot.user) lsSet(LS_UID, String(S.boot.user.id));
 }
 
-function obHeader(step) {
-  const labels = ["Welcome", "About you", "Optional & consent-based", "Goals"];
-  return `<div class="row spread"><div class="row" style="gap:8px">
-    ${labels.map((l, i) => `<span class="pill ${i + 1 === step ? "pill-teal" : "pill-slate"}">${i + 1} · ${l}</span>`).join("")}
-  </div><span class="tiny muted" aria-live="polite">Step ${step} of 4</span></div>
-  <h2 style="font-size:22px" class="mt12">${labels[step - 1]}</h2>`;
-}
-
-function obConsent(key, title, why, inputs) {
-  return `<div class="form-section mt12">
-    <div class="row spread">
-      <div style="flex:1"><b class="small">${title}</b><p class="tiny muted">${why}</p></div>
-      <label class="switch"><input type="checkbox" class="ob-consent" data-consent="${key}"
-        aria-label="I choose to add ${esc(title)}"><span class="track"></span></label>
-    </div>
-    <div class="mt12" id="ob-box-${key}" style="display:none">${inputs}</div>
-  </div>`;
-}
-
-function obNav() {
-  return `<div class="row mt20 wrap">
-    <button class="btn btn-deep" id="ob-next">Next →</button>
-    <button class="btn btn-ghost" id="ob-back">← Back</button>
-    <button class="btn btn-ghost" id="ob-skip">Skip for now</button></div>`;
-}
-
-function obBindNav(validate) {
-  $("#ob-back").onclick = () => { obRead(); OB.step = Math.max(1, OB.step - 1); renderOnboarding(); };
-  $("#ob-skip").onclick = (e) => withBusy(e.currentTarget,
-    () => collectAndSubmit(true), "Guest dashboard ready — add a profile anytime.");
-  $("#ob-next").onclick = () => { if (validate()) { OB.step += 1; renderOnboarding(); } };
-}
 
 function collectAndSubmit(skipOptional) {
   obRead();
@@ -402,7 +693,7 @@ function collectAndSubmit(skipOptional) {
   const body = { name };
   const profile = {};
   if (!skipOptional) {
-    if (!obValidateStep2() || !obValidateStep4()) return Promise.resolve(false);
+    if (!obValidateAll()) return Promise.resolve(false);
     const num = (value) => (value === "" || value === null || isNaN(Number(value)) ? null : Number(value));
     const age = num(OB.data.age), height = num(OB.data.height), weight = num(OB.data.weight);
     if (age) profile.age = age;

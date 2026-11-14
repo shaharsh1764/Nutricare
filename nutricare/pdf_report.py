@@ -361,3 +361,130 @@ def build_daily_report_pdf(*, user: dict, day: str, grouped_meals: dict[str, lis
 
     doc.build(story, onFirstPage=_page_footer, onLaterPages=_page_footer)
     return out.getvalue()
+
+
+def _period_page_footer(canvas, doc):
+    canvas.saveState()
+    width, _ = A4
+    canvas.setStrokeColor(OAT_DARK)
+    canvas.setLineWidth(0.5)
+    canvas.line(doc.leftMargin, 13 * mm, width - doc.rightMargin, 13 * mm)
+    canvas.setFillColor(MUTED)
+    canvas.setFont("Helvetica", 7)
+    canvas.drawString(doc.leftMargin, 8.5 * mm,
+                      "NutriCare nutrition summary — built only from logged meals and water")
+    canvas.drawRightString(width - doc.rightMargin, 8.5 * mm, f"Page {doc.page}")
+    canvas.restoreState()
+
+
+def build_period_report_pdf(*, user: dict, days: int, start_day: str, end_day: str,
+                            per_day: list[dict], targets: dict | None) -> bytes:
+    """Build a printable, non-clinical summary for a selected report window.
+
+    Days without meal entries remain visible in the table but are not treated as
+    zero food intake. The PDF is intentionally a summary rather than a set of
+    invented daily meal details.
+    """
+    out = BytesIO()
+    doc = SimpleDocTemplate(
+        out, pagesize=A4, title=f"NutriCare {days}-day nutrition summary",
+        author="NutriCare", leftMargin=17 * mm, rightMargin=17 * mm,
+        topMargin=16 * mm, bottomMargin=19 * mm, pageCompression=0,
+    )
+    styles = _styles()
+    story: list[Any] = []
+    meal_days = [row for row in per_day if row.get("logged_count", 0)]
+    keys = ("kcal", "protein_g", "carbs_g", "fat_g")
+    totals = {key: sum(float(row.get(key) or 0) for row in per_day) for key in keys}
+    water_total = sum(float(row.get("water_ml") or 0) for row in per_day)
+    n_meal_days = len(meal_days)
+    profile_note = "Personalised targets, where shown, are estimates." if targets else (
+        "Profile targets are not configured; no personalised comparisons are shown.")
+    story.extend([
+        Paragraph(f"Nutrition summary · {days} days", styles["title"]),
+        Paragraph(
+            f"For <b>{_safe(user.get('name') or 'Local profile')}</b> · "
+            f"{_safe(start_day)} to {_safe(end_day)}<br/>{profile_note}", styles["subtitle"]),
+    ])
+
+    if n_meal_days:
+        summary_cells = [
+            ("Meal-log days", f"{n_meal_days} of {days}"),
+            ("Average calories", f"{_number(totals['kcal'] / n_meal_days)} kcal"),
+            ("Average protein", f"{_number(totals['protein_g'] / n_meal_days, 1)} g"),
+            ("Average carbs", f"{_number(totals['carbs_g'] / n_meal_days, 1)} g"),
+            ("Average fat", f"{_number(totals['fat_g'] / n_meal_days, 1)} g"),
+        ]
+        summary_table = Table([
+            [Paragraph(label, styles["cell_label"]) for label, _ in summary_cells],
+            [Paragraph(value, styles["cell_value"]) for _, value in summary_cells],
+        ], colWidths=[doc.width / len(summary_cells)] * len(summary_cells))
+        summary_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), OAT),
+            ("BOX", (0, 0), (-1, -1), 0.5, OAT_DARK),
+            ("INNERGRID", (0, 0), (-1, -1), 0.3, OAT_DARK),
+            ("TOPPADDING", (0, 0), (-1, -1), 7),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+        ]))
+        story.extend([summary_table, Spacer(1, 5)])
+        story.append(Paragraph(
+            f"Recorded water across this window: <b>{_number(water_total)} ml</b>. "
+            "Nutrition averages use days with at least one meal entry.", styles["small"]))
+    else:
+        story.append(Paragraph(
+            "No meal entries are logged in this window. This summary does not treat the absence of a log as zero food intake.",
+            styles["body"]))
+        if water_total:
+            story.append(Paragraph(
+                f"Recorded water across this window: <b>{_number(water_total)} ml</b>.", styles["small"]))
+
+    story.append(Paragraph("Recorded daily totals", styles["section"]))
+    story.append(Paragraph(
+        "Only days with a meal entry display meal energy and macronutrients. A blank day means no meal was recorded, not that no food was eaten.",
+        styles["small"]))
+    table_rows = [[
+        Paragraph("Date", styles["cell_label"]),
+        Paragraph("Meal entries", styles["cell_label"]),
+        Paragraph("kcal", styles["cell_label"]),
+        Paragraph("Protein", styles["cell_label"]),
+        Paragraph("Carbs", styles["cell_label"]),
+        Paragraph("Fat", styles["cell_label"]),
+        Paragraph("Water", styles["cell_label"]),
+    ]]
+    for row in per_day:
+        has_meals = bool(row.get("logged_count", 0))
+        table_rows.append([
+            Paragraph(_safe(row.get("date")), styles["body"]),
+            Paragraph(str(int(row.get("logged_count") or 0)) if has_meals else "—", styles["right"]),
+            Paragraph(f"{_number(row.get('kcal'))}" if has_meals else "—", styles["right"]),
+            Paragraph(f"{_number(row.get('protein_g'), 1)} g" if has_meals else "—", styles["right"]),
+            Paragraph(f"{_number(row.get('carbs_g'), 1)} g" if has_meals else "—", styles["right"]),
+            Paragraph(f"{_number(row.get('fat_g'), 1)} g" if has_meals else "—", styles["right"]),
+            Paragraph(f"{_number(row.get('water_ml'))} ml", styles["right"]),
+        ])
+    daily_table = Table(table_rows,
+                        colWidths=[doc.width * .19, doc.width * .13, doc.width * .12,
+                                   doc.width * .15, doc.width * .15, doc.width * .12,
+                                   doc.width * .14], repeatRows=1)
+    daily_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), FOREST),
+        ("TEXTCOLOR", (0, 0), (-1, 0), WHITE),
+        ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#FBF9F5")),
+        ("GRID", (0, 0), (-1, -1), 0.35, OAT_DARK),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]))
+    story.append(daily_table)
+    story.extend([
+        Spacer(1, 8),
+        Paragraph(
+            "This document is a summary of the local records selected above. It is not a medical assessment, diagnosis, or food-safety certification.",
+            styles["small"]),
+    ])
+    if targets and targets.get("estimate_note"):
+        story.append(Spacer(1, 3))
+        story.append(Paragraph(_safe(targets["estimate_note"]), styles["small"]))
+
+    doc.build(story, onFirstPage=_period_page_footer, onLaterPages=_period_page_footer)
+    return out.getvalue()

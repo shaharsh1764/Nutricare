@@ -651,39 +651,63 @@ def report_csv():
 
 @api.get("/report.pdf")
 def report_pdf():
-    """Download one honest, printable record for the selected day (today by default)."""
+    """Download either one detailed day or an honest selected-period summary."""
     conn = db.get_db()
     uid = current_uid(conn)
     if uid is None:
         return no_user()
+    day_arg, days_arg = request.args.get("date"), request.args.get("days")
+    if day_arg and days_arg:
+        return err("Choose either date or days for a PDF export, not both.")
     try:
-        day = v_date(request.args.get("date", db.today()))
-    except ValueError as exc:
+        days = int(v_number(days_arg, "days", 1, 90, integer=True)) if days_arg else None
+        day = v_date(day_arg or db.today())
+    except (ValueError, TypeError) as exc:
         return err(str(exc))
 
     user = db.get_user(conn, uid) or {"name": "Local profile"}
     profile = db.get_profile(conn, uid)
     settings = db.get_settings(conn, uid)
-    entries = day_rows(conn, uid, day)
-    grouped = {meal: [] for meal in db.MEALS}
-    for entry in entries:
-        grouped.setdefault(entry["meal"], []).append(entry)
-    totals = nutrition.sum_nutrients([entry["nutrients"] for entry in entries])
-    water_ml = conn.execute(
-        "SELECT SUM(amount_ml) t FROM water_logs WHERE user_id = ? AND date = ?", (uid, day)
-    ).fetchone()["t"] or 0
-    foods = [dict(row) for row in conn.execute("SELECT * FROM foods ORDER BY id")]
     targets = targets_for(profile, settings)
-    daily = insights.daily_payload(
-        date=day, entries=entries, totals=totals, water_ml=water_ml,
-        water_goal_ml=settings["water_goal_ml"], targets=targets, profile=profile, foods=foods,
-    )
-    pdf_bytes = pdf_report.build_daily_report_pdf(
-        user=user, day=day, grouped_meals=grouped, totals=totals, water_ml=water_ml,
-        water_goal_ml=settings["water_goal_ml"], targets=targets, daily_insights=daily,
-    )
+    if days:
+        end_day = date.today()
+        start_day = end_day - timedelta(days=days - 1)
+        per_day = []
+        for offset in range(days - 1, -1, -1):
+            report_day = (end_day - timedelta(days=offset)).isoformat()
+            entries = day_rows(conn, uid, report_day)
+            totals = nutrition.sum_nutrients([entry["nutrients"] for entry in entries])
+            water_ml = conn.execute(
+                "SELECT SUM(amount_ml) t FROM water_logs WHERE user_id = ? AND date = ?", (uid, report_day)
+            ).fetchone()["t"] or 0
+            per_day.append({"date": report_day, **totals, "water_ml": water_ml,
+                            "logged_count": len(entries)})
+        pdf_bytes = pdf_report.build_period_report_pdf(
+            user=user, days=days, start_day=start_day.isoformat(), end_day=end_day.isoformat(),
+            per_day=per_day, targets=targets,
+        )
+        filename = f"nutricare-{days}-day-summary-{start_day.isoformat()}-to-{end_day.isoformat()}.pdf"
+    else:
+        entries = day_rows(conn, uid, day)
+        grouped = {meal: [] for meal in db.MEALS}
+        for entry in entries:
+            grouped.setdefault(entry["meal"], []).append(entry)
+        totals = nutrition.sum_nutrients([entry["nutrients"] for entry in entries])
+        water_ml = conn.execute(
+            "SELECT SUM(amount_ml) t FROM water_logs WHERE user_id = ? AND date = ?", (uid, day)
+        ).fetchone()["t"] or 0
+        foods = [dict(row) for row in conn.execute("SELECT * FROM foods ORDER BY id")]
+        daily = insights.daily_payload(
+            date=day, entries=entries, totals=totals, water_ml=water_ml,
+            water_goal_ml=settings["water_goal_ml"], targets=targets, profile=profile, foods=foods,
+        )
+        pdf_bytes = pdf_report.build_daily_report_pdf(
+            user=user, day=day, grouped_meals=grouped, totals=totals, water_ml=water_ml,
+            water_goal_ml=settings["water_goal_ml"], targets=targets, daily_insights=daily,
+        )
+        filename = f"nutricare-daily-record-{day}.pdf"
     return Response(pdf_bytes, mimetype="application/pdf", headers={
-        "Content-Disposition": f'attachment; filename="nutricare-daily-record-{day}.pdf"',
+        "Content-Disposition": f'attachment; filename="{filename}"',
         "Content-Length": str(len(pdf_bytes)),
     })
 
