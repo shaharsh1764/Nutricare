@@ -111,8 +111,9 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 
 ## 6. First run, empty states & demo mode
 
-* A brand-new install shows the **onboarding wizard** (welcome → about you →
-  consent-based optional fields → optional goals). Only the display name is
+* A brand-new install shows the **onboarding wizard**: a welcome page followed
+  by focused screens for display name, age, formula input, height, weight,
+  activity, optional context, and optional goals. Only the display name is
   required; everything else can be skipped and finished later in Health Profile.
   Entered values are preserved across Back/Next, and required-field and range
   checks (age 10–120, height 50–250 cm, weight 20–300 kg) block advancing with

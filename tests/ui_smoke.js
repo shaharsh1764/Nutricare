@@ -36,10 +36,13 @@ const LANDING_PHOTOS = ["landing-cooking.jpg", "landing-thali.jpg"];
 if (!LANDING_PHOTOS.every((file) => fs.existsSync(path.join(__dirname, "..", "static", "images", file)))
     || !ONBOARDING_SOURCE.includes("Keep the nutrition record that fits your real day.")
     || !ONBOARDING_SOURCE.includes("not password-protected or encrypted")
+    || !ONBOARDING_SOURCE.includes("What should we call you?")
+    || !ONBOARDING_SOURCE.includes("How active are you most weeks?")
+    || !ONBOARDING_SOURCE.includes("OB_TOTAL_STEPS = 9")
     || ONBOARDING_SOURCE.indexOf("landing-account-actions") > ONBOARDING_SOURCE.indexOf("landing-hero")) {
   throw new Error("The first-run landing page must include its photos, top-right account actions, and honest storage notice");
 }
-console.log("PASS  D1b first-run landing uses local editorial photos, top-right actions, and accurate storage limits");
+console.log("PASS  D1b landing and focused profile wizard retain honest storage limits");
 if (INDEX_TEMPLATE.includes('id="top-date"')) {
   throw new Error("The dashboard top bar must not render a separate date chip");
 }
@@ -218,23 +221,31 @@ const DRIVER = `
   await boot();
   assert(view().includes("Keep the nutrition record that fits your real day."), "B1 onboarding for fresh browser");
   await click("#ob-start");
+  assert(view().includes("What should we call you?") && view().includes("Step 1 of 8"),
+    "B1b profile setup starts with a focused, progressive name screen");
+  set("#ob-name", "Priya"); click("#ob-next");
   /* F: invalid input shows message, keeps other values, does not advance */
-  set("#ob-name", "Priya"); set("#ob-age", "5"); set("#ob-height", "168");
-  click("#ob-next");
+  set("#ob-age", "5"); click("#ob-next");
   assert(el("#ob-err").hidden === false && el("#ob-err").innerHTML.includes("between 10 and 120"),
     "F1 invalid age shows inline validation message");
-  assert(view().includes("About you"), "F2 wizard stays on the invalid step");
-  /* E: back/next preserve entered values */
-  set("#ob-age", "20"); set("#ob-sex", "female"); set("#ob-weight", "59.8");
-  set("#ob-activity", "moderate");
-  click("#ob-next");                       // -> step 3
-  assert(view().includes("consent"), "E1 step 3 renders consent section");
-  click("#ob-back");                       // -> step 2 again
-  assert(view().includes('value="Priya"') && view().includes('value="20"')
-    && view().includes('value="59.8"'), "E2 back re-renders preserved values");
-  click("#ob-next"); click("#ob-next");    // -> step 4
+  assert(view().includes("What is your age?"), "F2 wizard stays on the invalid screen");
+  /* E: one-question screens and Back preserve entered values */
+  set("#ob-age", "20"); click("#ob-next");
+  assert(view().includes("Which formula input should we use?"), "E1 formula-choice screen renders");
+  set("#ob-sex", "female"); click("#ob-next");
+  set("#ob-height", "168"); click("#ob-next");
+  set("#ob-weight", "59.8"); click("#ob-next");
+  assert(view().includes("How active are you most weeks?"), "E1b activity-choice screen renders");
+  set("#ob-activity", "moderate"); click("#ob-next");
+  assert(view().includes("Anything you want your journal to remember?"), "E1c optional context remains consent-based");
+  click("#ob-back");
+  assert(OB.data.name === "Priya" && OB.data.age === "20" && OB.data.sex === "female"
+    && OB.data.height === "168" && OB.data.weight === "59.8" && OB.data.activity === "moderate",
+  "E2 Back preserves every prior profile response");
+  click("#ob-next"); click("#ob-next");
+  assert(view().includes("Set the starting preferences you want."), "E3 target preferences screen renders last");
   set("#ob-goal", "maintain"); set("#ob-macro", "balanced"); set("#ob-water", "2800");
-  await click("#ob-finish");
+  await click("#ob-next");
   await sleep(500);
   assert(S.boot.user && S.boot.user.name === "Priya", "B2 profile saved and session active");
   assert(S.boot.profile.age === 20 && S.boot.profile.weight_kg === 59.8,
@@ -282,14 +293,18 @@ const DRIVER = `
   assert(S.onboardingActive && bodyClasses.has("no-shell") && view().includes("Keep the nutrition record that fits your real day."),
     "O2 new account opens the same first-launch wizard");
   click("#ob-start");
-  set("#ob-name", "Asha"); set("#ob-age", "29"); set("#ob-sex", "female");
-  set("#ob-height", "162"); set("#ob-weight", "57.5"); set("#ob-activity", "active");
-  set("#ob-prefs", "lactose-free"); click("#ob-next");
+  set("#ob-name", "Asha"); click("#ob-next");
+  set("#ob-age", "29"); click("#ob-next");
+  set("#ob-sex", "female"); click("#ob-next");
+  set("#ob-height", "162"); click("#ob-next");
+  set("#ob-weight", "57.5"); click("#ob-next");
+  set("#ob-activity", "active"); click("#ob-next");
+  set("#ob-prefs", "lactose-free");
   OB.consent.allergies = true; OB.consent.medications = true; OB.consent.history = true;
   set("#ob-allergies", "soy"); set("#ob-meds", "Vitamin D3");
   set("#ob-history", "Seasonal migraines"); click("#ob-next");
   set("#ob-goal", "mild_gain"); set("#ob-macro", "high_protein"); set("#ob-water", "3200");
-  await click("#ob-finish"); await sleep(500);
+  await click("#ob-next"); await sleep(500);
   assert(S.boot.user && S.boot.user.name === "Asha" && !S.onboardingActive,
     "O3 finished wizard creates and opens the new account");
   assert(S.boot.profile.age === 29 && S.boot.profile.dietary_prefs.includes("lactose-free")
