@@ -156,7 +156,7 @@ button{font-family:inherit}
 .audit-workspace{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(300px,.88fr);gap:16px;margin-top:16px;align-items:start}
 .audit-main-column,.audit-side-column{display:grid;gap:16px;min-width:0}.audit-side-column{align-content:start}
 .audit-section-head{align-items:flex-start;margin-bottom:12px}.audit-section-head h3,.audit-care-card h3{margin-top:4px;font-family:var(--font-editorial);font-size:24px;font-weight:500;line-height:1.05;letter-spacing:-.02em}
-.audit-status-stack{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}
+.audit-status-stack{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}.audit-section-actions{display:flex;justify-content:flex-end;gap:5px;width:100%}.audit-section-actions .btn{white-space:nowrap}
 .audit-timeline-card,.audit-today-card,.audit-log-card{background:var(--surface)}
 .audit-chart-shell{min-height:236px;padding:14px 12px;background:var(--surface-muted);border:1px solid var(--line)}
 .audit-chart-shell .empty-state{height:205px;background:transparent;border-color:var(--line-strong)}

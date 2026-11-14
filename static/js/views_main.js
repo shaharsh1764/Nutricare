@@ -114,7 +114,12 @@ async function renderDashboard() {
           <h3>Calories &amp; macro distribution</h3>
           <p class="tiny muted mt8">Your logged energy and macronutrients, grouped by meal.</p></div>
           <div class="audit-status-stack"><span class="pill pill-mint">${summary.logged_count} logged ${summary.logged_count === 1 ? "entry" : "entries"}</span>
-            ${t ? `<span class="pill pill-slate">Target ${fmt(t.kcal)} kcal</span>` : ""}</div></div>
+            ${t ? `<span class="pill pill-slate">Target ${fmt(t.kcal)} kcal</span>` : ""}
+            <div class="audit-section-actions" aria-label="Download today's nutrition record">
+              <a class="btn btn-ghost btn-sm" href="/api/report.pdf" download>${ICONS.download} Export PDF</a>
+              <a class="btn btn-ghost btn-sm" href="/api/report.csv?days=1" download>${ICONS.download} Export CSV</a>
+            </div>
+          </div></div>
         ${todayIntakeChart(summary, t)}
       </article>
 

@@ -188,6 +188,8 @@ const DRIVER = `
     && view().includes("Calories &amp; macro distribution")
     && view().includes("Export PDF")
     && view().includes("/api/report.pdf")
+    && view().includes("audit-section-actions")
+    && view().includes("/api/report.csv?days=1")
     && view().includes("Meals recorded today")
     && view().includes("Micronutrient snapshot")
     && view().includes("NutriCare nutrition record"),
