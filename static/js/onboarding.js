@@ -38,21 +38,11 @@ function obRead() {
     const field = $(selector);
     return field ? field.value : OB.data[key];
   };
-  // Range inputs always have a visual thumb. Keep optional values blank until
-  // someone actually moves one, while still letting a saved response survive Back.
-  const sliderValue = (selector, key) => {
-    const field = $(selector);
-    if (!field) return OB.data[key];
-    if (field.dataset.cleared === "true") return "";
-    const fallback = { "#ob-age": "30", "#ob-height": "170", "#ob-weight": "70" }[selector];
-    const base = field.dataset.defaultValue || fallback || field.value;
-    return field.dataset.touched === "true" || field.value !== base ? field.value : (OB.data[key] || "");
-  };
   if (OB.step === 2) OB.data.name = value("#ob-name", "name");
-  if (OB.step === 3) OB.data.age = sliderValue("#ob-age", "age");
+  if (OB.step === 3) OB.data.age = value("#ob-age", "age");
   if (OB.step === 4) OB.data.sex = value("#ob-sex", "sex");
-  if (OB.step === 5) OB.data.height = sliderValue("#ob-height", "height");
-  if (OB.step === 6) OB.data.weight = sliderValue("#ob-weight", "weight");
+  if (OB.step === 5) OB.data.height = value("#ob-height", "height");
+  if (OB.step === 6) OB.data.weight = value("#ob-weight", "weight");
   if (OB.step === 7) OB.data.activity = value("#ob-activity", "activity");
   if (OB.step === 8) {
     OB.data.prefs = value("#ob-prefs", "prefs");
@@ -306,9 +296,9 @@ function renderProfileWizard() {
       eyebrow: "Optional profile detail",
       title: "What is your age?",
       description: "Age is used only when all formula inputs are present to calculate a labelled energy estimate.",
-      content: obSliderField("ob-age", "Age in years", OB.data.age, "years", 10, 120, 1, 30),
+      content: obWheelField("ob-age", "Age in years", OB.data.age, "years", 10, 120, 1, 30),
       validate: obValidateCurrent,
-      bind: obBindOptionalSliders,
+      bind: obBindNumberWheels,
     });
     return;
   }
@@ -335,9 +325,9 @@ function renderProfileWizard() {
       eyebrow: "Optional profile detail",
       title: "How tall are you?",
       description: "Enter your height in centimetres. This stays editable in My Profile.",
-      content: obSliderField("ob-height", "Height in centimetres", OB.data.height, "cm", 50, 250, 1, 170),
+      content: obWheelField("ob-height", "Height in centimetres", OB.data.height, "cm", 50, 250, 1, 170),
       validate: obValidateCurrent,
-      bind: obBindOptionalSliders,
+      bind: obBindNumberWheels,
     });
     return;
   }
@@ -347,9 +337,9 @@ function renderProfileWizard() {
       eyebrow: "Optional profile detail",
       title: "What is your current weight?",
       description: "Enter kilograms if you want an energy estimate. NutriCare does not calculate or claim an ideal weight range.",
-      content: obSliderField("ob-weight", "Current weight in kilograms", OB.data.weight, "kg", 20, 300, 0.1, 70),
+      content: obWheelField("ob-weight", "Current weight in kilograms", OB.data.weight, "kg", 20, 300, 0.1, 70),
       validate: obValidateCurrent,
-      bind: obBindOptionalSliders,
+      bind: obBindNumberWheels,
     });
     return;
   }
@@ -458,59 +448,96 @@ function obWizardNav(primaryLabel) {
   </footer>`;
 }
 
-function obSliderField(id, label, value, unit, minimum, maximum, step, fallback) {
-  const hasValue = value !== "" && value !== null && value !== undefined;
-  const display = hasValue ? Number(value) : fallback;
-  const formatted = step < 1 ? Number(display).toFixed(1) : String(Math.round(Number(display)));
-  const selectionText = hasValue ? `${formatted} ${unit}` : "Not set";
-  const accessibleValue = hasValue ? `${formatted} ${unit}` : `No ${label.toLowerCase()} selected`;
-  return `<div class="ob-slider-field">
+function obWheelNumber(value, step) {
+  return step < 1 ? Number(value).toFixed(1) : String(Math.round(Number(value)));
+}
+
+function obWheelRows(current, minimum, maximum, step, selected) {
+  return [-2, -1, 0, 1, 2].map((offset) => {
+    const value = Math.max(minimum, Math.min(maximum, current + offset * step));
+    const kind = offset === 0 ? (selected ? "is-selected" : "is-suggested") : `is-offset-${Math.abs(offset)}`;
+    return `<span class="ob-wheel-value ${kind}" aria-hidden="true">${obWheelNumber(value, step)}</span>`;
+  }).join("");
+}
+
+function obWheelArrow(direction) {
+  const path = direction < 0 ? "m14 6-6 6 6 6" : "m10 6 6 6-6 6";
+  return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`;
+}
+
+function obWheelField(id, label, value, unit, minimum, maximum, step, fallback) {
+  const selected = value !== "" && value !== null && value !== undefined;
+  const current = selected ? Number(value) : fallback;
+  const selectedText = selected ? `Selected ${obWheelNumber(current, step)} ${unit}` : `No ${label.toLowerCase()} selected`;
+  return `<div class="ob-wheel-field">
     <span class="ob-field-label" id="${id}-label">${esc(label)} <em>optional</em></span>
-    <div class="ob-slider-picker">
-      <div class="ob-slider-scale" aria-hidden="true"><span>${maximum}</span><i></i><span>${minimum}</span></div>
-      <input class="ob-vertical-slider" id="${id}" type="range" min="${minimum}" max="${maximum}" step="${step}"
-        value="${display}" aria-labelledby="${id}-label" aria-describedby="${id}-hint" aria-valuetext="${esc(accessibleValue)}"
-        data-optional-slider data-default-value="${fallback}" data-selected="${hasValue}" data-label="${esc(label.toLowerCase())}" data-unit="${esc(unit)}" data-step="${step}">
-      <output class="ob-slider-readout" id="${id}-readout" for="${id}" aria-live="polite"><strong>${esc(selectionText)}</strong><small>${hasValue ? "Selected" : "Not set"}</small></output>
+    <input id="${id}" type="hidden" value="${selected ? esc(value) : ""}">
+    <div class="ob-wheel-shell">
+      <button class="ob-wheel-arrow" type="button" data-wheel-for="${id}" data-wheel-change="-1" aria-label="Decrease ${esc(label)}">${obWheelArrow(-1)}</button>
+      <div class="ob-wheel-picker" id="${id}-wheel" tabindex="0" role="spinbutton" aria-labelledby="${id}-label" aria-describedby="${id}-hint" aria-valuemin="${minimum}" aria-valuemax="${maximum}" aria-valuenow="${current}" aria-valuetext="${esc(selectedText)}"
+        data-number-wheel data-input="${id}" data-minimum="${minimum}" data-maximum="${maximum}" data-step="${step}" data-fallback="${fallback}" data-unit="${esc(unit)}" data-label="${esc(label.toLowerCase())}">
+        <div class="ob-wheel-values" id="${id}-values">${obWheelRows(current, minimum, maximum, step, selected)}</div>
+      </div>
+      <button class="ob-wheel-arrow" type="button" data-wheel-for="${id}" data-wheel-change="1" aria-label="Increase ${esc(label)}">${obWheelArrow(1)}</button>
     </div>
-    <div class="ob-slider-actions"><small id="${id}-hint">Slide vertically or use the arrow keys for precise changes. Leave it untouched to keep this detail blank.</small>
-      <button class="ob-slider-clear" id="${id}-clear" type="button" ${hasValue ? "" : "hidden"}>Clear</button></div>
+    <div class="ob-wheel-actions"><small id="${id}-hint">Use the arrows, swipe the wheel, or use the arrow keys. Leave it untouched to keep this detail blank.</small>
+      <span class="ob-wheel-unit" aria-hidden="true">${esc(unit)}</span>
+      <button class="ob-wheel-clear" id="${id}-clear" type="button" ${selected ? "" : "hidden"}>Clear</button></div>
   </div>`;
 }
 
-function obBindOptionalSliders() {
-  $$("[data-optional-slider]").forEach((field) => {
-    const fallback = field.dataset.defaultValue || field.value;
-    const wasSelected = field.dataset.selected === "true";
-    if (!field.value) field.value = fallback;
-    field.dataset.defaultValue = fallback;
-    field.dataset.touched = wasSelected ? "true" : "false";
-    field.dataset.cleared = "false";
-    const update = () => {
-      const selected = field.dataset.touched === "true" && field.dataset.cleared !== "true";
-      const step = Number(field.dataset.step || 1);
-      const shown = step < 1 ? Number(field.value).toFixed(1) : String(Math.round(Number(field.value)));
-      const unit = field.dataset.unit || "";
-      const readout = $(`#${field.id}-readout`);
-      const clear = $(`#${field.id}-clear`);
-      if (readout) readout.innerHTML = `<strong>${selected ? esc(`${shown} ${unit}`) : "Not set"}</strong><small>${selected ? "Selected" : "Not set"}</small>`;
-      if (clear) clear.hidden = !selected;
-      field.setAttribute("aria-valuetext", selected ? `${shown} ${unit}` : `No value selected. Move the slider to choose ${field.dataset.label || "a value"}.`);
+function obBindNumberWheels() {
+  $$("[data-number-wheel]").forEach((wheel) => {
+    const input = $(`#${wheel.dataset.input}`);
+    if (!input) return;
+    const minimum = Number(wheel.dataset.minimum);
+    const maximum = Number(wheel.dataset.maximum);
+    const step = Number(wheel.dataset.step);
+    const fallback = Number(wheel.dataset.fallback);
+    const factor = 10 ** ((String(step).split(".")[1] || "").length);
+    const current = () => input.value === "" ? fallback : Number(input.value);
+    const selected = () => input.value !== "";
+    const redraw = () => {
+      const value = current();
+      const rows = $(`#${input.id}-values`);
+      const clear = $(`#${input.id}-clear`);
+      if (rows) rows.innerHTML = obWheelRows(value, minimum, maximum, step, selected());
+      if (clear) clear.hidden = !selected();
+      wheel.setAttribute("aria-valuenow", String(value));
+      wheel.setAttribute("aria-valuetext", selected()
+        ? `Selected ${obWheelNumber(value, step)} ${wheel.dataset.unit}`
+        : `No ${wheel.dataset.label} selected. Choose a value or continue without it.`);
     };
-    field.oninput = () => {
-      field.dataset.touched = "true";
-      field.dataset.cleared = "false";
-      update();
+    const change = (direction) => {
+      const next = Math.max(minimum, Math.min(maximum,
+        Math.round((current() + direction * step) * factor) / factor));
+      input.value = obWheelNumber(next, step);
+      redraw();
     };
-    const clear = $(`#${field.id}-clear`);
-    if (clear) clear.onclick = () => {
-      field.value = fallback;
-      field.dataset.touched = "false";
-      field.dataset.cleared = "true";
-      update();
-      field.focus();
+    $$(`[data-wheel-for="${input.id}"]`).forEach((button) => {
+      button.onclick = () => change(Number(button.dataset.wheelChange));
+    });
+    wheel.onkeydown = (event) => {
+      if (["ArrowUp", "ArrowRight"].includes(event.key)) { event.preventDefault(); change(1); }
+      if (["ArrowDown", "ArrowLeft"].includes(event.key)) { event.preventDefault(); change(-1); }
+      if (event.key === "Home") { event.preventDefault(); input.value = obWheelNumber(minimum, step); redraw(); }
+      if (event.key === "End") { event.preventDefault(); input.value = obWheelNumber(maximum, step); redraw(); }
     };
-    update();
+    wheel.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      change(event.deltaY > 0 ? -1 : 1);
+    }, { passive: false });
+    let startY = null;
+    wheel.addEventListener("pointerdown", (event) => { startY = event.clientY; });
+    wheel.addEventListener("pointerup", (event) => {
+      if (startY === null) return;
+      const distance = event.clientY - startY;
+      startY = null;
+      if (Math.abs(distance) >= 20) change(distance < 0 ? 1 : -1);
+    });
+    const clear = $(`#${input.id}-clear`);
+    if (clear) clear.onclick = () => { input.value = ""; redraw(); wheel.focus(); };
+    redraw();
   });
 }
 
