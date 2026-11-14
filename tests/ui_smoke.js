@@ -31,6 +31,15 @@ if (/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u.test(UI_SOURCE)) 
   throw new Error("The customer-facing application shell must use the shared SVG icon system, not emoji glyphs");
 }
 console.log("PASS  D1 customer-facing UI is emoji-free");
+const ONBOARDING_SOURCE = fs.readFileSync(path.join(JS_DIR, "onboarding.js"), "utf8");
+const LANDING_PHOTOS = ["landing-cooking.jpg", "landing-thali.jpg"];
+if (!LANDING_PHOTOS.every((file) => fs.existsSync(path.join(__dirname, "..", "static", "images", file)))
+    || !ONBOARDING_SOURCE.includes("Keep the nutrition record that fits your real day.")
+    || !ONBOARDING_SOURCE.includes("not password-protected or encrypted")
+    || ONBOARDING_SOURCE.indexOf("landing-account-actions") > ONBOARDING_SOURCE.indexOf("landing-hero")) {
+  throw new Error("The first-run landing page must include its photos, top-right account actions, and honest storage notice");
+}
+console.log("PASS  D1b first-run landing uses local editorial photos, top-right actions, and accurate storage limits");
 if (INDEX_TEMPLATE.includes('id="top-date"')) {
   throw new Error("The dashboard top bar must not render a separate date chip");
 }
@@ -152,7 +161,7 @@ const DRIVER = `
   console.log("A: skip onboarding -> guest dashboard…");
   cookieJar.clear(); storage.delete("nutricare_uid");
   await boot();
-  assert(view().includes("Start setup"), "A1 first run shows onboarding");
+  assert(view().includes("Keep the nutrition record that fits your real day."), "A1 first run shows onboarding");
   const guestsBefore = ((await (await fetch("BASE" + "/api/users")).json()).users)
     .filter((u) => u.name.trim().toLowerCase() === "guest");
   await click("#ob-skip-all");
@@ -207,7 +216,7 @@ const DRIVER = `
   console.log("B: complete onboarding, refresh preserves profile…");
   cookieJar.clear(); storage.delete("nutricare_uid");
   await boot();
-  assert(view().includes("Start setup"), "B1 onboarding for fresh browser");
+  assert(view().includes("Keep the nutrition record that fits your real day."), "B1 onboarding for fresh browser");
   await click("#ob-start");
   /* F: invalid input shows message, keeps other values, does not advance */
   set("#ob-name", "Priya"); set("#ob-age", "5"); set("#ob-height", "168");
@@ -233,7 +242,7 @@ const DRIVER = `
   assert(S.boot.targets && S.boot.targets.kcal > 0, "B4 targets computed after completion");
   assert(view().includes("Energy budget"), "B5 dashboard opens after finish");
   await boot();                            // simulate browser refresh
-  assert(!view().includes("Start setup") && view().includes("Energy budget"),
+  assert(!view().includes("Keep the nutrition record that fits your real day.") && view().includes("Energy budget"),
     "B6 refresh does not return to onboarding");
   assert(S.boot.profile.age === 20, "B7 refresh preserves the saved profile");
 
@@ -270,7 +279,7 @@ const DRIVER = `
     && !el("#modal-root").innerHTML.includes("u-new-name"),
   "O1 account switcher replaces name-only creation with guided setup");
   await click("#u-create");
-  assert(S.onboardingActive && bodyClasses.has("no-shell") && view().includes("Start setup"),
+  assert(S.onboardingActive && bodyClasses.has("no-shell") && view().includes("Keep the nutrition record that fits your real day."),
     "O2 new account opens the same first-launch wizard");
   click("#ob-start");
   set("#ob-name", "Asha"); set("#ob-age", "29"); set("#ob-sex", "female");
@@ -388,7 +397,7 @@ const DRIVER = `
   const guestsJ = usersBeforeJ.filter((u) => u.name.trim().toLowerCase() === "guest");
   cookieJar.clear(); storage.delete("nutricare_uid");
   await boot();
-  assert(view().includes("Start setup"), "J1 fresh visitor state shows onboarding again");
+  assert(view().includes("Keep the nutrition record that fits your real day."), "J1 fresh visitor state shows onboarding again");
   await click("#ob-skip-all");
   await sleep(400);
   const usersAfterJ = (await (await fetch("BASE" + "/api/users")).json()).users;

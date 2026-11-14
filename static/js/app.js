@@ -190,7 +190,7 @@ async function openUserModal() {
 
 async function afterUserChange() {
   S.onboardingActive = false;
-  document.body.classList.remove("no-shell");
+  document.body.classList.remove("no-shell", "landing-active");
   ensureShell();
   refreshBanners();
   await refreshSideGoal();
