@@ -27,6 +27,16 @@ const OB_ACTIVITY = [
   ["very_active", "Physical work + training", "A physically demanding job alongside regular training."],
 ];
 
+// These are optional, user-controlled labels only. They are not diagnoses,
+// allergy-safety checks, or inputs NutriCare uses to direct care or targets.
+const OB_CONTEXT_OPTIONS = {
+  prefs: ["Vegetarian", "Vegan", "Egg-free", "Lactose-free", "Gluten-free", "No beef", "No pork"],
+  allergies: ["Milk", "Egg", "Peanuts", "Tree nuts", "Soy", "Wheat / gluten", "Fish", "Shellfish", "Sesame"],
+  meds: ["Vitamin D3", "Vitamin B12", "Iron", "Calcium", "Omega-3", "Other medication"],
+  history: ["Diabetes", "Pre-diabetes", "High cholesterol", "High blood pressure", "PCOS", "Thyroid condition",
+    "Physical injury", "High stress or anxiety", "Sleep concerns", "Depression", "Anger concerns", "Loneliness", "Relationship stress"],
+};
+
 // The welcome page is separate. These eight screens collect only the profile
 // information NutriCare can actually store and explain each optional input.
 const OB_TOTAL_STEPS = 9;
@@ -364,22 +374,27 @@ function renderProfileWizard() {
       eyebrow: "Optional context",
       title: "Anything you want your journal to remember?",
       description: "Dietary preferences can help filter food suggestions. Health notes are off by default and are never required for logging food or water.",
-      content: `<div class="ob-compact-field"><label class="ob-field-label" for="ob-prefs">Dietary preferences</label>
-          <input class="input" id="ob-prefs" value="${esc(OB.data.prefs)}" placeholder="Vegetarian, lactose-free, sesame allergy…">
-          <p>Optional, comma-separated. Check entries before relying on any food suggestion.</p></div>
+      content: `<div class="ob-context-intro"><p>Choose a common option or add your own. Food suggestions and health notes remain separate; review every food before relying on it.</p></div>
+        <div class="ob-compact-field ob-context-field"><label class="ob-field-label" for="ob-prefs">Dietary preferences</label>
+          ${obContextChoices("prefs", "ob-prefs", OB.data.prefs, OB_CONTEXT_OPTIONS.prefs)}
+          <input class="input" id="ob-prefs" value="${esc(OB.data.prefs)}" placeholder="Add another preference, then separate with a comma">
+          <p>Optional. Your selections and custom entries are saved as your own notes.</p></div>
         <div class="ob-consent-stack">
           ${obConsent("allergies", "Allergies & intolerances",
-            "Shows your own notes back to you when relevant; it does not certify food as safe.",
-            `<input class="input" id="ob-allergies" value="${esc(OB.data.allergies)}" placeholder="e.g. lactose intolerance, peanuts">`)}
+            "Select a note you want stored locally. NutriCare does not certify food as safe.",
+            "ob-allergies", OB.data.allergies, OB_CONTEXT_OPTIONS.allergies,
+            "Add another allergy or intolerance")}
           ${obConsent("medications", "Medications / supplements",
-            "Stored only as context. NutriCare never advises on medications.",
-            `<input class="input" id="ob-meds" value="${esc(OB.data.meds)}" placeholder="e.g. Vitamin D3">`)}
+            "Optional personal context only. NutriCare never advises on medications.",
+            "ob-meds", OB.data.meds, OB_CONTEXT_OPTIONS.meds,
+            "Add another medication or supplement")}
           ${obConsent("history", "Relevant health notes",
-            "Free text you control. Leave this off if you prefer.",
-            `<textarea class="input" id="ob-history" rows="3" maxlength="500">${esc(OB.data.history)}</textarea>`)}
+            "Optional notes you choose to keep. They do not direct care, goals, or diagnoses.",
+            "ob-history", OB.data.history, OB_CONTEXT_OPTIONS.history,
+            "Add another health note", true)}
         </div>`,
       validate: obValidateCurrent,
-      bind: obBindConsentControls,
+      bind: () => { obBindConsentControls(); obBindContextChoices(); },
     });
     return;
   }
@@ -567,6 +582,68 @@ function obBindChoiceButtons(selector, inputSelector) {
   });
 }
 
+function obContextTokens(value) {
+  return String(value || "").split(",").map((item) => item.trim()).filter(Boolean);
+}
+
+function obContextChoices(field, inputId, value, options, consentKey = "") {
+  const selected = obContextTokens(value).map((item) => item.toLocaleLowerCase());
+  const hasSelection = selected.length > 0;
+  const choice = (item) => selected.includes(item.toLocaleLowerCase());
+  return `<div class="ob-context-choices" role="group" aria-label="Common ${esc(field === "prefs" ? "dietary preferences" : field)}">
+    ${field !== "prefs" ? `<button class="ob-context-chip ob-context-none ${hasSelection ? "" : "selected"}" type="button" data-context-input="${inputId}" data-context-field="${field}" data-context-consent="${consentKey}" data-context-none="true" aria-pressed="${hasSelection ? "false" : "true"}">None</button>` : ""}
+    ${options.map((item) => `<button class="ob-context-chip ${choice(item) ? "selected" : ""}" type="button" data-context-input="${inputId}" data-context-field="${field}" data-context-consent="${consentKey}" data-context-value="${esc(item)}" aria-pressed="${choice(item) ? "true" : "false"}">${esc(item)}</button>`).join("")}
+  </div>`;
+}
+
+function obContextValue(key) {
+  return key === "prefs" ? OB.data.prefs : key === "allergies" ? OB.data.allergies
+    : key === "medications" ? OB.data.meds : OB.data.history;
+}
+
+function obSetContextValue(key, value) {
+  if (key === "prefs") OB.data.prefs = value;
+  if (key === "allergies") OB.data.allergies = value;
+  if (key === "medications") OB.data.meds = value;
+  if (key === "history") OB.data.history = value;
+}
+
+function obEnableConsent(key) {
+  if (!key) return;
+  OB.consent[key] = true;
+  const toggle = $(`#ob-consent-${key}`);
+  const box = $(`#ob-box-${key}`);
+  if (toggle) toggle.checked = true;
+  if (box) box.style.display = "block";
+}
+
+function obBindContextChoices() {
+  $$(".ob-context-chip").forEach((button) => button.onclick = () => {
+    obRead();
+    const field = button.dataset.contextField;
+    const input = $(`#${button.dataset.contextInput}`);
+    const value = input ? input.value : obContextValue(field);
+    let values = obContextTokens(value);
+    if (button.dataset.contextNone === "true") values = [];
+    else {
+      const option = button.dataset.contextValue;
+      const index = values.findIndex((item) => item.toLocaleLowerCase() === option.toLocaleLowerCase());
+      if (index >= 0) values.splice(index, 1); else values.push(option);
+    }
+    const next = values.join(", ");
+    if (input) input.value = next;
+    obSetContextValue(field, next);
+    obEnableConsent(button.dataset.contextConsent);
+    $$(`.ob-context-chip[data-context-input="${button.dataset.contextInput}"]`).forEach((chip) => {
+      const isNone = chip.dataset.contextNone === "true";
+      const isSelected = isNone ? values.length === 0
+        : values.some((item) => item.toLocaleLowerCase() === chip.dataset.contextValue.toLocaleLowerCase());
+      chip.classList.toggle("selected", isSelected);
+      chip.setAttribute("aria-pressed", String(isSelected));
+    });
+  });
+}
+
 function obBindConsentControls() {
   $$(".ob-consent").forEach((toggle) => {
     toggle.checked = OB.consent[toggle.dataset.consent];
@@ -580,12 +657,18 @@ function obBindConsentControls() {
   });
 }
 
-function obConsent(key, title, why, inputs) {
-  return `<div class="ob-consent-card">
-    <div><b>${esc(title)}</b><p>${esc(why)}</p></div>
-    <label class="switch"><input type="checkbox" class="ob-consent" data-consent="${key}" aria-label="I choose to add ${esc(title)}"><span class="track"></span></label>
-    <div class="ob-consent-input" id="ob-box-${key}" style="display:none">${inputs}</div>
-  </div>`;
+function obConsent(key, title, why, inputId, value, options, placeholder, multiline = false) {
+  const checked = OB.consent[key];
+  const input = multiline
+    ? `<textarea class="input" id="${inputId}" rows="3" maxlength="500" placeholder="${esc(placeholder)}">${esc(value)}</textarea>`
+    : `<input class="input" id="${inputId}" value="${esc(value)}" placeholder="${esc(placeholder)}">`;
+  return `<section class="ob-consent-card" aria-labelledby="ob-consent-title-${key}">
+    <div class="ob-consent-heading"><b id="ob-consent-title-${key}">${esc(title)}</b><p>${esc(why)}</p></div>
+    <label class="switch"><input id="ob-consent-${key}" type="checkbox" class="ob-consent" data-consent="${key}" aria-label="I choose to store ${esc(title)}"><span class="track"></span></label>
+    ${obContextChoices(key === "medications" ? "medications" : key, inputId, value, options, key)}
+    <div class="ob-consent-input" id="ob-box-${key}" style="display:${checked ? "block" : "none"}">${input}
+      <p>Switch on or select a preset to store this optional note locally.</p></div>
+  </section>`;
 }
 
 function obBindWizard(validate, final = false) {

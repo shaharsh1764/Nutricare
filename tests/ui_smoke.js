@@ -39,6 +39,8 @@ if (!LANDING_PHOTOS.every((file) => fs.existsSync(path.join(__dirname, "..", "st
     || !ONBOARDING_SOURCE.includes("What should we call you?")
     || !ONBOARDING_SOURCE.includes("How active are you most weeks?")
     || !ONBOARDING_SOURCE.includes("OB_TOTAL_STEPS = 9")
+    || !ONBOARDING_SOURCE.includes("OB_CONTEXT_OPTIONS")
+    || !ONBOARDING_SOURCE.includes("obBindContextChoices")
     || !ONBOARDING_SOURCE.includes("obBindNumberWheels")
     || !ONBOARDING_SOURCE.includes('role=\"spinbutton\"')
     || ONBOARDING_SOURCE.indexOf("landing-account-actions") > ONBOARDING_SOURCE.indexOf("landing-hero")) {
