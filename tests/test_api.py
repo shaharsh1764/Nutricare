@@ -274,7 +274,16 @@ def test_report_and_csv_export(client):
     assert b"Nutrition observations & recommendations" in pdf.data
     assert b"Test item" in pdf.data
     assert "nutricare-daily-record-" in pdf.headers["Content-Disposition"]
+    period_pdf = client.get("/api/report.pdf?days=7")
+    assert period_pdf.status_code == 200 and period_pdf.mimetype == "application/pdf"
+    assert b"Nutrition summary" in period_pdf.data and b"Recorded daily totals" in period_pdf.data
+    assert "nutricare-7-day-summary-" in period_pdf.headers["Content-Disposition"]
+    period_pdf_30 = client.get("/api/report.pdf?days=30")
+    assert period_pdf_30.status_code == 200 and b"Nutrition summary" in period_pdf_30.data
+    assert "nutricare-30-day-summary-" in period_pdf_30.headers["Content-Disposition"]
     assert client.get("/api/report.pdf?date=2026-99-99").status_code == 400
+    assert client.get("/api/report.pdf?days=500").status_code == 400
+    assert client.get("/api/report.pdf?days=7&date=2026-01-01").status_code == 400
     assert client.get("/api/report?days=500").status_code == 400
 
 

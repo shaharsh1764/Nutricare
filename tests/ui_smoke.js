@@ -351,8 +351,14 @@ const DRIVER = `
     assert(view().includes(marker), "H nav renders " + hash);
   }
   location.hash = "#/reports"; await refreshView();
-  assert(view().includes('href="/api/report.pdf"') && view().includes("Daily PDF"),
-    "H0 reports offers the documented daily PDF download");
+  assert(view().includes('href="/api/report.pdf?days=7"') && view().includes("7-day PDF")
+    && view().includes("7-day CSV"),
+    "H0 reports exports the selected seven-day PDF and CSV period");
+  S.reportDays = 30; await renderReports();
+  assert(view().includes('href="/api/report.pdf?days=30"') && view().includes("30-day PDF")
+    && view().includes("30-day CSV"),
+    "H0b changing report range changes both download periods");
+  S.reportDays = 7;
   location.hash = "#/tracker"; await refreshView();
   assert(typeof el("#day-prev").onclick === "function"
     && typeof el("#day-next").onclick === "function", "H1 tracker date nav bound");

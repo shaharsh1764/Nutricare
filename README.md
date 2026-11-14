@@ -178,7 +178,7 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
 
 * **No authentication, no encryption, no network security** — local profiles only (§7).
   Do not store sensitive health details on a shared machine.
-* PDF export buttons from the mockups are replaced by CSV/JSON export + browser print.
+* Exports are records of what was logged: a detailed daily PDF, a selected 7/30/90-day PDF summary, CSV meal rows, and a complete JSON export. They do not add missing meals or clinical interpretation.
 * No barcode scanning, no Apple Health / dining-hall sync (mockup decoration only).
 * Profile form inputs are metric; imperial units apply to *displayed* values.
 * Micronutrient coverage is a 5-nutrient subset, clearly labelled in the UI.
