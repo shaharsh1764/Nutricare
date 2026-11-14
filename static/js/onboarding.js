@@ -30,7 +30,7 @@ const OB_ACTIVITY = [
 // These are optional, user-controlled labels only. They are not diagnoses,
 // allergy-safety checks, or inputs NutriCare uses to direct care or targets.
 const OB_CONTEXT_OPTIONS = {
-  prefs: ["Vegetarian", "Vegan", "Egg-free", "Lactose-free", "Gluten-free", "No beef", "No pork"],
+  prefs: ["Vegetarian", "Vegan", "Egg-free", "Lactose-free", "Gluten-free"],
   allergies: ["Milk", "Egg", "Peanuts", "Tree nuts", "Soy", "Wheat / gluten", "Fish", "Shellfish", "Sesame"],
   meds: ["Vitamin D3", "Vitamin B12", "Iron", "Calcium", "Omega-3", "Other medication"],
   history: ["Diabetes", "Pre-diabetes", "High cholesterol", "High blood pressure", "PCOS", "Thyroid condition",
