@@ -394,7 +394,7 @@ function renderProfileWizard() {
             "Add another health note", true)}
         </div>`,
       validate: obValidateCurrent,
-      bind: () => { obBindConsentControls(); obBindContextChoices(); },
+      bind: () => { obBindContextChoices(); obBindContextInputs(); },
     });
     return;
   }
@@ -609,12 +609,7 @@ function obSetContextValue(key, value) {
 }
 
 function obEnableConsent(key) {
-  if (!key) return;
-  OB.consent[key] = true;
-  const toggle = $(`#ob-consent-${key}`);
-  const box = $(`#ob-box-${key}`);
-  if (toggle) toggle.checked = true;
-  if (box) box.style.display = "block";
+  if (key) OB.consent[key] = true;
 }
 
 function obBindContextChoices() {
@@ -644,30 +639,26 @@ function obBindContextChoices() {
   });
 }
 
-function obBindConsentControls() {
-  $$(".ob-consent").forEach((toggle) => {
-    toggle.checked = OB.consent[toggle.dataset.consent];
-    const box = $(`#ob-box-${toggle.dataset.consent}`);
-    if (box) box.style.display = toggle.checked ? "block" : "none";
-    toggle.onchange = () => {
-      OB.consent[toggle.dataset.consent] = toggle.checked;
-      const nextBox = $(`#ob-box-${toggle.dataset.consent}`);
-      if (nextBox) nextBox.style.display = toggle.checked ? "block" : "none";
+function obBindContextInputs() {
+  $$(".ob-context-custom").forEach((input) => {
+    const consentKey = input.dataset.contextConsent;
+    const enable = () => {
+      if (input.value.trim()) obEnableConsent(consentKey);
     };
+    input.oninput = enable;
+    input.onchange = enable;
   });
 }
 
 function obConsent(key, title, why, inputId, value, options, placeholder, multiline = false) {
-  const checked = OB.consent[key];
   const input = multiline
-    ? `<textarea class="input" id="${inputId}" rows="3" maxlength="500" placeholder="${esc(placeholder)}">${esc(value)}</textarea>`
-    : `<input class="input" id="${inputId}" value="${esc(value)}" placeholder="${esc(placeholder)}">`;
+    ? `<textarea class="input ob-context-custom" id="${inputId}" data-context-consent="${key}" rows="3" maxlength="500" placeholder="${esc(placeholder)}">${esc(value)}</textarea>`
+    : `<input class="input ob-context-custom" id="${inputId}" data-context-consent="${key}" value="${esc(value)}" placeholder="${esc(placeholder)}">`;
   return `<section class="ob-consent-card" aria-labelledby="ob-consent-title-${key}">
     <div class="ob-consent-heading"><b id="ob-consent-title-${key}">${esc(title)}</b><p>${esc(why)}</p></div>
-    <label class="switch"><input id="ob-consent-${key}" type="checkbox" class="ob-consent" data-consent="${key}" aria-label="I choose to store ${esc(title)}"><span class="track"></span></label>
     ${obContextChoices(key === "medications" ? "medications" : key, inputId, value, options, key)}
-    <div class="ob-consent-input" id="ob-box-${key}" style="display:${checked ? "block" : "none"}">${input}
-      <p>Switch on or select a preset to store this optional note locally.</p></div>
+    <div class="ob-consent-input">${input}
+      <p>Choosing a preset or typing your own note means you choose to store it in this local profile.</p></div>
   </section>`;
 }
 
