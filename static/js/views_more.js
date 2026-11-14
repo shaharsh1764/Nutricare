@@ -11,9 +11,10 @@ async function renderReports() {
   const rangeHead = `<div class="page-head">
     <div><h2>Nutrition & Health Reports</h2>
       <p class="sub">Daily and weekly summaries compiled from your continuous logs. Charts are
-      interactive summaries of your own data — exportable as CSV.</p></div>
+      interactive summaries of your own data — exportable as a daily PDF, CSV, or JSON.</p></div>
     <div class="row">
       ${[7, 30, 90].map((d) => `<button class="btn btn-sm ${d === days ? "btn-deep" : "btn-ghost"}" data-days="${d}">${d} Days</button>`).join("")}
+      <a class="btn btn-ghost btn-sm" href="/api/report.pdf" download title="Download today's nutrition record as a PDF">${ICONS.download} Daily PDF</a>
       <a class="btn btn-ghost btn-sm" href="/api/report.csv?days=${days}" download>${ICONS.download} CSV</a>
       <a class="btn btn-primary btn-sm" href="/api/export.json" download>${ICONS.download} Full JSON</a>
     </div>

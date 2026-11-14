@@ -348,6 +348,9 @@ const DRIVER = `
     location.hash = hash; await refreshView();
     assert(view().includes(marker), "H nav renders " + hash);
   }
+  location.hash = "#/reports"; await refreshView();
+  assert(view().includes('href="/api/report.pdf"') && view().includes("Daily PDF"),
+    "H0 reports offers the documented daily PDF download");
   location.hash = "#/tracker"; await refreshView();
   assert(typeof el("#day-prev").onclick === "function"
     && typeof el("#day-next").onclick === "function", "H1 tracker date nav bound");
