@@ -39,6 +39,8 @@ if (!LANDING_PHOTOS.every((file) => fs.existsSync(path.join(__dirname, "..", "st
     || !ONBOARDING_SOURCE.includes("What should we call you?")
     || !ONBOARDING_SOURCE.includes("How active are you most weeks?")
     || !ONBOARDING_SOURCE.includes("OB_TOTAL_STEPS = 9")
+    || !ONBOARDING_SOURCE.includes("obBindOptionalSliders")
+    || !ONBOARDING_SOURCE.includes('type=\"range\"')
     || ONBOARDING_SOURCE.indexOf("landing-account-actions") > ONBOARDING_SOURCE.indexOf("landing-hero")) {
   throw new Error("The first-run landing page must include its photos, top-right account actions, and honest storage notice");
 }

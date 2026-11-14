@@ -38,11 +38,21 @@ function obRead() {
     const field = $(selector);
     return field ? field.value : OB.data[key];
   };
+  // Range inputs always have a visual thumb. Keep optional values blank until
+  // someone actually moves one, while still letting a saved response survive Back.
+  const sliderValue = (selector, key) => {
+    const field = $(selector);
+    if (!field) return OB.data[key];
+    if (field.dataset.cleared === "true") return "";
+    const fallback = { "#ob-age": "30", "#ob-height": "170", "#ob-weight": "70" }[selector];
+    const base = field.dataset.defaultValue || fallback || field.value;
+    return field.dataset.touched === "true" || field.value !== base ? field.value : (OB.data[key] || "");
+  };
   if (OB.step === 2) OB.data.name = value("#ob-name", "name");
-  if (OB.step === 3) OB.data.age = value("#ob-age", "age");
+  if (OB.step === 3) OB.data.age = sliderValue("#ob-age", "age");
   if (OB.step === 4) OB.data.sex = value("#ob-sex", "sex");
-  if (OB.step === 5) OB.data.height = value("#ob-height", "height");
-  if (OB.step === 6) OB.data.weight = value("#ob-weight", "weight");
+  if (OB.step === 5) OB.data.height = sliderValue("#ob-height", "height");
+  if (OB.step === 6) OB.data.weight = sliderValue("#ob-weight", "weight");
   if (OB.step === 7) OB.data.activity = value("#ob-activity", "activity");
   if (OB.step === 8) {
     OB.data.prefs = value("#ob-prefs", "prefs");
@@ -296,8 +306,9 @@ function renderProfileWizard() {
       eyebrow: "Optional profile detail",
       title: "What is your age?",
       description: "Age is used only when all formula inputs are present to calculate a labelled energy estimate.",
-      content: obNumberField("ob-age", "Age in years", OB.data.age, "years", 10, 120, "e.g. 20"),
+      content: obSliderField("ob-age", "Age in years", OB.data.age, "years", 10, 120, 1, 30),
       validate: obValidateCurrent,
+      bind: obBindOptionalSliders,
     });
     return;
   }
@@ -324,8 +335,9 @@ function renderProfileWizard() {
       eyebrow: "Optional profile detail",
       title: "How tall are you?",
       description: "Enter your height in centimetres. This stays editable in My Profile.",
-      content: obNumberField("ob-height", "Height in centimetres", OB.data.height, "cm", 50, 250, "e.g. 168"),
+      content: obSliderField("ob-height", "Height in centimetres", OB.data.height, "cm", 50, 250, 1, 170),
       validate: obValidateCurrent,
+      bind: obBindOptionalSliders,
     });
     return;
   }
@@ -335,8 +347,9 @@ function renderProfileWizard() {
       eyebrow: "Optional profile detail",
       title: "What is your current weight?",
       description: "Enter kilograms if you want an energy estimate. NutriCare does not calculate or claim an ideal weight range.",
-      content: obNumberField("ob-weight", "Current weight in kilograms", OB.data.weight, "kg", 20, 300, "e.g. 60"),
+      content: obSliderField("ob-weight", "Current weight in kilograms", OB.data.weight, "kg", 20, 300, 0.1, 70),
       validate: obValidateCurrent,
+      bind: obBindOptionalSliders,
     });
     return;
   }
@@ -445,11 +458,60 @@ function obWizardNav(primaryLabel) {
   </footer>`;
 }
 
-function obNumberField(id, label, value, unit, minimum, maximum, placeholder) {
-  return `<label class="ob-number-field" for="${id}"><span class="ob-field-label">${esc(label)} <em>optional</em></span>
-    <div class="ob-number-control"><input id="${id}" type="number" inputmode="decimal" min="${minimum}" max="${maximum}" step="0.1" value="${esc(value)}" placeholder="${esc(placeholder)}"><span>${esc(unit)}</span></div>
-    <small>Leave blank to continue without this detail.</small>
-  </label>`;
+function obSliderField(id, label, value, unit, minimum, maximum, step, fallback) {
+  const hasValue = value !== "" && value !== null && value !== undefined;
+  const display = hasValue ? Number(value) : fallback;
+  const formatted = step < 1 ? Number(display).toFixed(1) : String(Math.round(Number(display)));
+  const selectionText = hasValue ? `${formatted} ${unit}` : "Not set";
+  const accessibleValue = hasValue ? `${formatted} ${unit}` : `No ${label.toLowerCase()} selected`;
+  return `<div class="ob-slider-field">
+    <span class="ob-field-label" id="${id}-label">${esc(label)} <em>optional</em></span>
+    <div class="ob-slider-picker">
+      <div class="ob-slider-scale" aria-hidden="true"><span>${maximum}</span><i></i><span>${minimum}</span></div>
+      <input class="ob-vertical-slider" id="${id}" type="range" min="${minimum}" max="${maximum}" step="${step}"
+        value="${display}" aria-labelledby="${id}-label" aria-describedby="${id}-hint" aria-valuetext="${esc(accessibleValue)}"
+        data-optional-slider data-default-value="${fallback}" data-selected="${hasValue}" data-label="${esc(label.toLowerCase())}" data-unit="${esc(unit)}" data-step="${step}">
+      <output class="ob-slider-readout" id="${id}-readout" for="${id}" aria-live="polite"><strong>${esc(selectionText)}</strong><small>${hasValue ? "Selected" : "Not set"}</small></output>
+    </div>
+    <div class="ob-slider-actions"><small id="${id}-hint">Slide vertically or use the arrow keys for precise changes. Leave it untouched to keep this detail blank.</small>
+      <button class="ob-slider-clear" id="${id}-clear" type="button" ${hasValue ? "" : "hidden"}>Clear</button></div>
+  </div>`;
+}
+
+function obBindOptionalSliders() {
+  $$("[data-optional-slider]").forEach((field) => {
+    const fallback = field.dataset.defaultValue || field.value;
+    const wasSelected = field.dataset.selected === "true";
+    if (!field.value) field.value = fallback;
+    field.dataset.defaultValue = fallback;
+    field.dataset.touched = wasSelected ? "true" : "false";
+    field.dataset.cleared = "false";
+    const update = () => {
+      const selected = field.dataset.touched === "true" && field.dataset.cleared !== "true";
+      const step = Number(field.dataset.step || 1);
+      const shown = step < 1 ? Number(field.value).toFixed(1) : String(Math.round(Number(field.value)));
+      const unit = field.dataset.unit || "";
+      const readout = $(`#${field.id}-readout`);
+      const clear = $(`#${field.id}-clear`);
+      if (readout) readout.innerHTML = `<strong>${selected ? esc(`${shown} ${unit}`) : "Not set"}</strong><small>${selected ? "Selected" : "Not set"}</small>`;
+      if (clear) clear.hidden = !selected;
+      field.setAttribute("aria-valuetext", selected ? `${shown} ${unit}` : `No value selected. Move the slider to choose ${field.dataset.label || "a value"}.`);
+    };
+    field.oninput = () => {
+      field.dataset.touched = "true";
+      field.dataset.cleared = "false";
+      update();
+    };
+    const clear = $(`#${field.id}-clear`);
+    if (clear) clear.onclick = () => {
+      field.value = fallback;
+      field.dataset.touched = "false";
+      field.dataset.cleared = "true";
+      update();
+      field.focus();
+    };
+    update();
+  });
 }
 
 function obFormulaChoice(value, title, detail) {
