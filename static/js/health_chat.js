@@ -974,7 +974,7 @@ function renderHealthChat() {
     </button>
     ${expanded ? `<section class="health-chat-panel" id="health-chat-panel" role="dialog" aria-modal="false" aria-label="NutriCare Health Assistant">
       <header class="health-chat-header"><div class="row" style="gap:9px"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span><div><b>Health assistant</b><small>Local safety-led guidance</small></div></div>
-        <div class="health-chat-tools">${guided ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-restart" type="button">Restart</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-free-text" type="button">Free text</button>` : otc ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="otc-guidance-restart" type="button">Restart OTC</button>` : `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-start" type="button">Assessment</button>`}<button class="btn btn-ghost btn-sm health-chat-clear" id="otc-guidance-start" type="button">OTC info</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-chat-history" type="button" aria-expanded="${HEALTH_CHAT.historyMenu}" aria-controls="health-chat-history-menu">History</button>
+        <div class="health-chat-tools">${guided ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-restart" type="button">Restart</button>` : otc ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="otc-guidance-restart" type="button">Restart OTC</button>` : `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-start" type="button">Assessment</button>`}<button class="btn btn-ghost btn-sm health-chat-clear" id="otc-guidance-start" type="button">OTC info</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-chat-history" type="button" aria-expanded="${HEALTH_CHAT.historyMenu}" aria-controls="health-chat-history-menu">History</button>
         <button class="icon-btn" id="health-chat-close" type="button" aria-label="Close Health Assistant" title="Close">×</button></div></header>
       ${HEALTH_CHAT.historyMenu ? `<section class="health-chat-history-menu" id="health-chat-history-menu" aria-label="Local assistant history options"><b>Local assistant history</b><div><button class="btn btn-ghost btn-sm" id="health-chat-export-json" type="button">Export JSON</button><button class="btn btn-ghost btn-sm" id="health-chat-export-csv" type="button">Export CSV</button><button class="btn btn-danger-soft btn-sm" id="health-chat-clear" type="button">Delete chat history</button></div><p>Exports include saved chat messages and completed guided assessments for this local profile.</p></section>` : ""}
       <div class="health-chat-safety"><b>Emergency?</b> Call 112 in India or your local emergency number now. This assistant cannot replace emergency care.</div>
@@ -1004,8 +1004,6 @@ function renderHealthChat() {
   if (startOtc) startOtc.onclick = () => { startOtcGuidance(); renderHealthChat(); };
   const restartOtc = $("#otc-guidance-restart");
   if (restartOtc) restartOtc.onclick = () => { startOtcGuidance(); renderHealthChat(); };
-  const freeText = $("#health-assessment-free-text");
-  if (freeText) freeText.onclick = () => { stopHealthAssessment(); renderHealthChat(); $("#health-chat-input").focus(); };
   if (guided) {
     bindHealthAssessment();
   } else if (otc) {

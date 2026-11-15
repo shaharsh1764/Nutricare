@@ -494,11 +494,13 @@ const DRIVER = `
     "G9 emergency choices stop the ordinary assessment and show the local protocol");
 
   startHealthAssessment(); renderHealthChat();
-  await click("#health-assessment-free-text");
+  assert(!el("#health-chat-root").innerHTML.includes("Free text"),
+    "G10 guided Assistant header keeps the assessment-focused controls without a Free text option");
+  stopHealthAssessment(); renderHealthChat();
   set("#health-chat-input", "sick");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
   assert(el("#health-chat-root").innerHTML.includes("What symptoms are you experiencing?"),
-    "G10 free-text fallback still starts the local symptom conversation");
+    "G10a direct Health Chat still starts the local symptom conversation");
   set("#health-chat-input", "What medicine should I take for a headache?");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
   assert(el("#health-chat-root").innerHTML.includes("pharmacist"),
