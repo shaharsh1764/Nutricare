@@ -231,6 +231,10 @@ async function boot() {
   S.trackerDate = S.boot.today;
   document.body.classList.remove("no-shell");
   ensureShell();
+  // A restored local profile enters through boot rather than afterUserChange.
+  // Mount the persistent launcher here too, otherwise it remains hidden after
+  // an ordinary refresh of an existing account.
+  if (typeof ensureHealthChat === "function") ensureHealthChat();
   refreshBanners();
   await refreshSideGoal();
   await refreshView();
