@@ -19,7 +19,6 @@ const ROUTES = {
      omitting it from the navigation list. */
   scanner: { title: "Food Scanner", render: renderScanner, nav: false },
   profile: { title: "My Profile", navLabel: "Biometrics & vitals", render: renderProfile },
-  assistant: { title: "Health Assistant", navLabel: "Health assistant", render: renderAssistant },
   reports: { title: "Reports", navLabel: "Macro & nutrient reports", render: renderReports },
   settings: { title: "Settings", navLabel: "Preferences & settings", render: renderSettings },
 };
@@ -171,12 +170,13 @@ async function openUserModal() {
     closeModal();
     obResetState();
     S.onboardingActive = true;
+    if (typeof hideHealthChat === "function") hideHealthChat();
     document.body.classList.add("no-shell");
     await renderOnboarding();
   };
   $("#u-delete").onclick = async () => {
     const ok = await confirmModal("Delete this local profile?",
-      "All meals, water logs, symptom checks and profile details for the current profile are permanently removed. Other profiles are untouched.",
+      "All meals, water logs, saved health-chat messages, legacy symptom checks and profile details for the current profile are permanently removed. Other profiles are untouched.",
       "Delete profile");
     if (!ok) return;
     await api(`/users/${S.boot.user.id}`, { method: "DELETE" });
@@ -192,6 +192,7 @@ async function afterUserChange() {
   S.onboardingActive = false;
   document.body.classList.remove("no-shell", "landing-active");
   ensureShell();
+  if (typeof ensureHealthChat === "function") ensureHealthChat();
   refreshBanners();
   await refreshSideGoal();
   await refreshView();
@@ -221,6 +222,7 @@ async function boot() {
     }
   }
   if (!S.boot.user) {
+    if (typeof hideHealthChat === "function") hideHealthChat();
     document.body.classList.add("no-shell");
     await renderOnboarding();
     return;
@@ -229,6 +231,10 @@ async function boot() {
   S.trackerDate = S.boot.today;
   document.body.classList.remove("no-shell");
   ensureShell();
+  // A restored local profile enters through boot rather than afterUserChange.
+  // Mount the persistent launcher here too, otherwise it remains hidden after
+  // an ordinary refresh of an existing account.
+  if (typeof ensureHealthChat === "function") ensureHealthChat();
   refreshBanners();
   await refreshSideGoal();
   await refreshView();

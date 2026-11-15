@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>NutriCare — Nutrition Tracker & Personal Health Assistant</title>
+<title>NutriCare — Nutrition Tracker & Local Health Chat</title>
 <script>
   /* Apply the persisted preference before CSS paints to avoid a light-theme flash.
      Theme choice belongs to this browser, not a local profile, so account switches
@@ -21,7 +21,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/style.css?v=health-chat-v10">
 <link rel="icon" type="image/png" href="/static/images/nutricare-mark.png">
 </head>
 <body>
@@ -39,6 +39,7 @@
     </div>
     <div class="nav-label">NAVIGATION</div>
     <nav id="nav-links"></nav>
+    <div id="health-chat-root" hidden></div>
     <div class="side-foot">
       <div class="goal-card" id="side-goal"></div>
       <button class="emergency-link" id="side-emergency"><span class="emergency-link-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 012 4.2 2 2 0 014 2h3a2 2 0 012 1.7l.5 2.6a2 2 0 01-.6 1.8l-1.8 1.8a16 16 0 006 6l1.8-1.8a2 2 0 011.8-.6l2.6.5A2 2 0 0122 16.9z"/></svg>Emergency Contact</span><span>›</span></button>
@@ -87,7 +88,8 @@
 <script src="/static/js/views_more.js"></script>
 <script src="/static/js/views_insights.js"></script>
 <script src="/static/js/views_scanner.js"></script>
-<script src="/static/js/app.js"></script>
+<script src="/static/js/health_chat.js?v=health-chat-v10"></script>
+<script src="/static/js/app.js?v=health-chat-v10"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("side-emergency").onclick = () => {

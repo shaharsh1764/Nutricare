@@ -4,6 +4,8 @@ Identity model under test: local users in a session cookie, no passwords.
 Two separate test clients == two separate browsers (separate cookie jars).
 """
 
+import csv
+import io
 import sqlite3
 
 import pytest
@@ -42,7 +44,7 @@ def test_brand_new_client_has_no_user_and_locked_data(client):
     boot = client.get("/api/bootstrap").get_json()
     assert boot["user"] is None
     for path in ("/api/meals", "/api/summary", "/api/report", "/api/water",
-                 "/api/assistant/history", "/api/settings", "/api/profile"):
+                 "/api/assistant/history", "/api/health-chat/history", "/api/settings", "/api/profile"):
         assert client.get(path).status_code == 401, path
     # the shared food database is not personal data and stays readable
     assert client.get("/api/foods?q=roti").status_code == 200
@@ -313,6 +315,118 @@ def test_warning_signs_endpoint_matches_engine_and_drives_triage(client):
     assert [f["id"] for f in data["red_flags"]] == ["chest_pain"]
 
 
+def test_assistant_safety_screen_is_independent_and_does_not_persist_partial_assessments(client):
+    new_user(client, "Guided Safety")
+    safe = client.post("/api/assistant/screen", json={"text": "headache for today", "warning_signs": []})
+    assert safe.status_code == 200
+    assert safe.get_json()["emergency"] is False
+    flagged = client.post("/api/assistant/screen", json={
+        "text": "I feel tired", "warning_signs": ["chest_pain"],
+    }).get_json()
+    assert flagged["emergency"] is True
+    assert [flag["id"] for flag in flagged["red_flags"]] == ["chest_pain"]
+    assert "112" in flagged["emergency_actions"][0]
+    assert client.get("/api/assistant/history").get_json()["history"] == []
+
+
+def test_otc_guidance_endpoint_requires_local_option_screening_and_prioritises_safety(client):
+    new_user(client, "OTC Guidance")
+    payload = {
+        "topic": "fever", "warning_signs": [], "age_group": "age_16_plus",
+        "medication_allergy": "no", "conditions": ["none"],
+        "pregnancy_status": "not_applicable", "current_medicines": "no",
+        "already_taken": "no", "fever_duration": "under_24_hours", "fever_level": "not_high",
+    }
+    safe = client.post("/api/assistant/otc-guidance", json=payload)
+    assert safe.status_code == 200
+    data = safe.get_json()
+    assert data["triage"] == "otc_education"
+    assert data["medication"]["generic_name"] == "Paracetamol"
+    assert data["medication"]["sources"][0]["source_last_reviewed"]
+
+    duplicate = client.post("/api/assistant/otc-guidance", json={**payload, "already_taken": "yes"}).get_json()
+    assert duplicate["triage"] == "pharmacist_handoff"
+    assert duplicate["medication"]["dosing"] is None
+
+    emergency = client.post("/api/assistant/otc-guidance", json={
+        **payload, "topic": "allergy_symptoms", "warning_signs": ["anaphylaxis"],
+    }).get_json()
+    assert emergency["triage"] == "emergency"
+    assert emergency["medication"] is None
+
+    invalid = client.post("/api/assistant/otc-guidance", json={**payload, "age_group": "adult"})
+    assert invalid.status_code == 400
+
+
+def test_health_chat_history_exports_json_and_csv(client):
+    new_user(client, "Assistant Export")
+    assert client.post("/api/health-chat/messages", json={"message": "I feel tired"}).status_code == 200
+    assert client.post("/api/assistant/assess", json={
+        "primary": "Headache", "duration": "today", "severity": 5,
+        "associated": ["Nausea"], "existing_conditions": ["Diabetes"],
+    }).status_code == 200
+
+    json_export = client.get("/api/health-chat/export.json")
+    assert json_export.status_code == 200
+    assert "attachment" in json_export.headers["Content-Disposition"]
+    exported = json_export.get_json()
+    assert [item["role"] for item in exported["messages"]] == ["user", "assistant"]
+    assert exported["guided_assessments"][0]["payload"]["existing_conditions"] == ["Diabetes"]
+
+    csv_export = client.get("/api/health-chat/export.csv")
+    assert csv_export.status_code == 200
+    assert "attachment" in csv_export.headers["Content-Disposition"]
+    rows = list(csv.DictReader(io.StringIO(csv_export.get_data(as_text=True))))
+    assert {row["record_type"] for row in rows} == {"chat_message", "guided_assessment"}
+    assessment_row = next(row for row in rows if row["record_type"] == "guided_assessment")
+    assert assessment_row["primary"] == "Headache"
+    assert assessment_row["existing_conditions"] == "Diabetes"
+
+
+def test_health_chat_persists_conversation_state_and_supports_clear_and_export(client):
+    new_user(client, "Chat Person")
+    sick = client.post("/api/health-chat/messages", json={"message": "I am sick"})
+    assert sick.status_code == 200, sick.get_json()
+    assert sick.get_json()["reply"]["conversation"]["next_question"] == "symptoms"
+    assert "what symptoms" in sick.get_json()["reply"]["message"].lower()
+
+    symptoms = client.post("/api/health-chat/messages", json={"message": "I have a headache and feel weak"})
+    assert symptoms.get_json()["reply"]["conversation"]["next_question"] == "duration"
+    duration = client.post("/api/health-chat/messages", json={"message": "Since yesterday"})
+    assert duration.get_json()["reply"]["conversation"]["duration"] == "Since yesterday"
+    assert duration.get_json()["reply"]["conversation"]["next_question"] == "severity"
+
+    complete = client.post("/api/health-chat/messages", json={"message": "6"})
+    assert complete.get_json()["reply"]["conversation"]["status"] == "complete"
+    assert "headache and weakness" in complete.get_json()["reply"]["message"].lower()
+
+    history = client.get("/api/health-chat/history").get_json()
+    assert [message["role"] for message in history["messages"]] == ["user", "assistant"] * 4
+    assert history["messages"][-1]["reply"]["conversation"]["severity"] == "6"
+    exported = client.get("/api/export.json").get_json()
+    assert [message["role"] for message in exported["health_chat"]] == ["user", "assistant"] * 4
+
+    medicine = client.post("/api/health-chat/messages", json={"message": "Which medicine should I take?"})
+    assert medicine.get_json()["reply"]["triage"] == "pharmacist_handoff"
+    emergency = client.post("/api/health-chat/messages", json={"message": "I have chest pressure"})
+    assert emergency.get_json()["reply"]["triage"] == "emergency"
+
+    assert client.delete("/api/health-chat/history").status_code == 200
+    assert client.get("/api/health-chat/history").get_json()["messages"] == []
+    restarted = client.post("/api/health-chat/messages", json={"message": "I feel tired"}).get_json()
+    assert restarted["reply"]["conversation"]["symptoms"] == ["fatigue"]
+    assert "yesterday" not in restarted["reply"]["message"].lower()
+
+
+def test_health_chat_validation_error_does_not_corrupt_persisted_conversation(client):
+    new_user(client, "Chat Validation")
+    assert client.post("/api/health-chat/messages", json={"message": "sick"}).status_code == 200
+    before = client.get("/api/health-chat/history").get_json()["messages"]
+    invalid = client.post("/api/health-chat/messages", json={"message": " "})
+    assert invalid.status_code == 400
+    assert client.get("/api/health-chat/history").get_json()["messages"] == before
+
+
 def test_settings_update_and_validation(client):
     new_user(client, "Settings")
     data = client.put("/api/settings", json={"water_goal_ml": 3000, "privacy_ai": False}).get_json()
@@ -326,10 +440,12 @@ def test_purge_keeps_account_but_deletes_records(client):
                                     "custom_name": "gone soon", "custom_kcal": 50})
     client.post("/api/water", json={"amount_ml": 250})
     client.post("/api/assistant/assess", json={"primary": "headache", "severity": 2})
+    client.post("/api/health-chat/messages", json={"message": "I feel tired"})
     assert client.post("/api/profile/purge").status_code == 200
     assert client.get("/api/meals").get_json()["totals"]["kcal"] == 0
     assert client.get("/api/water").get_json()["total_ml"] == 0
     assert client.get("/api/assistant/history").get_json()["history"] == []
+    assert client.get("/api/health-chat/history").get_json()["messages"] == []
     boot = client.get("/api/bootstrap").get_json()
     assert boot["user"]["name"] == "Purger"  # account survives
     assert boot["targets"] is None

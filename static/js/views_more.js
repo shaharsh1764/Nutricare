@@ -116,7 +116,7 @@ async function renderSettings() {
   const theme = currentTheme();
   $("#view").innerHTML = `
   <div class="page-head"><div><h2>Account & Application Settings</h2>
-    <p class="sub">Appearance, units, calculation model, hydration goal, privacy switches and data controls.
+    <p class="sub">Appearance, units, calculation model, hydration goal, local health-chat privacy, and data controls.
     Secrets (if any) live in environment variables, never in the UI.</p></div></div>
 
   <div class="grid cols-2" style="align-items:start">
@@ -148,20 +148,19 @@ async function renderSettings() {
       <div class="card">
         <div class="card-head"><span class="card-title">Privacy & data governance</span><span class="icon-pill tint-sky">${ICONS.shield}</span></div>
         ${[["privacy_sync", "Local device sync of logs", "Keep meals/water synced in the local SQLite database (required for tracking)."],
-           ["privacy_ai", "On-device assistant analysis", "Symptom assessments are processed locally by the rule-based engine; nothing leaves your machine."],
+           ["privacy_ai", "On-device health chat", "Health-chat messages are processed locally by the safety-led rule engine; nothing is sent to a third party."],
            ["privacy_research", "Contribute anonymised statistics (off by default)", "Placeholder for a future opt-in research mode. Currently stored only, never transmitted."]]
           .map(([key, title, sub]) => `<div class="row spread mt12">
             <div style="flex:1"><b class="small">${title}</b><p class="tiny muted">${sub}</p></div>
             <label class="switch"><input type="checkbox" data-privacy="${key}" ${set[key] ? "checked" : ""} ${key === "privacy_sync" ? "disabled" : ""}><span class="track"></span></label>
           </div>`).join("")}
-        <p class="tiny faint mt12">This build has no third-party analytics, no ads and no external API calls from the assistant.</p>
+        <p class="tiny faint mt12">This build has no third-party analytics, no ads, and no external API calls from the health chat.</p>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">Health Assistant engine</span></div>
-        <div class="selfcare-card"><b class="small">${esc(S.boot.assistant.label)}</b>
-          <p class="tiny muted mt8">Engine: <code>${esc(S.boot.assistant.engine)}</code> ·
-          online AI configured: ${S.boot.assistant.online_ai_configured ? "yes (unused in v1)" : "no"} ·
-          online AI used: <b>no</b>. The app never pretends an AI is answering.</p></div>
+        <div class="card-head"><span class="card-title">Health chat safety engine</span></div>
+        <div class="selfcare-card"><b class="small">${esc((S.boot.health_chat || {}).label || "Local safety-led health chat")}</b>
+          <p class="tiny muted mt8">Engine: <code>${esc((S.boot.health_chat || {}).engine || "local-health-chat")}</code> ·
+          online AI used: <b>no</b>. The chat provides general education, routes medication questions to a pharmacist or clinician, and screens emergency wording locally.</p></div>
       </div>
     </div>
 
@@ -195,7 +194,7 @@ async function renderSettings() {
       <div class="card" style="border-color:var(--rose-border);background:var(--warning-bg)">
         <div class="card-head"><span class="card-title" style="color:var(--rose)">Danger zone: deletion & purge</span>
           <span class="icon-pill tint-rose">${ICONS.alert}</span></div>
-        <p class="small muted">Permanently delete all personal entries: biometric records, symptom
+        <p class="small muted">Permanently delete all personal entries: biometric records, saved health-chat messages, legacy symptom
         assessments, meal and hydration logs. The action cannot be reversed.</p>
         <button class="btn btn-danger mt12" id="s-purge">Permanently delete my data</button>
       </div>
@@ -248,7 +247,7 @@ async function renderSettings() {
   $("#s-users").onclick = openUserModal;
   $("#s-purge").onclick = async () => {
     const ok = await confirmModal("Permanently delete all data?",
-      "Profile details, meals, water logs and symptom assessments will be erased from the database.",
+      "Profile details, meals, water logs, saved health-chat messages and legacy symptom assessments will be erased from the database.",
       "Delete everything");
     if (!ok) return;
     await api("/profile/purge", { method: "POST" });

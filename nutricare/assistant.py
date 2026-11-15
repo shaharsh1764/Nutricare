@@ -59,7 +59,7 @@ WARNING_SIGNS = [
      "regex": r"chest (pain|pressure|tightness|crush)",
      "action": "Chest pain can be a sign of a heart emergency. Get emergency care now."},
     {"id": "breathing", "label": "Difficulty breathing or severe shortness of breath",
-     "regex": r"(difficulty|trouble) breath|shortness of breath|can'?t breathe|cannot breathe",
+     "regex": r"(difficulty|trouble) breath|severe (difficulty )?breathing|severe shortness of breath|shortness of breath|can'?t breathe|cannot breathe",
      "action": "Breathing difficulty needs immediate emergency assessment."},
     {"id": "stroke", "label": "Stroke signs: sudden numbness/weakness, face droop, speech or vision change",
      "regex": r"sudden (numbness|weakness)|face droop|drooping face|slurred speech|trouble speaking|sudden (vision loss|blindness)|one[- ]sided weakness",
@@ -83,7 +83,7 @@ WARNING_SIGNS = [
      "regex": r"suicid|self[- ]harm|kill myself|hurt myself",
      "action": "Please contact emergency services or a crisis helpline now. You deserve immediate support."},
     {"id": "anaphylaxis", "label": "Swelling of face/throat/tongue, trouble swallowing, suspected severe allergy",
-     "regex": r"swell(ing|en)? (of|in) (face|throat|tongue|lips)|anaphylax|trouble swallowing|throat closing",
+     "regex": r"swell(ing|en)? (of|in) (face|throat|tongue|lips)|anaphylax|severe allergic reaction|trouble swallowing|throat closing",
      "action": "Facial/throat swelling with breathing trouble is an emergency."},
     {"id": "severe_abdominal", "label": "Severe abdominal (stomach) pain",
      "regex": r"severe abdominal pain|severe stomach pain",
@@ -335,6 +335,7 @@ def assess(payload: dict, profile: dict | None = None) -> dict:
     primary = str(payload.get("primary") or "").strip()
     notes = str(payload.get("notes") or "").strip()
     associated = [str(a).strip() for a in (payload.get("associated") or []) if str(a).strip()]
+    existing_conditions = [str(c).strip() for c in (payload.get("existing_conditions") or []) if str(c).strip()]
     selected_signs = [str(s).strip() for s in (payload.get("warning_signs") or []) if str(s).strip()]
     duration = payload.get("duration") or "today"
     try:
@@ -420,6 +421,7 @@ def assess(payload: dict, profile: dict | None = None) -> dict:
             "duration_label": DURATION_LABELS[duration],
             "severity": severity,
             "associated": associated,
+            "existing_conditions": existing_conditions,
             "warning_signs_selected": [s["label"] for s in WARNING_SIGNS
                                        if s["id"] in selected_signs],
             "notes": notes[:300],
@@ -437,5 +439,6 @@ def assess(payload: dict, profile: dict | None = None) -> dict:
         "disclaimer": DISCLAIMER,
         "input_echo": {"primary": primary, "duration": duration,
                        "severity": severity, "associated": associated,
+                       "existing_conditions": existing_conditions,
                        "warning_signs": selected_signs},
     }
