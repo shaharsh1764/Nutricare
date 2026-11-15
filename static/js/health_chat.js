@@ -16,6 +16,52 @@ const HEALTH_ASSESSMENT = {
   emergency: null, result: null, error: null,
 };
 
+// The OTC flow is separate from assessment and free text. It accepts only
+// predefined answers, then sends the complete selection set to a local backend
+// rule engine backed by source-reviewed references.
+const OTC_GUIDANCE = {
+  active: false, loading: false, steps: [], index: 0, answers: {}, turns: [],
+  emergency: null, result: null, error: null,
+};
+
+const OTC_TOPIC_OPTIONS = [
+  { value: "fever", label: "Fever" },
+  { value: "mild_pain", label: "Mild pain, such as a mild headache or body pain" },
+  { value: "allergy_symptoms", label: "Sneezing, itching, or a runny nose" },
+  { value: "other", label: "A different concern" },
+];
+const OTC_AGE_OPTIONS = [
+  { value: "under_2", label: "Under 2 years" }, { value: "age_2_to_5", label: "2–5 years" },
+  { value: "age_6_to_11", label: "6–11 years" }, { value: "age_12_to_15", label: "12–15 years" },
+  { value: "age_16_plus", label: "16 years or older" }, { value: "not_sure", label: "Not sure" },
+  { value: "prefer_not", label: "Prefer not to answer" },
+];
+const OTC_YES_NO_UNKNOWN = [
+  { value: "no", label: "No" }, { value: "yes", label: "Yes" },
+  { value: "not_sure", label: "Not sure" }, { value: "prefer_not", label: "Prefer not to answer" },
+];
+const OTC_CONDITION_OPTIONS = [
+  { value: "none", label: "None of these" }, { value: "liver_condition", label: "Liver condition" },
+  { value: "kidney_condition", label: "Kidney condition" }, { value: "regular_alcohol_use", label: "Regular alcohol use" },
+  { value: "low_body_weight", label: "Weigh under 50 kg" }, { value: "other_condition", label: "Another medical condition" }, { value: "not_sure", label: "Not sure" },
+  { value: "prefer_not", label: "Prefer not to answer" },
+];
+const OTC_PREGNANCY_OPTIONS = [
+  { value: "not_applicable", label: "Not applicable" }, { value: "no", label: "No" },
+  { value: "pregnant", label: "Pregnant" }, { value: "breastfeeding", label: "Breastfeeding" },
+  { value: "not_sure", label: "Not sure" }, { value: "prefer_not", label: "Prefer not to answer" },
+];
+const OTC_FEVER_DURATION_OPTIONS = [
+  { value: "under_24_hours", label: "Less than 24 hours" }, { value: "one_two_days", label: "1–2 days" },
+  { value: "three_days_or_more", label: "3 days or more" }, { value: "not_sure", label: "Not sure" },
+  { value: "prefer_not", label: "Prefer not to answer" },
+];
+const OTC_FEVER_LEVEL_OPTIONS = [
+  { value: "not_measured", label: "Not measured" }, { value: "not_high", label: "Not very high" },
+  { value: "very_high_or_worsening", label: "Very high or getting worse" }, { value: "not_sure", label: "Not sure" },
+  { value: "prefer_not", label: "Prefer not to answer" },
+];
+
 const ASSESSMENT_SYMPTOMS = [
   { value: "feeling_good", label: "Feeling good" },
   { value: "fatigue", label: "Feeling tired" },
@@ -107,6 +153,15 @@ function resetHealthChatState(userId) {
   HEALTH_ASSESSMENT.emergency = null;
   HEALTH_ASSESSMENT.result = null;
   HEALTH_ASSESSMENT.error = null;
+  OTC_GUIDANCE.active = false;
+  OTC_GUIDANCE.loading = false;
+  OTC_GUIDANCE.steps = [];
+  OTC_GUIDANCE.index = 0;
+  OTC_GUIDANCE.answers = {};
+  OTC_GUIDANCE.turns = [];
+  OTC_GUIDANCE.emergency = null;
+  OTC_GUIDANCE.result = null;
+  OTC_GUIDANCE.error = null;
 }
 
 function ensureHealthChat() {
@@ -200,7 +255,7 @@ function healthChatWelcome() {
     <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
     <div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Chat</b>
       <p>Hi! I’m NutriCare Health Chat. What would you like help with?</p>
-      <p>I can offer general health and nutrition information, documented food ideas, and identify emergency warning signs. I cannot diagnose conditions or choose medication doses.</p>
+      <p>I can offer general health and nutrition information, documented food ideas, and identify emergency warning signs. The OTC info option provides limited source-cited education only after safety questions; it cannot diagnose, prescribe, or check interactions.</p>
       <p class="health-chat-disclaimer">Messages are saved only in this local profile. If you think you may have an emergency, call local emergency services now — India: 112 or ambulance 108.</p>
     </div>
   </article>`;
@@ -215,6 +270,7 @@ function assessmentOptions(values) {
 }
 
 function startHealthAssessment() {
+  OTC_GUIDANCE.active = false;
   HEALTH_ASSESSMENT.active = true;
   HEALTH_ASSESSMENT.loading = false;
   HEALTH_ASSESSMENT.steps = [assessmentStep(
@@ -233,6 +289,267 @@ function stopHealthAssessment() {
   HEALTH_ASSESSMENT.active = false;
   HEALTH_ASSESSMENT.loading = false;
   HEALTH_ASSESSMENT.error = null;
+}
+
+function otcStep(id, prompt, options, config = {}) {
+  return assessmentStep(id, prompt, options, { other: false, ...config });
+}
+
+function startOtcGuidance() {
+  stopHealthAssessment();
+  OTC_GUIDANCE.active = true;
+  OTC_GUIDANCE.loading = false;
+  OTC_GUIDANCE.steps = [otcStep("topic", "What would you like general OTC information about?", OTC_TOPIC_OPTIONS)];
+  OTC_GUIDANCE.index = 0;
+  OTC_GUIDANCE.answers = {};
+  OTC_GUIDANCE.turns = [];
+  OTC_GUIDANCE.emergency = null;
+  OTC_GUIDANCE.result = null;
+  OTC_GUIDANCE.error = null;
+}
+
+function stopOtcGuidance() {
+  OTC_GUIDANCE.active = false;
+  OTC_GUIDANCE.loading = false;
+  OTC_GUIDANCE.error = null;
+}
+
+function otcCurrentStep() { return OTC_GUIDANCE.steps[OTC_GUIDANCE.index]; }
+
+function otcAnswer(step) {
+  return OTC_GUIDANCE.answers[step.id] || { values: [], other: "" };
+}
+
+function otcOptionLabel(step, value) {
+  return (step.options.find((option) => option.value === value) || { label: value }).label;
+}
+
+function otcAnswerText(step) {
+  const answer = otcAnswer(step);
+  const labels = answer.values.map((value) => otcOptionLabel(step, value));
+  return labels.length ? labels.join("; ") : "Not answered";
+}
+
+function otcHasAnswer(step) { return otcAnswer(step).values.length > 0; }
+
+function updateOtcSelection(step, value) {
+  const answer = otcAnswer(step);
+  let values = [...answer.values];
+  const checked = values.includes(value);
+  if (!step.multiple) values = [value];
+  else if (step.noneValue === value) values = [value];
+  else if (checked) values = values.filter((item) => item !== value);
+  else values = [...values.filter((item) => item !== step.noneValue), value];
+  OTC_GUIDANCE.answers[step.id] = { values, other: "" };
+  OTC_GUIDANCE.error = null;
+  renderHealthChat();
+}
+
+function otcWarningIds() {
+  const ids = [];
+  for (const step of OTC_GUIDANCE.steps) {
+    for (const value of otcAnswer(step).values) {
+      const option = step.options.find((item) => item.value === value);
+      if (option?.warning && !ids.includes(option.warning)) ids.push(option.warning);
+    }
+  }
+  return ids;
+}
+
+function otcSafetyText() {
+  return OTC_GUIDANCE.steps.map((step) => step.review ? "" : otcAnswerText(step)).join(" | ");
+}
+
+function buildOtcSteps(topic) {
+  const steps = [OTC_GUIDANCE.steps[0], otcStep(
+    "safety", "Before OTC information, do any emergency warning signs apply right now?",
+    GLOBAL_SAFETY_OPTIONS, { multiple: true, noneValue: "none" },
+  )];
+  if (topic === "other") return [...steps, { id: "review", review: true }];
+  if (topic === "fever") {
+    steps.push(
+      otcStep("fever_duration", "How long has the fever lasted?", OTC_FEVER_DURATION_OPTIONS),
+      otcStep("fever_level", "Which best describes the fever right now?", OTC_FEVER_LEVEL_OPTIONS),
+    );
+  }
+  steps.push(
+    otcStep("age_group", "What is the age group?", OTC_AGE_OPTIONS),
+    otcStep("medication_allergy", "Do you know of a medication allergy?", OTC_YES_NO_UNKNOWN),
+    otcStep("conditions", "Do any of these apply?", OTC_CONDITION_OPTIONS, { multiple: true, noneValue: "none" }),
+    otcStep("pregnancy_status", "Are you pregnant or breastfeeding?", OTC_PREGNANCY_OPTIONS),
+    otcStep("current_medicines", "Are you taking any medicines, vitamins, or supplements now?", OTC_YES_NO_UNKNOWN),
+    otcStep("already_taken", "Have you already taken medicine for this symptom?", OTC_YES_NO_UNKNOWN),
+  );
+  return [...steps, { id: "review", review: true }];
+}
+
+function otcPayload() {
+  const value = (id) => otcAnswer(OTC_GUIDANCE.steps.find((step) => step.id === id) || { options: [] }).values[0] || "";
+  const topic = value("topic");
+  const payload = { topic, warning_signs: otcWarningIds() };
+  if (topic === "other") return payload;
+  payload.age_group = value("age_group");
+  payload.medication_allergy = value("medication_allergy");
+  payload.conditions = otcAnswer(OTC_GUIDANCE.steps.find((step) => step.id === "conditions") || { options: [] }).values;
+  payload.pregnancy_status = value("pregnancy_status");
+  payload.current_medicines = value("current_medicines");
+  payload.already_taken = value("already_taken");
+  if (topic === "fever") {
+    payload.fever_duration = value("fever_duration");
+    payload.fever_level = value("fever_level");
+  }
+  return payload;
+}
+
+async function screenOtcGuidance() {
+  const data = await api("/assistant/screen", {
+    method: "POST", body: { text: otcSafetyText(), warning_signs: otcWarningIds() },
+  });
+  if (data.emergency) OTC_GUIDANCE.emergency = data;
+  return data;
+}
+
+function healthOtcEmergency() {
+  const result = OTC_GUIDANCE.emergency;
+  return `<article class="health-chat-message assistant emergency">
+    <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
+    <div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Assistant</b>
+      <p>An emergency warning sign was selected. Do not use OTC information now; seek immediate medical help.</p>
+      ${healthChatEmergency({ triage: "emergency", red_flags: result.red_flags, emergency_actions: result.emergency_actions })}
+    </div>
+  </article>`;
+}
+
+function healthOtcResult() {
+  const result = OTC_GUIDANCE.result;
+  if (!result) return "";
+  const medication = result.medication;
+  const reasons = (result.safety_reasons || []).map((reason) => `<li>${esc(reason)}</li>`).join("");
+  const warnings = (medication?.warnings || []).map((warning) => `<li>${esc(warning)}</li>`).join("");
+  const sources = (medication?.sources || []).map((source) =>
+    `<li><a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.name)}</a> · source reviewed ${esc(source.source_last_reviewed)}</li>`).join("");
+  const care = (result.seek_care || []).map((item) => `<li>${esc(item)}</li>`).join("");
+  const className = result.triage === "emergency" ? " emergency" : result.triage === "urgent_same_day" ? " urgent" : result.triage === "pharmacist_handoff" ? " pharmacist" : "";
+  return `<article class="health-chat-message assistant${className}">
+    <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
+    <div class="health-chat-bubble health-otc-result"><b class="health-chat-speaker">NutriCare OTC information</b>
+      <p>${esc(result.message || "")}</p>
+      ${medication ? `<div class="health-assessment-summary"><b>${esc(medication.generic_name)}${medication.also_known_as?.length ? ` (also called ${esc(medication.also_known_as.join(", "))})` : ""}</b><p>${esc(medication.intended_use)}</p>${medication.dosing ? `<p><b>Source-cited reference:</b> ${esc(medication.dosing)}</p>` : ""}${medication.child_guidance ? `<p>${esc(medication.child_guidance)}</p>` : ""}</div>` : ""}
+      ${reasons ? `<div class="health-assessment-seek"><b>Why professional advice is needed</b><ul>${reasons}</ul></div>` : ""}
+      ${warnings ? `<div class="health-assessment-seek"><b>Important warnings</b><ul>${warnings}</ul></div>` : ""}
+      ${care ? `<div class="health-assessment-seek"><b>What to do now</b><ul>${care}</ul></div>` : ""}
+      ${sources ? `<div class="health-otc-sources"><b>Sources</b><ul>${sources}</ul>${medication?.reference_last_reviewed ? `<p>NutriCare reference reviewed ${esc(medication.reference_last_reviewed)}.</p>` : ""}</div>` : ""}
+      <p class="health-chat-disclaimer">${esc(result.disclaimer || "")}</p>
+    </div>
+  </article>`;
+}
+
+function healthOtcQuestion() {
+  const step = otcCurrentStep();
+  if (!step) return "";
+  if (step.review) return healthOtcReview();
+  const answer = otcAnswer(step);
+  const position = Math.min(OTC_GUIDANCE.index + 1, OTC_GUIDANCE.steps.length);
+  const choices = step.options.map((option) => `<button class="health-assessment-option" type="button"
+      data-otc-option="${esc(option.value)}" aria-pressed="${answer.values.includes(option.value)}">
+      <span class="health-assessment-indicator" aria-hidden="true"></span><span>${esc(option.label)}</span></button>`).join("");
+  return `<article class="health-chat-message assistant">
+    <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
+    <div class="health-chat-bubble health-assessment-question"><b class="health-chat-speaker">NutriCare OTC information</b>
+      <div class="health-assessment-progress"><span>Safety step ${position} of ${OTC_GUIDANCE.steps.length}</span><i style="width:${Math.round((position / OTC_GUIDANCE.steps.length) * 100)}%"></i></div>
+      <p>${esc(step.prompt)}</p>
+      ${step.multiple ? `<p class="health-assessment-help">Select all that apply. “None of these” is exclusive.</p>` : ""}
+      <div class="health-assessment-options" role="${step.multiple ? "group" : "radiogroup"}" aria-label="${esc(step.prompt)}">${choices}</div>
+      ${OTC_GUIDANCE.error ? `<div class="health-chat-error" role="alert">${esc(OTC_GUIDANCE.error)}</div>` : ""}
+      <div class="health-assessment-actions"><button class="btn btn-ghost btn-sm" id="otc-guidance-back" type="button" ${OTC_GUIDANCE.index === 0 || OTC_GUIDANCE.loading ? "disabled" : ""}>Back</button>
+        <button class="btn btn-primary btn-sm" id="otc-guidance-continue" type="button" ${OTC_GUIDANCE.loading ? "disabled" : ""}>${OTC_GUIDANCE.loading ? "Checking…" : "Continue"}</button></div>
+    </div>
+  </article>`;
+}
+
+function healthOtcReview() {
+  const steps = OTC_GUIDANCE.steps.filter((step) => !step.review);
+  return `<article class="health-chat-message assistant"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
+    <div class="health-chat-bubble health-assessment-question"><b class="health-chat-speaker">NutriCare OTC information</b>
+      <div class="health-assessment-progress"><span>Review</span><i style="width:100%"></i></div>
+      <p>Please review these safety answers before receiving general, source-cited information.</p>
+      <div class="health-assessment-review">${steps.map((step) => `<div><b>${esc(step.prompt)}</b><p>${esc(otcAnswerText(step))}</p></div>`).join("")}</div>
+      ${OTC_GUIDANCE.error ? `<div class="health-chat-error" role="alert">${esc(OTC_GUIDANCE.error)}</div>` : ""}
+      <div class="health-assessment-actions"><button class="btn btn-ghost btn-sm" id="otc-guidance-back" type="button" ${OTC_GUIDANCE.loading ? "disabled" : ""}>Back</button><button class="btn btn-primary btn-sm" id="otc-guidance-confirm" type="button" ${OTC_GUIDANCE.loading ? "disabled" : ""}>${OTC_GUIDANCE.loading ? "Preparing…" : "Confirm and view information"}</button></div>
+    </div>
+  </article>`;
+}
+
+function healthOtcConversation() {
+  if (OTC_GUIDANCE.emergency) return healthOtcEmergency();
+  const transcript = OTC_GUIDANCE.turns.map((turn) => `<article class="health-chat-message assistant"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span><div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare OTC information</b><p>${esc(turn.question)}</p></div></article><article class="health-chat-message user"><div class="health-chat-bubble"><p>${esc(turn.answer)}</p></div></article>`).join("");
+  return transcript + (OTC_GUIDANCE.result ? healthOtcResult() : healthOtcQuestion());
+}
+
+async function continueOtcGuidance() {
+  const step = otcCurrentStep();
+  if (!step || OTC_GUIDANCE.loading || OTC_GUIDANCE.result || OTC_GUIDANCE.emergency) return;
+  if (!otcHasAnswer(step)) {
+    OTC_GUIDANCE.error = "Select one of the predefined options before continuing.";
+    renderHealthChat();
+    return;
+  }
+  OTC_GUIDANCE.loading = true;
+  OTC_GUIDANCE.error = null;
+  renderHealthChat();
+  try {
+    const screen = await screenOtcGuidance();
+    if (screen.emergency) return;
+    const current = otcCurrentStep();
+    OTC_GUIDANCE.turns.push({ question: current.prompt, answer: otcAnswerText(current) });
+    if (current.id === "topic") {
+      OTC_GUIDANCE.steps = buildOtcSteps(otcAnswer(current).values[0]);
+      OTC_GUIDANCE.index = 1;
+    } else {
+      OTC_GUIDANCE.index = Math.min(OTC_GUIDANCE.index + 1, OTC_GUIDANCE.steps.length - 1);
+    }
+  } catch (error) {
+    OTC_GUIDANCE.error = error.message || "The local safety check could not be completed.";
+  } finally {
+    OTC_GUIDANCE.loading = false;
+    renderHealthChat();
+  }
+}
+
+function backOtcGuidance() {
+  if (OTC_GUIDANCE.loading || OTC_GUIDANCE.index <= 0) return;
+  OTC_GUIDANCE.index -= 1;
+  OTC_GUIDANCE.turns.pop();
+  OTC_GUIDANCE.error = null;
+  renderHealthChat();
+}
+
+async function finishOtcGuidance() {
+  if (OTC_GUIDANCE.loading || OTC_GUIDANCE.result || OTC_GUIDANCE.emergency) return;
+  OTC_GUIDANCE.loading = true;
+  OTC_GUIDANCE.error = null;
+  renderHealthChat();
+  try {
+    const result = await api("/assistant/otc-guidance", { method: "POST", body: otcPayload() });
+    OTC_GUIDANCE.result = result;
+  } catch (error) {
+    OTC_GUIDANCE.error = error.message || "The OTC reference could not be checked.";
+  } finally {
+    OTC_GUIDANCE.loading = false;
+    renderHealthChat();
+  }
+}
+
+function bindOtcGuidance() {
+  const step = otcCurrentStep();
+  if (!step || OTC_GUIDANCE.emergency || OTC_GUIDANCE.result) return;
+  $$("[data-otc-option]").forEach((button) => button.onclick = () => updateOtcSelection(step, button.dataset.otcOption));
+  const back = $("#otc-guidance-back");
+  if (back) back.onclick = backOtcGuidance;
+  const next = $("#otc-guidance-continue");
+  if (next) next.onclick = continueOtcGuidance;
+  const confirm = $("#otc-guidance-confirm");
+  if (confirm) confirm.onclick = finishOtcGuidance;
 }
 
 function selectedAssessmentSymptoms() {
@@ -627,6 +944,7 @@ function healthChatMessages() {
     return `<div class="health-chat-loading" role="status">Loading your local chat history…</div>`;
   }
   if (HEALTH_ASSESSMENT.active) return healthAssessmentConversation();
+  if (OTC_GUIDANCE.active) return healthOtcConversation();
   const items = HEALTH_CHAT.messages.length
     ? HEALTH_CHAT.messages.map((entry) => entry.role === "user"
       ? `<article class="health-chat-message user${entry.pending ? " pending" : ""}"><div class="health-chat-bubble"><p>${esc(entry.message)}</p></div></article>`
@@ -649,18 +967,19 @@ function renderHealthChat() {
   syncHealthChatLayout(expanded);
   const busy = HEALTH_CHAT.loading || HEALTH_CHAT.sending;
   const guided = HEALTH_ASSESSMENT.active;
+  const otc = OTC_GUIDANCE.active;
   root.innerHTML = `
     <button class="health-chat-launcher" id="health-chat-launcher" type="button" aria-label="Open Health Assistant" aria-expanded="${expanded}" aria-controls="health-chat-panel">
       ${healthChatIcon(22)}<span>Health assistant</span>
     </button>
     ${expanded ? `<section class="health-chat-panel" id="health-chat-panel" role="dialog" aria-modal="false" aria-label="NutriCare Health Assistant">
       <header class="health-chat-header"><div class="row" style="gap:9px"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span><div><b>Health assistant</b><small>Local safety-led guidance</small></div></div>
-        <div class="row" style="gap:4px">${guided ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-restart" type="button">Restart</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-free-text" type="button">Free text</button>` : `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-start" type="button">Assessment</button>`}<button class="btn btn-ghost btn-sm health-chat-clear" id="health-chat-history" type="button" aria-expanded="${HEALTH_CHAT.historyMenu}" aria-controls="health-chat-history-menu">History</button>
+        <div class="health-chat-tools">${guided ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-restart" type="button">Restart</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-free-text" type="button">Free text</button>` : otc ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="otc-guidance-restart" type="button">Restart OTC</button>` : `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-start" type="button">Assessment</button>`}<button class="btn btn-ghost btn-sm health-chat-clear" id="otc-guidance-start" type="button">OTC info</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-chat-history" type="button" aria-expanded="${HEALTH_CHAT.historyMenu}" aria-controls="health-chat-history-menu">History</button>
         <button class="icon-btn" id="health-chat-close" type="button" aria-label="Close Health Assistant" title="Close">×</button></div></header>
       ${HEALTH_CHAT.historyMenu ? `<section class="health-chat-history-menu" id="health-chat-history-menu" aria-label="Local assistant history options"><b>Local assistant history</b><div><button class="btn btn-ghost btn-sm" id="health-chat-export-json" type="button">Export JSON</button><button class="btn btn-ghost btn-sm" id="health-chat-export-csv" type="button">Export CSV</button><button class="btn btn-danger-soft btn-sm" id="health-chat-clear" type="button">Delete chat history</button></div><p>Exports include saved chat messages and completed guided assessments for this local profile.</p></section>` : ""}
       <div class="health-chat-safety"><b>Emergency?</b> Call 112 in India or your local emergency number now. This assistant cannot replace emergency care.</div>
       <div class="health-chat-messages" id="health-chat-messages" aria-live="polite">${healthChatMessages()}</div>
-      ${guided ? "" : `<form class="health-chat-form" id="health-chat-form">
+      ${guided || otc ? "" : `<form class="health-chat-form" id="health-chat-form">
         <label class="sr-only" for="health-chat-input">Write a health or nutrition question</label>
         <textarea id="health-chat-input" maxlength="800" rows="2" placeholder="Write a health or nutrition question" ${busy ? "disabled" : ""} required>${esc(HEALTH_CHAT.draft)}</textarea>
         <div class="row spread mt8"><span class="tiny muted">Health and nutrition questions only</span><button class="btn btn-primary btn-sm" id="health-chat-send" type="submit" ${busy ? "disabled" : ""}>${HEALTH_CHAT.sending ? "Sending…" : "Send"}</button></div>
@@ -681,10 +1000,16 @@ function renderHealthChat() {
   if (restart) restart.onclick = () => { startHealthAssessment(); renderHealthChat(); };
   const startAssessment = $("#health-assessment-start");
   if (startAssessment) startAssessment.onclick = () => { startHealthAssessment(); renderHealthChat(); };
+  const startOtc = $("#otc-guidance-start");
+  if (startOtc) startOtc.onclick = () => { startOtcGuidance(); renderHealthChat(); };
+  const restartOtc = $("#otc-guidance-restart");
+  if (restartOtc) restartOtc.onclick = () => { startOtcGuidance(); renderHealthChat(); };
   const freeText = $("#health-assessment-free-text");
   if (freeText) freeText.onclick = () => { stopHealthAssessment(); renderHealthChat(); $("#health-chat-input").focus(); };
   if (guided) {
     bindHealthAssessment();
+  } else if (otc) {
+    bindOtcGuidance();
   } else {
     const form = $("#health-chat-form");
     const input = $("#health-chat-input");

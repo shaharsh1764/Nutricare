@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 
 from flask import Blueprint, jsonify, request, session, Response
 
-from . import assistant, db, health_chat, insights, nutrition, pdf_report
+from . import assistant, db, health_chat, insights, nutrition, otc_guidance, pdf_report
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -932,6 +932,24 @@ def assistant_safety_screen():
 
 # Retained for records created by earlier releases and now also used by the
 # confirmed final step of the guided Health Assistant.
+@api.post("/assistant/otc-guidance")
+def assistant_otc_guidance():
+    """Return only source-cited, option-screened OTC education.
+
+    This endpoint does not accept free-text medicine requests or drug names. Its
+    local rules repeat emergency screening and reject every non-enumerated value
+    so client-side changes cannot bypass the safety gate.
+    """
+    data = request.get_json(silent=True) or {}
+    conn = db.get_db()
+    if current_uid(conn) is None:
+        return no_user()
+    try:
+        return jsonify(otc_guidance.guidance(data))
+    except ValueError as exc:
+        return err(str(exc))
+
+
 @api.post("/assistant/assess")
 def assess():
     data = request.get_json(silent=True) or {}

@@ -406,6 +406,34 @@ const DRIVER = `
   assert(location.href === "/api/health-chat/export.csv", "G2c CSV history export is bound");
   click("#health-chat-history");
 
+  await click("#otc-guidance-start");
+  assert(OTC_GUIDANCE.active && otcCurrentStep().id === "topic"
+    && el("#health-chat-root").innerHTML.includes("What would you like general OTC information about?"),
+  "G2d source-cited OTC education starts as a separate option-only flow");
+  OTC_GUIDANCE.answers.topic = { values: ["fever"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.safety = { values: ["none"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.fever_duration = { values: ["under_24_hours"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.fever_level = { values: ["not_high"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.age_group = { values: ["age_16_plus"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.medication_allergy = { values: ["no"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.conditions = { values: ["none"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.pregnancy_status = { values: ["not_applicable"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.current_medicines = { values: ["no"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.already_taken = { values: ["no"], other: "" }; await continueOtcGuidance();
+  assert(otcCurrentStep().id === "review" && el("#health-chat-root").innerHTML.includes("source-cited information"),
+    "G2e OTC flow requires review of age, allergy, conditions, pregnancy, and medicine-use answers");
+  await finishOtcGuidance();
+  assert(OTC_GUIDANCE.result?.medication?.generic_name === "Paracetamol"
+    && el("#health-chat-root").innerHTML.includes("Important warnings")
+    && el("#health-chat-root").innerHTML.includes("Sources"),
+  "G2f a cleared fever screen returns local, source-cited paracetamol education");
+  startOtcGuidance();
+  OTC_GUIDANCE.answers.topic = { values: ["allergy_symptoms"], other: "" }; await continueOtcGuidance();
+  OTC_GUIDANCE.answers.safety = { values: ["anaphylaxis"], other: "" }; await continueOtcGuidance();
+  assert(OTC_GUIDANCE.emergency && el("#health-chat-root").innerHTML.includes("112"),
+    "G2g emergency warning signs stop OTC information before a medicine suggestion");
+  startHealthAssessment(); renderHealthChat();
+
   const guidedBranches = {
     feeling_good: "conditions", fatigue: "fatigue_sleep", headache: "headache_duration",
     fever: "fever_temperature", dizziness: "dizziness_duration", nausea: "nausea_duration",

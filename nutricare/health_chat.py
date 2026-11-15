@@ -1,9 +1,11 @@
 """Local, safety-led conversational health chat for NutriCare.
 
 The module is intentionally deterministic. It does not call an online model,
-does not diagnose, and does not select or dose medication. Emergency screening
-is shared with the established assistant rule engine so ordinary conversation
-logic cannot bypass its warning-sign policy.
+does not diagnose, and does not select or dose medication from a free-text
+message. A separate option-only OTC education flow is backed by a small,
+source-reviewed local reference; emergency screening is shared with the
+established assistant rule engine so ordinary conversation logic cannot bypass
+its warning-sign policy.
 
 The chat keeps only a small, explicit conversation state: the symptom details a
 person has chosen to share and the next single follow-up question. The state is
@@ -17,7 +19,7 @@ from typing import Any
 
 from . import assistant, insights
 
-ENGINE_VERSION = "local-health-chat-v2"
+ENGINE_VERSION = "local-health-chat-v3"
 MAX_MESSAGE_CHARS = 800
 
 DISCLAIMER = (
@@ -26,8 +28,9 @@ DISCLAIMER = (
     "or local emergency services."
 )
 
-# A medicine request always receives a pharmacist/clinician handoff rather than
-# an inferred diagnosis, medication selection, interaction check, or dose.
+# A free-text medicine request receives a pharmacist/clinician handoff rather
+# than inferred selection, interaction advice, or a dose. Source-cited OTC
+# education is available only through the separate option-only safety flow.
 MEDICINE_PATTERN = re.compile(
     r"\b(medic(?:ine|ation)|drug|tablet|pill|dose|antibiotic|painkiller|"
     r"paracetamol|acetaminophen|ibuprofen|aspirin)\b",
@@ -124,7 +127,7 @@ def engine_mode() -> dict:
         "engine": ENGINE_VERSION,
         "online_ai_used": False,
         "label": "Local safety-led health chat (no online AI or external health API)",
-        "medication_policy": "Medication questions are directed to a pharmacist or clinician; no medicine selection or dosing is provided.",
+        "medication_policy": "Free-text medicine questions are handed to a pharmacist or clinician. Limited paracetamol/cetirizine education is available only through the source-cited, option-only OTC safety flow.",
     }
 
 
@@ -522,7 +525,7 @@ def respond(
 
     if MEDICINE_PATTERN.search(text):
         return _reply(
-            "I can’t choose a medicine, recommend a dose, or check a medication interaction. Please speak with a pharmacist or clinician, who can review your symptoms, current medicines, allergies, and relevant conditions safely. If symptoms are severe, worsening, or you are worried, seek urgent in-person care.",
+            "I cannot choose a medicine, recommend a personal dose, or check a medication interaction from a free-text message. For limited source-cited information on paracetamol or cetirizine, use the Assistant’s OTC info option, which asks structured safety questions first. For any other medicine question, please speak with a pharmacist or clinician. If symptoms are severe, worsening, or worrying, seek urgent in-person care.",
             triage="pharmacist_handoff",
             guidance=[{
                 "title": "Medication safety",

@@ -329,6 +329,35 @@ def test_assistant_safety_screen_is_independent_and_does_not_persist_partial_ass
     assert client.get("/api/assistant/history").get_json()["history"] == []
 
 
+def test_otc_guidance_endpoint_requires_local_option_screening_and_prioritises_safety(client):
+    new_user(client, "OTC Guidance")
+    payload = {
+        "topic": "fever", "warning_signs": [], "age_group": "age_16_plus",
+        "medication_allergy": "no", "conditions": ["none"],
+        "pregnancy_status": "not_applicable", "current_medicines": "no",
+        "already_taken": "no", "fever_duration": "under_24_hours", "fever_level": "not_high",
+    }
+    safe = client.post("/api/assistant/otc-guidance", json=payload)
+    assert safe.status_code == 200
+    data = safe.get_json()
+    assert data["triage"] == "otc_education"
+    assert data["medication"]["generic_name"] == "Paracetamol"
+    assert data["medication"]["sources"][0]["source_last_reviewed"]
+
+    duplicate = client.post("/api/assistant/otc-guidance", json={**payload, "already_taken": "yes"}).get_json()
+    assert duplicate["triage"] == "pharmacist_handoff"
+    assert duplicate["medication"]["dosing"] is None
+
+    emergency = client.post("/api/assistant/otc-guidance", json={
+        **payload, "topic": "allergy_symptoms", "warning_signs": ["anaphylaxis"],
+    }).get_json()
+    assert emergency["triage"] == "emergency"
+    assert emergency["medication"] is None
+
+    invalid = client.post("/api/assistant/otc-guidance", json={**payload, "age_group": "adult"})
+    assert invalid.status_code == 400
+
+
 def test_health_chat_history_exports_json_and_csv(client):
     new_user(client, "Assistant Export")
     assert client.post("/api/health-chat/messages", json={"message": "I feel tired"}).status_code == 200

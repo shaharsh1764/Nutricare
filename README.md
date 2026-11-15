@@ -64,7 +64,9 @@ node tests/ui_smoke.js            # browserless workflow checks against the runn
 | `nutricare/api.py` | all REST endpoints (`/api/...`) with input validation (Insights uses two read-only GETs) |
 | `nutricare/nutrition.py` | calorie/macro maths (Mifflin-St Jeor, PAL factors, 4/4/9) |
 | `nutricare/insights.py` | Smart Nutrition Insights analytics (read-only, pure functions) |
-| `nutricare/health_chat.py` | Local Health Chat response rules, emergency screen, medication handoff, and food suggestions |
+| `nutricare/health_chat.py` | Local Health Chat response rules, emergency screen, free-text medication handoff, and food suggestions |
+| `nutricare/otc_guidance.py` | Locked local OTC education rules; validates option-only safety answers and reads the source-reviewed reference catalogue |
+| `data/otc_medication_references.json` | Versioned paracetamol/cetirizine generic-use, warning, source, and review-date reference data |
 | `nutricare/assistant.py` | Legacy rule engine retained for existing historical assessment records and shared emergency-screen rules |
 | `nutricare/db.py` | SQLite schema, seeding, local chat storage, purge |
 | `static/`, `templates/` | frontend (CSS design system, JS views, SVG charts) |
@@ -118,10 +120,22 @@ offline rule engine — no online AI or third-party health API is called.
 5. Food ideas come only from NutriCare's documented catalogue and are filtered by
    stored allergies and dietary preferences. They are general nourishment ideas,
    not treatment claims.
-6. Medication questions deliberately receive a pharmacist-or-clinician handoff.
-   The chat does not choose a medicine, recommend a dose, check interactions, or
-   prescribe treatment.
-7. Severe or worsening wording is directed to same-day in-person care. The chat
+6. Free-text medication questions deliberately receive a pharmacist-or-clinician
+   handoff. The separate **OTC info** flow is strictly option-only and has a
+   deliberately narrow, source-cited catalogue: paracetamol for fever/mild pain
+   and cetirizine for common nasal allergy symptoms. Before any medicine-specific
+   reference is shown it collects age group, medicine-allergy status, relevant
+   conditions, pregnancy/breastfeeding status, current-medicine status, and
+   whether medicine was already taken. “Not sure” and “Prefer not to answer”
+   block dosing information and direct the person to a pharmacist or clinician.
+   The local catalogue records every source URL and source/reference review date;
+   it is not generated from user text or an external API.
+7. Emergency signs always stop the OTC flow. Very high/worsening fever or fever
+   lasting 3 days or more receives prompt in-person direction before any OTC
+   reference; cetirizine guidance warns about drowsiness and driving, while
+   paracetamol warns about liver disease and duplicate ingredients. This does not
+   prescribe treatment, check interactions, or replace medical assessment.
+8. Severe or worsening wording is directed to same-day in-person care. The chat
    includes a persistent disclaimer and has no disease probabilities.
 
 ## 6. First run, empty states & demo mode
@@ -205,9 +219,11 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
   and becomes a ☰ drawer under ~860px. The Health Chat is instead a persistent
   bottom-left control for signed-in local profiles; its saved messages are not encrypted.
 * **Health Chat:** this is a keyword/rule-based safety tool, not a diagnostic or
-  medication service. It can miss context, cannot examine a person, and should not
-  delay urgent care. Medication questions are intentionally handed to a pharmacist
-  or clinician rather than answered with a medicine or dose.
+  prescribing service. It can miss context, cannot examine a person, and should
+  not delay urgent care. Free-text medication questions are handed to a pharmacist
+  or clinician. Its separate OTC info flow is limited to a local source-reviewed
+  paracetamol/cetirizine reference after required option-based safety checks; it
+  does not check interactions or create an individual treatment plan.
 * **AI Food Scanner:** the 80-class primary model has a held-out same-dataset
   accuracy of **56.72%** (macro-F1 0.5559, n=647); results remain unconfirmed.
   It identifies one dominant dish per photo, cannot measure weight from an image,

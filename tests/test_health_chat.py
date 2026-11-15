@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -37,13 +38,13 @@ def test_other_emergency_warning_signs_override_conversation(message):
     assert "112" in reply["message"]
 
 
-def test_medication_question_is_handed_to_a_pharmacist_without_a_drug_choice():
+def test_free_text_medication_question_stays_handed_to_a_pharmacist_and_does_not_dose():
     reply = ask("What tablet and dose should I take for a headache?")
     text = json.dumps(reply).lower()
     assert reply["triage"] == "pharmacist_handoff"
     assert reply["medication_handoff"] is True
-    assert "pharmacist" in text
-    assert "ibuprofen" not in text and "paracetamol" not in text
+    assert "pharmacist" in text and "otc info" in text
+    assert not re.search(r"\b\d+(?:\.\d+)?\s*mg\b", text)
 
 
 def test_sick_starts_symptom_conversation_without_repeating_welcome():

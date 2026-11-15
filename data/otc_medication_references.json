@@ -1,0 +1,67 @@
+{
+  "catalog_version": "2026-11-12",
+  "scope": "A locked, rule-based educational reference for two common over-the-counter medicines. It is not a prescribing database, an interaction checker, or a substitute for a pharmacist or clinician.",
+  "medications": {
+    "paracetamol": {
+      "generic_name": "Paracetamol",
+      "also_known_as": ["Acetaminophen"],
+      "intended_use": "General information for temporary fever reduction or relief of mild pain.",
+      "topics": ["fever", "mild_pain"],
+      "minimum_age_for_standard_adult_information": "age_16_plus",
+      "standard_adult_information": "For people aged 16 or older, the NHS states the usual adult dose is 500 mg to 1 g at a time, with at least 4 hours between doses and a maximum of 4 g (eight 500 mg tablets) in 24 hours. Follow the local product label; do not use this as a personal dosing plan.",
+      "child_guidance": "Do not use adult dosing for a child. NutriCare does not calculate a child dose because the correct child product and dose depend on the child's age, weight and product concentration. Use only a child-specific product label and ask a pharmacist or child clinician to confirm it.",
+      "warnings": [
+        "Do not take more than one product containing paracetamol or acetaminophen at the same time.",
+        "Too much paracetamol can seriously damage the liver.",
+        "Get pharmacist or clinician advice before use if you have liver disease, drink alcohol regularly, weigh under 50 kg, are pregnant or breastfeeding, take other medicines, or have already taken medicine for this symptom.",
+        "If fever gets worse or lasts more than 3 days, seek medical advice; do not continue self-treatment alone."
+      ],
+      "professional_advice": "A pharmacist or clinician should check any uncertain allergy, current medicine, liver condition, pregnancy or breastfeeding situation, or possible duplicate ingredient before you use paracetamol.",
+      "sources": [
+        {
+          "name": "NHS — How and when to take paracetamol for adults",
+          "url": "https://www.nhs.uk/medicines/paracetamol-for-adults/how-and-when-to-take-paracetamol-for-adults/",
+          "source_last_reviewed": "2025-01-29"
+        },
+        {
+          "name": "MedlinePlus — Acetaminophen Drug Information",
+          "url": "https://medlineplus.gov/druginfo/meds/a681004.html",
+          "source_last_reviewed": "2025-10-15"
+        }
+      ],
+      "reference_last_reviewed": "2026-11-12"
+    },
+    "cetirizine": {
+      "generic_name": "Cetirizine",
+      "intended_use": "General information for common allergy symptoms such as sneezing, itching and a runny nose.",
+      "topics": ["allergy_symptoms"],
+      "standard_adult_information": "For adults and children aged 12 or older, the NHS lists 10 mg once a day. Follow the local product label; do not use this as a personal dosing plan.",
+      "child_information": {
+        "age_2_to_5": "The NHS lists 2.5 mg twice a day for children aged 2 to 5. This is source information only: use a child formulation and confirm the exact product instructions with a pharmacist.",
+        "age_6_to_11": "The NHS lists 5 mg twice a day for children aged 6 to 11. This is source information only: use a child formulation and confirm the exact product instructions with a pharmacist.",
+        "age_12_to_15": "The NHS lists 10 mg once a day for people aged 12 or older. Follow the local product label and involve a parent or guardian for a child.",
+        "under_2": "Do not use this guidance for a child under 2. A clinician should determine whether any medicine is appropriate."
+      },
+      "warnings": [
+        "Cetirizine can cause drowsiness or tiredness. Do not drive, ride, use machinery, or do tasks requiring alertness until you know how it affects you.",
+        "Alcohol can add to drowsiness.",
+        "Get pharmacist or clinician advice before use if you have kidney or liver disease, are pregnant or breastfeeding, take other medicines, have a medicine allergy, or have already taken medicine for this symptom.",
+        "Face or throat swelling, trouble breathing, severe hives, or feeling faint can be signs of a severe allergic reaction and need emergency care, not self-treatment."
+      ],
+      "professional_advice": "A pharmacist or clinician should check any uncertain allergy, current medicine, kidney or liver condition, pregnancy or breastfeeding situation, or possible duplicate treatment before you use cetirizine.",
+      "sources": [
+        {
+          "name": "NHS — How and when to take cetirizine",
+          "url": "https://www.nhs.uk/medicines/cetirizine/how-and-when-to-take-cetirizine/",
+          "source_last_reviewed": "2026-05-01"
+        },
+        {
+          "name": "MedlinePlus — Cetirizine Drug Information",
+          "url": "https://medlineplus.gov/druginfo/meds/a623043.html",
+          "source_last_reviewed": "2026-04-15"
+        }
+      ],
+      "reference_last_reviewed": "2026-11-12"
+    }
+  }
+}
