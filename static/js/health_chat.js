@@ -5,7 +5,7 @@
 
 const HEALTH_CHAT = {
   open: false, loading: false, sending: false, messages: [], userId: null,
-  draft: "", error: "", selectedPrompt: "",
+  draft: "", error: "", selectedPrompt: "", historyMenu: false,
 };
 
 // The guided assessment is deliberately local and option based. It sends a
@@ -89,6 +89,7 @@ function resetHealthChatState(userId) {
   HEALTH_CHAT.draft = "";
   HEALTH_CHAT.error = "";
   HEALTH_CHAT.selectedPrompt = "";
+  HEALTH_CHAT.historyMenu = false;
   HEALTH_CHAT.open = false;
   HEALTH_ASSESSMENT.active = false;
   HEALTH_ASSESSMENT.steps = [];
@@ -641,8 +642,9 @@ function renderHealthChat() {
     </button>
     ${expanded ? `<section class="health-chat-panel" id="health-chat-panel" role="dialog" aria-modal="false" aria-label="NutriCare Health Assistant">
       <header class="health-chat-header"><div class="row" style="gap:9px"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span><div><b>Health assistant</b><small>Local safety-led guidance</small></div></div>
-        <div class="row" style="gap:4px">${guided ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-restart" type="button">Restart</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-free-text" type="button">Free text</button>` : `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-start" type="button">Assessment</button>`}<button class="btn btn-ghost btn-sm health-chat-clear" id="health-chat-clear" type="button" title="Start a new conversation" aria-label="Start a new conversation">New chat</button>
+        <div class="row" style="gap:4px">${guided ? `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-restart" type="button">Restart</button><button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-free-text" type="button">Free text</button>` : `<button class="btn btn-ghost btn-sm health-chat-clear" id="health-assessment-start" type="button">Assessment</button>`}<button class="btn btn-ghost btn-sm health-chat-clear" id="health-chat-history" type="button" aria-expanded="${HEALTH_CHAT.historyMenu}" aria-controls="health-chat-history-menu">History</button>
         <button class="icon-btn" id="health-chat-close" type="button" aria-label="Close Health Assistant" title="Close">×</button></div></header>
+      ${HEALTH_CHAT.historyMenu ? `<section class="health-chat-history-menu" id="health-chat-history-menu" aria-label="Local assistant history options"><b>Local assistant history</b><div><button class="btn btn-ghost btn-sm" id="health-chat-export-json" type="button">Export JSON</button><button class="btn btn-ghost btn-sm" id="health-chat-export-csv" type="button">Export CSV</button><button class="btn btn-danger-soft btn-sm" id="health-chat-clear" type="button">Delete chat history</button></div><p>Exports include saved chat messages and completed guided assessments for this local profile.</p></section>` : ""}
       <div class="health-chat-safety"><b>Emergency?</b> Call 112 in India or your local emergency number now. This assistant cannot replace emergency care.</div>
       <div class="health-chat-messages" id="health-chat-messages" aria-live="polite">${healthChatMessages()}</div>
       ${guided ? "" : `<form class="health-chat-form" id="health-chat-form">
@@ -654,7 +656,14 @@ function renderHealthChat() {
   $("#health-chat-launcher").onclick = () => expanded ? closeHealthChat() : openHealthChat();
   if (!expanded) return;
   $("#health-chat-close").onclick = closeHealthChat;
-  $("#health-chat-clear").onclick = clearHealthChat;
+  const history = $("#health-chat-history");
+  if (history) history.onclick = () => { HEALTH_CHAT.historyMenu = !HEALTH_CHAT.historyMenu; renderHealthChat(); };
+  const clear = $("#health-chat-clear");
+  if (clear) clear.onclick = clearHealthChat;
+  const exportJson = $("#health-chat-export-json");
+  if (exportJson) exportJson.onclick = () => { location.href = "/api/health-chat/export.json"; };
+  const exportCsv = $("#health-chat-export-csv");
+  if (exportCsv) exportCsv.onclick = () => { location.href = "/api/health-chat/export.csv"; };
   const restart = $("#health-assessment-restart");
   if (restart) restart.onclick = () => { startHealthAssessment(); renderHealthChat(); };
   const startAssessment = $("#health-assessment-start");
@@ -719,8 +728,8 @@ async function sendHealthChatMessage(event) {
 }
 
 async function clearHealthChat() {
-  const ok = await confirmModal("Start a new local conversation?",
-    "This removes the saved messages for the current local profile. This cannot be undone.", "Start new chat");
+  const ok = await confirmModal("Delete saved chat history?",
+    "This permanently removes the saved chat messages for the current local profile. This cannot be undone.", "Delete history");
   if (!ok) return;
   try {
     await api("/health-chat/history", { method: "DELETE" });
@@ -728,9 +737,10 @@ async function clearHealthChat() {
     HEALTH_CHAT.draft = "";
     HEALTH_CHAT.selectedPrompt = "";
     HEALTH_CHAT.error = "";
+    HEALTH_CHAT.historyMenu = false;
     startHealthAssessment();
     renderHealthChat();
-    toast("New local health assessment started");
+    toast("Saved chat history deleted; a new local health assessment has started");
   } catch (error) {
     HEALTH_CHAT.error = error.message || "The local chat history could not be cleared.";
     renderHealthChat();

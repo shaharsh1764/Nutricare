@@ -776,6 +776,81 @@ def _health_chat_conversation(conn, uid: int) -> dict | None:
     return conversation if isinstance(conversation, dict) else None
 
 
+def _guided_assessment_history(conn, uid: int) -> list[dict]:
+    """Return completed local rule-engine assessments for Assistant exports."""
+    rows = conn.execute(
+        "SELECT id, created_at, emergency, payload, result FROM assessments "
+        "WHERE user_id = ? ORDER BY id", (uid,)
+    ).fetchall()
+    items = []
+    for row in rows:
+        item = {"id": row["id"], "created_at": row["created_at"], "emergency": bool(row["emergency"])}
+        for column in ("payload", "result"):
+            try:
+                item[column] = json.loads(row[column]) if row[column] else {}
+            except json.JSONDecodeError:
+                item[column] = {}
+        items.append(item)
+    return items
+
+
+def _assistant_history_export_payload(conn, uid: int) -> dict:
+    return {
+        "exported_at": db.now(),
+        "scope": "NutriCare local Health Assistant history",
+        "messages": _health_chat_history(conn, uid, limit=10000),
+        "guided_assessments": _guided_assessment_history(conn, uid),
+    }
+
+
+@api.get("/health-chat/export.json")
+def export_health_chat_json():
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    body = json.dumps(_assistant_history_export_payload(conn, uid), indent=2, ensure_ascii=False)
+    return Response(body, mimetype="application/json", headers={
+        "Content-Disposition": 'attachment; filename="nutricare-health-assistant-history.json"',
+    })
+
+
+@api.get("/health-chat/export.csv")
+def export_health_chat_csv():
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=[
+        "record_type", "created_at", "role", "message", "triage", "primary",
+        "duration", "severity", "associated", "existing_conditions", "notes",
+    ])
+    writer.writeheader()
+    for message in _health_chat_history(conn, uid, limit=10000):
+        writer.writerow({
+            "record_type": "chat_message", "created_at": message["created_at"],
+            "role": message["role"], "message": message["message"],
+            "triage": message.get("triage") or "", "primary": "", "duration": "",
+            "severity": "", "associated": "", "existing_conditions": "", "notes": "",
+        })
+    for assessment in _guided_assessment_history(conn, uid):
+        payload = assessment["payload"]
+        result = assessment["result"]
+        writer.writerow({
+            "record_type": "guided_assessment", "created_at": assessment["created_at"],
+            "role": "user-confirmed", "message": "", "triage": result.get("triage", ""),
+            "primary": payload.get("primary", ""), "duration": payload.get("duration", ""),
+            "severity": payload.get("severity", ""),
+            "associated": "; ".join(str(item) for item in payload.get("associated", [])),
+            "existing_conditions": "; ".join(str(item) for item in payload.get("existing_conditions", [])),
+            "notes": payload.get("notes", ""),
+        })
+    return Response(output.getvalue(), mimetype="text/csv", headers={
+        "Content-Disposition": 'attachment; filename="nutricare-health-assistant-history.csv"',
+    })
+
+
 @api.get("/health-chat/history")
 def health_chat_history():
     conn = db.get_db()

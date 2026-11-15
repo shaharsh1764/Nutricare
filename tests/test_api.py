@@ -4,6 +4,8 @@ Identity model under test: local users in a session cookie, no passwords.
 Two separate test clients == two separate browsers (separate cookie jars).
 """
 
+import csv
+import io
 import sqlite3
 
 import pytest
@@ -325,6 +327,31 @@ def test_assistant_safety_screen_is_independent_and_does_not_persist_partial_ass
     assert [flag["id"] for flag in flagged["red_flags"]] == ["chest_pain"]
     assert "112" in flagged["emergency_actions"][0]
     assert client.get("/api/assistant/history").get_json()["history"] == []
+
+
+def test_health_chat_history_exports_json_and_csv(client):
+    new_user(client, "Assistant Export")
+    assert client.post("/api/health-chat/messages", json={"message": "I feel tired"}).status_code == 200
+    assert client.post("/api/assistant/assess", json={
+        "primary": "Headache", "duration": "today", "severity": 5,
+        "associated": ["Nausea"], "existing_conditions": ["Diabetes"],
+    }).status_code == 200
+
+    json_export = client.get("/api/health-chat/export.json")
+    assert json_export.status_code == 200
+    assert "attachment" in json_export.headers["Content-Disposition"]
+    exported = json_export.get_json()
+    assert [item["role"] for item in exported["messages"]] == ["user", "assistant"]
+    assert exported["guided_assessments"][0]["payload"]["existing_conditions"] == ["Diabetes"]
+
+    csv_export = client.get("/api/health-chat/export.csv")
+    assert csv_export.status_code == 200
+    assert "attachment" in csv_export.headers["Content-Disposition"]
+    rows = list(csv.DictReader(io.StringIO(csv_export.get_data(as_text=True))))
+    assert {row["record_type"] for row in rows} == {"chat_message", "guided_assessment"}
+    assessment_row = next(row for row in rows if row["record_type"] == "guided_assessment")
+    assert assessment_row["primary"] == "Headache"
+    assert assessment_row["existing_conditions"] == "Diabetes"
 
 
 def test_health_chat_persists_conversation_state_and_supports_clear_and_export(client):

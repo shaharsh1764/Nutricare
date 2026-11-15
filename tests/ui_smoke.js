@@ -393,6 +393,16 @@ const DRIVER = `
     && el("#health-chat-root").innerHTML.includes("health-assessment-indicator")
     && el("#health-chat-root").innerHTML.includes("Continue"),
   "G2 a new Health Assistant shows text-only multiple-symptom choices and Continue");
+  click("#health-chat-history");
+  assert(el("#health-chat-root").innerHTML.includes("Export JSON")
+    && el("#health-chat-root").innerHTML.includes("Export CSV")
+    && el("#health-chat-root").innerHTML.includes("Delete chat history"),
+  "G2a Assistant history menu exposes local export and deletion controls");
+  click("#health-chat-export-json");
+  assert(location.href === "/api/health-chat/export.json", "G2b JSON history export is bound");
+  click("#health-chat-export-csv");
+  assert(location.href === "/api/health-chat/export.csv", "G2c CSV history export is bound");
+  click("#health-chat-history");
 
   const guidedBranches = {
     feeling_good: "conditions", fatigue: "fatigue_sleep", headache: "headache_duration",
@@ -404,7 +414,7 @@ const DRIVER = `
     HEALTH_ASSESSMENT.answers.symptoms = { values: [symptom], other: symptom === "other" ? "A concern in ordinary words" : "" };
     await continueHealthAssessment();
     assert(HEALTH_ASSESSMENT.steps.some((step) => step.id === expectedStep),
-      "G2a " + symptom + " follows its relevant option-based branch");
+      "G2d " + symptom + " follows its relevant option-based branch");
   }
   startHealthAssessment(); renderHealthChat();
 
@@ -458,8 +468,8 @@ const DRIVER = `
   assert(el("#health-chat-root").innerHTML.includes("pharmacist"),
     "G11 medication request receives pharmacist handoff without a dose");
   assert(typeof el("#health-chat-input").onkeydown === "function"
-    && el("#health-chat-root").innerHTML.includes("New chat"),
-  "G12 free-text chat supports Enter handling and a visible new-conversation control");
+    && el("#health-chat-root").innerHTML.includes("History"),
+  "G12 free-text chat supports Enter handling and visible history controls");
   click("#health-chat-close");
   assert(!el("#health-chat-root").innerHTML.includes('id="health-chat-panel"'),
     "G13 Health Assistant closes without changing the current page");

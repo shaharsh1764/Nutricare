@@ -110,8 +110,9 @@ offline rule engine — no online AI or third-party health API is called.
    free-text-chat fallback remain available for ordinary wording.
 3. Non-emergency free-text symptom chats use a small persisted local state (the
    details a person has written and one next question), so short follow-ups such
-   as “since yesterday” retain their context. **New chat** deliberately clears
-   the current profile’s saved chat and starts the local conversation again.
+   as “since yesterday” retain their context. The Assistant’s **History** menu
+   can export local chat and guided-assessment records as JSON or CSV, or delete
+   the saved chat messages for the current profile before starting again.
 4. Replies use keyword-selected general educational material. They are not
    diagnoses and do not assert a medical cause from limited input.
 5. Food ideas come only from NutriCare's documented catalogue and are filtered by
