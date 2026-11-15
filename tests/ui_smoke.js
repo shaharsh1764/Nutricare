@@ -62,12 +62,18 @@ if (!TRACKER_SOURCE.includes("chooseMealForFood") || !TRACKER_SOURCE.includes("d
 }
 console.log("PASS  D3 global search removed, theme switch and meal chooser are wired");
 const HEALTH_CHAT_SOURCE = fs.readFileSync(path.join(JS_DIR, "health_chat.js"), "utf8");
+const STYLE_SOURCE = fs.readFileSync(path.join(__dirname, "..", "static", "css", "style.css"), "utf8");
 if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("Hi! How are you feeling today?")
     || !HEALTH_CHAT_SOURCE.includes("/assistant/screen") || !HEALTH_CHAT_SOURCE.includes("/assistant/assess")
     || !HEALTH_CHAT_SOURCE.includes("/health-chat/messages") || !HEALTH_CHAT_SOURCE.includes("pharmacist")) {
   throw new Error("The local bottom-left Health Chat must be wired into the shell with its safe API flow");
 }
 console.log("PASS  D4 local Health Chat launcher and safe API flow are wired");
+if (!STYLE_SOURCE.includes("body.health-chat-expanded .health-chat-panel{position:fixed;bottom:16px;left:16px")
+    || !STYLE_SOURCE.includes("height:min(610px,calc(100dvh - 32px))")) {
+  throw new Error("The open desktop Health Assistant must stay fully within the viewport so its header controls remain available");
+}
+console.log("PASS  D4b open desktop Health Assistant keeps its header controls in the viewport");
 
 /* ---------------- minimal DOM stub ---------------- */
 const registry = new Map();
