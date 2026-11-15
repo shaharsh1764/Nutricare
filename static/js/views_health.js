@@ -74,7 +74,7 @@ async function renderProfile() {
           <input class="input" id="p-prefs" value="${esc((p.dietary_prefs || []).join(", "))}" placeholder="Vegetarian, nut-friendly…"></div>
         <div class="field"><span class="label">Allergies / intolerances (comma separated)</span>
           <input class="input" id="p-allergies" value="${esc((p.allergies || []).join(", "))}" placeholder="Lactose intolerance, peanuts…"></div>
-        <p class="tiny muted">Used only as context reminders (e.g. the Health Assistant shows them back to you). Never shared externally.</p>
+        <p class="tiny muted">Used for local food filtering and stored as your own profile notes. Never shared externally.</p>
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">3 · Medications & history</span>
@@ -82,13 +82,13 @@ async function renderProfile() {
         <div class="field"><span class="label">Current medications / supplements (comma separated)</span>
           <input class="input" id="p-meds" value="${esc((p.medications || []).join(", "))}" placeholder="Vitamin D3…"></div>
         <div class="field"><span class="label">Relevant medical history (optional, free text)</span>
-          <textarea class="input" id="p-history" rows="3" maxlength="500" placeholder="Optional — only what you want the assistant to keep in mind.">${esc(p.medical_history || "")}</textarea></div>
+          <textarea class="input" id="p-history" rows="3" maxlength="500" placeholder="Optional — only what you choose to store in this local profile.">${esc(p.medical_history || "")}</textarea></div>
         <p class="tiny muted">Optional fields. Leave blank if you prefer — the app works without them.</p>
       </div>
       <div class="card" style="border-color:var(--rose-border);background:var(--warning-bg)">
         <div class="card-head"><span class="card-title" style="color:var(--rose)">Data control</span>
           <span class="icon-pill tint-rose">${ICONS.shield}</span></div>
-        <p class="small muted">Delete every meal, water log, symptom assessment and profile detail from the
+        <p class="small muted">Delete every meal, water log, saved health-chat message, legacy symptom assessment, and profile detail from the
         database. The food dataset itself is kept (it is not personal data).</p>
         <div class="row mt12">
           <button class="btn btn-danger" id="p-purge"> Delete all my data</button>
@@ -122,7 +122,7 @@ async function renderProfile() {
   });
   $("#p-purge").onclick = async () => {
     const ok = await confirmModal("Delete ALL personal data?",
-      "Meals, water logs, symptom assessments and profile details will be permanently removed from the local database. This cannot be undone.",
+      "Meals, water logs, saved health-chat messages, legacy symptom assessments and profile details will be permanently removed from the local database. This cannot be undone.",
       "Yes, delete everything");
     if (!ok) return;
     await api("/profile/purge", { method: "POST" });

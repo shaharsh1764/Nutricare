@@ -146,10 +146,10 @@ async function renderDashboard() {
       </article>
 
       <article class="card audit-care-card">
-        <span class="audit-section-kicker">HEALTH ASSISTANT</span>
+        <span class="audit-section-kicker">LOCAL HEALTH CHAT</span>
         <h3>Need help making sense of a symptom?</h3>
-        <p class="small muted mt8">Use a short structured check for general education, self-care, and urgent warning signs.</p>
-        <button class="btn btn-ghost mt12" id="quick-symptoms">Start a check →</button>
+        <p class="small muted mt8">Open the local health chat for general education, documented food ideas, pharmacist handoff for medication questions, and emergency warning-sign screening.</p>
+        <button class="btn btn-ghost mt12" id="quick-health-chat">Open health chat →</button>
       </article>
     </aside>
   </section>
@@ -172,7 +172,7 @@ async function renderDashboard() {
     await api("/water", { method: "POST", body: { amount_ml: 250 } });
     toast("+250 ml water logged"); renderDashboard();
   };
-  $("#quick-symptoms").onclick = () => location.hash = "#/assistant";
+  $("#quick-health-chat").onclick = () => openHealthChat();
   $("#quick-log").onclick = () => location.hash = "#/tracker";
   const quickScan = $("#quick-scan");
   if (quickScan) quickScan.onclick = () => location.hash = "#/scanner";

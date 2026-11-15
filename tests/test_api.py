@@ -42,7 +42,7 @@ def test_brand_new_client_has_no_user_and_locked_data(client):
     boot = client.get("/api/bootstrap").get_json()
     assert boot["user"] is None
     for path in ("/api/meals", "/api/summary", "/api/report", "/api/water",
-                 "/api/assistant/history", "/api/settings", "/api/profile"):
+                 "/api/assistant/history", "/api/health-chat/history", "/api/settings", "/api/profile"):
         assert client.get(path).status_code == 401, path
     # the shared food database is not personal data and stays readable
     assert client.get("/api/foods?q=roti").status_code == 200
@@ -313,6 +313,28 @@ def test_warning_signs_endpoint_matches_engine_and_drives_triage(client):
     assert [f["id"] for f in data["red_flags"]] == ["chest_pain"]
 
 
+def test_health_chat_persists_local_messages_and_supports_clear_and_export(client):
+    new_user(client, "Chat Person")
+    created = client.post("/api/health-chat/messages", json={"message": "I feel nauseous today"})
+    assert created.status_code == 200, created.get_json()
+    data = created.get_json()
+    assert data["reply"]["triage"] == "general_guidance"
+    assert data["reply"]["food_recommendations"]
+    assert [message["role"] for message in data["messages"]] == ["user", "assistant"]
+    history = client.get("/api/health-chat/history").get_json()
+    assert history["messages"][1]["reply"]["message"] == data["reply"]["message"]
+    exported = client.get("/api/export.json").get_json()
+    assert [message["role"] for message in exported["health_chat"]] == ["user", "assistant"]
+
+    medicine = client.post("/api/health-chat/messages", json={"message": "Which medicine should I take?"})
+    assert medicine.get_json()["reply"]["triage"] == "pharmacist_handoff"
+    emergency = client.post("/api/health-chat/messages", json={"message": "I have chest pressure"})
+    assert emergency.get_json()["reply"]["triage"] == "emergency"
+
+    assert client.delete("/api/health-chat/history").status_code == 200
+    assert client.get("/api/health-chat/history").get_json()["messages"] == []
+
+
 def test_settings_update_and_validation(client):
     new_user(client, "Settings")
     data = client.put("/api/settings", json={"water_goal_ml": 3000, "privacy_ai": False}).get_json()
@@ -326,10 +348,12 @@ def test_purge_keeps_account_but_deletes_records(client):
                                     "custom_name": "gone soon", "custom_kcal": 50})
     client.post("/api/water", json={"amount_ml": 250})
     client.post("/api/assistant/assess", json={"primary": "headache", "severity": 2})
+    client.post("/api/health-chat/messages", json={"message": "I feel tired"})
     assert client.post("/api/profile/purge").status_code == 200
     assert client.get("/api/meals").get_json()["totals"]["kcal"] == 0
     assert client.get("/api/water").get_json()["total_ml"] == 0
     assert client.get("/api/assistant/history").get_json()["history"] == []
+    assert client.get("/api/health-chat/history").get_json()["messages"] == []
     boot = client.get("/api/bootstrap").get_json()
     assert boot["user"]["name"] == "Purger"  # account survives
     assert boot["targets"] is None

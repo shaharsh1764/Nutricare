@@ -62,6 +62,15 @@ CREATE TABLE IF NOT EXISTS assessments (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TEXT, emergency INTEGER, payload TEXT, result TEXT
 );
+CREATE TABLE IF NOT EXISTS health_chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+    message TEXT NOT NULL,
+    payload TEXT,
+    triage TEXT,
+    created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS settings (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     key TEXT NOT NULL, value TEXT,
@@ -69,6 +78,7 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 CREATE INDEX IF NOT EXISTS idx_meals_user_date ON meal_entries (user_id, date);
 CREATE INDEX IF NOT EXISTS idx_water_user_date ON water_logs (user_id, date);
+CREATE INDEX IF NOT EXISTS idx_health_chat_user_id ON health_chat_messages (user_id, id);
 """
 
 DEFAULT_SETTINGS = {
@@ -278,6 +288,7 @@ def purge_user_data(conn: sqlite3.Connection, uid: int):
     conn.execute("DELETE FROM meal_entries WHERE user_id = ?", (uid,))
     conn.execute("DELETE FROM water_logs WHERE user_id = ?", (uid,))
     conn.execute("DELETE FROM assessments WHERE user_id = ?", (uid,))
+    conn.execute("DELETE FROM health_chat_messages WHERE user_id = ?", (uid,))
     conn.execute(
         "UPDATE profile SET age=NULL, sex=NULL, height_cm=NULL, weight_kg=NULL, "
         "activity='moderate', goal='maintain', macro_model='balanced', units='metric', "

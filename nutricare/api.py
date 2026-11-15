@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 
 from flask import Blueprint, jsonify, request, session, Response
 
-from . import assistant, db, insights, nutrition, pdf_report
+from . import assistant, db, health_chat, insights, nutrition, pdf_report
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -107,8 +107,8 @@ def targets_for(profile: dict, settings: dict) -> dict | None:
 
 def bootstrap_payload(conn):
     uid = current_uid(conn)
-    base = {"assistant": assistant.engine_mode(), "today": db.today(),
-            "meals": db.MEALS, "user": None}
+    base = {"assistant": assistant.engine_mode(), "health_chat": health_chat.engine_mode(),
+            "today": db.today(), "meals": db.MEALS, "user": None}
     if uid is None:
         return base
     user = db.get_user(conn, uid)
@@ -729,10 +729,85 @@ def export_json():
             "SELECT * FROM water_logs WHERE user_id = ?", (uid,))],
         "assessments": [dict(r) for r in conn.execute(
             "SELECT id, created_at, emergency FROM assessments WHERE user_id = ?", (uid,))],
+        "health_chat": _health_chat_history(conn, uid, limit=10000),
     })
 
 
-# ------------------------------------------------------------------ assistant
+# ------------------------------------------------------------------ health chat
+
+def _health_chat_history(conn, uid: int, limit: int = 80) -> list[dict]:
+    rows = conn.execute(
+        "SELECT id, role, message, payload, triage, created_at FROM health_chat_messages "
+        "WHERE user_id = ? ORDER BY id DESC LIMIT ?", (uid, limit)
+    ).fetchall()
+    messages = []
+    for row in reversed(rows):
+        item = {
+            "id": row["id"], "role": row["role"], "message": row["message"],
+            "triage": row["triage"], "created_at": row["created_at"],
+        }
+        if row["role"] == "assistant" and row["payload"]:
+            try:
+                item["reply"] = json.loads(row["payload"])
+            except json.JSONDecodeError:
+                item["reply"] = {"message": row["message"], "triage": row["triage"]}
+        messages.append(item)
+    return messages
+
+
+@api.get("/health-chat/history")
+def health_chat_history():
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    return jsonify({"messages": _health_chat_history(conn, uid),
+                    "engine": health_chat.engine_mode()})
+
+
+@api.post("/health-chat/messages")
+def health_chat_message():
+    data = request.get_json(silent=True) or {}
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    message = str(data.get("message") or "").strip()
+    try:
+        profile = db.get_profile(conn, uid)
+        foods = [dict(row) for row in conn.execute("SELECT * FROM foods ORDER BY id")]
+        reply = health_chat.respond(message, profile, foods)
+    except ValueError as exc:
+        return err(str(exc))
+
+    created_at = db.now()
+    conn.execute(
+        "INSERT INTO health_chat_messages (user_id, role, message, created_at) "
+        "VALUES (?, 'user', ?, ?)", (uid, message, created_at)
+    )
+    conn.execute(
+        "INSERT INTO health_chat_messages (user_id, role, message, payload, triage, created_at) "
+        "VALUES (?, 'assistant', ?, ?, ?, ?)",
+        (uid, reply["message"], json.dumps(reply), reply["triage"], created_at)
+    )
+    conn.commit()
+    return jsonify({"reply": reply, "messages": _health_chat_history(conn, uid)})
+
+
+@api.delete("/health-chat/history")
+def clear_health_chat_history():
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    conn.execute("DELETE FROM health_chat_messages WHERE user_id = ?", (uid,))
+    conn.commit()
+    return jsonify({"ok": True})
+
+
+# ------------------------------------------------------------------ legacy assistant API
+# Retained for records created by earlier releases. The product UI now uses the
+# bottom-left Health Chat and no longer routes people to this assessment flow.
 
 @api.post("/assistant/assess")
 def assess():

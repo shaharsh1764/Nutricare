@@ -1,13 +1,13 @@
-# NutriCare — Nutrition Tracker & Personal Health Assistant
+# NutriCare — Nutrition Tracker & Local Health Chat
 
-A working full-stack web app built from the Google Stitch designs in `uploads/`
-(six screens: Dashboard, Nutrition Tracker, Health Profile, Health Assistant,
-Reports, Settings).
+A working full-stack web app built from the Google Stitch designs in `uploads/`.
+It provides Dashboard, Nutrition Tracker, Health Profile, Reports, Settings, and
+a persistent bottom-left local Health Chat.
 
 * **Backend:** Python + Flask (a small, beginner-friendly web framework)
 * **Database:** SQLite — a single file, no server to install
 * **Frontend:** plain HTML/CSS/JavaScript served by Flask (no build step, no node needed)
-* **Tests:** `pytest` (184 tests: 125 baseline + 59 AI Food Scanner) + a Node UI smoke harness (78–80 checks: A–L)
+* **Tests:** `pytest` coverage for maths, API, privacy, health-chat safety, data, and scanner behavior, plus a Node UI smoke harness
 
 ---
 
@@ -49,9 +49,9 @@ Stop the server with `Ctrl+C`.
 ## 2. Run the tests
 
 ```bash
-python -m pytest tests/ -q        # 98 backend tests (math, safety, API, persistence, Insights)
+python -m pytest -q               # backend, data, safety, scanner, and API checks
 python app.py &                   # start the server in another terminal, then:
-node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the running server
+node tests/ui_smoke.js            # browserless workflow checks against the running server
 ```
 
 `tests/ui_smoke.js` needs Node only for testing; the app itself does not need Node.
@@ -64,8 +64,9 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 | `nutricare/api.py` | all REST endpoints (`/api/...`) with input validation (Insights uses two read-only GETs) |
 | `nutricare/nutrition.py` | calorie/macro maths (Mifflin-St Jeor, PAL factors, 4/4/9) |
 | `nutricare/insights.py` | Smart Nutrition Insights analytics (read-only, pure functions) |
-| `nutricare/assistant.py` | Health Assistant rule engine + emergency red-flag screen |
-| `nutricare/db.py` | SQLite schema, seeding, purge |
+| `nutricare/health_chat.py` | Local Health Chat response rules, emergency screen, medication handoff, and food suggestions |
+| `nutricare/assistant.py` | Legacy rule engine retained for existing historical assessment records and shared emergency-screen rules |
+| `nutricare/db.py` | SQLite schema, seeding, local chat storage, purge |
 | `static/`, `templates/` | frontend (CSS design system, JS views, SVG charts) |
 | `data/foods.json` | food dataset (203 foods, per-100 g values) |
 | `data/food_classes.json` | AI Food Scanner taxonomy and label-to-catalogue mappings (not every model label has nutrition) |
@@ -91,23 +92,26 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
   servings × serving size (or grams directly), then linear scaling
 * **Micronutrients** — tracked subset only: fiber, sodium, potassium, calcium, iron
 
-## 5. Health Assistant — safety rules baked in
+## 5. Local Health Chat — safety rules baked in
 
-1. Emergency warning signs (chest pain, stroke signs, breathing trouble, self-harm…)
-   are screened by an **independent function** (`screen_red_flags`) from both an
-   explicit on-form checklist and all free text; they always win over everything
-   else, and unticking one sign removes only that sign's flag.
-2. What you reported (`reported_facts`) is displayed separately from
-   `possibilities` — keyword-selected general education entries that never assert
-   mechanisms (e.g. fatigue alone is never explained by glucose, deficiency or
-   dehydration; tests enforce this).
-3. Outputs are labelled *possibilities*, never diagnoses; **no disease
-   probabilities and no medication doses are ever produced** (there are tests for this).
-3. Every result carries limitations, "when to seek care" criteria, references
-   (NHS / CDC / Harvard Health / AAFP) and a disclaimer.
-4. The engine is honestly labelled in the UI: **offline rule-based engine**.
-   No AI API is called; if you later add `ASSISTANT_API_KEY` to `.env`, the UI
-   still says the local safety engine is what runs (v1 behaviour).
+The persistent **bottom-left Health Chat** accepts health and nutrition questions
+only and stores messages locally under the active profile. It is a deterministic,
+offline rule engine — no online AI or third-party health API is called.
+
+1. Every message is screened first by the independent emergency-sign function
+   (`screen_red_flags`). Chest pain, breathing difficulty, stroke signs, severe
+   allergy signs, self-harm wording, and other warning patterns show emergency
+   action immediately, including India 112 / ambulance 108.
+2. Non-emergency replies use keyword-selected general educational material. They
+   are not diagnoses and do not assert a medical cause from limited input.
+3. Food ideas come only from NutriCare's documented catalogue and are filtered by
+   stored allergies and dietary preferences. They are general nourishment ideas,
+   not treatment claims.
+4. Medication questions deliberately receive a pharmacist-or-clinician handoff.
+   The chat does not choose a medicine, recommend a dose, check interactions, or
+   prescribe treatment.
+5. Severe or worsening wording is directed to same-day in-person care. The chat
+   includes a persistent disclaimer and has no disease probabilities.
 
 ## 6. First run, empty states & demo mode
 
@@ -119,7 +123,7 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
   checks (age 10–120, height 50–250 cm, weight 20–300 kg) block advancing with
   an inline message — without discarding anything else you typed.
 * **Skip for now** opens Guest mode on a fully working dashboard immediately:
-  logging, the assistant, reports and settings all function. Only personalised
+  logging, the local health chat, reports and settings all function. Only personalised
   targets are missing, and the UI explains that instead of inventing numbers.
   Skipping **restores the device's existing Guest profile** (the most recent
   one, same as its "Continue as Guest" button) and creates a new Guest only if
@@ -132,7 +136,7 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
   **Continue as …** buttons for existing local profiles, so reopening the app
   never orphans or overwrites saved records.
 * Every new account starts **genuinely empty**: no sample meals, no fake totals,
-  no prefilled symptom history. Empty logs show honest messages ("an empty log
+  and no prefilled health-chat history. Empty logs show honest messages ("an empty log
   never means zero intake"), charts stay blank until real data exists, and
   targets appear only when age + sex + height + weight are set — labelled
   *estimates*.
@@ -143,7 +147,7 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
 ## 7. Privacy, local profiles & honest limitations
 
 * **Local profiles, not accounts.** Profiles (top-right avatar → *Local profiles*)
-  keep each person's meals/water/symptom records separate in the SQLite file, and
+  keep each person's meals, water, and saved health-chat records separate in the SQLite file, and
   two browsers on one machine get two separate profiles via session cookies.
 * **There is no authentication and no encryption.** Anyone using the same browser
   can switch profiles. This is data *organisation* for a shared device — it is
@@ -153,7 +157,7 @@ node tests/ui_smoke.js            # 55 UI checks (workflows A–K) against the r
   infrastructure this project deliberately does not fake.
 * Settings → export everything as JSON; Reports → CSV export.
 * Profile or Settings → **delete all my data** purges that profile's meals, water,
-  assessments and profile fields (food dataset stays; it isn't personal data).
+  saved health-chat messages, legacy assessments, and profile fields (food dataset stays; it isn't personal data).
   Deleting a profile removes only that profile's rows.
 * Upgrading from the old single-user version migrates existing records under
   local profile #1 automatically.
@@ -187,15 +191,17 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
   database by design — delete any you don't want via Settings → *Manage local
   profiles*; deleting one never touches another profile's records.
 * Navigation: the sidebar collapses to an icon rail on desktop (choice remembered)
-  and becomes a ☰ drawer under ~860px; symptom severity uses exact radio numbers
-  1–10 — no slider is used for any health input.
-* **AI Food Scanner:** the bundled model recognises **20 foods** at **81.4%**
-  test accuracy — not the 65 in the taxonomy, so the scanner only offers trained
-  classes. It identifies one dominant dish per photo, cannot measure weight from
-  an image, and 13 of its 20 classes have no documented nutrition entry, so those
-  ask you for values instead of guessing. Accuracy on real phone photos of home
-  cooking will be lower than the test set, which is largely stock photography.
-  See `docs/MODEL.md` §9.
+  and becomes a ☰ drawer under ~860px. The Health Chat is instead a persistent
+  bottom-left control for signed-in local profiles; its saved messages are not encrypted.
+* **Health Chat:** this is a keyword/rule-based safety tool, not a diagnostic or
+  medication service. It can miss context, cannot examine a person, and should not
+  delay urgent care. Medication questions are intentionally handed to a pharmacist
+  or clinician rather than answered with a medicine or dose.
+* **AI Food Scanner:** the 80-class primary model has a held-out same-dataset
+  accuracy of **56.72%** (macro-F1 0.5559, n=647); results remain unconfirmed.
+  It identifies one dominant dish per photo, cannot measure weight from an image,
+  and only 18 primary labels currently map to documented catalogue nutrition.
+  Accuracy on real phone photos may be lower. See `docs/MODEL.md`.
 
 ## 10. AI Food Scanner (photo → nutrition → diary)
 

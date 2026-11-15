@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>NutriCare — Nutrition Tracker & Personal Health Assistant</title>
+<title>NutriCare — Nutrition Tracker & Local Health Chat</title>
 <script>
   /* Apply the persisted preference before CSS paints to avoid a light-theme flash.
      Theme choice belongs to this browser, not a local profile, so account switches
@@ -79,6 +79,7 @@
 </div>
 <div id="modal-root"></div>
 <div id="toast"></div>
+<div id="health-chat-root" hidden></div>
 <script src="/static/js/util.js"></script>
 <script src="/static/js/charts.js"></script>
 <script src="/static/js/onboarding.js"></script>
@@ -87,6 +88,7 @@
 <script src="/static/js/views_more.js"></script>
 <script src="/static/js/views_insights.js"></script>
 <script src="/static/js/views_scanner.js"></script>
+<script src="/static/js/health_chat.js"></script>
 <script src="/static/js/app.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {

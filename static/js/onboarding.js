@@ -162,7 +162,7 @@ async function renderOnboarding() {
             <h2 id="landing-start-title">Use a profile for saved preferences, or begin as a guest.</h2>
           </div>
           <div class="landing-start-copy">
-            <p>A profile can hold the optional details you choose to add. Guest mode still lets you log food, water, reports, and health-assistant entries; it simply leaves personal targets off until enough profile details are available.</p>
+            <p>A profile can hold the optional details you choose to add. Guest mode still lets you log food, water, use reports, and open the local health chat; it simply leaves personal targets off until enough profile details are available.</p>
             <a href="#landing-details">See what NutriCare records <span aria-hidden="true">→</span></a>
           </div>
         </section>
@@ -198,8 +198,8 @@ async function renderOnboarding() {
             </article>
             <article class="landing-feature-card">
               <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M8 12h8M12 8v8"/></svg></span>
-              <h3>Use a safety-led health assistant</h3>
-              <p>A structured symptom check screens for emergency warning signs and offers general education. It never diagnoses, gives odds, or prescribes treatment.</p>
+              <h3>Use a safety-led health chat</h3>
+              <p>A local chat screens messages for emergency warning signs and offers general education and documented food ideas. It never diagnoses, chooses medication, or prescribes treatment.</p>
             </article>
             <article class="landing-feature-card">
               <span class="landing-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></span>
@@ -420,7 +420,7 @@ function renderProfileWizard() {
         <div class="ob-unit-input"><input class="input" id="ob-water" type="number" min="500" max="6000" step="100" value="${esc(OB.data.water)}"><span>ml</span></div>
         <p>Optional. Enter 500–6000 ml, or leave it blank.</p></div>
       </div>
-      <div class="ob-storage-note"><b>Stored locally</b><span>Your profile keeps only the information you choose above, plus empty meal, water, and health-assistant records. Local profiles are not password-protected or encrypted.</span></div>`,
+      <div class="ob-storage-note"><b>Stored locally</b><span>Your profile keeps only the information you choose above, plus meal, water, and health-chat records. Local profiles are not password-protected or encrypted.</span></div>`,
     validate: () => obValidateCurrent() && obValidateAll(),
     final: true,
   });

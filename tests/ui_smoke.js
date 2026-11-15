@@ -25,7 +25,7 @@ if (themeBootstrap < 0 || stylesheetLink < 0 || themeBootstrap > stylesheetLink)
 console.log("PASS  T0 no-flash theme bootstrap precedes the stylesheet");
 const FILES = ["util.js", "charts.js", "onboarding.js", "views_main.js",
   "views_health.js", "views_more.js", "views_insights.js", "views_scanner.js",
-  "app.js"];
+  "health_chat.js", "app.js"];
 const UI_SOURCE = [INDEX_TEMPLATE, ...FILES.map((file) => fs.readFileSync(path.join(JS_DIR, file), "utf8"))].join("\n");
 if (/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u.test(UI_SOURCE)) {
   throw new Error("The customer-facing application shell must use the shared SVG icon system, not emoji glyphs");
@@ -61,6 +61,12 @@ if (!TRACKER_SOURCE.includes("chooseMealForFood") || !TRACKER_SOURCE.includes("d
   throw new Error("Adding a documented food must ask for a meal category with a skip option");
 }
 console.log("PASS  D3 global search removed, theme switch and meal chooser are wired");
+const HEALTH_CHAT_SOURCE = fs.readFileSync(path.join(JS_DIR, "health_chat.js"), "utf8");
+if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("How are you feeling today?")
+    || !HEALTH_CHAT_SOURCE.includes("/health-chat/messages") || !HEALTH_CHAT_SOURCE.includes("pharmacist")) {
+  throw new Error("The local bottom-left Health Chat must be wired into the shell with its safe API flow");
+}
+console.log("PASS  D4 local Health Chat launcher and safe API flow are wired");
 
 /* ---------------- minimal DOM stub ---------------- */
 const registry = new Map();
@@ -345,8 +351,8 @@ const DRIVER = `
   /* ---- H: navigation + interactive controls across all views ---- */
   console.log("H: navigation and controls…");
   for (const [hash, marker] of [["#/tracker", "Nutrition Tracker"], ["#/profile", "Biometrics"],
-    ["#/assistant", "Symptom Assessment"], ["#/reports", "Nutrition & Health Reports"],
-    ["#/settings", "Privacy & data governance"], ["#/dashboard", "Energy budget"]]) {
+    ["#/reports", "Nutrition & Health Reports"], ["#/settings", "Privacy & data governance"],
+    ["#/dashboard", "Energy budget"]]) {
     location.hash = hash; await refreshView();
     assert(view().includes(marker), "H nav renders " + hash);
   }
@@ -373,28 +379,31 @@ const DRIVER = `
   location.hash = "#/settings"; await refreshView();
   assert(typeof el("#s-save-units").onclick === "function", "H3 settings save bound");
   assert(typeof el("#s-users").onclick === "function", "H4 profile manager bound");
-  location.hash = "#/assistant"; await refreshView();
-  assert(typeof el("#a-form").handlers.submit === "function", "H5 assistant form submit bound");
-  assert(view().includes('name="severity"') && !view().includes('type="range"'),
-    "H6 severity uses exact radio controls, not a slider");
-  assert((view().match(/type="checkbox"/g) || []).length >= 18,
-    "H7 warning signs + associated render as distinct checkboxes");
+  assert(!el("#nav-links").innerHTML.includes('data-route="assistant"'),
+    "H5 legacy Health Assistant route is removed from navigation");
 
-  /* ---- assistant flows still safe (G: existing behaviour) ---- */
-  console.log("G: assistant emergency + mild flows…");
-  const form = el("#a-form");
-  const submit = () => form.handlers.submit({ preventDefault() {}, target: form });
-  set("#a-primary", "sudden chest pain and pressure");
-  el('input[name="severity"]:checked').value = "8";
-  await submit(); await sleep(300);
-  assert(el("#a-result").innerHTML.includes("EMERGENCY WARNING FLAGS"),
-    "G1 emergency banner shown for red-flag text");
-  set("#a-primary", "mild headache after study");
-  el('input[name="severity"]:checked').value = "3";
-  await submit(); await sleep(300);
-  const mild = el("#a-result").innerHTML;
-  assert(mild.includes("Possible explanations") && mild.includes("What you reported"),
-    "G2 mild case shows facts + labelled possibilities");
+  /* ---- G: bottom-left Health Chat safety flows ---- */
+  console.log("G: local Health Chat emergency + general flows…");
+  assert(typeof el("#health-chat-launcher").onclick === "function", "G1 Health Chat launcher is bound");
+  await click("#health-chat-launcher"); await sleep(300);
+  assert(el("#health-chat-root").innerHTML.includes("How are you feeling today?"),
+    "G2 Health Chat opens from the bottom-left launcher");
+  set("#health-chat-input", "sudden chest pain and pressure");
+  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
+  assert(el("#health-chat-root").innerHTML.includes("Emergency warning signs")
+    && el("#health-chat-root").innerHTML.includes("112"),
+  "G3 red-flag chat message shows emergency protocol");
+  set("#health-chat-input", "What medicine should I take for a headache?");
+  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
+  assert(el("#health-chat-root").innerHTML.includes("pharmacist"),
+    "G4 medication request receives pharmacist handoff without a dose");
+  set("#health-chat-input", "I feel nauseous today");
+  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
+  assert(el("#health-chat-root").innerHTML.includes("Documented food ideas"),
+    "G5 health chat returns documented food ideas for a non-emergency symptom");
+  click("#health-chat-close");
+  assert(!el("#health-chat-root").innerHTML.includes('id="health-chat-panel"'),
+    "G6 Health Chat closes without changing the current page");
 
   /* ---- I: drawer + sidebar toggle interactions ---- */
   console.log("I: hamburger drawer and sidebar toggle…");
