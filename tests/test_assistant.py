@@ -8,10 +8,12 @@ import pytest
 from nutricare import assistant
 
 
-def run(primary, severity=3, duration="today", associated=None, notes="", warning_signs=None):
+def run(primary, severity=3, duration="today", associated=None, notes="", warning_signs=None,
+        existing_conditions=None):
     return assistant.assess({"primary": primary, "severity": severity,
                              "duration": duration, "associated": associated or [],
-                             "notes": notes, "warning_signs": warning_signs or []})
+                             "notes": notes, "warning_signs": warning_signs or [],
+                             "existing_conditions": existing_conditions or []})
 
 
 # ---------------------------------------------------------------- emergency screen
@@ -56,6 +58,13 @@ def test_removing_one_warning_sign_removes_only_that_flag():
     assert only_stroke["triage"] == "emergency"  # still emergency, other flag intact
     none = run("tired", warning_signs=[])
     assert none["red_flags"] == [] and none["triage"] == "self_care"
+
+
+def test_existing_conditions_are_echoed_as_user_report_not_inferred():
+    result = run("headache", existing_conditions=["Diabetes", "Hypertension"])
+    assert result["reported_facts"]["existing_conditions"] == ["Diabetes", "Hypertension"]
+    assert result["input_echo"]["existing_conditions"] == ["Diabetes", "Hypertension"]
+    assert "diabetes" not in " ".join(result["possibilities"][0].values()).lower()
 
 
 def test_unknown_warning_sign_ids_are_ignored_safely():

@@ -102,20 +102,25 @@ offline rule engine — no online AI or third-party health API is called.
    (`screen_red_flags`). Chest pain, breathing difficulty, stroke signs, severe
    allergy signs, self-harm wording, and other warning patterns show emergency
    action immediately, including India 112 / ambulance 108.
-2. Non-emergency symptom chats use a small persisted local state (the details a
-   person has written and one next question), so short follow-ups such as “since
-   yesterday” retain their context. The welcome appears only for an empty/new
-   chat. **New chat** deliberately clears the current profile’s saved chat and
-   starts the local conversation again.
-3. Replies use keyword-selected general educational material. They are not
+2. A new chat opens an **option-based guided assessment**: a person can select
+   one or more symptoms, answer only the matching follow-up questions, optionally
+   record existing conditions, review/correct the summary, and confirm it. Every
+   transition uses the same local emergency screen; the confirmed structured
+   answers go to the established rule-based assessment engine. Text fields and a
+   free-text-chat fallback remain available for ordinary wording.
+3. Non-emergency free-text symptom chats use a small persisted local state (the
+   details a person has written and one next question), so short follow-ups such
+   as “since yesterday” retain their context. **New chat** deliberately clears
+   the current profile’s saved chat and starts the local conversation again.
+4. Replies use keyword-selected general educational material. They are not
    diagnoses and do not assert a medical cause from limited input.
-4. Food ideas come only from NutriCare's documented catalogue and are filtered by
+5. Food ideas come only from NutriCare's documented catalogue and are filtered by
    stored allergies and dietary preferences. They are general nourishment ideas,
    not treatment claims.
-5. Medication questions deliberately receive a pharmacist-or-clinician handoff.
+6. Medication questions deliberately receive a pharmacist-or-clinician handoff.
    The chat does not choose a medicine, recommend a dose, check interactions, or
    prescribe treatment.
-6. Severe or worsening wording is directed to same-day in-person care. The chat
+7. Severe or worsening wording is directed to same-day in-person care. The chat
    includes a persistent disclaimer and has no disease probabilities.
 
 ## 6. First run, empty states & demo mode

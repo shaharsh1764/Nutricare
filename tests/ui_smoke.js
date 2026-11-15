@@ -62,7 +62,8 @@ if (!TRACKER_SOURCE.includes("chooseMealForFood") || !TRACKER_SOURCE.includes("d
 }
 console.log("PASS  D3 global search removed, theme switch and meal chooser are wired");
 const HEALTH_CHAT_SOURCE = fs.readFileSync(path.join(JS_DIR, "health_chat.js"), "utf8");
-if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("What would you like help with?")
+if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("Hi! How are you feeling today?")
+    || !HEALTH_CHAT_SOURCE.includes("/assistant/screen") || !HEALTH_CHAT_SOURCE.includes("/assistant/assess")
     || !HEALTH_CHAT_SOURCE.includes("/health-chat/messages") || !HEALTH_CHAT_SOURCE.includes("pharmacist")) {
   throw new Error("The local bottom-left Health Chat must be wired into the shell with its safe API flow");
 }
@@ -382,48 +383,86 @@ const DRIVER = `
   assert(!el("#nav-links").innerHTML.includes('data-route="assistant"'),
     "H5 legacy Health Assistant route is removed from navigation");
 
-  /* ---- G: local Health Chat conversation and safety flows ---- */
-  console.log("G: local Health Chat conversation + safety flows…");
-  assert(typeof el("#health-chat-launcher").onclick === "function", "G1 Health Chat launcher is bound");
+  /* ---- G: option-based local Health Assistant flows ---- */
+  console.log("G: guided local Health Assistant conversation + safety flows…");
+  assert(typeof el("#health-chat-launcher").onclick === "function", "G1 Health Assistant launcher is bound");
   await click("#health-chat-launcher"); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("What would you like help with?")
-    && el("#health-chat-root").innerHTML.includes("How are you feeling today?")
+  assert(el("#health-chat-root").innerHTML.includes("Hi! How are you feeling today?")
     && ["Feeling good", "Feeling tired", "Headache", "Fever", "Dizziness", "Nausea", "Body pain", "Stressed or anxious", "Feeling low", "Other"]
       .every((label) => el("#health-chat-root").innerHTML.includes(label))
-    && el("#health-chat-root").innerHTML.includes("health-chat-prompt-indicator"),
-  "G2 a new Health Chat shows its welcome and text-only symptom quick starts once");
+    && el("#health-chat-root").innerHTML.includes("health-assessment-indicator")
+    && el("#health-chat-root").innerHTML.includes("Continue"),
+  "G2 a new Health Assistant shows text-only multiple-symptom choices and Continue");
+
+  const guidedBranches = {
+    feeling_good: "conditions", fatigue: "fatigue_sleep", headache: "headache_duration",
+    fever: "fever_temperature", dizziness: "dizziness_duration", nausea: "nausea_duration",
+    body_pain: "body_pain_location", stress_anxiety: "wellbeing_safety", low_mood: "wellbeing_safety", other: "conditions",
+  };
+  for (const [symptom, expectedStep] of Object.entries(guidedBranches)) {
+    startHealthAssessment();
+    HEALTH_ASSESSMENT.answers.symptoms = { values: [symptom], other: symptom === "other" ? "A concern in ordinary words" : "" };
+    await continueHealthAssessment();
+    assert(HEALTH_ASSESSMENT.steps.some((step) => step.id === expectedStep),
+      "G2a " + symptom + " follows its relevant option-based branch");
+  }
+  startHealthAssessment(); renderHealthChat();
+
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["headache", "fever"], other: "" };
+  await continueHealthAssessment();
+  assert(HEALTH_ASSESSMENT.steps.some((s) => s.id === "headache_duration")
+    && HEALTH_ASSESSMENT.steps.some((s) => s.id === "fever_temperature")
+    && assessmentCurrentStep().id === "safety",
+  "G3 multiple selections branch into relevant headache and fever questions");
+  HEALTH_ASSESSMENT.answers.safety = { values: ["none"], other: "" };
+  await continueHealthAssessment();
+  assert(assessmentCurrentStep().id === "headache_duration", "G4 guided flow advances to the headache duration question");
+  backHealthAssessment();
+  assert(assessmentCurrentStep().id === "safety", "G5 Back returns to the previous guided question");
+
+  startHealthAssessment();
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["headache"], other: "" };
+  await continueHealthAssessment();
+  HEALTH_ASSESSMENT.answers.safety = { values: ["none"], other: "" }; await continueHealthAssessment();
+  HEALTH_ASSESSMENT.answers.headache_duration = { values: ["yesterday"], other: "" }; await continueHealthAssessment();
+  HEALTH_ASSESSMENT.answers.headache_severity = { values: ["5"], other: "" }; await continueHealthAssessment();
+  HEALTH_ASSESSMENT.answers.headache_location = { values: ["temples"], other: "" }; await continueHealthAssessment();
+  HEALTH_ASSESSMENT.answers.headache_associated = { values: ["none"], other: "" }; await continueHealthAssessment();
+  HEALTH_ASSESSMENT.answers.conditions = { values: ["diabetes", "hypertension"], other: "Some other condition" };
+  updateAssessmentSelection(assessmentCurrentStep(), "none");
+  assert(HEALTH_ASSESSMENT.answers.conditions.values.length === 1
+    && HEALTH_ASSESSMENT.answers.conditions.values[0] === "none"
+    && HEALTH_ASSESSMENT.answers.conditions.other === "",
+  "G6 None clears incompatible medical-condition selections and free text");
+  await continueHealthAssessment();
+  assert(assessmentCurrentStep().id === "review" && el("#health-chat-root").innerHTML.includes("review your answers"),
+    "G7 answers reach a review step with correction controls");
+  await finishHealthAssessment();
+  assert(HEALTH_ASSESSMENT.result && HEALTH_ASSESSMENT.result.reported_facts.primary.includes("Headache"),
+    "G8 confirmed guided answers reach the existing rule-based assessment engine");
+
+  startHealthAssessment();
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["headache"], other: "" }; await continueHealthAssessment();
+  HEALTH_ASSESSMENT.answers.safety = { values: ["chest_pain"], other: "" }; await continueHealthAssessment();
+  assert(HEALTH_ASSESSMENT.emergency && el("#health-chat-root").innerHTML.includes("112"),
+    "G9 emergency choices stop the ordinary assessment and show the local protocol");
+
+  startHealthAssessment(); renderHealthChat();
+  await click("#health-assessment-free-text");
   set("#health-chat-input", "sick");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("What symptoms are you experiencing?")
-    && !el("#health-chat-root").innerHTML.includes("What would you like help with?"),
-  "G3 sick starts symptom questions instead of repeating the welcome");
-  set("#health-chat-input", "I have a headache and feel weak");
-  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("How long have you been experiencing this?"),
-    "G4 symptom details receive a relevant duration question");
-  set("#health-chat-input", "Since yesterday");
-  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("scale of 1 to 10"),
-    "G5 local conversation remembers the duration answer");
-  set("#health-chat-input", "sudden chest pain and pressure");
-  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("Emergency warning signs")
-    && el("#health-chat-root").innerHTML.includes("112"),
-  "G6 red-flag chat message shows emergency protocol");
+  assert(el("#health-chat-root").innerHTML.includes("What symptoms are you experiencing?"),
+    "G10 free-text fallback still starts the local symptom conversation");
   set("#health-chat-input", "What medicine should I take for a headache?");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
   assert(el("#health-chat-root").innerHTML.includes("pharmacist"),
-    "G7 medication request receives pharmacist handoff without a dose");
-  set("#health-chat-input", "What should I eat when I feel nauseous?");
-  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("Documented food ideas"),
-    "G8 nutrition question returns documented food ideas");
+    "G11 medication request receives pharmacist handoff without a dose");
   assert(typeof el("#health-chat-input").onkeydown === "function"
     && el("#health-chat-root").innerHTML.includes("New chat"),
-  "G9 chat supports Enter handling and a visible new-conversation control");
+  "G12 free-text chat supports Enter handling and a visible new-conversation control");
   click("#health-chat-close");
   assert(!el("#health-chat-root").innerHTML.includes('id="health-chat-panel"'),
-    "G10 Health Chat closes without changing the current page");
+    "G13 Health Assistant closes without changing the current page");
 
   /* ---- I: drawer + sidebar toggle interactions ---- */
   console.log("I: hamburger drawer and sidebar toggle…");

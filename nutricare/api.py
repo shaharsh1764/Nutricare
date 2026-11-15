@@ -827,10 +827,36 @@ def clear_health_chat_history():
     return jsonify({"ok": True})
 
 
-# ------------------------------------------------------------------ legacy assistant API
-# Retained for records created by earlier releases. The product UI now uses the
-# bottom-left Health Chat and no longer routes people to this assessment flow.
+# ------------------------------------------------------------------ local rule-based assessment API
+# The guided Health Assistant uses this independent safety screen before moving
+# between option steps. It intentionally writes no assessment record: only a
+# confirmed final assessment is persisted by /assistant/assess.
+@api.post("/assistant/screen")
+def assistant_safety_screen():
+    data = request.get_json(silent=True) or {}
+    conn = db.get_db()
+    if current_uid(conn) is None:
+        return no_user()
+    text = str(data.get("text") or "").strip()
+    if len(text) > 5000:
+        return err("safety-screen text must be 5000 characters or fewer")
+    selected = data.get("warning_signs") or []
+    if not isinstance(selected, list):
+        return err("warning_signs must be a list")
+    flags = assistant.screen_red_flags(text, [str(item) for item in selected])
+    return jsonify({
+        "emergency": bool(flags),
+        "triage": "emergency" if flags else "continue",
+        "red_flags": [{"id": flag["id"], "label": flag["label"], "action": flag["action"]}
+                      for flag in flags],
+        "emergency_actions": ([assistant.EMERGENCY_ACTION] + [flag["action"] for flag in flags])
+                             if flags else [],
+        "disclaimer": assistant.DISCLAIMER,
+    })
 
+
+# Retained for records created by earlier releases and now also used by the
+# confirmed final step of the guided Health Assistant.
 @api.post("/assistant/assess")
 def assess():
     data = request.get_json(silent=True) or {}

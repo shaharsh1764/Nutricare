@@ -313,6 +313,20 @@ def test_warning_signs_endpoint_matches_engine_and_drives_triage(client):
     assert [f["id"] for f in data["red_flags"]] == ["chest_pain"]
 
 
+def test_assistant_safety_screen_is_independent_and_does_not_persist_partial_assessments(client):
+    new_user(client, "Guided Safety")
+    safe = client.post("/api/assistant/screen", json={"text": "headache for today", "warning_signs": []})
+    assert safe.status_code == 200
+    assert safe.get_json()["emergency"] is False
+    flagged = client.post("/api/assistant/screen", json={
+        "text": "I feel tired", "warning_signs": ["chest_pain"],
+    }).get_json()
+    assert flagged["emergency"] is True
+    assert [flag["id"] for flag in flagged["red_flags"]] == ["chest_pain"]
+    assert "112" in flagged["emergency_actions"][0]
+    assert client.get("/api/assistant/history").get_json()["history"] == []
+
+
 def test_health_chat_persists_conversation_state_and_supports_clear_and_export(client):
     new_user(client, "Chat Person")
     sick = client.post("/api/health-chat/messages", json={"message": "I am sick"})
