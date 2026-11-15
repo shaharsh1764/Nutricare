@@ -58,6 +58,17 @@ def test_greeting_is_friendly_and_does_not_hide_a_symptom():
     assert greeting["message"].startswith("Hi!")
     symptomatic_greeting = ask("Hi, I am sick")
     assert symptomatic_greeting["conversation"]["next_question"] == "symptoms"
+    feeling_good = ask("I am feeling good")
+    assert "glad" in feeling_good["message"].lower()
+
+
+def test_text_only_quick_start_mood_and_body_pain_messages_start_a_safe_follow_up():
+    for message, label in [("I have body pain", "body pain"),
+                           ("I feel stressed or anxious", "stress or anxiety"),
+                           ("I am feeling low", "low mood")]:
+        reply = ask(message)
+        assert reply["conversation"]["next_question"] == "duration"
+        assert label in reply["conversation"]["symptoms"]
 
 
 def test_headache_and_weakness_follow_up_remembers_answers():

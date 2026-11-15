@@ -386,8 +386,12 @@ const DRIVER = `
   console.log("G: local Health Chat conversation + safety flows…");
   assert(typeof el("#health-chat-launcher").onclick === "function", "G1 Health Chat launcher is bound");
   await click("#health-chat-launcher"); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("What would you like help with?"),
-    "G2 a new Health Chat shows its welcome once");
+  assert(el("#health-chat-root").innerHTML.includes("What would you like help with?")
+    && el("#health-chat-root").innerHTML.includes("How are you feeling today?")
+    && ["Feeling good", "Feeling tired", "Headache", "Fever", "Dizziness", "Nausea", "Body pain", "Stressed or anxious", "Feeling low", "Other"]
+      .every((label) => el("#health-chat-root").innerHTML.includes(label))
+    && el("#health-chat-root").innerHTML.includes("health-chat-prompt-indicator"),
+  "G2 a new Health Chat shows its welcome and text-only symptom quick starts once");
   set("#health-chat-input", "sick");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
   assert(el("#health-chat-root").innerHTML.includes("What symptoms are you experiencing?")

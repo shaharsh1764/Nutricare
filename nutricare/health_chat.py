@@ -36,6 +36,7 @@ MEDICINE_PATTERN = re.compile(
 
 GREETING_PATTERN = re.compile(r"^\s*(hi|hello|hey|good (morning|afternoon|evening))\b", re.IGNORECASE)
 ILLNESS_PATTERN = re.compile(r"\b(sick|ill|unwell|not well|under the weather)\b", re.IGNORECASE)
+GOOD_PATTERN = re.compile(r"\b(feel(?:ing)? good|feeling well|i am well|i'm well)\b", re.IGNORECASE)
 DONT_KNOW_PATTERN = re.compile(r"^\s*(i\s+)?(do not|don't|dont)\s+know\b|^\s*not sure\b", re.IGNORECASE)
 TEMPERATURE_PATTERN = re.compile(
     r"\b\d{2,3}(?:\.\d)?\s*(?:°\s*)?(?:c|f|celsius|fahrenheit|degrees?)\b|\b(high|low)\s+fever\b",
@@ -202,6 +203,12 @@ def _symptom_labels(text: str) -> list[str]:
             labels.append(name.replace("_", " "))
     if re.search(r"\bweak(?:ness)?\b", lowered) and "weakness" not in labels:
         labels.append("weakness")
+    if re.search(r"\bbody pain\b", lowered) and "body pain" not in labels:
+        labels.append("body pain")
+    if re.search(r"\b(stress(?:ed)?|anxious|anxiety)\b", lowered) and "stress or anxiety" not in labels:
+        labels.append("stress or anxiety")
+    if re.search(r"\b(feeling low|feel low|low mood|sad)\b", lowered) and "low mood" not in labels:
+        labels.append("low mood")
     return labels
 
 
@@ -440,6 +447,12 @@ def _urgent_symptom_reply(symptoms: list[str]) -> dict:
     )
 
 
+def _feeling_good_reply() -> dict:
+    return _reply(
+        "I’m glad you’re feeling well. I can still help with a general nutrition, hydration, sleep, or wellbeing question whenever you need it.",
+    )
+
+
 def _hydration_reply() -> dict:
     return _reply(
         "Hydration needs vary with weather, activity, illness, pregnancy, and some health conditions. "
@@ -544,6 +557,8 @@ def respond(
         return _start_symptom_conversation(symptoms)
     if ILLNESS_PATTERN.search(text):
         return _start_symptom_conversation([])
+    if GOOD_PATTERN.search(text):
+        return _feeling_good_reply()
     if GREETING_PATTERN.search(text):
         return _reply(
             "Hi! I’m NutriCare Health Chat. What would you like help with? You can describe how you feel, ask a general nutrition or hydration question, or ask for health education.",

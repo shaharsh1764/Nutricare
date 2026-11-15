@@ -5,8 +5,23 @@
 
 const HEALTH_CHAT = {
   open: false, loading: false, sending: false, messages: [], userId: null,
-  draft: "", error: "",
+  draft: "", error: "", selectedPrompt: "",
 };
+
+// Text-only quick starts keep the first interaction accessible and avoid
+// decorative imagery. Selecting one fills the editable message box; it is not
+// sent until the person chooses Send or presses Enter.
+const HEALTH_CHAT_PROMPTS = [
+  ["Feeling good", "I am feeling good."],
+  ["Feeling tired", "I feel tired."],
+  ["Headache", "I have a headache."],
+  ["Fever", "I have a fever."],
+  ["Dizziness", "I feel dizzy."],
+  ["Nausea", "I feel nauseous."],
+  ["Body pain", "I have body pain."],
+  ["Stressed or anxious", "I feel stressed or anxious."],
+  ["Feeling low", "I am feeling low."],
+];
 
 function healthChatIcon(size = 20) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18.5 3.8 21V6.5A3.5 3.5 0 0 1 7.3 3h9.4a3.5 3.5 0 0 1 3.5 3.5v6.3a3.5 3.5 0 0 1-3.5 3.5H10z"/><path d="M12 7v6M9 10h6"/></svg>`;
@@ -27,6 +42,7 @@ function resetHealthChatState(userId) {
   HEALTH_CHAT.sending = false;
   HEALTH_CHAT.draft = "";
   HEALTH_CHAT.error = "";
+  HEALTH_CHAT.selectedPrompt = "";
   HEALTH_CHAT.open = false;
 }
 
@@ -121,6 +137,16 @@ function healthChatWelcome() {
     <div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Chat</b>
       <p>Hi! I’m NutriCare Health Chat. What would you like help with?</p>
       <p>I can offer general health and nutrition information, documented food ideas, and identify emergency warning signs. I cannot diagnose conditions or choose medication doses.</p>
+      <section class="health-chat-prompts" aria-labelledby="health-chat-prompt-title">
+        <b id="health-chat-prompt-title">How are you feeling today?</b>
+        <div class="health-chat-prompt-grid" role="group" aria-label="Choose a quick health-chat prompt">
+          ${HEALTH_CHAT_PROMPTS.map(([label, value]) => `<button class="health-chat-prompt" type="button"
+            data-health-chat-prompt="${esc(value)}" aria-pressed="${HEALTH_CHAT.selectedPrompt === label}">
+            <span class="health-chat-prompt-indicator" aria-hidden="true"></span>${esc(label)}</button>`).join("")}
+          <button class="health-chat-prompt" id="health-chat-other" type="button" aria-pressed="false">
+            <span class="health-chat-prompt-indicator" aria-hidden="true"></span>Other</button>
+        </div>
+      </section>
       <p class="health-chat-disclaimer">Messages are saved only in this local profile. If you think you may have an emergency, call local emergency services now — India: 112 or ambulance 108.</p>
     </div>
   </article>`;
@@ -170,12 +196,33 @@ function renderHealthChat() {
   const form = $("#health-chat-form");
   const input = $("#health-chat-input");
   form.onsubmit = sendHealthChatMessage;
-  input.oninput = () => { HEALTH_CHAT.draft = input.value; };
+  input.oninput = () => {
+    HEALTH_CHAT.draft = input.value;
+    const matchingPrompt = HEALTH_CHAT_PROMPTS.find(([, value]) => value === input.value);
+    HEALTH_CHAT.selectedPrompt = matchingPrompt ? matchingPrompt[0] : "";
+  };
   input.onkeydown = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       sendHealthChatMessage(event);
     }
+  };
+  $$("[data-health-chat-prompt]").forEach((button) => button.onclick = () => {
+    const selected = HEALTH_CHAT_PROMPTS.find(([, value]) => value === button.dataset.healthChatPrompt);
+    if (!selected) return;
+    HEALTH_CHAT.selectedPrompt = selected[0];
+    HEALTH_CHAT.draft = selected[1];
+    renderHealthChat();
+    const selectedInput = $("#health-chat-input");
+    if (selectedInput) selectedInput.focus();
+  });
+  const other = $("#health-chat-other");
+  if (other) other.onclick = () => {
+    HEALTH_CHAT.selectedPrompt = "";
+    HEALTH_CHAT.draft = "";
+    renderHealthChat();
+    const selectedInput = $("#health-chat-input");
+    if (selectedInput) selectedInput.focus();
   };
   $$("[data-health-chat-food]").forEach((button) => button.onclick = () => {
     closeHealthChat();
@@ -199,6 +246,7 @@ async function sendHealthChatMessage(event) {
   const confirmedMessages = HEALTH_CHAT.messages;
   HEALTH_CHAT.messages = [...confirmedMessages, { role: "user", message, pending: true }];
   HEALTH_CHAT.draft = "";
+  HEALTH_CHAT.selectedPrompt = "";
   HEALTH_CHAT.error = "";
   HEALTH_CHAT.sending = true;
   renderHealthChat();
@@ -227,6 +275,7 @@ async function clearHealthChat() {
     await api("/health-chat/history", { method: "DELETE" });
     HEALTH_CHAT.messages = [];
     HEALTH_CHAT.draft = "";
+    HEALTH_CHAT.selectedPrompt = "";
     HEALTH_CHAT.error = "";
     renderHealthChat();
     toast("New local health chat started");
