@@ -62,7 +62,7 @@ if (!TRACKER_SOURCE.includes("chooseMealForFood") || !TRACKER_SOURCE.includes("d
 }
 console.log("PASS  D3 global search removed, theme switch and meal chooser are wired");
 const HEALTH_CHAT_SOURCE = fs.readFileSync(path.join(JS_DIR, "health_chat.js"), "utf8");
-if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("How are you feeling today?")
+if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("What would you like help with?")
     || !HEALTH_CHAT_SOURCE.includes("/health-chat/messages") || !HEALTH_CHAT_SOURCE.includes("pharmacist")) {
   throw new Error("The local bottom-left Health Chat must be wired into the shell with its safe API flow");
 }
@@ -382,28 +382,44 @@ const DRIVER = `
   assert(!el("#nav-links").innerHTML.includes('data-route="assistant"'),
     "H5 legacy Health Assistant route is removed from navigation");
 
-  /* ---- G: bottom-left Health Chat safety flows ---- */
-  console.log("G: local Health Chat emergency + general flows…");
+  /* ---- G: local Health Chat conversation and safety flows ---- */
+  console.log("G: local Health Chat conversation + safety flows…");
   assert(typeof el("#health-chat-launcher").onclick === "function", "G1 Health Chat launcher is bound");
   await click("#health-chat-launcher"); await sleep(300);
-  assert(el("#health-chat-root").innerHTML.includes("How are you feeling today?"),
-    "G2 Health Chat opens from the bottom-left launcher");
+  assert(el("#health-chat-root").innerHTML.includes("What would you like help with?"),
+    "G2 a new Health Chat shows its welcome once");
+  set("#health-chat-input", "sick");
+  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
+  assert(el("#health-chat-root").innerHTML.includes("What symptoms are you experiencing?")
+    && !el("#health-chat-root").innerHTML.includes("What would you like help with?"),
+  "G3 sick starts symptom questions instead of repeating the welcome");
+  set("#health-chat-input", "I have a headache and feel weak");
+  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
+  assert(el("#health-chat-root").innerHTML.includes("How long have you been experiencing this?"),
+    "G4 symptom details receive a relevant duration question");
+  set("#health-chat-input", "Since yesterday");
+  await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
+  assert(el("#health-chat-root").innerHTML.includes("scale of 1 to 10"),
+    "G5 local conversation remembers the duration answer");
   set("#health-chat-input", "sudden chest pain and pressure");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
   assert(el("#health-chat-root").innerHTML.includes("Emergency warning signs")
     && el("#health-chat-root").innerHTML.includes("112"),
-  "G3 red-flag chat message shows emergency protocol");
+  "G6 red-flag chat message shows emergency protocol");
   set("#health-chat-input", "What medicine should I take for a headache?");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
   assert(el("#health-chat-root").innerHTML.includes("pharmacist"),
-    "G4 medication request receives pharmacist handoff without a dose");
-  set("#health-chat-input", "I feel nauseous today");
+    "G7 medication request receives pharmacist handoff without a dose");
+  set("#health-chat-input", "What should I eat when I feel nauseous?");
   await el("#health-chat-form").onsubmit({ preventDefault() {} }); await sleep(300);
   assert(el("#health-chat-root").innerHTML.includes("Documented food ideas"),
-    "G5 health chat returns documented food ideas for a non-emergency symptom");
+    "G8 nutrition question returns documented food ideas");
+  assert(typeof el("#health-chat-input").onkeydown === "function"
+    && el("#health-chat-root").innerHTML.includes("New chat"),
+  "G9 chat supports Enter handling and a visible new-conversation control");
   click("#health-chat-close");
   assert(!el("#health-chat-root").innerHTML.includes('id="health-chat-panel"'),
-    "G6 Health Chat closes without changing the current page");
+    "G10 Health Chat closes without changing the current page");
 
   /* ---- I: drawer + sidebar toggle interactions ---- */
   console.log("I: hamburger drawer and sidebar toggle…");

@@ -3,7 +3,10 @@
    generates health guidance itself and does not send data to a third party. */
 "use strict";
 
-const HEALTH_CHAT = { open: false, loading: false, messages: [], userId: null, mounted: false };
+const HEALTH_CHAT = {
+  open: false, loading: false, sending: false, messages: [], userId: null,
+  draft: "", error: "",
+};
 
 function healthChatIcon(size = 20) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18.5 3.8 21V6.5A3.5 3.5 0 0 1 7.3 3h9.4a3.5 3.5 0 0 1 3.5 3.5v6.3a3.5 3.5 0 0 1-3.5 3.5H10z"/><path d="M12 7v6M9 10h6"/></svg>`;
@@ -17,17 +20,22 @@ function hideHealthChat() {
   HEALTH_CHAT.open = false;
 }
 
+function resetHealthChatState(userId) {
+  HEALTH_CHAT.userId = userId;
+  HEALTH_CHAT.messages = [];
+  HEALTH_CHAT.loading = false;
+  HEALTH_CHAT.sending = false;
+  HEALTH_CHAT.draft = "";
+  HEALTH_CHAT.error = "";
+  HEALTH_CHAT.open = false;
+}
+
 function ensureHealthChat() {
   const root = healthChatRoot();
   if (!root) return;
   const user = S && S.boot && S.boot.user;
   if (!user || S.onboardingActive) { hideHealthChat(); return; }
-  if (HEALTH_CHAT.userId !== user.id) {
-    HEALTH_CHAT.userId = user.id;
-    HEALTH_CHAT.messages = [];
-    HEALTH_CHAT.loading = false;
-    HEALTH_CHAT.open = false;
-  }
+  if (HEALTH_CHAT.userId !== user.id) resetHealthChatState(user.id);
   root.hidden = false;
   renderHealthChat();
 }
@@ -35,20 +43,25 @@ function ensureHealthChat() {
 async function openHealthChat() {
   if (!S || !S.boot || !S.boot.user) return;
   HEALTH_CHAT.open = true;
+  HEALTH_CHAT.error = "";
   renderHealthChat();
-  const input = $("#health-chat-input");
-  if (input) input.focus();
-  if (HEALTH_CHAT.messages.length || HEALTH_CHAT.loading) return;
+  if (HEALTH_CHAT.messages.length || HEALTH_CHAT.loading || HEALTH_CHAT.sending) {
+    const input = $("#health-chat-input");
+    if (input && !input.disabled) input.focus();
+    return;
+  }
   HEALTH_CHAT.loading = true;
   renderHealthChat();
   try {
     const data = await api("/health-chat/history");
     HEALTH_CHAT.messages = data.messages || [];
   } catch (error) {
-    toast(error.message, true);
+    HEALTH_CHAT.error = `We could not load this local chat history. ${error.message || "Please try again."}`;
   } finally {
     HEALTH_CHAT.loading = false;
     renderHealthChat();
+    const input = $("#health-chat-input");
+    if (input && !input.disabled) input.focus();
   }
 }
 
@@ -102,50 +115,68 @@ function healthChatAssistantMessage(entry) {
   </article>`;
 }
 
+function healthChatWelcome() {
+  return `<article class="health-chat-message assistant">
+    <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
+    <div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Chat</b>
+      <p>Hi! I’m NutriCare Health Chat. What would you like help with?</p>
+      <p>I can offer general health and nutrition information, documented food ideas, and identify emergency warning signs. I cannot diagnose conditions or choose medication doses.</p>
+      <p class="health-chat-disclaimer">Messages are saved only in this local profile. If you think you may have an emergency, call local emergency services now — India: 112 or ambulance 108.</p>
+    </div>
+  </article>`;
+}
+
 function healthChatMessages() {
   if (HEALTH_CHAT.loading) {
     return `<div class="health-chat-loading" role="status">Loading your local chat history…</div>`;
   }
-  if (!HEALTH_CHAT.messages.length) {
-    return `<article class="health-chat-message assistant">
-      <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
-      <div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Chat</b>
-        <p>How are you feeling today?</p>
-        <p>I can offer general health and nutrition information, document food ideas, and identify emergency warning signs. I cannot diagnose conditions or choose medication doses.</p>
-        <p class="health-chat-disclaimer">Messages are saved only in this local profile. If you think you may have an emergency, call local emergency services now — India: 112 or ambulance 108.</p>
-      </div>
-    </article>`;
-  }
-  return HEALTH_CHAT.messages.map((entry) => entry.role === "user"
-    ? `<article class="health-chat-message user"><div class="health-chat-bubble"><p>${esc(entry.message)}</p></div></article>`
-    : healthChatAssistantMessage(entry)).join("");
+  const items = HEALTH_CHAT.messages.length
+    ? HEALTH_CHAT.messages.map((entry) => entry.role === "user"
+      ? `<article class="health-chat-message user${entry.pending ? " pending" : ""}"><div class="health-chat-bubble"><p>${esc(entry.message)}</p></div></article>`
+      : healthChatAssistantMessage(entry)).join("")
+    : healthChatWelcome();
+  const pending = HEALTH_CHAT.sending
+    ? `<div class="health-chat-loading" role="status">NutriCare Health Chat is preparing a local safety-led response…</div>` : "";
+  const error = HEALTH_CHAT.error
+    ? `<div class="health-chat-error" role="alert"><b>Message not sent.</b> ${esc(HEALTH_CHAT.error)}</div>` : "";
+  return items + pending + error;
 }
 
 function renderHealthChat() {
   const root = healthChatRoot();
   if (!root || root.hidden) return;
   const expanded = HEALTH_CHAT.open;
+  const busy = HEALTH_CHAT.loading || HEALTH_CHAT.sending;
   root.innerHTML = `
     <button class="health-chat-launcher" id="health-chat-launcher" type="button" aria-label="Open Health Chat" aria-expanded="${expanded}" aria-controls="health-chat-panel">
       ${healthChatIcon(22)}<span>Health chat</span>
     </button>
     ${expanded ? `<section class="health-chat-panel" id="health-chat-panel" role="dialog" aria-modal="false" aria-label="NutriCare Health Chat">
       <header class="health-chat-header"><div class="row" style="gap:9px"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span><div><b>Health chat</b><small>Local safety-led guidance</small></div></div>
-        <div class="row" style="gap:4px"><button class="icon-btn health-chat-clear" id="health-chat-clear" type="button" title="Clear local chat history" aria-label="Clear local chat history">${ICONS.trash}</button>
+        <div class="row" style="gap:4px"><button class="btn btn-ghost btn-sm health-chat-clear" id="health-chat-clear" type="button" title="Start a new conversation" aria-label="Start a new conversation">New chat</button>
         <button class="icon-btn" id="health-chat-close" type="button" aria-label="Close Health Chat" title="Close">×</button></div></header>
       <div class="health-chat-safety"><b>Emergency?</b> Call 112 in India or your local emergency number now. This chat cannot replace emergency care.</div>
       <div class="health-chat-messages" id="health-chat-messages" aria-live="polite">${healthChatMessages()}</div>
       <form class="health-chat-form" id="health-chat-form">
-        <label class="sr-only" for="health-chat-input">Describe how you are feeling</label>
-        <textarea id="health-chat-input" maxlength="800" rows="2" placeholder="How are you feeling today?" required></textarea>
-        <div class="row spread mt8"><span class="tiny muted">Health and nutrition questions only</span><button class="btn btn-primary btn-sm" id="health-chat-send" type="submit">Send</button></div>
+        <label class="sr-only" for="health-chat-input">Write a health or nutrition question</label>
+        <textarea id="health-chat-input" maxlength="800" rows="2" placeholder="Write a health or nutrition question" ${busy ? "disabled" : ""} required>${esc(HEALTH_CHAT.draft)}</textarea>
+        <div class="row spread mt8"><span class="tiny muted">Health and nutrition questions only</span><button class="btn btn-primary btn-sm" id="health-chat-send" type="submit" ${busy ? "disabled" : ""}>${HEALTH_CHAT.sending ? "Sending…" : "Send"}</button></div>
       </form>
     </section>` : ""}`;
   $("#health-chat-launcher").onclick = () => expanded ? closeHealthChat() : openHealthChat();
   if (!expanded) return;
   $("#health-chat-close").onclick = closeHealthChat;
   $("#health-chat-clear").onclick = clearHealthChat;
-  $("#health-chat-form").onsubmit = sendHealthChatMessage;
+  const form = $("#health-chat-form");
+  const input = $("#health-chat-input");
+  form.onsubmit = sendHealthChatMessage;
+  input.oninput = () => { HEALTH_CHAT.draft = input.value; };
+  input.onkeydown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendHealthChatMessage(event);
+    }
+  };
   $$("[data-health-chat-food]").forEach((button) => button.onclick = () => {
     closeHealthChat();
     location.hash = "#/tracker";
@@ -157,31 +188,52 @@ function renderHealthChat() {
 
 async function sendHealthChatMessage(event) {
   event.preventDefault();
+  if (HEALTH_CHAT.sending || HEALTH_CHAT.loading) return;
   const input = $("#health-chat-input");
-  const send = $("#health-chat-send");
-  const message = input ? input.value.trim() : "";
-  if (!message) { toast("Write a health or nutrition question first", true); return; }
-  if (send) { send.disabled = true; send.textContent = "Sending…"; }
+  const message = input ? input.value.trim() : HEALTH_CHAT.draft.trim();
+  if (!message) {
+    HEALTH_CHAT.error = "Write a health or nutrition question before sending.";
+    renderHealthChat();
+    return;
+  }
+  const confirmedMessages = HEALTH_CHAT.messages;
+  HEALTH_CHAT.messages = [...confirmedMessages, { role: "user", message, pending: true }];
+  HEALTH_CHAT.draft = "";
+  HEALTH_CHAT.error = "";
+  HEALTH_CHAT.sending = true;
+  renderHealthChat();
   try {
     const data = await api("/health-chat/messages", { method: "POST", body: { message } });
     HEALTH_CHAT.messages = data.messages || [];
-    renderHealthChat();
   } catch (error) {
-    toast(error.message, true);
-    if (send) { send.disabled = false; send.textContent = "Send"; }
+    // Do not replace confirmed conversation history with the welcome state when
+    // a request fails. Restore the unsent text so the person can retry it.
+    HEALTH_CHAT.messages = confirmedMessages;
+    HEALTH_CHAT.draft = message;
+    HEALTH_CHAT.error = error.message || "The message could not be sent. Please try again.";
+  } finally {
+    HEALTH_CHAT.sending = false;
+    renderHealthChat();
+    const nextInput = $("#health-chat-input");
+    if (nextInput && !nextInput.disabled) nextInput.focus();
   }
 }
 
 async function clearHealthChat() {
-  const ok = await confirmModal("Clear local health chat history?",
-    "This permanently removes the saved messages for the current local profile.", "Clear history");
+  const ok = await confirmModal("Start a new local conversation?",
+    "This removes the saved messages for the current local profile. This cannot be undone.", "Start new chat");
   if (!ok) return;
   try {
     await api("/health-chat/history", { method: "DELETE" });
     HEALTH_CHAT.messages = [];
+    HEALTH_CHAT.draft = "";
+    HEALTH_CHAT.error = "";
     renderHealthChat();
-    toast("Local chat history cleared");
-  } catch (error) { toast(error.message, true); }
+    toast("New local health chat started");
+  } catch (error) {
+    HEALTH_CHAT.error = error.message || "The local chat history could not be cleared.";
+    renderHealthChat();
+  }
 }
 
 document.addEventListener("keydown", (event) => {

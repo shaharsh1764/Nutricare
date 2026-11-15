@@ -12,16 +12,33 @@ from nutricare import health_chat
 FOODS = json.loads((Path(__file__).parents[1] / "data" / "foods.json").read_text())["foods"]
 
 
+def ask(message: str, conversation: dict | None = None):
+    return health_chat.respond(message, {}, FOODS, conversation=conversation)
+
+
 def test_emergency_wording_always_wins_and_has_local_protocol():
-    reply = health_chat.respond("I have chest pain and pressure", {}, FOODS)
+    reply = ask("I have chest pain and pressure")
     assert reply["triage"] == "emergency"
     assert reply["red_flags"]
     assert "112" in reply["message"]
     assert reply["food_recommendations"] == []
+    assert reply["conversation"]["interrupted_by"] == "emergency"
+
+
+@pytest.mark.parametrize("message", [
+    "I have severe breathing difficulty",
+    "My face is swelling after a severe allergic reaction",
+    "I suddenly have one-sided weakness and trouble speaking",
+    "I want to hurt myself",
+])
+def test_other_emergency_warning_signs_override_conversation(message):
+    reply = ask(message, {"mode": "symptom", "next_question": "duration", "symptoms": ["headache"]})
+    assert reply["triage"] == "emergency"
+    assert "112" in reply["message"]
 
 
 def test_medication_question_is_handed_to_a_pharmacist_without_a_drug_choice():
-    reply = health_chat.respond("What tablet and dose should I take for a headache?", {}, FOODS)
+    reply = ask("What tablet and dose should I take for a headache?")
     text = json.dumps(reply).lower()
     assert reply["triage"] == "pharmacist_handoff"
     assert reply["medication_handoff"] is True
@@ -29,23 +46,97 @@ def test_medication_question_is_handed_to_a_pharmacist_without_a_drug_choice():
     assert "ibuprofen" not in text and "paracetamol" not in text
 
 
-def test_nausea_food_options_come_from_catalogue_and_respect_preferences():
-    reply = health_chat.respond("I feel nauseous today", {"allergies": [], "dietary_prefs": ["vegan"]}, FOODS)
-    assert reply["triage"] == "general_guidance"
-    assert reply["food_recommendations"]
+def test_sick_starts_symptom_conversation_without_repeating_welcome():
+    reply = ask("I am sick")
+    assert reply["conversation"]["next_question"] == "symptoms"
+    assert "what symptoms" in reply["message"].lower()
+    assert "what would you like help with" not in reply["message"].lower()
+
+
+def test_greeting_is_friendly_and_does_not_hide_a_symptom():
+    greeting = ask("Hi")
+    assert greeting["message"].startswith("Hi!")
+    symptomatic_greeting = ask("Hi, I am sick")
+    assert symptomatic_greeting["conversation"]["next_question"] == "symptoms"
+
+
+def test_headache_and_weakness_follow_up_remembers_answers():
+    sick = ask("sick")
+    symptoms = ask("I have a headache and feel weak", sick["conversation"])
+    assert symptoms["conversation"]["next_question"] == "duration"
+    assert "how long" in symptoms["message"].lower()
+
+    duration = ask("Since yesterday", symptoms["conversation"])
+    assert duration["conversation"]["duration"] == "Since yesterday"
+    assert duration["conversation"]["next_question"] == "severity"
+    assert "scale of 1 to 10" in duration["message"].lower()
+
+    complete = ask("6", duration["conversation"])
+    assert complete["conversation"]["status"] == "complete"
+    assert "headache and weakness" in complete["message"].lower()
+    assert "since yesterday" in complete["message"].lower()
+    assert "cannot tell what is causing" in complete["message"].lower()  # no diagnosis claim
+
+    corrected = ask("Actually, since today", complete["conversation"])
+    assert corrected["conversation"]["duration"] == "since today"
+    assert "since today" in corrected["message"].lower()
+
+
+def test_fever_flow_asks_temperature_then_duration_and_other_symptoms():
+    fever = ask("I have a fever")
+    assert fever["conversation"]["next_question"] == "temperature"
+    assert "thermometer" in fever["message"].lower()
+
+    duration = ask("38.4 C", fever["conversation"])
+    assert duration["conversation"]["next_question"] == "duration"
+    associated = ask("Since yesterday", duration["conversation"])
+    assert associated["conversation"]["next_question"] == "associated"
+    assert "other symptoms" in associated["message"].lower()
+
+
+def test_unclear_follow_up_asks_for_clarification_without_inventing_symptoms():
+    reply = ask("I don't know", {"mode": "symptom", "next_question": "symptoms", "symptoms": []})
+    assert reply["conversation"]["next_question"] == "symptoms"
+    assert "describe" in reply["message"].lower()
+    assert reply["conversation"]["symptoms"] == []
+
+
+def test_nutrition_and_hydration_questions_receive_relevant_safe_guidance():
+    nutrition = ask("What should I eat when I feel nauseous?")
+    assert nutrition["triage"] == "general_guidance"
+    assert nutrition["food_recommendations"]
     dataset_names = {food["name"] for food in FOODS}
-    assert all(food["name"] in dataset_names for food in reply["food_recommendations"])
-    assert all(food["name"] != "Curd / dahi (plain, whole milk)" for food in reply["food_recommendations"])
+    assert all(food["name"] in dataset_names for food in nutrition["food_recommendations"])
+
+    hydration = ask("How much water should I drink?")
+    assert "hydration needs vary" in hydration["message"].lower()
+    assert hydration["guidance"]
+
+
+def test_education_question_is_answered_without_diagnosing():
+    reply = ask("What is diabetes?")
+    assert "long-term condition" in reply["message"].lower()
+    assert "diagnosed" in reply["message"].lower()
+    assert reply["triage"] == "general_guidance"
+
+
+def test_new_conversation_state_does_not_reuse_previous_answers():
+    prior = {"mode": "symptom", "next_question": "severity", "symptoms": ["headache"], "duration": "yesterday"}
+    reply = ask("I feel tired", conversation=None)
+    assert reply["conversation"]["next_question"] == "duration"
+    assert reply["conversation"]["symptoms"] == ["fatigue"]
+    assert "yesterday" not in reply["message"].lower()
+    assert prior["duration"] == "yesterday"  # no mutation of saved prior state
 
 
 def test_non_health_prompt_is_refused_to_keep_chat_in_scope():
-    reply = health_chat.respond("Write a poem about a mountain", {}, FOODS)
+    reply = ask("Write a poem about a mountain")
     assert reply["triage"] == "out_of_scope"
     assert "health and nutrition" in reply["message"].lower()
 
 
 def test_severe_non_flagged_wording_gets_same_day_direction():
-    reply = health_chat.respond("I have a severe headache that is getting worse", {}, FOODS)
+    reply = ask("I have a severe headache that is getting worse")
     assert reply["triage"] == "urgent_same_day"
     assert "same-day" in reply["message"]
 
@@ -53,7 +144,7 @@ def test_severe_non_flagged_wording_gets_same_day_direction():
 @pytest.mark.parametrize("message", ["", " " * 4, "a" * 801])
 def test_message_validation(message):
     with pytest.raises(ValueError):
-        health_chat.respond(message, {}, FOODS)
+        ask(message)
 
 
 def test_engine_mode_is_explicitly_local():

@@ -102,15 +102,20 @@ offline rule engine — no online AI or third-party health API is called.
    (`screen_red_flags`). Chest pain, breathing difficulty, stroke signs, severe
    allergy signs, self-harm wording, and other warning patterns show emergency
    action immediately, including India 112 / ambulance 108.
-2. Non-emergency replies use keyword-selected general educational material. They
-   are not diagnoses and do not assert a medical cause from limited input.
-3. Food ideas come only from NutriCare's documented catalogue and are filtered by
+2. Non-emergency symptom chats use a small persisted local state (the details a
+   person has written and one next question), so short follow-ups such as “since
+   yesterday” retain their context. The welcome appears only for an empty/new
+   chat. **New chat** deliberately clears the current profile’s saved chat and
+   starts the local conversation again.
+3. Replies use keyword-selected general educational material. They are not
+   diagnoses and do not assert a medical cause from limited input.
+4. Food ideas come only from NutriCare's documented catalogue and are filtered by
    stored allergies and dietary preferences. They are general nourishment ideas,
    not treatment claims.
-4. Medication questions deliberately receive a pharmacist-or-clinician handoff.
+5. Medication questions deliberately receive a pharmacist-or-clinician handoff.
    The chat does not choose a medicine, recommend a dose, check interactions, or
    prescribe treatment.
-5. Severe or worsening wording is directed to same-day in-person care. The chat
+6. Severe or worsening wording is directed to same-day in-person care. The chat
    includes a persistent disclaimer and has no disease probabilities.
 
 ## 6. First run, empty states & demo mode

@@ -313,18 +313,28 @@ def test_warning_signs_endpoint_matches_engine_and_drives_triage(client):
     assert [f["id"] for f in data["red_flags"]] == ["chest_pain"]
 
 
-def test_health_chat_persists_local_messages_and_supports_clear_and_export(client):
+def test_health_chat_persists_conversation_state_and_supports_clear_and_export(client):
     new_user(client, "Chat Person")
-    created = client.post("/api/health-chat/messages", json={"message": "I feel nauseous today"})
-    assert created.status_code == 200, created.get_json()
-    data = created.get_json()
-    assert data["reply"]["triage"] == "general_guidance"
-    assert data["reply"]["food_recommendations"]
-    assert [message["role"] for message in data["messages"]] == ["user", "assistant"]
+    sick = client.post("/api/health-chat/messages", json={"message": "I am sick"})
+    assert sick.status_code == 200, sick.get_json()
+    assert sick.get_json()["reply"]["conversation"]["next_question"] == "symptoms"
+    assert "what symptoms" in sick.get_json()["reply"]["message"].lower()
+
+    symptoms = client.post("/api/health-chat/messages", json={"message": "I have a headache and feel weak"})
+    assert symptoms.get_json()["reply"]["conversation"]["next_question"] == "duration"
+    duration = client.post("/api/health-chat/messages", json={"message": "Since yesterday"})
+    assert duration.get_json()["reply"]["conversation"]["duration"] == "Since yesterday"
+    assert duration.get_json()["reply"]["conversation"]["next_question"] == "severity"
+
+    complete = client.post("/api/health-chat/messages", json={"message": "6"})
+    assert complete.get_json()["reply"]["conversation"]["status"] == "complete"
+    assert "headache and weakness" in complete.get_json()["reply"]["message"].lower()
+
     history = client.get("/api/health-chat/history").get_json()
-    assert history["messages"][1]["reply"]["message"] == data["reply"]["message"]
+    assert [message["role"] for message in history["messages"]] == ["user", "assistant"] * 4
+    assert history["messages"][-1]["reply"]["conversation"]["severity"] == "6"
     exported = client.get("/api/export.json").get_json()
-    assert [message["role"] for message in exported["health_chat"]] == ["user", "assistant"]
+    assert [message["role"] for message in exported["health_chat"]] == ["user", "assistant"] * 4
 
     medicine = client.post("/api/health-chat/messages", json={"message": "Which medicine should I take?"})
     assert medicine.get_json()["reply"]["triage"] == "pharmacist_handoff"
@@ -333,6 +343,18 @@ def test_health_chat_persists_local_messages_and_supports_clear_and_export(clien
 
     assert client.delete("/api/health-chat/history").status_code == 200
     assert client.get("/api/health-chat/history").get_json()["messages"] == []
+    restarted = client.post("/api/health-chat/messages", json={"message": "I feel tired"}).get_json()
+    assert restarted["reply"]["conversation"]["symptoms"] == ["fatigue"]
+    assert "yesterday" not in restarted["reply"]["message"].lower()
+
+
+def test_health_chat_validation_error_does_not_corrupt_persisted_conversation(client):
+    new_user(client, "Chat Validation")
+    assert client.post("/api/health-chat/messages", json={"message": "sick"}).status_code == 200
+    before = client.get("/api/health-chat/history").get_json()["messages"]
+    invalid = client.post("/api/health-chat/messages", json={"message": " "})
+    assert invalid.status_code == 400
+    assert client.get("/api/health-chat/history").get_json()["messages"] == before
 
 
 def test_settings_update_and_validation(client):
