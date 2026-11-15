@@ -75,10 +75,19 @@ function healthChatIcon(size = 20) {
 
 function healthChatRoot() { return $("#health-chat-root"); }
 
+function syncHealthChatLayout(expanded) {
+  // On desktop, the open panel takes a dedicated sidebar column instead of
+  // floating across the current page title or controls.
+  if (document.body && document.body.classList) {
+    document.body.classList.toggle("health-chat-expanded", Boolean(expanded));
+  }
+}
+
 function hideHealthChat() {
   const root = healthChatRoot();
   if (root) { root.hidden = true; root.innerHTML = ""; }
   HEALTH_CHAT.open = false;
+  syncHealthChatLayout(false);
 }
 
 function resetHealthChatState(userId) {
@@ -632,8 +641,12 @@ function healthChatMessages() {
 
 function renderHealthChat() {
   const root = healthChatRoot();
-  if (!root || root.hidden) return;
+  if (!root || root.hidden) {
+    syncHealthChatLayout(false);
+    return;
+  }
   const expanded = HEALTH_CHAT.open;
+  syncHealthChatLayout(expanded);
   const busy = HEALTH_CHAT.loading || HEALTH_CHAT.sending;
   const guided = HEALTH_ASSESSMENT.active;
   root.innerHTML = `

@@ -387,6 +387,8 @@ const DRIVER = `
   console.log("G: guided local Health Assistant conversation + safety flows…");
   assert(typeof el("#health-chat-launcher").onclick === "function", "G1 Health Assistant launcher is bound");
   await click("#health-chat-launcher"); await sleep(300);
+  assert(bodyClasses.has("health-chat-expanded"),
+    "G1a desktop Health Assistant reserves a sidebar column instead of covering page content");
   assert(el("#health-chat-root").innerHTML.includes("Hi! How are you feeling today?")
     && ["Feeling good", "Feeling tired", "Headache", "Fever", "Dizziness", "Nausea", "Body pain", "Stressed or anxious", "Feeling low", "Other"]
       .every((label) => el("#health-chat-root").innerHTML.includes(label))
@@ -471,8 +473,9 @@ const DRIVER = `
     && el("#health-chat-root").innerHTML.includes("History"),
   "G12 free-text chat supports Enter handling and visible history controls");
   click("#health-chat-close");
-  assert(!el("#health-chat-root").innerHTML.includes('id="health-chat-panel"'),
-    "G13 Health Assistant closes without changing the current page");
+  assert(!el("#health-chat-root").innerHTML.includes('id="health-chat-panel"')
+    && !bodyClasses.has("health-chat-expanded"),
+    "G13 Health Assistant closes without changing the current page or reserving its panel column");
 
   /* ---- I: drawer + sidebar toggle interactions ---- */
   console.log("I: hamburger drawer and sidebar toggle…");
