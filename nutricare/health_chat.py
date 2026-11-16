@@ -48,6 +48,15 @@ TEMPERATURE_PATTERN = re.compile(
 SEVERITY_PATTERN = re.compile(r"\b(10|[1-9])\b")
 CORRECTION_PATTERN = re.compile(r"^\s*(actually|correction|i meant|to correct that)\b", re.IGNORECASE)
 DURATION_HINT_PATTERN = re.compile(r"\b(since|for|today|yesterday|days?|weeks?|months?)\b", re.IGNORECASE)
+SLEEP_ANSWER_PATTERN = re.compile(
+    r"\b(sleep|slept|rest|rested|hours?|night|insomnia|wake|waking|good|well|"
+    r"poor|bad|fine|okay|ok|trouble|difficult|enough|less|more)\b",
+    re.IGNORECASE,
+)
+NO_ASSOCIATED_SYMPTOMS_PATTERN = re.compile(
+    r"^\s*(no|none|nothing|not really)(?:\s+(?:other|else|additional)\s+symptoms?)?\s*[.!]?\s*$",
+    re.IGNORECASE,
+)
 
 # Health/nutrition-only scope. Follow-up answers are accepted through the saved
 # conversation state even when they are short (for example, "Since yesterday").
@@ -189,11 +198,14 @@ def _reply(
     }
 
 
-def _out_of_scope_reply() -> dict:
+def _out_of_scope_reply(conversation: dict | None = None) -> dict:
     return _reply(
-        "I’m NutriCare’s health and nutrition chat. I can help with general symptoms, "
-        "food, hydration, and health education. Please ask a health or nutrition question.",
+        "I’m NutriCare Health Chat. I can help with general health education, "
+        "symptom check-ins, food and nutrition ideas, and hydration. I can’t assist "
+        "with unrelated requests. Please rephrase your message as a health or "
+        "nutrition question, and I’ll do my best to help.",
         triage="out_of_scope",
+        conversation=conversation,
     )
 
 
@@ -213,6 +225,30 @@ def _symptom_labels(text: str) -> list[str]:
     if re.search(r"\b(feeling low|feel low|low mood|sad)\b", lowered) and "low mood" not in labels:
         labels.append("low mood")
     return labels
+
+
+def _matches_follow_up_context(text: str, conversation: dict) -> bool:
+    """Allow a plausible answer to the current question, not arbitrary text."""
+    if DONT_KNOW_PATTERN.search(text):
+        return True
+    question = conversation.get("next_question")
+    symptoms = _symptom_labels(text)
+    if question == "symptoms":
+        return bool(symptoms or HEALTH_PATTERN.search(text))
+    if question == "temperature":
+        return bool(TEMPERATURE_PATTERN.search(text)
+                    or re.fullmatch(r"\s*\d{2,3}(?:\.\d)?\s*", text)
+                    or symptoms)
+    if question == "duration":
+        return bool(DURATION_HINT_PATTERN.search(text) or symptoms)
+    if question == "sleep":
+        return bool(SLEEP_ANSWER_PATTERN.search(text) or symptoms)
+    if question == "associated":
+        return bool(HEALTH_PATTERN.search(text)
+                    or NO_ASSOCIATED_SYMPTOMS_PATTERN.fullmatch(text))
+    if question == "severity":
+        return bool(SEVERITY_PATTERN.search(text) or symptoms)
+    return False
 
 
 def _pretty_list(items: list[str]) -> str:
@@ -394,6 +430,14 @@ def _continue_symptom_conversation(
         )
 
     if question == "duration":
+        if not unknown and not DURATION_HINT_PATTERN.search(text):
+            return _reply(
+                "I’m not sure how long that has been happening. You can share a "
+                "time period, such as “since yesterday” or “for three days,” or "
+                "say “I don’t know.”",
+                triage="clarification",
+                conversation=state,
+            )
         state["duration"] = "not known" if unknown else text[:120]
         state["next_question"] = _next_after_duration(state["symptoms"])
         if state["next_question"] == "associated":
@@ -544,10 +588,15 @@ def respond(
     if NUTRITION_PATTERN.search(text) and (re.search(r"\?", text) or ILLNESS_PATTERN.search(text)):
         return _nutrition_reply(text, profile, foods)
 
-    if _active_symptom_state(conversation):
+    active_state = _active_symptom_state(conversation)
+    if active_state:
         if _has_urgent_wording(text):
-            return _urgent_symptom_reply((conversation or {}).get("symptoms") or _symptom_labels(text))
-        return _continue_symptom_conversation(text, conversation or {}, profile, foods)
+            return _urgent_symptom_reply(active_state.get("symptoms") or _symptom_labels(text))
+        if not _matches_follow_up_context(text, active_state):
+            # Do not store unrelated free text as a symptom duration/severity.
+            # Preserve the current question so the person can resume it later.
+            return _out_of_scope_reply(conversation=active_state)
+        return _continue_symptom_conversation(text, active_state, profile, foods)
     if _completed_symptom_state(conversation) and CORRECTION_PATTERN.search(text):
         return _correct_completed_symptom_conversation(text, conversation or {}, profile, foods)
 
@@ -577,8 +626,12 @@ def respond(
     if not HEALTH_PATTERN.search(text):
         return _out_of_scope_reply()
 
-    # A health-related but unspecific message gets a clarification, not a static
-    # catalogue paragraph or the welcome message.
+    # A health-related message that does not match a supported rule gets a
+    # clear, useful clarification instead of an unrelated or guessed answer.
     return _reply(
-        "I can help with general health and nutrition information. Could you share a little more about what you are feeling or what you would like to know?",
+        "I’m not sure I understood your health or nutrition question. I can help "
+        "with general health education, symptom check-ins, food and nutrition "
+        "ideas, or hydration. Could you rephrase your question or tell me what "
+        "kind of help you’re looking for?",
+        triage="clarification",
     )

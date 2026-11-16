@@ -1,6 +1,6 @@
 """
 Integration tests for NutriCare's primary 80-class Indian-food recognition model
-(224x224 input resolution, MobileNetV3 Small + ImageNet transfer learning).
+(224x224 input resolution, MobileNetV3 Small warm-started from NutriCare's 12-class checkpoint).
 
 These tests exercise the real Predictor against the actual experimental
 checkpoint. No neural network is simulated — inference is genuinely executed.
@@ -12,7 +12,7 @@ Coverage:
   - Prediction output structure (slug, label, group, confidence)
   - Softmax probabilities are valid (0-1, top-k sum <= 1)
   - Top-k predictions are clamped and validated
-  - Low-confidence rejection works (threshold 0.40)
+  - The API abstains below the raw-confidence threshold of 0.35
   - Invalid and corrupted images are rejected
   - Missing primary checkpoint raises ModelUnavailable
   - The 12-class checkpoint remains unchanged and available as technical fallback
@@ -304,15 +304,20 @@ def test_end_to_end_prediction_with_experimental_model(tmp_path, monkeypatch):
         resp = client.post("/api/vision/predict?top_k=5",
                            data=make_png(),
                            content_type="application/octet-stream")
-        assert resp.status_code == 200
         body = resp.get_json()
-        assert body["model"] == vision.PRIMARY_MODEL_NAME
-        assert body["recognition"]["fallback_used"] is False
-        assert body["recognition"]["prediction_unconfirmed"] is True
-        assert "ensemble" not in body
-        assert len(body["predictions"]) <= 5
-        assert "low_confidence" in body
-        assert "threshold" in body
+        if body.get("code") == "food_not_recognized":
+            assert resp.status_code == 422
+            assert body["confidence"] < vision.MIN_FOOD_RECOGNITION_CONFIDENCE
+            assert "predictions" not in body and "top" not in body
+        else:
+            assert resp.status_code == 200
+            assert body["model"] == vision.PRIMARY_MODEL_NAME
+            assert body["recognition"]["fallback_used"] is False
+            assert body["recognition"]["prediction_unconfirmed"] is True
+            assert "ensemble" not in body
+            assert len(body["predictions"]) <= 5
+            assert "low_confidence" in body
+            assert "threshold" in body
 
     vision.reset_predictor()
 
@@ -491,20 +496,23 @@ def test_experimental_prediction_includes_nutrition(tmp_path, monkeypatch):
     with application.test_client() as client:
         client.post("/api/users", json={"name": "E2E Nutrition Tester"})
 
-        # Predict with the fixed 80-class primary. We cannot control the
-        # actual class, but every candidate still needs a nutrition response.
+        # Predict with the fixed 80-class primary. A low raw score is an
+        # explicit abstention; otherwise each returned candidate gets nutrition.
         resp = client.post("/api/vision/predict?top_k=5",
                            data=make_png(),
                            content_type="application/octet-stream")
-        assert resp.status_code == 200
         body = resp.get_json()
-        assert body["model"] == vision.PRIMARY_MODEL_NAME
-        assert body["recognition"]["fallback_used"] is False
-
-        # Each candidate should have nutrition info (available or not)
-        for candidate in body["candidates"]:
-            assert "nutrition" in candidate, f"Missing nutrition for {candidate['slug']}"
-            assert "nutrition_available" in candidate["nutrition"]
+        if body.get("code") == "food_not_recognized":
+            assert resp.status_code == 422
+            assert body["confidence"] < vision.MIN_FOOD_RECOGNITION_CONFIDENCE
+            assert "candidates" not in body
+        else:
+            assert resp.status_code == 200
+            assert body["model"] == vision.PRIMARY_MODEL_NAME
+            assert body["recognition"]["fallback_used"] is False
+            for candidate in body["candidates"]:
+                assert "nutrition" in candidate, f"Missing nutrition for {candidate['slug']}"
+                assert "nutrition_available" in candidate["nutrition"]
 
     vision.reset_predictor()
 
@@ -526,23 +534,29 @@ def test_default_model_classes_still_work(tmp_path, monkeypatch):
         resp = client.post("/api/vision/predict?top_k=3",
                            data=make_png(),
                            content_type="application/octet-stream")
-        assert resp.status_code == 200
         body = resp.get_json()
         # Force a missing primary checkpoint so this is a genuine technical
-        # fallback test, not a selectable/default model test.
-        assert len(body["predictions"]) <= 3
-        assert body["model"] == vision.FALLBACK_MODEL_NAME
-        assert body["recognition"]["fallback_used"] is True
-        assert body["top"]["slug"] in \
-            {"chicken_biryani", "chole", "chomchom", "curd_dahi", "jalebi",
-             "kheer", "khichdi", "morog_polao", "pakora", "pani_puri",
-             "paratha_plain", "rasgulla"}
-        assert "low_confidence" in body
+        # fallback test. The abstention gate applies to either model result.
+        if body.get("code") == "food_not_recognized":
+            assert resp.status_code == 422
+            assert body["model"] == vision.FALLBACK_MODEL_NAME
+            assert body["confidence"] < vision.MIN_FOOD_RECOGNITION_CONFIDENCE
+            assert "predictions" not in body
+        else:
+            assert resp.status_code == 200
+            assert len(body["predictions"]) <= 3
+            assert body["model"] == vision.FALLBACK_MODEL_NAME
+            assert body["recognition"]["fallback_used"] is True
+            assert body["top"]["slug"] in \
+                {"chicken_biryani", "chole", "chomchom", "curd_dahi", "jalebi",
+                 "kheer", "khichdi", "morog_polao", "pakora", "pani_puri",
+                 "paratha_plain", "rasgulla"}
+            assert "low_confidence" in body
 
-        # All predicted slugs should be in the taxonomy
-        taxonomy = json.loads(Path("data/food_classes.json").read_text())
-        taxonomy_slugs = {c["slug"] for c in taxonomy["classes"]}
-        for pred in body["predictions"]:
-            assert pred["slug"] in taxonomy_slugs, f"{pred['slug']} not in taxonomy"
+            # All predicted slugs should be in the taxonomy.
+            taxonomy = json.loads(Path("data/food_classes.json").read_text())
+            taxonomy_slugs = {c["slug"] for c in taxonomy["classes"]}
+            for pred in body["predictions"]:
+                assert pred["slug"] in taxonomy_slugs, f"{pred['slug']} not in taxonomy"
 
     vision.reset_predictor()

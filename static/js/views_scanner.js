@@ -220,6 +220,24 @@ async function scanAnalyze() {
     if (r) r.onclick = () => { scanReset(); renderScanner(); };
     return;
   }
+  if (res.status === 422 && data && data.code === "food_not_recognized") {
+    box.innerHTML = `
+      <div class="scan-empty">
+        <span class="scan-empty-icon" aria-hidden="true">${ICONS.meal}</span>
+        <b>We couldn’t recognize a food in this photo.</b>
+        <p class="tiny muted mt8">Try a clear photo of one dish, or choose the food yourself from the catalogue.</p>
+        <div class="row mt12" style="justify-content:center">
+          <button class="btn btn-deep btn-sm" id="scan-manual">Choose food manually</button>
+          <button class="btn btn-ghost btn-sm" id="scan-retry">Choose another photo</button>
+        </div>
+      </div>`;
+    const m = $("#scan-manual");
+    if (m) m.onclick = () => openFoodSearchModal(
+      SCAN.meal || "lunch", null, scanSelectCatalogueFood);
+    const r = $("#scan-retry");
+    if (r) r.onclick = () => { scanReset(); renderScanner(); };
+    return;
+  }
   if (!res.ok) {
     box.innerHTML = `<div class="scan-empty"><span class="scan-empty-icon" aria-hidden="true">${ICONS.scanner}</span>
       <b>We couldn’t use that photo.</b>

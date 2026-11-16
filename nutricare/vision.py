@@ -17,9 +17,10 @@ Honesty rules enforced here:
     "demo mode", and no hardcoded answer table.
   * The returned ``confidence`` is the model's own softmax probability. It is
     not fudged, clamped or re-interpreted as certainty.
-  * Low-confidence output is surfaced as ``low_confidence: True`` as an
-    uncalibrated uncertainty signal. It never selects another model or causes a
-    technical fallback; every prediction remains unconfirmed.
+  * Confidence is an uncalibrated raw softmax score. Low scores never select
+    another model or trigger the technical fallback. The HTTP scanner abstains
+    below its separate 0.35 minimum and reports food-not-recognized; accepted
+    predictions remain unconfirmed.
 
 The model is a single-label classifier: it reports the one dominant dish in a
 photograph. It does not segment a plate into separate dishes, and the API says
@@ -80,10 +81,14 @@ MAX_UPLOAD_BYTES = int(os.environ.get("NUTRICARE_MAX_UPLOAD_BYTES", 8 * 1024 * 1
 MAX_DIMENSION = 8000          # reject absurd pixel counts before decoding
 MIN_DIMENSION = 16            # reject 1-px noise images
 
-# Retained as an uncertainty signal for existing clients. It has no documented
-# calibration or rejection evaluation and must never choose a model or trigger
-# the 12-class technical fallback. Every scanner prediction is unconfirmed.
+# Existing client-facing uncertainty signal. It does not choose a model or
+# trigger the 12-class technical fallback. Scores remain uncalibrated.
 LOW_CONFIDENCE_THRESHOLD = float(os.environ.get("NUTRICARE_LOW_CONFIDENCE", 0.40))
+
+# API abstention gate requested for scanner predictions. This is a product
+# threshold on raw softmax output, not a calibrated probability of correctness.
+# Below it, the API returns food_not_recognized without exposing a food label.
+MIN_FOOD_RECOGNITION_CONFIDENCE = 0.35
 
 CONFIDENCE_NOTE = (
     "Confidence is the selected model's raw softmax output. It is not calibrated "
@@ -459,7 +464,7 @@ class Predictor:
             "slug": cls["slug"],
             "label": cls.get("label", cls["slug"]),
             "group": cls.get("group", "unknown"),
-            "confidence": round(float(prob), 4),
+            "confidence": float(prob),
             "confidence_pct": round(float(prob) * 100, 1),
         } for cls, prob in ranked]
 
@@ -691,6 +696,8 @@ def recognition_status() -> dict:
             "technical_fallback_model": FALLBACK_MODEL_NAME,
             "fallback_conditions": list(TECHNICAL_FALLBACK_CONDITIONS),
             "low_confidence_triggers_fallback": False,
+            "minimum_accepted_confidence": MIN_FOOD_RECOGNITION_CONFIDENCE,
+            "below_threshold_result": "food_not_recognized",
             "prediction_unconfirmed": True,
             "confidence_calibrated": False,
         },
@@ -720,6 +727,7 @@ def _annotate_recognition(result: dict, *, served_by: str,
         "confidence_calibrated": False,
         "confidence_note": CONFIDENCE_NOTE,
         "low_confidence_triggers_fallback": False,
+        "minimum_accepted_confidence": MIN_FOOD_RECOGNITION_CONFIDENCE,
     }
     return annotated
 

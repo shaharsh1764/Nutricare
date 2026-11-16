@@ -18,6 +18,8 @@ Security decisions, all deliberate:
 
 from __future__ import annotations
 
+import math
+
 from flask import Blueprint, jsonify, request, session
 
 from . import db, food_recognition, nutrition, vision
@@ -27,10 +29,10 @@ vision_api = Blueprint("vision", __name__, url_prefix="/api/vision")
 MAX_TOP_K = 5
 
 
-def _err(message: str, code: int = 400, **extra):
+def _err(message: str, status_code: int = 400, **extra):
     payload = {"error": message}
     payload.update(extra)
-    return jsonify(payload), code
+    return jsonify(payload), status_code
 
 
 def _current_uid(conn) -> int | None:
@@ -116,9 +118,11 @@ def predict():
     Normal scans invoke only the 80-class Indian-food model. The 12-class
     CC0-declared checkpoint is invoked only after a technical primary failure
     (missing/unreadable checkpoint, initialisation failure, or inference
-    exception). Low confidence is returned as an unconfirmed prediction and
-    never triggers fallback. There is no ensemble, score comparison, or
-    session/query-parameter model selection.
+    exception). Low confidence never triggers fallback. The selected model's
+    raw top score is checked after inference; below 0.35 the API abstains with
+    ``food_not_recognized`` instead of returning a class. Scores are uncalibrated.
+    There is no ensemble, score comparison, or session/query-parameter model
+    selection.
     """
     uid_conn = db.get_db()
     if _current_uid(uid_conn) is None:
@@ -154,6 +158,26 @@ def predict():
         return _err(str(exc), 503, model_unavailable=True,
                     hint="Train or install a checkpoint with docs/MODEL.md. "
                          "NutriCare will not guess a food name.")
+
+    top = result.get("top") or {}
+    try:
+        confidence = float(top.get("confidence"))
+    except (TypeError, ValueError):
+        confidence = None
+    if confidence is not None and not math.isfinite(confidence):
+        confidence = None
+    if confidence is None or confidence < vision.MIN_FOOD_RECOGNITION_CONFIDENCE:
+        return _err(
+            "We couldn’t confidently recognize a food in this photo. Try a clear "
+            "photo of one dish, or choose a food manually.",
+            422,
+            code="food_not_recognized",
+            confidence=confidence,
+            confidence_threshold=vision.MIN_FOOD_RECOGNITION_CONFIDENCE,
+            confidence_note=vision.CONFIDENCE_NOTE,
+            model=result.get("model"),
+            recognition=result.get("recognition"),
+        )
 
     result["candidates"] = food_recognition.predictions_with_nutrition(
         uid_conn, result, grams_value)

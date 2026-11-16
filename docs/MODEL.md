@@ -6,10 +6,13 @@ NutriCare's scan endpoint uses one fixed policy:
 
 1. Load and run `models/v2/food_classifier_indian_80_224.pt`, the **80-class
    Indian-food model**, for every normal photo-recognition request.
-2. Return only that model's ranked predictions and its raw softmax confidence
-   metadata.
-3. Run `models/food_classifier_cc0.pt`, the **12-class CC0-declared model**,
+2. Run `models/food_classifier_cc0.pt`, the **12-class CC0-declared model**,
    only after a genuine technical failure of the primary model.
+3. After the selected model returns, accept the result only when its top raw
+   softmax score is at least **0.35**. Below 0.35, the API abstains with HTTP
+   `422` and code `food_not_recognized`; it returns no food label or nutrition
+   candidates. The scanner invites the user to try another clear photo or
+   choose a food manually.
 
 The exact technical fallback conditions are:
 
@@ -27,12 +30,15 @@ does not cause fallback. If both checkpoints fail technically, the API returns
 its explicit `503` recognition-unavailable response and does not invent a food
 name.
 
-Every prediction is **unconfirmed**. The response's confidence is the selected
-model's raw softmax output, not a calibrated probability that the food is
-correct. `LOW_CONFIDENCE_THRESHOLD` remains an existing uncertainty signal for
-clients, but it has no documented calibration or rejection evaluation and does
-not change the model policy. User confirmation belongs to the follow-up scanner
-workflow work; this runtime change does not automatically add meals.
+Any returned prediction is **unconfirmed**. The response's confidence is the
+selected model's raw softmax output, not a calibrated probability that the food
+is correct. The API now abstains below a fixed 0.35 raw-score gate and returns
+`food_not_recognized` rather than a guessed label. This is a conservative
+product cutoff, not a measured or calibrated correctness threshold. The existing
+`LOW_CONFIDENCE_THRESHOLD` (0.40 by default) remains a separate uncertainty
+signal for accepted results between 0.35 and 0.40; neither threshold invokes
+the technical fallback. The scanner still requires user confirmation before
+using any accepted food suggestion, and does not automatically add meals.
 
 ## Shipped artifacts
 
@@ -107,8 +113,12 @@ and is outside the scanner policy.
 
 `POST /api/vision/predict` exposes the selected runtime in its `model` field and
 adds `recognition` metadata including `fallback_used`,
-`prediction_unconfirmed`, and `low_confidence_triggers_fallback: false`.
-There is no `ensemble` result block.
+`prediction_unconfirmed`, `minimum_accepted_confidence: 0.35`, and
+`low_confidence_triggers_fallback: false`. Below the minimum, it returns HTTP
+`422` with `code: food_not_recognized`, the raw top score and threshold, and no
+food-class predictions or nutrition candidates. The upload is still a valid
+image; this is a recognition abstention, not an image-decoding error. There is
+no `ensemble` result block.
 
 `GET /api/vision/status` reports the fixed policy, primary/fallback status, and
 whether each checkpoint is present without loading either model.
