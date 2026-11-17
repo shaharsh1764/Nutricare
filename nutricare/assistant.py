@@ -288,6 +288,40 @@ def _matches(text: str, regex: str) -> bool:
     return re.search(regex, text, re.IGNORECASE) is not None
 
 
+class UnrecognizedSymptomError(ValueError):
+    """The assessment cannot safely proceed without a recognized symptom."""
+
+
+# These additional labels are supported by the guided symptom options or the
+# existing conversational symptom parser, but do not all have their own
+# educational entry. They remain recognized without inventing extra synonyms.
+ASSESSMENT_ONLY_SYMPTOM_MATCHERS = (
+    r"\bbody pain\b",
+    r"\b(?:stress(?:ed)?|anxious|anxiety)\b",
+    r"\b(?:low mood|feeling low|feel low|sad|depressed)\b",
+    r"\b(?:feeling good|feel good|feeling well|feel well)\b",
+    r"\bweak(?:ness)?\b",
+)
+
+
+def _normalize_symptom_input(text: str) -> str:
+    """Apply text-only normalization: trim, collapse whitespace, and case-fold.
+
+    Recognition still relies exclusively on the existing rule-based knowledge
+    base patterns and already-supported guided/conversational labels. This does
+    not translate, transliterate, or infer a symptom from unfamiliar wording.
+    """
+    return re.sub(r"\s+", " ", str(text or "").strip()).casefold()
+
+
+def is_recognized_symptom(text: str) -> bool:
+    """Return whether text matches an existing supported symptom rule/label."""
+    normalized = _normalize_symptom_input(text)
+    if any(_matches(normalized, kb["match"]) for kb in SYMPTOM_KB.values()):
+        return True
+    return any(_matches(normalized, pattern) for pattern in ASSESSMENT_ONLY_SYMPTOM_MATCHERS)
+
+
 # ------------------------------------------------------------------ independent screens
 
 def screen_red_flags(text: str, selected_sign_ids: list[str]) -> list[dict]:
@@ -337,23 +371,45 @@ def assess(payload: dict, profile: dict | None = None) -> dict:
     associated = [str(a).strip() for a in (payload.get("associated") or []) if str(a).strip()]
     existing_conditions = [str(c).strip() for c in (payload.get("existing_conditions") or []) if str(c).strip()]
     selected_signs = [str(s).strip() for s in (payload.get("warning_signs") or []) if str(s).strip()]
-    duration = payload.get("duration") or "today"
+    duration = payload.get("duration")
     try:
-        severity = int(payload.get("severity", 0))
+        severity = int(payload.get("severity"))
     except (TypeError, ValueError):
-        severity = 0
-    if not primary:
-        raise ValueError("primary symptom is required")
-    if not 1 <= severity <= 10:
-        raise ValueError("severity must be an integer from 1 to 10")
-    if duration not in DURATIONS:
-        raise ValueError(f"duration must be one of {DURATIONS}")
+        severity = None
 
     haystack = " | ".join([primary, notes, *associated]).lower()
 
-    # 1) emergency screen FIRST and independently of everything below
+    # 1) emergency screen FIRST and independently of required ordinary
+    # assessment fields or symptom recognition.
     flags = screen_red_flags(haystack, selected_signs)
     emergency = bool(flags)
+
+    if emergency:
+        # Keep the emergency pathway available even when ordinary assessment
+        # fields are incomplete; do not invent severity or duration facts.
+        if severity is not None and not 1 <= severity <= 10:
+            severity = None
+        if duration not in DURATIONS:
+            duration = None
+    else:
+        if not primary:
+            raise ValueError("primary symptom is required")
+
+        # Fail closed before validating assessment details, triage, education,
+        # or generic guidance. Invalid symptom wording gets the correct retry
+        # prompt instead of a later, unrelated validation response.
+        if not is_recognized_symptom(primary):
+            raise UnrecognizedSymptomError(
+                "I couldn't recognize that symptom. Please select a supported symptom "
+                "or try describing it using different wording. I can't safely assess "
+                "a symptom I don't understand."
+            )
+        if severity is None or not 1 <= severity <= 10:
+            raise ValueError("severity must be an integer from 1 to 10")
+        if not duration:
+            duration = "today"  # preserve the existing default for valid assessments
+        if duration not in DURATIONS:
+            raise ValueError(f"duration must be one of {DURATIONS}")
 
     # 2) triage level
     if emergency:
@@ -407,7 +463,7 @@ def assess(payload: dict, profile: dict | None = None) -> dict:
     if duration == ">2w":
         seek_care.insert(0, "These symptoms have lasted more than 2 weeks — book a clinician "
                             "visit rather than continuing self-care alone.")
-    if severity >= 6 and not emergency:
+    if not emergency and severity is not None and severity >= 6:
         seek_care.insert(0, "Severity this high deserves a same-day or next-day clinician "
                             "check even without warning signs.")
 
@@ -418,7 +474,7 @@ def assess(payload: dict, profile: dict | None = None) -> dict:
         "reported_facts": {
             "primary": primary,
             "duration": duration,
-            "duration_label": DURATION_LABELS[duration],
+            "duration_label": DURATION_LABELS.get(duration, "Not recorded"),
             "severity": severity,
             "associated": associated,
             "existing_conditions": existing_conditions,

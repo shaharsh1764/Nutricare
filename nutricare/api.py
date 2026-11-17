@@ -960,6 +960,8 @@ def assess():
     profile = db.get_profile(conn, uid)
     try:
         result = assistant.assess(data, profile)
+    except assistant.UnrecognizedSymptomError as exc:
+        return err(str(exc), 422)
     except ValueError as exc:
         return err(str(exc))
     conn.execute(

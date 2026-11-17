@@ -151,6 +151,14 @@ def test_non_health_prompt_gets_professional_out_of_scope_redirect():
     assert reply["food_recommendations"] == []
 
 
+def test_unrecognized_symptom_wording_gets_rephrase_prompt_without_guidance():
+    reply = ask("sar dard")
+    assert reply["guidance"] == []
+    assert reply["food_recommendations"] == []
+    assert "rephrase" in reply["message"].lower()
+    assert reply["triage"] == "out_of_scope"
+
+
 def test_unmatched_health_language_gets_default_clarification_not_a_guessed_answer():
     reply = ask("My wellness energy feels unusual")
     assert reply["triage"] == "clarification"

@@ -443,16 +443,41 @@ const DRIVER = `
   const guidedBranches = {
     feeling_good: "conditions", fatigue: "fatigue_sleep", headache: "headache_duration",
     fever: "fever_temperature", dizziness: "dizziness_duration", nausea: "nausea_duration",
-    body_pain: "body_pain_location", stress_anxiety: "wellbeing_safety", low_mood: "wellbeing_safety", other: "conditions",
+    body_pain: "body_pain_location", stress_anxiety: "wellbeing_safety", low_mood: "wellbeing_safety",
   };
   for (const [symptom, expectedStep] of Object.entries(guidedBranches)) {
     startHealthAssessment();
-    HEALTH_ASSESSMENT.answers.symptoms = { values: [symptom], other: symptom === "other" ? "A concern in ordinary words" : "" };
+    HEALTH_ASSESSMENT.answers.symptoms = { values: [symptom], other: "" };
     await continueHealthAssessment();
     assert(HEALTH_ASSESSMENT.steps.some((step) => step.id === expectedStep),
       "G2d " + symptom + " follows its relevant option-based branch");
   }
+  startHealthAssessment();
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "I have a migraine" };
+  await continueHealthAssessment();
+  assert(HEALTH_ASSESSMENT.steps.some((step) => step.id === "headache_duration")
+    && !HEALTH_ASSESSMENT.answers.symptoms.values.includes("other"),
+  "G2e a free-text Other answer matching a supported symptom follows that symptom branch");
+
   startHealthAssessment(); renderHealthChat();
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "i want ice cream" };
+  await continueHealthAssessment();
+  assert(HEALTH_ASSESSMENT.scopeFallback && assessmentCurrentStep().id === "symptoms"
+    && !HEALTH_ASSESSMENT.steps.some((step) => step.id === "conditions")
+    && el("#health-chat-root").innerHTML.includes("I couldn't recognize that symptom")
+    && el("#health-chat-root").innerHTML.includes("Try again")
+    && el("#health-chat-root").innerHTML.includes("Continue in Health Chat"),
+  "G2f an unsupported Other answer such as a food request does not proceed to medical questions");
+  el("#health-assessment-fallback-retry").onclick();
+  assert(HEALTH_ASSESSMENT.active && !HEALTH_ASSESSMENT.scopeFallback
+    && assessmentCurrentStep().id === "symptoms" && !HEALTH_ASSESSMENT.answers.symptoms,
+  "G2g the user can retry from the symptom question after an unrecognized answer");
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "i want ice cream" };
+  await continueHealthAssessment();
+  el("#health-assessment-fallback-chat").onclick();
+  assert(!HEALTH_ASSESSMENT.active && !HEALTH_ASSESSMENT.scopeFallback
+    && HEALTH_CHAT.draft === "i want ice cream",
+  "G2h the fallback preserves an out-of-scope food request in Health Chat");
 
   HEALTH_ASSESSMENT.answers.symptoms = { values: ["headache", "fever"], other: "" };
   await continueHealthAssessment();
@@ -492,6 +517,16 @@ const DRIVER = `
   HEALTH_ASSESSMENT.answers.safety = { values: ["chest_pain"], other: "" }; await continueHealthAssessment();
   assert(HEALTH_ASSESSMENT.emergency && el("#health-chat-root").innerHTML.includes("112"),
     "G9 emergency choices stop the ordinary assessment and show the local protocol");
+
+  startHealthAssessment();
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "sar dard" };
+  HEALTH_ASSESSMENT.steps.push(assessmentStep("review", "Review", [], { review: true, other: false }));
+  HEALTH_ASSESSMENT.index = 1;
+  renderHealthChat();
+  await finishHealthAssessment();
+  assert(assessmentCurrentStep().id === "symptoms" && HEALTH_ASSESSMENT.error?.includes("couldn't recognize that symptom")
+    && !HEALTH_ASSESSMENT.result && el("#health-chat-root").innerHTML.includes("I can&#39;t safely assess"),
+  "G9a backend rejection returns the user to the symptom question without showing a medical assessment");
 
   startHealthAssessment(); renderHealthChat();
   assert(!el("#health-chat-root").innerHTML.includes("Free text"),

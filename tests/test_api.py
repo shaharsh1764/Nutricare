@@ -302,6 +302,31 @@ def test_assistant_endpoint_emergency_and_logging(client):
                        json={"primary": "headache", "severity": 11}).status_code == 400
 
 
+def test_unrecognized_symptom_rejected_without_persisting_and_can_retry(client):
+    new_user(client, "Unrecognized symptom")
+    for phrase in ("zxqwv", "kidney pain", "sar dard"):
+        rejected = client.post("/api/assistant/assess", json={
+            "primary": phrase, "severity": 3, "duration": "today",
+        })
+        assert rejected.status_code == 422
+        payload = rejected.get_json()
+        assert set(payload) == {"error"}
+        error = payload["error"].lower()
+        assert "couldn't recognize that symptom" in error
+        assert "can't safely assess" in error
+        assert client.get("/api/assistant/history").get_json()["history"] == []
+
+    # The same assessment flow remains usable after the user retries with a
+    # supported symptom; the failed attempts did not create assessment records.
+    accepted = client.post("/api/assistant/assess", json={
+        "primary": "HEADACHE", "severity": 3, "duration": "today",
+    })
+    assert accepted.status_code == 200
+    assert accepted.get_json()["triage"] == "self_care"
+    history = client.get("/api/assistant/history").get_json()["history"]
+    assert len(history) == 1 and history[0]["primary"] == "HEADACHE"
+
+
 def test_warning_signs_endpoint_matches_engine_and_drives_triage(client):
     new_user(client, "Signs")
     signs = client.get("/api/assistant/warning-signs").get_json()["warning_signs"]

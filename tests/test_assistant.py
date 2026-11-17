@@ -102,14 +102,46 @@ def test_cautious_language_no_asserted_causes():
         assert "cannot" in blob or "not possible" in blob  # uncertainty stated
 
 
-def test_ambiguous_input_handled_cautiously():
-    result = run("weird feeling, not sure what it is")
+@pytest.mark.parametrize("text", ["zxqwv", "kidney pain", "sar dard"])
+def test_unrecognized_symptoms_stop_before_any_assessment(text):
+    with pytest.raises(assistant.UnrecognizedSymptomError) as exc_info:
+        run(text)
+    message = str(exc_info.value).lower()
+    assert "couldn't recognize that symptom" in message
+    assert "try describing it using different wording" in message
+    assert "can't safely assess" in message
+
+
+def test_unrecognized_symptom_rejection_precedes_ordinary_assessment_validation():
+    with pytest.raises(assistant.UnrecognizedSymptomError):
+        assistant.assess({"primary": "kidney pain"})
+
+
+def test_supported_symptom_is_normalized_and_continues_assessment():
+    result = run("  HEADACHE  ")
     assert result["triage"] == "self_care"
-    assert result["red_flags"] == []
+    assert result["reported_facts"]["primary"] == "HEADACHE"
+    assert result["possibilities"]
+
+
+def test_recognized_symptom_without_education_keeps_existing_generic_path():
+    # Body pain is an explicit supported guided option, but has no exact
+    # educational-entry matcher in SYMPTOM_KB. It remains recognized.
+    result = run("Body pain")
+    assert result["triage"] == "self_care"
     assert any("no specific educational entry matched" in note.lower()
                for note in result["caution_notes"])
+    assert result["self_care"]
     assert result["possibilities"][0]["tag"].startswith("Possible")
-    assert result["disclaimer"] and result["limitations"]
+
+
+def test_emergency_screen_wins_for_unrecognized_symptom_text_without_assessment_fields():
+    result = assistant.assess({"primary": "sar dard with chest pain"})
+    assert result["triage"] == "emergency"
+    assert any(flag["id"] == "chest_pain" for flag in result["red_flags"])
+    assert result["emergency_actions"]
+    assert result["reported_facts"]["severity"] is None
+    assert result["reported_facts"]["duration"] is None
 
 
 def test_multi_symptom_input_flags_ambiguity():
@@ -166,7 +198,7 @@ def test_no_medication_dosing():
 
 
 def test_disclaimer_and_limitations_always_present():
-    for primary in ["fatigue", "chest pain", "nothing matches this"]:
+    for primary in ["fatigue", "chest pain", "body pain"]:
         result = run(primary)
         assert "not a medical diagnosis" in result["disclaimer"].lower()
         assert len(result["limitations"]) >= 3

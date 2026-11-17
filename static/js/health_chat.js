@@ -13,7 +13,7 @@ const HEALTH_CHAT = {
 // it never calls an LLM or a third-party health service.
 const HEALTH_ASSESSMENT = {
   active: false, loading: false, steps: [], index: 0, answers: {}, turns: [],
-  emergency: null, result: null, error: null,
+  emergency: null, result: null, error: null, scopeFallback: false,
 };
 
 // The OTC flow is separate from assessment and free text. It accepts only
@@ -73,6 +73,20 @@ const ASSESSMENT_SYMPTOMS = [
   { value: "stress_anxiety", label: "Stressed or anxious" },
   { value: "low_mood", label: "Feeling low" },
   { value: "other", label: "Other" },
+];
+
+// A free-text “Other” answer can continue only when it maps to a symptom
+// branch this deterministic assessment actually knows how to handle.
+const ASSESSMENT_TEXT_SYMPTOM_MATCHERS = [
+  ["fatigue", /\b(tired|fatigue|exhausted|low energy|sleepy)\b/i],
+  ["headache", /\b(headache|migraine)\b/i],
+  ["fever", /\b(fever|high temperature)\b/i],
+  ["dizziness", /\b(dizz(?:y|iness)|lightheaded|vertigo)\b/i],
+  ["nausea", /\b(nausea|nauseous|vomit(?:ing)?)\b/i],
+  ["body_pain", /\b(body pain|muscle aches?|joint pain|aches?)\b/i],
+  ["stress_anxiety", /\b(stress(?:ed)?|anxious|anxiety)\b/i],
+  ["low_mood", /\b(low mood|feeling low|feel low|sad|depressed)\b/i],
+  ["feeling_good", /\b(feeling good|feel good|feeling well|feel well)\b/i],
 ];
 
 const ASSESSMENT_CONDITIONS = [
@@ -273,6 +287,7 @@ function startHealthAssessment() {
   OTC_GUIDANCE.active = false;
   HEALTH_ASSESSMENT.active = true;
   HEALTH_ASSESSMENT.loading = false;
+  HEALTH_ASSESSMENT.scopeFallback = false;
   HEALTH_ASSESSMENT.steps = [assessmentStep(
     "symptoms", "Hi! How are you feeling today?", ASSESSMENT_SYMPTOMS,
     { multiple: true, otherLabel: "Describe any other symptom or concern" },
@@ -556,6 +571,10 @@ function selectedAssessmentSymptoms() {
   return (HEALTH_ASSESSMENT.answers.symptoms?.values || []).filter((value) => value !== "other");
 }
 
+function matchAssessmentTextSymptom(text) {
+  return ASSESSMENT_TEXT_SYMPTOM_MATCHERS.find(([, pattern]) => pattern.test(text))?.[0] || "";
+}
+
 function buildAssessmentSteps(symptoms) {
   const steps = [HEALTH_ASSESSMENT.steps[0]];
   const needsSafetyScreen = symptoms.some((value) => value !== "feeling_good" && value !== "other");
@@ -796,6 +815,15 @@ function healthAssessmentReview() {
 
 function healthAssessmentConversation() {
   if (HEALTH_ASSESSMENT.emergency) return healthAssessmentEmergency();
+  if (HEALTH_ASSESSMENT.scopeFallback) {
+    return `<article class="health-chat-message assistant"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
+      <div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Assistant</b>
+        <p>I couldn't recognize that symptom. Please select a supported symptom or try describing it using different wording. I can't safely assess a symptom I don't understand. For food or nutrition ideas, continue in Health Chat and ask your question there.</p>
+        <button class="btn btn-primary btn-sm" id="health-assessment-fallback-retry" type="button">Try again</button>
+        <button class="btn btn-ghost btn-sm" id="health-assessment-fallback-chat" type="button">Continue in Health Chat</button>
+        <p class="health-chat-disclaimer">If you may be experiencing an emergency, call 112 in India or your local emergency number now.</p>
+      </div></article>`;
+  }
   const transcript = HEALTH_ASSESSMENT.turns.map((turn) => `<article class="health-chat-message assistant">
       <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span><div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Assistant</b><p>${esc(turn.question)}</p></div></article>
       <article class="health-chat-message user"><div class="health-chat-bubble"><p>${esc(turn.answer)}</p></div></article>`).join("");
@@ -871,8 +899,20 @@ async function continueHealthAssessment(skip = false) {
     return;
   }
   const initialAnswer = assessmentAnswer(step);
-  if (step.id === "symptoms" && initialAnswer.other.trim() && !initialAnswer.values.includes("other")) {
-    HEALTH_ASSESSMENT.answers[step.id] = { ...initialAnswer, values: [...initialAnswer.values, "other"] };
+  if (step.id === "symptoms") {
+    const hasOther = initialAnswer.values.includes("other") || Boolean(initialAnswer.other.trim());
+    if (hasOther) {
+      const matchedSymptom = matchAssessmentTextSymptom(initialAnswer.other);
+      if (matchedSymptom) {
+        const values = [...initialAnswer.values.filter((value) => value !== "other"), matchedSymptom];
+        HEALTH_ASSESSMENT.answers[step.id] = { ...initialAnswer, values };
+      } else {
+        HEALTH_ASSESSMENT.scopeFallback = true;
+        HEALTH_ASSESSMENT.error = null;
+        renderHealthChat();
+        return;
+      }
+    }
   }
   HEALTH_ASSESSMENT.error = null;
   HEALTH_ASSESSMENT.loading = true;
@@ -916,6 +956,10 @@ async function finishHealthAssessment() {
     if (result.triage === "emergency") HEALTH_ASSESSMENT.emergency = result;
     else HEALTH_ASSESSMENT.result = result;
   } catch (error) {
+    if (error.status === 422) {
+      HEALTH_ASSESSMENT.index = 0;
+      HEALTH_ASSESSMENT.turns = [];
+    }
     HEALTH_ASSESSMENT.error = error.message || "The assessment could not be completed. Please try again.";
   } finally {
     HEALTH_ASSESSMENT.loading = false;
@@ -924,6 +968,18 @@ async function finishHealthAssessment() {
 }
 
 function bindHealthAssessment() {
+  if (HEALTH_ASSESSMENT.scopeFallback) {
+    const retry = $("#health-assessment-fallback-retry");
+    if (retry) retry.onclick = () => { startHealthAssessment(); renderHealthChat(); };
+    const continueChat = $("#health-assessment-fallback-chat");
+    if (continueChat) continueChat.onclick = () => {
+      HEALTH_CHAT.draft = HEALTH_ASSESSMENT.answers.symptoms?.other?.trim() || "";
+      HEALTH_ASSESSMENT.active = false;
+      HEALTH_ASSESSMENT.scopeFallback = false;
+      renderHealthChat();
+    };
+    return;
+  }
   const step = assessmentCurrentStep();
   if (!step || HEALTH_ASSESSMENT.emergency || HEALTH_ASSESSMENT.result) return;
   $$("[data-assessment-option]").forEach((button) => button.onclick = () => updateAssessmentSelection(step, button.dataset.assessmentOption));
