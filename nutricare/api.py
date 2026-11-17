@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 
 from flask import Blueprint, jsonify, request, session, Response
 
-from . import assistant, db, health_chat, insights, nutrition, otc_guidance, pdf_report
+from . import assistant, db, guided_assessment, health_chat, insights, nutrition, otc_guidance, pdf_report
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -904,8 +904,8 @@ def clear_health_chat_history():
 
 # ------------------------------------------------------------------ local rule-based assessment API
 # The guided Health Assistant uses this independent safety screen before moving
-# between option steps. It intentionally writes no assessment record: only a
-# confirmed final assessment is persisted by /assistant/assess.
+# between option steps. It intentionally writes no assessment record; validated
+# answers live in a separate per-user draft until /assistant/guided/complete.
 @api.post("/assistant/screen")
 def assistant_safety_screen():
     data = request.get_json(silent=True) or {}
@@ -930,8 +930,138 @@ def assistant_safety_screen():
     })
 
 
+def _load_guided_assessment_state(conn, uid: int) -> dict | None:
+    row = conn.execute(
+        "SELECT state FROM guided_assessment_sessions WHERE user_id = ?", (uid,)
+    ).fetchone()
+    if not row:
+        return None
+    try:
+        state = json.loads(row["state"])
+    except (TypeError, json.JSONDecodeError):
+        return None
+    return state if isinstance(state, dict) else None
+
+
+def _save_guided_assessment_state(conn, uid: int, state: dict) -> None:
+    conn.execute(
+        "INSERT INTO guided_assessment_sessions (user_id, state, updated_at) VALUES (?, ?, ?) "
+        "ON CONFLICT(user_id) DO UPDATE SET state = excluded.state, updated_at = excluded.updated_at",
+        (uid, json.dumps(state), db.now()),
+    )
+    conn.commit()
+
+
 # Retained for records created by earlier releases and now also used by the
 # confirmed final step of the guided Health Assistant.
+@api.post("/assistant/guided/start")
+def guided_assessment_start():
+    """Create fresh server-owned state for a guided assessment attempt."""
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    state = guided_assessment.initial_state(uid)
+    _save_guided_assessment_state(conn, uid, state)
+    return jsonify({"ok": True, "expected_step": "symptoms"})
+
+
+@api.post("/assistant/guided/answer")
+def guided_assessment_answer():
+    """Validate exactly the expected answer before advancing server-side state."""
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    data = request.get_json(silent=True) or {}
+    state = _load_guided_assessment_state(conn, uid)
+
+    # Emergency detection is independent of expected-step and ordinary answer
+    # validation, so malformed or out-of-order answers cannot hide a red flag.
+    raw_answer = data.get("answer")
+    flags = guided_assessment.emergency_for_answer(
+        state if isinstance(state, dict) else {}, raw_answer,
+    )
+    if flags:
+        return jsonify({
+            "emergency": True,
+            "triage": "emergency",
+            "red_flags": [{"id": flag["id"], "label": flag["label"], "action": flag["action"]}
+                          for flag in flags],
+            "emergency_actions": ([assistant.EMERGENCY_ACTION]
+                                  + [flag["action"] for flag in flags]),
+            "disclaimer": assistant.DISCLAIMER,
+        })
+
+    try:
+        state = guided_assessment.state_for_user(state, uid)
+        step_id = data.get("step_id")
+        if not isinstance(step_id, str):
+            raise guided_assessment.FlowStateError("A guided step identifier is required.")
+        state, next_step = guided_assessment.accept_answer(state, step_id, raw_answer)
+    except guided_assessment.FlowStateError as exc:
+        return err(str(exc), 409)
+    except guided_assessment.InvalidAnswerError as exc:
+        return err(str(exc), 422)
+
+    _save_guided_assessment_state(conn, uid, state)
+    response = {"ok": True, "emergency": False, "next_step": next_step}
+    if step_id == "symptoms":
+        response["symptoms"] = state["symptoms"]
+    return jsonify(response)
+
+
+@api.post("/assistant/guided/back")
+def guided_assessment_back():
+    """Rewind only to the immediately preceding server-validated question."""
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    data = request.get_json(silent=True) or {}
+    try:
+        state = guided_assessment.state_for_user(_load_guided_assessment_state(conn, uid), uid)
+        step_id = data.get("step_id")
+        if not isinstance(step_id, str):
+            raise guided_assessment.FlowStateError("A guided step identifier is required.")
+        state = guided_assessment.go_back(state, step_id)
+    except guided_assessment.FlowStateError as exc:
+        return err(str(exc), 409)
+    _save_guided_assessment_state(conn, uid, state)
+    return jsonify({"ok": True, "expected_step": state["step_ids"][state["index"]]})
+
+
+@api.post("/assistant/guided/complete")
+def guided_assessment_complete():
+    """Build and persist a final assessment only from validated session answers."""
+    conn = db.get_db()
+    uid = current_uid(conn)
+    if uid is None:
+        return no_user()
+    try:
+        state = guided_assessment.state_for_user(_load_guided_assessment_state(conn, uid), uid)
+        guided_assessment.complete(state)
+    except guided_assessment.FlowStateError as exc:
+        return err(str(exc), 409)
+
+    payload = guided_assessment.assessment_payload(state)
+    profile = db.get_profile(conn, uid)
+    try:
+        result = assistant.assess(payload, profile)
+    except assistant.UnrecognizedSymptomError as exc:
+        return err(str(exc), 422)
+    except ValueError as exc:
+        return err(str(exc))
+    conn.execute(
+        "INSERT INTO assessments (user_id, created_at, emergency, payload, result) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (uid, db.now(), 1 if result["triage"] == "emergency" else 0,
+         json.dumps(payload), json.dumps(result)))
+    conn.execute("DELETE FROM guided_assessment_sessions WHERE user_id = ?", (uid,))
+    conn.commit()
+    return jsonify(result)
+
+
 @api.post("/assistant/otc-guidance")
 def assistant_otc_guidance():
     """Return only source-cited, option-screened OTC education.

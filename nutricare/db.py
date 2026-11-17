@@ -62,6 +62,11 @@ CREATE TABLE IF NOT EXISTS assessments (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TEXT, emergency INTEGER, payload TEXT, result TEXT
 );
+CREATE TABLE IF NOT EXISTS guided_assessment_sessions (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    state TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS health_chat_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -288,6 +293,7 @@ def purge_user_data(conn: sqlite3.Connection, uid: int):
     conn.execute("DELETE FROM meal_entries WHERE user_id = ?", (uid,))
     conn.execute("DELETE FROM water_logs WHERE user_id = ?", (uid,))
     conn.execute("DELETE FROM assessments WHERE user_id = ?", (uid,))
+    conn.execute("DELETE FROM guided_assessment_sessions WHERE user_id = ?", (uid,))
     conn.execute("DELETE FROM health_chat_messages WHERE user_id = ?", (uid,))
     conn.execute(
         "UPDATE profile SET age=NULL, sex=NULL, height_cm=NULL, weight_kg=NULL, "

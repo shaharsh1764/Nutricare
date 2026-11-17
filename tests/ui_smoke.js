@@ -64,7 +64,9 @@ console.log("PASS  D3 global search removed, theme switch and meal chooser are w
 const HEALTH_CHAT_SOURCE = fs.readFileSync(path.join(JS_DIR, "health_chat.js"), "utf8");
 const STYLE_SOURCE = fs.readFileSync(path.join(__dirname, "..", "static", "css", "style.css"), "utf8");
 if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("Hi! How are you feeling today?")
-    || !HEALTH_CHAT_SOURCE.includes("/assistant/screen") || !HEALTH_CHAT_SOURCE.includes("/assistant/assess")
+    || !HEALTH_CHAT_SOURCE.includes("/assistant/screen")
+    || !HEALTH_CHAT_SOURCE.includes("/assistant/guided/answer")
+    || !HEALTH_CHAT_SOURCE.includes("/assistant/guided/complete")
     || !HEALTH_CHAT_SOURCE.includes("/health-chat/messages") || !HEALTH_CHAT_SOURCE.includes("pharmacist")) {
   throw new Error("The local bottom-left Health Chat must be wired into the shell with its safe API flow");
 }
@@ -460,8 +462,9 @@ const DRIVER = `
   "G2e a free-text Other answer matching a supported symptom follows that symptom branch");
 
   startHealthAssessment(); renderHealthChat();
-  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "i want ice cream" };
-  await continueHealthAssessment();
+  el("#health-assessment-other").value = "sar dard";
+  el("#health-assessment-other").oninput();
+  await el("#health-assessment-continue").onclick();
   assert(HEALTH_ASSESSMENT.scopeFallback && assessmentCurrentStep().id === "symptoms"
     && !HEALTH_ASSESSMENT.steps.some((step) => step.id === "conditions")
     && el("#health-chat-root").innerHTML.includes("I couldn't recognize that symptom")
@@ -488,7 +491,7 @@ const DRIVER = `
   HEALTH_ASSESSMENT.answers.safety = { values: ["none"], other: "" };
   await continueHealthAssessment();
   assert(assessmentCurrentStep().id === "headache_duration", "G4 guided flow advances to the headache duration question");
-  backHealthAssessment();
+  await backHealthAssessment();
   assert(assessmentCurrentStep().id === "safety", "G5 Back returns to the previous guided question");
 
   startHealthAssessment();
@@ -518,15 +521,25 @@ const DRIVER = `
   assert(HEALTH_ASSESSMENT.emergency && el("#health-chat-root").innerHTML.includes("112"),
     "G9 emergency choices stop the ordinary assessment and show the local protocol");
 
-  startHealthAssessment();
-  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "sar dard" };
-  HEALTH_ASSESSMENT.steps.push(assessmentStep("review", "Review", [], { review: true, other: false }));
-  HEALTH_ASSESSMENT.index = 1;
-  renderHealthChat();
-  await finishHealthAssessment();
-  assert(assessmentCurrentStep().id === "symptoms" && HEALTH_ASSESSMENT.error?.includes("couldn't recognize that symptom")
-    && !HEALTH_ASSESSMENT.result && el("#health-chat-root").innerHTML.includes("I can&#39;t safely assess"),
-  "G9a backend rejection returns the user to the symptom question without showing a medical assessment");
+  startHealthAssessment(); renderHealthChat();
+  if (HEALTH_ASSESSMENT.sessionReady) await HEALTH_ASSESSMENT.sessionReady;
+  let rejectedSymptom = null;
+  try {
+    await api("/assistant/guided/answer", { method: "POST", body: {
+      step_id: "symptoms", answer: { values: ["other"], other: "sar dard" },
+    } });
+  } catch (error) { rejectedSymptom = error; }
+  let bypassedStep = null;
+  try {
+    await api("/assistant/guided/answer", { method: "POST", body: {
+      step_id: "conditions", answer: { values: ["other"], other: "sar dard" },
+    } });
+  } catch (error) { bypassedStep = error; }
+  assert(rejectedSymptom?.status === 422 && bypassedStep?.status === 409
+    && assessmentCurrentStep().id === "symptoms"
+    && el("#health-chat-root").innerHTML.includes("How are you feeling today?")
+    && !el("#health-chat-root").innerHTML.includes("existing medical conditions"),
+  "G9a backend rejects sar dard and refuses a condition-step bypass without advancing UI or server state");
 
   startHealthAssessment(); renderHealthChat();
   assert(!el("#health-chat-root").innerHTML.includes("Free text"),
