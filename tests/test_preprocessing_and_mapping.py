@@ -91,13 +91,15 @@ def test_transform_output_shape_and_channels(predictor_app):
     assert tuple(tensor.shape) == (1, 3, 224, 224)
 
 
-def test_grayscale_image_is_converted_to_rgb(predictor_app):
+def test_grayscale_image_is_converted_to_rgb(predictor_app, monkeypatch):
     """A single-channel upload must be expanded to 3 channels, not rejected.
 
     ``Predictor.predict`` converts to RGB before transforming, so a grayscale
-    PNG must flow through the full prediction path and return a ranked result
-    rather than an error.
+    PNG must flow through the full prediction path. This plumbing test disables
+    the separate API abstention gate; random fixture weights are not food-model
+    accuracy evidence.
     """
+    monkeypatch.setattr(vision, "MIN_FOOD_RECOGNITION_CONFIDENCE", 0.0)
     with predictor_app.test_client() as client:
         client.post("/api/users", json={"name": "Gray"})
         from PIL import Image
@@ -159,9 +161,13 @@ def test_model_class_order_matches_taxonomy_slugs(predictor_app):
         assert entry["label"] == by_slug[slug]["label"]
 
 
-def test_prediction_slugs_are_subset_of_checkpoint_classes(predictor_app):
-    """Every returned prediction slug belongs to the primary checkpoint,
-    never to the broader taxonomy or a combined-model result."""
+def test_prediction_slugs_are_subset_of_checkpoint_classes(predictor_app, monkeypatch):
+    """Returned prediction slugs belong to the primary checkpoint only.
+
+    Disable the API abstention gate in this plumbing-only test because its
+    fixture is intentionally random, not trained for food recognition.
+    """
+    monkeypatch.setattr(vision, "MIN_FOOD_RECOGNITION_CONFIDENCE", 0.0)
     with predictor_app.test_client() as client:
         client.post("/api/users", json={"name": "Map"})
         resp = client.post("/api/vision/predict?top_k=4",
@@ -183,13 +189,14 @@ def test_prediction_slugs_are_subset_of_checkpoint_classes(predictor_app):
 def test_low_confidence_flag_is_set_for_random_weights(predictor_app):
     """Random weights cannot be confident: low_confidence must be a real bool
     tied to the threshold, and must trip when top confidence is below it."""
-    with predictor_app.test_client() as client:
-        client.post("/api/users", json={"name": "Conf"})
-        body = client.post("/api/vision/predict", data=make_png()).get_json()
+    # Inspect Predictor output directly: the HTTP API intentionally abstains
+    # below its separate minimum-acceptance gate and omits class labels there.
+    body = vision.get_primary_predictor().predict(make_png())
     assert isinstance(body["low_confidence"], bool)
     assert body["threshold"] == vision.LOW_CONFIDENCE_THRESHOLD
-    if body["top"]["confidence"] < vision.LOW_CONFIDENCE_THRESHOLD:
-        assert body["low_confidence"] is True
+    assert body["low_confidence"] == (
+        body["top"]["confidence"] < vision.LOW_CONFIDENCE_THRESHOLD
+    )
 
 
 # ---------------------------------------------------------------- model absence

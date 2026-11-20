@@ -295,7 +295,7 @@ def demo_clear():
 @api.get("/foods")
 def foods():
     q = (request.args.get("q") or "").strip().lower()
-    limit = max(1, min(int(request.args.get("limit", 12)), 250))
+    limit = max(1, min(int(request.args.get("limit", 12)), 500))
     conn = db.get_db()
     if q:
         rows = conn.execute(

@@ -295,7 +295,7 @@ class TestAllergyFiltering:
         log_meal(client, rice["id"])
         j = client.get("/api/insights").get_json()
         # Fetch full dataset to cross-check
-        dataset_names = {f["name"] for f in client.get("/api/foods?limit=200").get_json()["foods"]}
+        dataset_names = {f["name"] for f in client.get("/api/foods?limit=500").get_json()["foods"]}
         for ins in j["insights"]:
             for rec in ins.get("recommendations", []):
                 assert rec["name"] in dataset_names, f"{rec['name']} not in dataset"

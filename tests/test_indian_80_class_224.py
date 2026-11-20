@@ -330,16 +330,16 @@ def test_experimental_nutrition_mappings_have_food_entries():
     classes_by_slug = {c["slug"]: c for c in taxonomy["classes"]}
 
     mapped = {
-        "biryani": "Chicken biryani",
+        "biryani": "Biryani (prepared, recipe estimate)",
         "chapati": "Roti, whole wheat (cooked)",
         "chana_masala": "Chole / chana masala (prepared)",
         "cham_cham": "Chomchom (chhena sweet, prepared)",
         "kadhi_pakoda": "Kadhi pakora (prepared)",
-        "lassi": "Lassi, sweet (prepared)",
-        "chak_hao_kheer": "Kheer, milk-rice (prepared)",
-        "doodhpak": "Kheer, milk-rice (prepared)",
-        "navrattan_korma": "Vegetable curry, mixed (prepared)",
-        "phirni": "Kheer, milk-rice (prepared)",
+        "lassi": "Lassi (prepared, recipe estimate)",
+        "chak_hao_kheer": "Chak Hao Kheer (prepared, recipe estimate)",
+        "doodhpak": "Doodhpak (prepared, recipe estimate)",
+        "navrattan_korma": "Navrattan Korma (prepared, recipe estimate)",
+        "phirni": "Phirni / Firni (prepared, recipe estimate)",
     }
     for slug, expected_food in mapped.items():
         assert slug in classes_by_slug, f"{slug} missing from taxonomy"
@@ -392,14 +392,14 @@ def test_experimental_nutrition_approximate_marked(tmp_path, monkeypatch):
         body = resp.get_json()
         assert body["nutrition_available"] is True
         assert body["approx_note"] is not None
-        assert "black rice" in body["approx_note"].lower()
+        assert "recipe-derived approximate" in body["approx_note"].lower()
+        assert "model_food_recipe_profiles.json" in body["approx_note"]
 
     vision.reset_predictor()
 
 
-def test_experimental_missing_nutrition_mappings(tmp_path, monkeypatch):
-    """Classes without nutrition mappings return nutrition_available=False
-    with an honest message, not an error."""
+def test_experimental_recipe_classes_have_approximate_nutrition(tmp_path, monkeypatch):
+    """New prepared-dish mappings expose nutrition as explicit estimates."""
     from nutricare import create_app
 
     monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "vision_nonutrition.db"))
@@ -415,8 +415,9 @@ def test_experimental_missing_nutrition_mappings(tmp_path, monkeypatch):
                                json={"slug": slug, "grams": 150})
             assert resp.status_code == 200, f"{slug}: {resp.get_json()}"
             body = resp.get_json()
-            assert body["nutrition_available"] is False, f"{slug}: should have no nutrition"
-            assert "unavailable_reason" in body, f"{slug}: missing reason"
+            assert body["nutrition_available"] is True, f"{slug}: nutrition missing"
+            assert body["nutrients"]["kcal"] > 0, f"{slug}: calories missing"
+            assert "recipe-derived approximate" in body["approx_note"].lower()
 
     vision.reset_predictor()
 
