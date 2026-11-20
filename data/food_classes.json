@@ -35,33 +35,113 @@
       }
     ],
     "trained_model_coverage": {
-      "note": "Classes the shipped checkpoint can actually predict. Keep this in sync with models/food_classifier.pt via its 'classes' field.",
-      "source_dataset": "dhruvk2002/food-classifier (20 Indian-majority classes)",
+      "note": "Primary classes are taken from models/v2/food_classifier_indian_80_224.metrics.json class_names, the checkpoint actually used for normal scans. The 12-class CC0 checkpoint is a technical-only fallback and is reported separately.",
+      "source_dataset": "models/v2/food_classifier_indian_80_224.metrics.json; SoumyaXD/Kaggle lineage, image rights unresolved",
       "classes": [
-        "roti",
-        "naan",
-        "idli",
-        "masala_dosa",
-        "pav_bhaji",
-        "chole_bhature",
+        "adhirasam",
+        "aloo_gobi",
+        "aloo_matar",
+        "aloo_methi",
+        "aloo_shimla_mirch",
+        "aloo_tikki",
+        "anarsa",
+        "ariselu",
+        "bandar_laddu",
+        "basundi",
+        "bhatura",
+        "bhindi_masala",
+        "biryani",
+        "boondi",
+        "butter_chicken",
+        "chak_hao_kheer",
+        "cham_cham",
+        "chana_masala",
+        "chapati",
+        "chhena_kheeri",
+        "chicken_razala",
+        "chicken_tikka",
+        "chicken_tikka_masala",
+        "chikki",
+        "daal_baati_churma",
+        "daal_puri",
         "dal_makhani",
-        "kadai_paneer",
-        "dhokla",
-        "samosa",
-        "pakora",
-        "pani_puri",
-        "fried_rice",
-        "pizza",
-        "burger",
-        "momos",
-        "chai",
+        "dal_tadka",
+        "dharwad_pedha",
+        "doodhpak",
+        "double_ka_meetha",
+        "dum_aloo",
+        "gajar_ka_halwa",
+        "gavvalu",
+        "ghevar",
+        "gulab_jamun",
+        "imarti",
         "jalebi",
-        "kulfi",
-        "kaathi_rolls"
-      ]
+        "kachori",
+        "kadai_paneer",
+        "kadhi_pakoda",
+        "kajjikaya",
+        "kakinada_khaja",
+        "kalakand",
+        "karela_bharta",
+        "kofta",
+        "kuzhi_paniyaram",
+        "lassi",
+        "ledikeni",
+        "litti_chokha",
+        "lyangcha",
+        "maach_jhol",
+        "makki_di_roti_sarson_da_saag",
+        "malapua",
+        "misi_roti",
+        "misti_doi",
+        "modak",
+        "mysore_pak",
+        "naan",
+        "navrattan_korma",
+        "palak_paneer",
+        "paneer_butter_masala",
+        "phirni",
+        "pithe",
+        "poha",
+        "poornalu",
+        "pootharekulu",
+        "qubani_ka_meetha",
+        "rabri",
+        "ras_malai",
+        "rasgulla",
+        "sandesh",
+        "shankarpali",
+        "sheer_korma",
+        "sheera",
+        "shrikhand",
+        "sohan_halwa",
+        "sohan_papdi",
+        "sutar_feni",
+        "unni_appam"
+      ],
+      "model_sidecar": "models/v2/food_classifier_indian_80_224.metrics.json"
     },
     "provenance_notes": {
       "cc0_12_class": "Classes added alongside models/food_classifier_cc0.pt (CC0 1.0 source). 'unavailable' nutrition_source rows exist on purpose: the classifier recognises the dish, but NutriCare has no documented nutrition entry, so the app asks the user instead of fabricating a figure."
+    },
+    "fallback_model_coverage": {
+      "model": "models/food_classifier_cc0.pt (technical fallback only)",
+      "source_sidecar": "models/food_classifier_cc0.metrics.json",
+      "classes": [
+        "chicken_biryani",
+        "chole",
+        "chomchom",
+        "curd_dahi",
+        "jalebi",
+        "kheer",
+        "khichdi",
+        "morog_polao",
+        "pakora",
+        "pani_puri",
+        "paratha_plain",
+        "rasgulla"
+      ],
+      "note": "Used only after a technical primary-model failure; every checkpoint class has a taxonomy row and documented food mapping. Not the normal scan model."
     }
   },
   "classes": [
@@ -495,10 +575,10 @@
         "pbm",
         "butter paneer"
       ],
-      "food": null,
+      "food": "Paneer Butter Masala (prepared, recipe estimate)",
       "default_grams": 150,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "bhindi_masala",
@@ -509,10 +589,10 @@
         "okra masala",
         "ladyfinger masala"
       ],
-      "food": null,
+      "food": "Bhindi Masala (prepared, recipe estimate)",
       "default_grams": 150,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "curd_dahi",
@@ -670,10 +750,10 @@
         "kachori",
         "katchori"
       ],
-      "food": null,
+      "food": "Kachori (prepared, recipe estimate)",
       "default_grams": 80,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "vada_pav",
@@ -874,10 +954,10 @@
         "dal makhni",
         "makhani dal"
       ],
-      "food": null,
+      "food": "Dal Makhani (prepared, recipe estimate)",
       "default_grams": 180,
-      "approx_note": null,
-      "nutrition_source": "unavailable"
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "nutrition_source": "dataset"
     },
     {
       "slug": "kadai_paneer",
@@ -888,10 +968,10 @@
         "karahi paneer",
         "kadhai paneer"
       ],
-      "food": null,
+      "food": "Kadai Paneer (prepared, recipe estimate)",
       "default_grams": 150,
-      "approx_note": null,
-      "nutrition_source": "unavailable"
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "nutrition_source": "dataset"
     },
     {
       "slug": "chai",
@@ -1011,7 +1091,7 @@
       "default_grams": 200,
       "nutrition_source": "dataset",
       "approx_note": "Recipe-derived (approximate): rice + chicken + ghee. Deliberately NOT mapped to 'Pulao, vegetable', which is a different dish.",
-      "notes": "Recognised by the CC0 model. Deliberately NOT mapped to 'Pulao, vegetable' (a different dish) \u2014 nutrition is a recipe-derived estimate of this pilaf (see approx_note)."
+      "notes": "Recognised by the CC0 model. Deliberately NOT mapped to 'Pulao, vegetable' (a different dish) — nutrition is a recipe-derived estimate of this pilaf (see approx_note)."
     },
     {
       "slug": "luchi",
@@ -1037,10 +1117,10 @@
         "biriyani",
         "beriani"
       ],
-      "food": "Chicken biryani",
+      "food": "Biryani (prepared, recipe estimate)",
       "default_grams": 180,
       "nutrition_source": "dataset",
-      "approx_note": "Biryani varies by region, meat, and preparation. Closest documented entry is Chicken biryani.",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
       "notes": "Recognised by the experimental 80-class model. Nutrition mapped to Chicken biryani (recipe-derived)."
     },
     {
@@ -1114,10 +1194,10 @@
         "sweet lassi",
         "salted lassi"
       ],
-      "food": "Lassi, sweet (prepared)",
+      "food": "Lassi (prepared, recipe estimate)",
       "default_grams": 150,
       "nutrition_source": "dataset",
-      "approx_note": null,
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
       "notes": "Direct match with documented Lassi, sweet (prepared) entry."
     },
     {
@@ -1129,10 +1209,10 @@
         "black rice kheer",
         "chakhao kheer"
       ],
-      "food": "Kheer, milk-rice (prepared)",
+      "food": "Chak Hao Kheer (prepared, recipe estimate)",
       "default_grams": 150,
       "nutrition_source": "dataset",
-      "approx_note": "Chak hao is black rice from Manipur; mapped to regular rice kheer. Nutrition differs due to rice variety.",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
       "notes": "APPROXIMATE: mapped to Kheer, milk-rice as closest documented entry. Black rice vs white rice changes nutrition values."
     },
     {
@@ -1143,10 +1223,10 @@
         "doodhpak",
         "doodh pak"
       ],
-      "food": "Kheer, milk-rice (prepared)",
+      "food": "Doodhpak (prepared, recipe estimate)",
       "default_grams": 150,
       "nutrition_source": "dataset",
-      "approx_note": "Doodhpak is a Gujarati milk pudding similar to kheer but often thicker with nuts. Mapped to kheer as closest entry.",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
       "notes": "APPROXIMATE: mapped to Kheer, milk-rice as closest documented entry."
     },
     {
@@ -1158,10 +1238,10 @@
         "navrattan korma",
         "nine vegetable korma"
       ],
-      "food": "Vegetable curry, mixed (prepared)",
+      "food": "Navrattan Korma (prepared, recipe estimate)",
       "default_grams": 150,
       "nutrition_source": "dataset",
-      "approx_note": "Navrattan korma is mixed vegetables in creamy cashew/yogurt sauce; mapped to mixed vegetable curry. Sauce differs (cream/cashew vs simple curry).",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
       "notes": "APPROXIMATE: mapped to Vegetable curry, mixed as closest documented entry."
     },
     {
@@ -1173,10 +1253,10 @@
         "firni",
         "kheer (ground rice)"
       ],
-      "food": "Kheer, milk-rice (prepared)",
+      "food": "Phirni / Firni (prepared, recipe estimate)",
       "default_grams": 150,
       "nutrition_source": "dataset",
-      "approx_note": "Phirni is made with ground rice and served cold; mapped to kheer. Texture and rice preparation differ.",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
       "notes": "APPROXIMATE: mapped to Kheer, milk-rice as closest documented entry."
     },
     {
@@ -1186,11 +1266,11 @@
       "aliases": [
         "adhirasam"
       ],
-      "food": null,
+      "food": "Adhirasam (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "aloo_matar",
@@ -1199,11 +1279,11 @@
       "aliases": [
         "aloo_matar"
       ],
-      "food": null,
+      "food": "Aloo Matar (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "aloo_methi",
@@ -1212,11 +1292,11 @@
       "aliases": [
         "aloo_methi"
       ],
-      "food": null,
+      "food": "Aloo Methi (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "aloo_shimla_mirch",
@@ -1225,11 +1305,11 @@
       "aliases": [
         "aloo_shimla_mirch"
       ],
-      "food": null,
+      "food": "Aloo Shimla Mirch (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "aloo_tikki",
@@ -1238,11 +1318,11 @@
       "aliases": [
         "aloo_tikki"
       ],
-      "food": null,
+      "food": "Aloo Tikki (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "anarsa",
@@ -1251,11 +1331,11 @@
       "aliases": [
         "anarsa"
       ],
-      "food": null,
+      "food": "Anarsa (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "ariselu",
@@ -1264,11 +1344,11 @@
       "aliases": [
         "ariselu"
       ],
-      "food": null,
+      "food": "Ariselu (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "bandar_laddu",
@@ -1277,11 +1357,11 @@
       "aliases": [
         "bandar_laddu"
       ],
-      "food": null,
+      "food": "Bandar Laddu (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "basundi",
@@ -1290,11 +1370,11 @@
       "aliases": [
         "basundi"
       ],
-      "food": null,
+      "food": "Basundi (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "boondi",
@@ -1303,11 +1383,11 @@
       "aliases": [
         "boondi"
       ],
-      "food": null,
+      "food": "Boondi (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "butter_chicken",
@@ -1316,11 +1396,11 @@
       "aliases": [
         "butter_chicken"
       ],
-      "food": null,
+      "food": "Butter Chicken (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "chhena_kheeri",
@@ -1329,11 +1409,11 @@
       "aliases": [
         "chhena_kheeri"
       ],
-      "food": null,
+      "food": "Chhena Kheeri (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "chicken_razala",
@@ -1342,11 +1422,11 @@
       "aliases": [
         "chicken_razala"
       ],
-      "food": null,
+      "food": "Chicken Razala (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "chicken_tikka",
@@ -1355,11 +1435,11 @@
       "aliases": [
         "chicken_tikka"
       ],
-      "food": null,
+      "food": "Chicken Tikka (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "chicken_tikka_masala",
@@ -1368,11 +1448,11 @@
       "aliases": [
         "chicken_tikka_masala"
       ],
-      "food": null,
+      "food": "Chicken Tikka Masala (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "chikki",
@@ -1381,11 +1461,11 @@
       "aliases": [
         "chikki"
       ],
-      "food": null,
+      "food": "Chikki (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "daal_baati_churma",
@@ -1394,11 +1474,11 @@
       "aliases": [
         "daal_baati_churma"
       ],
-      "food": null,
+      "food": "Dal Baati Churma (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "daal_puri",
@@ -1407,11 +1487,11 @@
       "aliases": [
         "daal_puri"
       ],
-      "food": null,
+      "food": "Dal Puri (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "dharwad_pedha",
@@ -1420,11 +1500,11 @@
       "aliases": [
         "dharwad_pedha"
       ],
-      "food": null,
+      "food": "Dharwad Pedha (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "double_ka_meetha",
@@ -1433,11 +1513,11 @@
       "aliases": [
         "double_ka_meetha"
       ],
-      "food": null,
+      "food": "Double Ka Meetha (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "dum_aloo",
@@ -1446,11 +1526,11 @@
       "aliases": [
         "dum_aloo"
       ],
-      "food": null,
+      "food": "Dum Aloo (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "gajar_ka_halwa",
@@ -1459,11 +1539,11 @@
       "aliases": [
         "gajar_ka_halwa"
       ],
-      "food": null,
+      "food": "Gajar Ka Halwa (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "gavvalu",
@@ -1472,11 +1552,11 @@
       "aliases": [
         "gavvalu"
       ],
-      "food": null,
+      "food": "Gavvalu (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "ghevar",
@@ -1485,11 +1565,11 @@
       "aliases": [
         "ghevar"
       ],
-      "food": null,
+      "food": "Ghevar (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "gulab_jamun",
@@ -1498,11 +1578,11 @@
       "aliases": [
         "gulab_jamun"
       ],
-      "food": null,
+      "food": "Gulab Jamun (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "imarti",
@@ -1511,11 +1591,11 @@
       "aliases": [
         "imarti"
       ],
-      "food": null,
+      "food": "Imarti (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "kajjikaya",
@@ -1524,11 +1604,11 @@
       "aliases": [
         "kajjikaya"
       ],
-      "food": null,
+      "food": "Kajjikaya (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "kakinada_khaja",
@@ -1537,11 +1617,11 @@
       "aliases": [
         "kakinada_khaja"
       ],
-      "food": null,
+      "food": "Kakinada Khaja (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "kalakand",
@@ -1550,11 +1630,11 @@
       "aliases": [
         "kalakand"
       ],
-      "food": null,
+      "food": "Kalakand (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "karela_bharta",
@@ -1563,11 +1643,11 @@
       "aliases": [
         "karela_bharta"
       ],
-      "food": null,
+      "food": "Karela Bharta (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "kofta",
@@ -1576,11 +1656,11 @@
       "aliases": [
         "kofta"
       ],
-      "food": null,
+      "food": "Kofta (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "kuzhi_paniyaram",
@@ -1589,11 +1669,11 @@
       "aliases": [
         "kuzhi_paniyaram"
       ],
-      "food": null,
+      "food": "Kuzhi Paniyaram (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "ledikeni",
@@ -1602,11 +1682,11 @@
       "aliases": [
         "ledikeni"
       ],
-      "food": null,
+      "food": "Ledikeni (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "litti_chokha",
@@ -1615,11 +1695,11 @@
       "aliases": [
         "litti_chokha"
       ],
-      "food": null,
+      "food": "Litti Chokha (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "lyangcha",
@@ -1628,11 +1708,11 @@
       "aliases": [
         "lyangcha"
       ],
-      "food": null,
+      "food": "Lyangcha (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "maach_jhol",
@@ -1641,11 +1721,11 @@
       "aliases": [
         "maach_jhol"
       ],
-      "food": null,
+      "food": "Maach Jhol (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "makki_di_roti_sarson_da_saag",
@@ -1654,11 +1734,11 @@
       "aliases": [
         "makki_di_roti_sarson_da_saag"
       ],
-      "food": null,
+      "food": "Makki Di Roti Sarson Da Saag (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "malapua",
@@ -1667,11 +1747,11 @@
       "aliases": [
         "malapua"
       ],
-      "food": null,
+      "food": "Malapua (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "misi_roti",
@@ -1680,11 +1760,11 @@
       "aliases": [
         "misi_roti"
       ],
-      "food": null,
+      "food": "Misi Roti (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "misti_doi",
@@ -1693,11 +1773,11 @@
       "aliases": [
         "misti_doi"
       ],
-      "food": null,
+      "food": "Misti Doi (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "modak",
@@ -1706,11 +1786,11 @@
       "aliases": [
         "modak"
       ],
-      "food": null,
+      "food": "Modak (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "mysore_pak",
@@ -1719,11 +1799,11 @@
       "aliases": [
         "mysore_pak"
       ],
-      "food": null,
+      "food": "Mysore Pak (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "pithe",
@@ -1732,11 +1812,11 @@
       "aliases": [
         "pithe"
       ],
-      "food": null,
+      "food": "Pithe (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "poornalu",
@@ -1745,11 +1825,11 @@
       "aliases": [
         "poornalu"
       ],
-      "food": null,
+      "food": "Poornalu (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "pootharekulu",
@@ -1758,11 +1838,11 @@
       "aliases": [
         "pootharekulu"
       ],
-      "food": null,
+      "food": "Pootharekulu (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "qubani_ka_meetha",
@@ -1771,11 +1851,11 @@
       "aliases": [
         "qubani_ka_meetha"
       ],
-      "food": null,
+      "food": "Qubani Ka Meetha (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "rabri",
@@ -1784,11 +1864,11 @@
       "aliases": [
         "rabri"
       ],
-      "food": null,
+      "food": "Rabri (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "ras_malai",
@@ -1797,11 +1877,11 @@
       "aliases": [
         "ras_malai"
       ],
-      "food": null,
+      "food": "Ras Malai (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "sandesh",
@@ -1810,11 +1890,11 @@
       "aliases": [
         "sandesh"
       ],
-      "food": null,
+      "food": "Sandesh (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "shankarpali",
@@ -1823,11 +1903,11 @@
       "aliases": [
         "shankarpali"
       ],
-      "food": null,
+      "food": "Shankarpali (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "sheer_korma",
@@ -1836,11 +1916,11 @@
       "aliases": [
         "sheer_korma"
       ],
-      "food": null,
+      "food": "Sheer Korma (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "sheera",
@@ -1849,11 +1929,11 @@
       "aliases": [
         "sheera"
       ],
-      "food": null,
+      "food": "Sheera (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "shrikhand",
@@ -1862,11 +1942,11 @@
       "aliases": [
         "shrikhand"
       ],
-      "food": null,
+      "food": "Shrikhand (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "sohan_halwa",
@@ -1875,11 +1955,11 @@
       "aliases": [
         "sohan_halwa"
       ],
-      "food": null,
+      "food": "Sohan Halwa (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "sohan_papdi",
@@ -1888,11 +1968,11 @@
       "aliases": [
         "sohan_papdi"
       ],
-      "food": null,
+      "food": "Sohan Papdi (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "sutar_feni",
@@ -1901,11 +1981,11 @@
       "aliases": [
         "sutar_feni"
       ],
-      "food": null,
+      "food": "Sutar Feni (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     },
     {
       "slug": "unni_appam",
@@ -1914,11 +1994,11 @@
       "aliases": [
         "unni_appam"
       ],
-      "food": null,
+      "food": "Unni Appam (prepared, recipe estimate)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null,
-      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry \u2014 user must enter values manually."
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recognised by the experimental 80-class model. No documented nutrition entry — user must enter values manually."
     }
   ]
 }

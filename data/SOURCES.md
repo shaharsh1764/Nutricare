@@ -1,9 +1,12 @@
 # NutriCare Food Dataset — Sources, Coverage & Caveats
 
+## Current status (2026-11-20)
+`data/foods.json` now contains 272 rows. The active 80-class primary model and the 12-class technical fallback each resolve to documented foods with nutrient values. The 68 model-coverage additions are representative recipe-derived estimates, not direct laboratory or IFCT/USDA analyses of finished dishes. See [`docs/FOOD_MODEL_NUTRITION_AUDIT.md`](../docs/FOOD_MODEL_NUTRITION_AUDIT.md) and [`model_food_recipe_profiles.json`](model_food_recipe_profiles.json) for class coverage, ingredients, calculation method and limitations. Historical counts and notes below describe earlier releases and are superseded where they conflict with this current status.
+
 ## What this file is
-`data/foods.json` is the **food dataset** shipped with NutriCare (v2.1, 198 foods, up from 42).
+`data/foods.json` is the **food dataset** shipped with NutriCare (current version 3.0, 272 foods; earlier v2.x counts are historical).
 It is loaded into the SQLite `foods` table on first run (see `nutricare/db.py`).
-Stable `id` values (1..198) are preserved across releases — meal records reference `food_id`, so original 1–42 remain unchanged.
+Stable original IDs 1–203 are preserved across releases — meal records reference `food_id`; new rows use IDs 204 onward.
 
 Every nutrient value is expressed **per 100 g of edible portion** unless the `state` field says otherwise
 (`raw` / `dry` / `cooked` / `prepared` explicitly distinguished). Serving sizes

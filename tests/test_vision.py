@@ -253,7 +253,9 @@ def trained_app(tmp_path, monkeypatch):
     vision.reset_predictor()
 
 
-def test_predict_output_structure_is_correct(trained_app):
+def test_predict_output_structure_is_correct(trained_app, monkeypatch):
+    # This fixture uses random weights; test response wiring, not recognition.
+    monkeypatch.setattr(vision, "MIN_FOOD_RECOGNITION_CONFIDENCE", 0.0)
     with trained_app.test_client() as client:
         client.post("/api/users", json={"name": "Shape"})
         resp = client.post("/api/vision/predict?top_k=3", data=make_png(),
@@ -279,7 +281,9 @@ def test_predict_output_structure_is_correct(trained_app):
     assert "ensemble" not in body
 
 
-def test_confidence_is_reported_and_low_confidence_flagged(trained_app):
+def test_confidence_is_reported_and_low_confidence_flagged(trained_app, monkeypatch):
+    # Allow the API to return the random-model payload so its fields can be tested.
+    monkeypatch.setattr(vision, "MIN_FOOD_RECOGNITION_CONFIDENCE", 0.0)
     with trained_app.test_client() as client:
         client.post("/api/users", json={"name": "Conf"})
         body = client.post("/api/vision/predict", data=make_png()).get_json()
@@ -290,7 +294,8 @@ def test_confidence_is_reported_and_low_confidence_flagged(trained_app):
         assert body["low_confidence"] is True
 
 
-def test_top_k_is_clamped_and_validated(trained_app):
+def test_top_k_is_clamped_and_validated(trained_app, monkeypatch):
+    monkeypatch.setattr(vision, "MIN_FOOD_RECOGNITION_CONFIDENCE", 0.0)
     with trained_app.test_client() as client:
         client.post("/api/users", json={"name": "K"})
         assert len(client.post("/api/vision/predict?top_k=99",
@@ -321,7 +326,9 @@ def test_checkpoint_load_failure_is_reported_not_hidden(tmp_path, monkeypatch):
     vision.reset_predictor()
 
 
-def test_repeated_predictions_reuse_the_loaded_model(trained_app):
+def test_repeated_predictions_reuse_the_loaded_model(trained_app, monkeypatch):
+    # Exercise repeated successful requests with random weights, not abstention.
+    monkeypatch.setattr(vision, "MIN_FOOD_RECOGNITION_CONFIDENCE", 0.0)
     predictor = vision.get_primary_predictor()
     with trained_app.test_client() as client:
         client.post("/api/users", json={"name": "Cache"})

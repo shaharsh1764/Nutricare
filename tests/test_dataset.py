@@ -1,4 +1,4 @@
-"""Dataset quality tests for expanded ~200 food dataset.
+"""Dataset quality tests for the expanded model-coverage food dataset.
 
 Covers schema validity, duplicates, units, dietary/allergen metadata,
 and that recommendations/search/logging still work with new foods.
@@ -38,7 +38,7 @@ def new_user(client, name="Dataset Tester", **profile):
 def test_dataset_schema_validity(dataset):
     foods, meta = dataset
     assert len(foods) >= 180, f"expected ~200 foods, got {len(foods)}"
-    assert len(foods) <= 220, f"too many foods: {len(foods)}"
+    assert len(foods) <= 300, f"unexpectedly large dataset: {len(foods)}"
     required = {"id","name","grp","serving_desc","serving_g","kcal","protein_g","carbs_g","fat_g","fiber_g","sodium_mg","potassium_mg","calcium_mg","iron_mg","source","source_id","state","quality","dietary","allergens"}
     for f in foods:
         missing = required - set(f.keys())
@@ -48,7 +48,7 @@ def test_dataset_schema_validity(dataset):
         assert isinstance(f["name"], str) and f["name"].strip()
         assert isinstance(f["grp"], str) and f["grp"].strip()
         assert isinstance(f["serving_g"], (int,float)) and f["serving_g"] > 0
-        assert f["state"] in {"raw","dry","cooked","prepared"}
+        assert f["state"] in {"raw","dry","dry-roasted","cooked","prepared"}
         assert f["quality"] in {"verified","approximate","illustrative"}
 
 def test_duplicate_ids(dataset):
@@ -184,7 +184,7 @@ def test_food_recommendations_from_dataset_only(client):
     roti = next(f for f in roti if f["name"]=="Roti, whole wheat (cooked)")
     client.post("/api/meals", json={"meal":"lunch","food_id":roti["id"],"quantity":1,"unit":"serving"})
     insights = client.get("/api/insights").get_json()
-    dataset_names = {f["name"] for f in client.get("/api/foods?limit=250").get_json()["foods"]}
+    dataset_names = {f["name"] for f in client.get("/api/foods?limit=500").get_json()["foods"]}
     for ins in insights["insights"]:
         for rec in ins.get("recommendations", []):
             assert rec["name"] in dataset_names
@@ -193,9 +193,9 @@ def test_existing_food_search_still_works(client):
     assert client.get("/api/foods?q=roti").status_code == 200
     assert len(client.get("/api/foods?q=roti").get_json()["foods"]) >= 1
     assert client.get("/api/foods?q=dal").get_json()["foods"]
-    assert client.get("/api/foods?limit=250").get_json()["foods"]
-    # total count should be ~196
-    all_foods = client.get("/api/foods?limit=250").get_json()["foods"]
+    assert client.get("/api/foods?limit=500").get_json()["foods"]
+    # The endpoint can return the complete current dataset.
+    all_foods = client.get("/api/foods?limit=500").get_json()["foods"]
     assert len(all_foods) >= 190
 
 def test_existing_meal_logging_with_new_dataset(client):
@@ -209,7 +209,7 @@ def test_existing_meal_logging_with_new_dataset(client):
     assert r2.status_code == 201
 
 def test_no_duplicate_names_in_db(client):
-    foods = client.get("/api/foods?limit=250").get_json()["foods"]
+    foods = client.get("/api/foods?limit=500").get_json()["foods"]
     names = [f["name"] for f in foods]
     assert len(names) == len(set(names))
 

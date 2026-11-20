@@ -1,0 +1,3289 @@
+{
+  "schema_version": 1,
+  "basis": "Each recipe profile specifies grams of each ingredient in 100 g of finished dish. Nutrients are calculated from the ingredient rows named by stable food_id in data/foods.json; added salt contributes 393.4 mg sodium per gram; the remaining mass is water.",
+  "limitations": "Representative home-style recipes, not laboratory analyses or official IFCT prepared-dish entries. Cooking yield, oil absorption, recipe region and brand cause substantial variation. All generated dish rows are quality=approximate and must be shown as estimates.",
+  "ingredient_sources": "Existing ingredient nutrient values retain their USDA FoodData Central or IFCT 2017 provenance. The added dry-roasted peanut ingredient is USDA FDC 173806 (NDB 16390).",
+  "primary_model_checkpoint": "models/v2/food_classifier_indian_80_224.metrics.json",
+  "profiles": [
+    {
+      "slug": "adhirasam",
+      "class_label": "Adhirasam",
+      "food_name": "Adhirasam (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-adhirasam-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Rice-flour/jaggery fried sweet; semolina is the cereal-flour proxy in this database.",
+      "ingredients": [
+        {
+          "food_id": 45,
+          "grams_per_100g": 46
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 24
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 169,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 8.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 428.2,
+        "protein_g": 6.8,
+        "carbs_g": 57.1,
+        "fat_g": 19.0,
+        "fiber_g": 2.4,
+        "sodium_mg": 199.6,
+        "potassium_mg": 361.0,
+        "calcium_mg": 75.8,
+        "iron_mg": 3.9
+      }
+    },
+    {
+      "slug": "aloo_matar",
+      "class_label": "Aloo Matar",
+      "food_name": "Aloo Matar (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-aloo_matar-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Potato and peas in tomato-onion gravy.",
+      "ingredients": [
+        {
+          "food_id": 26,
+          "grams_per_100g": 42
+        },
+        {
+          "food_id": 74,
+          "grams_per_100g": 24
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 87,
+          "grams_per_100g": 1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 8.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 107.5,
+        "protein_g": 3.1,
+        "carbs_g": 15.1,
+        "fat_g": 4.3,
+        "fiber_g": 3.2,
+        "sodium_mg": 318.4,
+        "potassium_mg": 292.7,
+        "calcium_mg": 14.4,
+        "iron_mg": 0.6
+      }
+    },
+    {
+      "slug": "aloo_methi",
+      "class_label": "Aloo Methi",
+      "food_name": "Aloo Methi (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-aloo_methi-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Potato and fresh fenugreek leaves with a small oil/ghee tempering.",
+      "ingredients": [
+        {
+          "food_id": 26,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 99,
+          "grams_per_100g": 16
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 14.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 105.3,
+        "protein_g": 1.7,
+        "carbs_g": 11.6,
+        "fat_g": 6.2,
+        "fiber_g": 1.9,
+        "sodium_mg": 329.5,
+        "potassium_mg": 293.3,
+        "calcium_mg": 68.3,
+        "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "aloo_shimla_mirch",
+      "class_label": "Aloo Shimla Mirch",
+      "food_name": "Aloo Shimla Mirch (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-aloo_shimla_mirch-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Potato and bell pepper in tomato-onion masala.",
+      "ingredients": [
+        {
+          "food_id": 26,
+          "grams_per_100g": 42
+        },
+        {
+          "food_id": 90,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 87,
+          "grams_per_100g": 1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 12.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 84.4,
+        "protein_g": 1.2,
+        "carbs_g": 11.3,
+        "fat_g": 4.1,
+        "fiber_g": 1.4,
+        "sodium_mg": 318.3,
+        "potassium_mg": 243.7,
+        "calcium_mg": 8.6,
+        "iron_mg": 0.3
+      }
+    },
+    {
+      "slug": "aloo_tikki",
+      "class_label": "Aloo Tikki",
+      "food_name": "Aloo Tikki (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-aloo_tikki-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Potato patty bound with gram flour and shallow-frying oil.",
+      "ingredients": [
+        {
+          "food_id": 26,
+          "grams_per_100g": 65
+        },
+        {
+          "food_id": 44,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 43,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 7.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 195.7,
+        "protein_g": 3.6,
+        "carbs_g": 21.6,
+        "fat_g": 10.6,
+        "fiber_g": 2.7,
+        "sodium_mg": 322.7,
+        "potassium_mg": 338.0,
+        "calcium_mg": 9.5,
+        "iron_mg": 0.8
+      }
+    },
+    {
+      "slug": "anarsa",
+      "class_label": "Anarsa",
+      "food_name": "Anarsa (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-anarsa-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Rice-based jaggery sweet with sesame and absorbed frying oil; semolina approximates rice flour.",
+      "ingredients": [
+        {
+          "food_id": 45,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 169,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 14
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 7.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 454.4,
+        "protein_g": 6.6,
+        "carbs_g": 54.4,
+        "fat_g": 23.4,
+        "fiber_g": 2.5,
+        "sodium_mg": 318.0,
+        "potassium_mg": 374.3,
+        "calcium_mg": 104.8,
+        "iron_mg": 4.4
+      }
+    },
+    {
+      "slug": "ariselu",
+      "class_label": "Ariselu",
+      "food_name": "Ariselu (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-ariselu-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Rice-and-jaggery fried sweet; semolina is a cereal-flour proxy.",
+      "ingredients": [
+        {
+          "food_id": 45,
+          "grams_per_100g": 42
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 169,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 7.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 453.2,
+        "protein_g": 6.3,
+        "carbs_g": 55.1,
+        "fat_g": 22.9,
+        "fiber_g": 2.2,
+        "sodium_mg": 317.7,
+        "potassium_mg": 364.0,
+        "calcium_mg": 75.9,
+        "iron_mg": 4.0
+      }
+    },
+    {
+      "slug": "bandar_laddu",
+      "class_label": "Bandar Laddu",
+      "food_name": "Bandar Laddu (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-bandar_laddu-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Gram-flour laddu bound with ghee and jaggery, with cashew.",
+      "ingredients": [
+        {
+          "food_id": 44,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 22
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 4.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 440.7,
+        "protein_g": 11.6,
+        "carbs_g": 49.2,
+        "fat_g": 21.4,
+        "fiber_g": 5.2,
+        "sodium_mg": 348.4,
+        "potassium_mg": 672.0,
+        "calcium_mg": 47.0,
+        "iron_mg": 5.2
+      }
+    },
+    {
+      "slug": "basundi",
+      "class_label": "Basundi",
+      "food_name": "Basundi (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-basundi-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Reduced whole milk with condensed milk, sugar, cream and cashew.",
+      "ingredients": [
+        {
+          "food_id": 10,
+          "grams_per_100g": 55
+        },
+        {
+          "food_id": 138,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 2.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 185.1,
+        "protein_g": 4.3,
+        "carbs_g": 24.7,
+        "fat_g": 8.2,
+        "fiber_g": 0.1,
+        "sodium_mg": 252.1,
+        "potassium_mg": 201.2,
+        "calcium_mg": 139.4,
+        "iron_mg": 0.4
+      }
+    },
+    {
+      "slug": "bhindi_masala",
+      "class_label": "Bhindi Masala",
+      "food_name": "Bhindi Masala (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-bhindi_masala-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Okra with tomato-onion masala and cooking oil.",
+      "ingredients": [
+        {
+          "food_id": 92,
+          "grams_per_100g": 60
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 87,
+          "grams_per_100g": 1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 9.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 72.5,
+        "protein_g": 1.4,
+        "carbs_g": 6.1,
+        "fat_g": 5.2,
+        "fiber_g": 2.3,
+        "sodium_mg": 320.2,
+        "potassium_mg": 229.4,
+        "calcium_mg": 55.0,
+        "iron_mg": 0.4
+      }
+    },
+    {
+      "slug": "biryani",
+      "class_label": "Biryani",
+      "food_name": "Biryani (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-biryani-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Generic biryani profile (chicken, rice, vegetables); not a claim for every regional recipe.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 147,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 27,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 6
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 9.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 148.5,
+        "protein_g": 7.0,
+        "carbs_g": 14.8,
+        "fat_g": 6.5,
+        "fiber_g": 0.7,
+        "sodium_mg": 338.7,
+        "potassium_mg": 102.3,
+        "calcium_mg": 18.6,
+        "iron_mg": 0.4
+      }
+    },
+    {
+      "slug": "boondi",
+      "class_label": "Boondi",
+      "food_name": "Boondi (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-boondi-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Fried gram-flour droplets, unsyruped savory style.",
+      "ingredients": [
+        {
+          "food_id": 44,
+          "grams_per_100g": 60
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 109,
+          "grams_per_100g": 1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 23.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 367.6,
+        "protein_g": 13.3,
+        "carbs_g": 34.7,
+        "fat_g": 18.8,
+        "fiber_g": 6.9,
+        "sodium_mg": 378.1,
+        "potassium_mg": 525.6,
+        "calcium_mg": 27.4,
+        "iron_mg": 3.0
+      }
+    },
+    {
+      "slug": "butter_chicken",
+      "class_label": "Butter Chicken",
+      "food_name": "Butter Chicken (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-butter_chicken-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Chicken in tomato, cream, butter and yogurt gravy.",
+      "ingredients": [
+        {
+          "food_id": 147,
+          "grams_per_100g": 42
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 133,
+          "grams_per_100g": 6
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 6
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 6.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 201.8,
+        "protein_g": 11.7,
+        "carbs_g": 2.0,
+        "fat_g": 16.3,
+        "fiber_g": 0.4,
+        "sodium_mg": 398.9,
+        "potassium_mg": 156.6,
+        "calcium_mg": 25.4,
+        "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "chak_hao_kheer",
+      "class_label": "Chak Hao Kheer",
+      "food_name": "Chak Hao Kheer (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-chak_hao_kheer-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Black-rice pudding profile approximated with cooked rice; ingredient row is white-rice proxy.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 50
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 122,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 1.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 171.0,
+        "protein_g": 2.5,
+        "carbs_g": 26.3,
+        "fat_g": 6.6,
+        "fiber_g": 0.3,
+        "sodium_mg": 226.2,
+        "potassium_mg": 144.7,
+        "calcium_mg": 83.5,
+        "iron_mg": 0.3
+      }
+    },
+    {
+      "slug": "chhena_kheeri",
+      "class_label": "Chhena Kheeri",
+      "food_name": "Chhena Kheeri (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-chhena_kheeri-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Milk-rice pudding enriched with chhena and cream.",
+      "ingredients": [
+        {
+          "food_id": 10,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 7,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 2,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 7.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 168.8,
+        "protein_g": 5.2,
+        "carbs_g": 18.0,
+        "fat_g": 8.6,
+        "fiber_g": 0.0,
+        "sodium_mg": 257.4,
+        "potassium_mg": 112.3,
+        "calcium_mg": 156.0,
+        "iron_mg": 0.2
+      }
+    },
+    {
+      "slug": "chicken_razala",
+      "class_label": "Chicken Razala",
+      "food_name": "Chicken Razala (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-chicken_razala-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Chicken in yogurt-and-milk gravy with onion and cashew.",
+      "ingredients": [
+        {
+          "food_id": 147,
+          "grams_per_100g": 48
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 6
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 88,
+          "grams_per_100g": 1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 11.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 175.9,
+        "protein_g": 14.0,
+        "carbs_g": 3.3,
+        "fat_g": 11.8,
+        "fiber_g": 0.3,
+        "sodium_mg": 368.4,
+        "potassium_mg": 173.4,
+        "calcium_mg": 37.3,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "chicken_tikka",
+      "class_label": "Chicken Tikka",
+      "food_name": "Chicken Tikka (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-chicken_tikka-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Yogurt-marinated roasted chicken with a small amount of oil.",
+      "ingredients": [
+        {
+          "food_id": 147,
+          "grams_per_100g": 68
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 16
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 88,
+          "grams_per_100g": 1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 6.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 190.3,
+        "protein_g": 18.3,
+        "carbs_g": 1.3,
+        "fat_g": 12.0,
+        "fiber_g": 0.1,
+        "sodium_mg": 383.6,
+        "potassium_mg": 170.8,
+        "calcium_mg": 31.3,
+        "iron_mg": 0.6
+      }
+    },
+    {
+      "slug": "chicken_tikka_masala",
+      "class_label": "Chicken Tikka Masala",
+      "food_name": "Chicken Tikka Masala (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-chicken_tikka_masala-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Roasted chicken in tomato, yogurt and cream masala.",
+      "ingredients": [
+        {
+          "food_id": 147,
+          "grams_per_100g": 43
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 6
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 5.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 180.7,
+        "protein_g": 12.4,
+        "carbs_g": 3.1,
+        "fat_g": 13.2,
+        "fiber_g": 0.5,
+        "sodium_mg": 361.0,
+        "potassium_mg": 183.1,
+        "calcium_mg": 24.6,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "chikki",
+      "class_label": "Chikki",
+      "food_name": "Chikki (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-chikki-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Peanut and jaggery brittle; peanut nutrient values use USDA FDC 173806.",
+      "ingredients": [
+        {
+          "food_id": 204,
+          "grams_per_100g": 65
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 34
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 0.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 511.8,
+        "protein_g": 16.0,
+        "carbs_g": 46.1,
+        "fat_g": 32.3,
+        "fiber_g": 5.5,
+        "sodium_mg": 203.3,
+        "potassium_mg": 769.1,
+        "calcium_mg": 64.9,
+        "iron_mg": 4.8
+      }
+    },
+    {
+      "slug": "daal_baati_churma",
+      "class_label": "Dal Baati Churma",
+      "food_name": "Dal Baati Churma (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-daal_baati_churma-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Composite of wheat baati, cooked toor dal and jaggery/ghee churma.",
+      "ingredients": [
+        {
+          "food_id": 43,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 4,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 12.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 304.6,
+        "protein_g": 5.6,
+        "carbs_g": 41.2,
+        "fat_g": 12.7,
+        "fiber_g": 5.4,
+        "sodium_mg": 317.7,
+        "potassium_mg": 366.2,
+        "calcium_mg": 28.1,
+        "iron_mg": 3.7
+      }
+    },
+    {
+      "slug": "daal_puri",
+      "class_label": "Dal Puri",
+      "food_name": "Dal Puri (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-daal_puri-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Wheat puri with cooked chana-dal filling and absorbed frying oil.",
+      "ingredients": [
+        {
+          "food_id": 43,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 70,
+          "grams_per_100g": 23
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 109,
+          "grams_per_100g": 1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 15.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 312.9,
+        "protein_g": 6.5,
+        "carbs_g": 34.6,
+        "fat_g": 16.4,
+        "fiber_g": 6.3,
+        "sodium_mg": 343.5,
+        "potassium_mg": 244.1,
+        "calcium_mg": 22.0,
+        "iron_mg": 2.2
+      }
+    },
+    {
+      "slug": "dal_makhani",
+      "class_label": "Dal Makhani",
+      "food_name": "Dal Makhani (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-dal_makhani-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Black urad and kidney beans with tomato, onion, cream and butter.",
+      "ingredients": [
+        {
+          "food_id": 67,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 6,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 6
+        },
+        {
+          "food_id": 133,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 16.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 140.1,
+        "protein_g": 4.3,
+        "carbs_g": 11.8,
+        "fat_g": 8.7,
+        "fiber_g": 3.3,
+        "sodium_mg": 348.8,
+        "potassium_mg": 204.3,
+        "calcium_mg": 23.0,
+        "iron_mg": 1.1
+      }
+    },
+    {
+      "slug": "dharwad_pedha",
+      "class_label": "Dharwad Pedha",
+      "food_name": "Dharwad Pedha (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-dharwad_pedha-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Khoa-based milk sweet with sugar, ghee and cashew.",
+      "ingredients": [
+        {
+          "food_id": 137,
+          "grams_per_100g": 55
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.3
+        }
+      ],
+      "water_g_per_100g": 0.7,
+      "salt_g_per_100g": 0.3,
+      "computed_per_100g": {
+        "kcal": 338.0,
+        "protein_g": 8.9,
+        "carbs_g": 38.6,
+        "fat_g": 17.5,
+        "fiber_g": 0.2,
+        "sodium_mg": 239.9,
+        "potassium_mg": 246.2,
+        "calcium_mg": 364.9,
+        "iron_mg": 1.1
+      }
+    },
+    {
+      "slug": "doodhpak",
+      "class_label": "Doodhpak",
+      "food_name": "Doodhpak (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-doodhpak-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Gujarati milk-rice sweet with condensed milk and cashew.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 48
+        },
+        {
+          "food_id": 138,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 6.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 181.1,
+        "protein_g": 3.6,
+        "carbs_g": 25.2,
+        "fat_g": 7.7,
+        "fiber_g": 0.2,
+        "sodium_mg": 234.1,
+        "potassium_mg": 162.7,
+        "calcium_mg": 100.8,
+        "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "double_ka_meetha",
+      "class_label": "Double Ka Meetha",
+      "food_name": "Double Ka Meetha (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-double_ka_meetha-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Fried bread pudding with milk, condensed milk, sugar and almonds.",
+      "ingredients": [
+        {
+          "food_id": 17,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 138,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 7.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 277.3,
+        "protein_g": 5.5,
+        "carbs_g": 35.1,
+        "fat_g": 13.0,
+        "fiber_g": 2.2,
+        "sodium_mg": 330.7,
+        "potassium_mg": 205.0,
+        "calcium_mg": 123.3,
+        "iron_mg": 0.9
+      }
+    },
+    {
+      "slug": "dum_aloo",
+      "class_label": "Dum Aloo",
+      "food_name": "Dum Aloo (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-dum_aloo-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Potato simmered in yogurt-tomato gravy with a little cashew.",
+      "ingredients": [
+        {
+          "food_id": 26,
+          "grams_per_100g": 62
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 3.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 110.6,
+        "protein_g": 2.0,
+        "carbs_g": 14.6,
+        "fat_g": 5.2,
+        "fiber_g": 1.5,
+        "sodium_mg": 322.0,
+        "potassium_mg": 300.7,
+        "calcium_mg": 16.9,
+        "iron_mg": 0.4
+      }
+    },
+    {
+      "slug": "gajar_ka_halwa",
+      "class_label": "Gajar Ka Halwa",
+      "food_name": "Gajar Ka Halwa (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-gajar_ka_halwa-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Carrot cooked with milk, khoa, sugar, ghee and cashew.",
+      "ingredients": [
+        {
+          "food_id": 105,
+          "grams_per_100g": 54
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 137,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 0.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 165.4,
+        "protein_g": 3.1,
+        "carbs_g": 18.4,
+        "fat_g": 9.3,
+        "fiber_g": 1.7,
+        "sodium_mg": 268.1,
+        "potassium_mg": 232.0,
+        "calcium_mg": 116.1,
+        "iron_mg": 0.6
+      }
+    },
+    {
+      "slug": "gavvalu",
+      "class_label": "Gavvalu",
+      "food_name": "Gavvalu (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-gavvalu-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Fried maida shells with jaggery/sugar coating and coconut.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 171,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 7.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 418.3,
+        "protein_g": 4.6,
+        "carbs_g": 65.3,
+        "fat_g": 15.6,
+        "fiber_g": 1.9,
+        "sodium_mg": 204.3,
+        "potassium_mg": 290.8,
+        "calcium_mg": 35.2,
+        "iron_mg": 2.9
+      }
+    },
+    {
+      "slug": "ghevar",
+      "class_label": "Ghevar",
+      "food_name": "Ghevar (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-ghevar-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Fried maida lattice with syrup, ghee and khoa.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 42
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 22
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 137,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 5.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 474.8,
+        "protein_g": 5.0,
+        "carbs_g": 54.6,
+        "fat_g": 26.4,
+        "fiber_g": 1.1,
+        "sodium_mg": 213.7,
+        "potassium_mg": 89.2,
+        "calcium_mg": 54.6,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "gulab_jamun",
+      "class_label": "Gulab Jamun",
+      "food_name": "Gulab Jamun (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-gulab_jamun-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Khoa-maida dumplings fried and soaked in sugar syrup.",
+      "ingredients": [
+        {
+          "food_id": 137,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 46,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 22
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 2.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 425.9,
+        "protein_g": 6.8,
+        "carbs_g": 38.2,
+        "fat_g": 28.3,
+        "fiber_g": 0.3,
+        "sodium_mg": 285.2,
+        "potassium_mg": 167.5,
+        "calcium_mg": 265.9,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "imarti",
+      "class_label": "Imarti",
+      "food_name": "Imarti (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-imarti-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Urad-batter rings fried and soaked in sugar syrup.",
+      "ingredients": [
+        {
+          "food_id": 67,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 9.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 362.8,
+        "protein_g": 3.0,
+        "carbs_g": 32.5,
+        "fat_g": 25.2,
+        "fiber_g": 2.4,
+        "sodium_mg": 208.5,
+        "potassium_mg": 153.2,
+        "calcium_mg": 32.8,
+        "iron_mg": 1.0
+      }
+    },
+    {
+      "slug": "kachori",
+      "class_label": "Kachori",
+      "food_name": "Kachori (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-kachori-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Maida shell with cooked moong filling and absorbed frying oil.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 64,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 3
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 6
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 12.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 355.1,
+        "protein_g": 5.6,
+        "carbs_g": 34.7,
+        "fat_g": 21.5,
+        "fiber_g": 2.1,
+        "sodium_mg": 316.6,
+        "potassium_mg": 99.6,
+        "calcium_mg": 12.8,
+        "iron_mg": 0.8
+      }
+    },
+    {
+      "slug": "kadai_paneer",
+      "class_label": "Kadai Paneer",
+      "food_name": "Kadai Paneer (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-kadai_paneer-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Paneer, capsicum and tomato-onion masala.",
+      "ingredients": [
+        {
+          "food_id": 7,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 90,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 6.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 178.3,
+        "protein_g": 7.9,
+        "carbs_g": 5.0,
+        "fat_g": 14.1,
+        "fiber_g": 0.6,
+        "sodium_mg": 398.5,
+        "potassium_mg": 140.7,
+        "calcium_mg": 200.4,
+        "iron_mg": 0.4
+      }
+    },
+    {
+      "slug": "kajjikaya",
+      "class_label": "Kajjikaya",
+      "food_name": "Kajjikaya (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-kajjikaya-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Fried pastry with coconut, jaggery, cashew and ghee.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 171,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 10
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 6.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 489.4,
+        "protein_g": 6.0,
+        "carbs_g": 50.0,
+        "fat_g": 30.4,
+        "fiber_g": 4.3,
+        "sodium_mg": 203.4,
+        "potassium_mg": 331.4,
+        "calcium_mg": 24.5,
+        "iron_mg": 3.3
+      }
+    },
+    {
+      "slug": "kakinada_khaja",
+      "class_label": "Kakinada Khaja",
+      "food_name": "Kakinada Khaja (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-kakinada_khaja-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Layered maida pastry with ghee, fried and sugar-coated.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 5.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 482.9,
+        "protein_g": 4.2,
+        "carbs_g": 55.0,
+        "fat_g": 27.5,
+        "fiber_g": 1.1,
+        "sodium_mg": 205.4,
+        "potassium_mg": 79.0,
+        "calcium_mg": 29.2,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "kalakand",
+      "class_label": "Kalakand",
+      "food_name": "Kalakand (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-kalakand-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Khoa and milk-set sweet with sugar and ghee.",
+      "ingredients": [
+        {
+          "food_id": 137,
+          "grams_per_100g": 60
+        },
+        {
+          "food_id": 138,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 1.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 311.2,
+        "protein_g": 9.5,
+        "carbs_g": 33.8,
+        "fat_g": 16.2,
+        "fiber_g": 0.0,
+        "sodium_mg": 337.9,
+        "potassium_mg": 251.4,
+        "calcium_mg": 413.1,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "karela_bharta",
+      "class_label": "Karela Bharta",
+      "food_name": "Karela Bharta (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-karela_bharta-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Bitter gourd mash with tomato, onion and potato.",
+      "ingredients": [
+        {
+          "food_id": 93,
+          "grams_per_100g": 60
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 26,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 4.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 65.5,
+        "protein_g": 0.9,
+        "carbs_g": 4.7,
+        "fat_g": 5.2,
+        "fiber_g": 2.1,
+        "sodium_mg": 319.1,
+        "potassium_mg": 246.7,
+        "calcium_mg": 15.4,
+        "iron_mg": 0.3
+      }
+    },
+    {
+      "slug": "kofta",
+      "class_label": "Kofta",
+      "food_name": "Kofta (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-kofta-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Vegetable-paneer dumplings in tomato-onion cream gravy.",
+      "ingredients": [
+        {
+          "food_id": 26,
+          "grams_per_100g": 32
+        },
+        {
+          "food_id": 7,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 44,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 6
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 5.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 183.2,
+        "protein_g": 6.0,
+        "carbs_g": 13.7,
+        "fat_g": 11.6,
+        "fiber_g": 1.8,
+        "sodium_mg": 360.2,
+        "potassium_mg": 264.5,
+        "calcium_mg": 98.6,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "kuzhi_paniyaram",
+      "class_label": "Kuzhi Paniyaram",
+      "food_name": "Kuzhi Paniyaram (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-kuzhi_paniyaram-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Fermented rice-lentil batter cakes cooked with onion and oil.",
+      "ingredients": [
+        {
+          "food_id": 20,
+          "grams_per_100g": 60
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 170,
+          "grams_per_100g": 6
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 18.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 170.2,
+        "protein_g": 3.0,
+        "carbs_g": 19.8,
+        "fat_g": 8.8,
+        "fiber_g": 1.8,
+        "sodium_mg": 448.3,
+        "potassium_mg": 84.0,
+        "calcium_mg": 18.1,
+        "iron_mg": 1.1
+      }
+    },
+    {
+      "slug": "lassi",
+      "class_label": "Lassi",
+      "food_name": "Lassi (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-lassi-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Plain unsweetened lassi from curd and milk; water is balance.",
+      "ingredients": [
+        {
+          "food_id": 8,
+          "grams_per_100g": 55
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 25
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 19.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 48.8,
+        "protein_g": 2.7,
+        "carbs_g": 3.8,
+        "fat_g": 2.6,
+        "fiber_g": 0.0,
+        "sodium_mg": 232.8,
+        "potassium_mg": 122.8,
+        "calcium_mg": 99.5,
+        "iron_mg": 0.1
+      }
+    },
+    {
+      "slug": "ledikeni",
+      "class_label": "Ledikeni",
+      "food_name": "Ledikeni (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-ledikeni-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Chhena/khoa dumplings fried and soaked in syrup.",
+      "ingredients": [
+        {
+          "food_id": 7,
+          "grams_per_100g": 40
+        },
+        {
+          "food_id": 137,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 46,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 12
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 4.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 364.4,
+        "protein_g": 10.3,
+        "carbs_g": 31.4,
+        "fat_g": 22.3,
+        "fiber_g": 0.2,
+        "sodium_mg": 312.5,
+        "potassium_mg": 128.2,
+        "calcium_mg": 299.8,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "litti_chokha",
+      "class_label": "Litti Chokha",
+      "food_name": "Litti Chokha (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-litti_chokha-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Wheat litti with gram-flour filling served with potato-tomato chokha.",
+      "ingredients": [
+        {
+          "food_id": 43,
+          "grams_per_100g": 38
+        },
+        {
+          "food_id": 44,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 26,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 191,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 13.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 257.1,
+        "protein_g": 8.3,
+        "carbs_g": 39.7,
+        "fat_g": 6.7,
+        "fiber_g": 6.7,
+        "sodium_mg": 326.3,
+        "potassium_mg": 348.0,
+        "calcium_mg": 22.4,
+        "iron_mg": 2.3
+      }
+    },
+    {
+      "slug": "lyangcha",
+      "class_label": "Lyangcha",
+      "food_name": "Lyangcha (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-lyangcha-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Khoa-chhena dough fried and soaked in sugar syrup.",
+      "ingredients": [
+        {
+          "food_id": 137,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 7,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 46,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 12
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 2.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 381.7,
+        "protein_g": 9.6,
+        "carbs_g": 36.1,
+        "fat_g": 22.7,
+        "fiber_g": 0.3,
+        "sodium_mg": 312.5,
+        "potassium_mg": 166.3,
+        "calcium_mg": 324.1,
+        "iron_mg": 0.8
+      }
+    },
+    {
+      "slug": "maach_jhol",
+      "class_label": "Maach Jhol",
+      "food_name": "Maach Jhol (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-maach_jhol-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Rohu fish curry with potato, tomato and mustard oil.",
+      "ingredients": [
+        {
+          "food_id": 150,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 26,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 191,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 17.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 93.0,
+        "protein_g": 7.4,
+        "carbs_g": 4.1,
+        "fat_g": 5.3,
+        "fiber_g": 0.5,
+        "sodium_mg": 345.4,
+        "potassium_mg": 227.2,
+        "calcium_mg": 21.6,
+        "iron_mg": 0.4
+      }
+    },
+    {
+      "slug": "makki_di_roti_sarson_da_saag",
+      "class_label": "Makki Di Roti Sarson Da Saag",
+      "food_name": "Makki Di Roti Sarson Da Saag (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-makki_di_roti_sarson_da_saag-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Maize-and-wheat flatbread with cooked greens; corn flour is approximated by maize and whole-grain flour ingredients.",
+      "ingredients": [
+        {
+          "food_id": 106,
+          "grams_per_100g": 28
+        },
+        {
+          "food_id": 23,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 133,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 191,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 43,
+          "grams_per_100g": 8
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 15.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 165.6,
+        "protein_g": 3.0,
+        "carbs_g": 13.0,
+        "fat_g": 12.2,
+        "fiber_g": 2.5,
+        "sodium_mg": 391.1,
+        "potassium_mg": 255.1,
+        "calcium_mg": 53.1,
+        "iron_mg": 1.7
+      }
+    },
+    {
+      "slug": "malapua",
+      "class_label": "Malapua",
+      "food_name": "Malapua (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-malapua-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Maida-milk batter pancake, fried and sweetened.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 18
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 30,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 2.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 341.8,
+        "protein_g": 4.1,
+        "carbs_g": 42.9,
+        "fat_g": 17.2,
+        "fiber_g": 0.9,
+        "sodium_mg": 214.7,
+        "potassium_mg": 116.3,
+        "calcium_mg": 54.3,
+        "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "misi_roti",
+      "class_label": "Misi Roti",
+      "food_name": "Misi Roti (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-misi_roti-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Whole-wheat and gram-flour flatbread with yogurt, ghee and fenugreek.",
+      "ingredients": [
+        {
+          "food_id": 43,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 44,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 99,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 13.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 337.1,
+        "protein_g": 11.2,
+        "carbs_g": 47.2,
+        "fat_g": 10.6,
+        "fiber_g": 8.3,
+        "sodium_mg": 336.2,
+        "potassium_mg": 399.0,
+        "calcium_mg": 44.6,
+        "iron_mg": 3.1
+      }
+    },
+    {
+      "slug": "misti_doi",
+      "class_label": "Misti Doi",
+      "food_name": "Misti Doi (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-misti_doi-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Sweetened fermented whole-milk yogurt with a little khoa.",
+      "ingredients": [
+        {
+          "food_id": 8,
+          "grams_per_100g": 60
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 137,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 0.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 134.3,
+        "protein_g": 3.2,
+        "carbs_g": 24.0,
+        "fat_g": 3.3,
+        "fiber_g": 0.0,
+        "sodium_mg": 244.3,
+        "potassium_mg": 154.1,
+        "calcium_mg": 134.1,
+        "iron_mg": 0.2
+      }
+    },
+    {
+      "slug": "modak",
+      "class_label": "Modak",
+      "food_name": "Modak (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-modak-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Rice/semolina shell with coconut-jaggery filling; cereal flour is approximate.",
+      "ingredients": [
+        {
+          "food_id": 45,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 2,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 171,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 9.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 366.1,
+        "protein_g": 6.0,
+        "carbs_g": 52.0,
+        "fat_g": 15.0,
+        "fiber_g": 3.8,
+        "sodium_mg": 201.8,
+        "potassium_mg": 334.4,
+        "calcium_mg": 25.7,
+        "iron_mg": 3.1
+      }
+    },
+    {
+      "slug": "mysore_pak",
+      "class_label": "Mysore Pak",
+      "food_name": "Mysore Pak (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-mysore_pak-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Gram flour cooked in ghee and sugar.",
+      "ingredients": [
+        {
+          "food_id": 44,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 4.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 503.2,
+        "protein_g": 6.8,
+        "carbs_g": 46.7,
+        "fat_g": 32.0,
+        "fiber_g": 3.3,
+        "sodium_mg": 226.4,
+        "potassium_mg": 301.2,
+        "calcium_mg": 44.5,
+        "iron_mg": 1.7
+      }
+    },
+    {
+      "slug": "navrattan_korma",
+      "class_label": "Navrattan Korma",
+      "food_name": "Navrattan Korma (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-navrattan_korma-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Mixed vegetables, paneer, peas, cream and cashew korma.",
+      "ingredients": [
+        {
+          "food_id": 27,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 7,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 74,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 14.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 165.9,
+        "protein_g": 5.9,
+        "carbs_g": 9.6,
+        "fat_g": 12.0,
+        "fiber_g": 2.5,
+        "sodium_mg": 359.7,
+        "potassium_mg": 219.0,
+        "calcium_mg": 95.1,
+        "iron_mg": 1.0
+      }
+    },
+    {
+      "slug": "paneer_butter_masala",
+      "class_label": "Paneer Butter Masala",
+      "food_name": "Paneer Butter Masala (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-paneer_butter_masala-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Paneer in tomato, cream, butter and cashew gravy.",
+      "ingredients": [
+        {
+          "food_id": 7,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 24
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 133,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 3
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 9.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 214.0,
+        "protein_g": 7.6,
+        "carbs_g": 5.1,
+        "fat_g": 18.3,
+        "fiber_g": 0.6,
+        "sodium_mg": 422.6,
+        "potassium_mg": 142.0,
+        "calcium_mg": 181.5,
+        "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "phirni",
+      "class_label": "Phirni / Firni",
+      "food_name": "Phirni / Firni (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-phirni-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Ground-rice milk pudding; cooked rice is used as the available rice proxy.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 55
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 4
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 3.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 174.5,
+        "protein_g": 3.2,
+        "carbs_g": 21.8,
+        "fat_g": 8.7,
+        "fiber_g": 0.5,
+        "sodium_mg": 227.8,
+        "potassium_mg": 142.0,
+        "calcium_mg": 97.3,
+        "iron_mg": 0.3
+      }
+    },
+    {
+      "slug": "pithe",
+      "class_label": "Pithe",
+      "food_name": "Pithe (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-pithe-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Rice-based dumpling/pancake with coconut-jaggery filling.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 171,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 45,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 4.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 334.7,
+        "protein_g": 3.9,
+        "carbs_g": 39.9,
+        "fat_g": 18.3,
+        "fiber_g": 3.7,
+        "sodium_mg": 207.0,
+        "potassium_mg": 326.1,
+        "calcium_mg": 36.0,
+        "iron_mg": 3.0
+      }
+    },
+    {
+      "slug": "poornalu",
+      "class_label": "Poornalu",
+      "food_name": "Poornalu (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-poornalu-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Chana-dal and jaggery filling in rice/urad batter, fried.",
+      "ingredients": [
+        {
+          "food_id": 70,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 2,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 67,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 12
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 12.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 252.7,
+        "protein_g": 3.2,
+        "carbs_g": 31.5,
+        "fat_g": 12.7,
+        "fiber_g": 2.2,
+        "sodium_mg": 321.3,
+        "potassium_mg": 341.2,
+        "calcium_mg": 29.5,
+        "iron_mg": 3.1
+      }
+    },
+    {
+      "slug": "pootharekulu",
+      "class_label": "Pootharekulu",
+      "food_name": "Pootharekulu (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-pootharekulu-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Paper-thin pastry sweet with sugar, ghee and nuts; pastry base approximated.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 2,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 6.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 377.4,
+        "protein_g": 5.0,
+        "carbs_g": 46.2,
+        "fat_g": 19.5,
+        "fiber_g": 1.8,
+        "sodium_mg": 205.2,
+        "potassium_mg": 126.5,
+        "calcium_mg": 50.0,
+        "iron_mg": 0.8
+      }
+    },
+    {
+      "slug": "qubani_ka_meetha",
+      "class_label": "Qubani Ka Meetha",
+      "food_name": "Qubani Ka Meetha (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-qubani_ka_meetha-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Dried-fruit dessert approximated with dates/raisins, sugar and cream; apricot row unavailable.",
+      "ingredients": [
+        {
+          "food_id": 121,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 122,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 8
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 8.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 302.3,
+        "protein_g": 3.5,
+        "carbs_g": 62.3,
+        "fat_g": 7.1,
+        "fiber_g": 4.7,
+        "sodium_mg": 206.1,
+        "potassium_mg": 492.1,
+        "calcium_mg": 75.5,
+        "iron_mg": 1.1
+      }
+    },
+    {
+      "slug": "rabri",
+      "class_label": "Rabri",
+      "food_name": "Rabri (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-rabri-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Reduced milk and condensed milk with cream and cashew.",
+      "ingredients": [
+        {
+          "food_id": 10,
+          "grams_per_100g": 58
+        },
+        {
+          "food_id": 138,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 0.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 181.4,
+        "protein_g": 4.2,
+        "carbs_g": 24.5,
+        "fat_g": 7.9,
+        "fiber_g": 0.1,
+        "sodium_mg": 253.2,
+        "potassium_mg": 199.1,
+        "calcium_mg": 142.8,
+        "iron_mg": 0.3
+      }
+    },
+    {
+      "slug": "ras_malai",
+      "class_label": "Ras Malai",
+      "food_name": "Ras Malai (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-ras_malai-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Chhena patties in sweetened milk/cream with almond.",
+      "ingredients": [
+        {
+          "food_id": 7,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 136,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 138,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 0.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 244.1,
+        "protein_g": 8.4,
+        "carbs_g": 24.5,
+        "fat_g": 12.9,
+        "fiber_g": 0.5,
+        "sodium_mg": 290.3,
+        "potassium_mg": 174.3,
+        "calcium_mg": 239.0,
+        "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "sandesh",
+      "class_label": "Sandesh",
+      "food_name": "Sandesh (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-sandesh-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Chhena sweet with sugar and almond.",
+      "ingredients": [
+        {
+          "food_id": 7,
+          "grams_per_100g": 68
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.3
+        }
+      ],
+      "water_g_per_100g": 3.7,
+      "salt_g_per_100g": 0.3,
+      "computed_per_100g": {
+        "kcal": 292.6,
+        "protein_g": 13.1,
+        "carbs_g": 29.2,
+        "fat_g": 13.7,
+        "fiber_g": 0.4,
+        "sodium_mg": 261.0,
+        "potassium_mg": 136.8,
+        "calcium_mg": 355.2,
+        "iron_mg": 0.8
+      }
+    },
+    {
+      "slug": "shankarpali",
+      "class_label": "Shankarpali",
+      "food_name": "Shankarpali (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-shankarpali-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Maida, milk and ghee dough pieces, fried and sweetened.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 45
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 22
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 2.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 473.1,
+        "protein_g": 4.8,
+        "carbs_g": 56.0,
+        "fat_g": 25.6,
+        "fiber_g": 1.2,
+        "sodium_mg": 205.9,
+        "potassium_mg": 84.9,
+        "calcium_mg": 31.2,
+        "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "sheer_korma",
+      "class_label": "Sheer Korma",
+      "food_name": "Sheer Korma (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-sheer_korma-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Vermicelli-style milk dessert approximated with semolina, dates, raisins and almonds.",
+      "ingredients": [
+        {
+          "food_id": 45,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 38
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 121,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 122,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 6
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 1.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 263.6,
+        "protein_g": 5.5,
+        "carbs_g": 43.1,
+        "fat_g": 8.5,
+        "fiber_g": 2.5,
+        "sodium_mg": 217.6,
+        "potassium_mg": 279.7,
+        "calcium_mg": 86.6,
+        "iron_mg": 0.8
+      }
+    },
+    {
+      "slug": "sheera",
+      "class_label": "Sheera",
+      "food_name": "Sheera (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-sheera-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Semolina pudding with ghee, sugar, milk and cashew.",
+      "ingredients": [
+        {
+          "food_id": 45,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 5
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 10
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 9.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 389.8,
+        "protein_g": 5.7,
+        "carbs_g": 51.7,
+        "fat_g": 17.9,
+        "fiber_g": 1.5,
+        "sodium_mg": 208.9,
+        "potassium_mg": 146.3,
+        "calcium_mg": 40.9,
+        "iron_mg": 0.9
+      }
+    },
+    {
+      "slug": "shrikhand",
+      "class_label": "Shrikhand",
+      "food_name": "Shrikhand (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-shrikhand-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Hung-curd dessert with sugar, condensed milk and almond.",
+      "ingredients": [
+        {
+          "food_id": 8,
+          "grams_per_100g": 70
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 138,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 3
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.3
+        }
+      ],
+      "water_g_per_100g": 1.7,
+      "salt_g_per_100g": 0.3,
+      "computed_per_100g": {
+        "kcal": 149.2,
+        "protein_g": 3.9,
+        "carbs_g": 24.0,
+        "fat_g": 4.7,
+        "fiber_g": 0.4,
+        "sodium_mg": 167.1,
+        "potassium_mg": 186.9,
+        "calcium_mg": 136.4,
+        "iron_mg": 0.3
+      }
+    },
+    {
+      "slug": "sohan_halwa",
+      "class_label": "Sohan Halwa",
+      "food_name": "Sohan Halwa (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-sohan_halwa-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Flour, ghee, sugar and cashew halwa.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 28
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 164,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 8.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 469.2,
+        "protein_g": 4.5,
+        "carbs_g": 48.4,
+        "fat_g": 29.0,
+        "fiber_g": 1.0,
+        "sodium_mg": 207.4,
+        "potassium_mg": 123.5,
+        "calcium_mg": 34.1,
+        "iron_mg": 1.0
+      }
+    },
+    {
+      "slug": "sohan_papdi",
+      "class_label": "Sohan Papdi",
+      "food_name": "Sohan Papdi (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-sohan_papdi-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Flaky gram/wheat flour sweet with sugar, ghee and almond.",
+      "ingredients": [
+        {
+          "food_id": 44,
+          "grams_per_100g": 25
+        },
+        {
+          "food_id": 46,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 28
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 1.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 484.9,
+        "protein_g": 8.6,
+        "carbs_g": 58.0,
+        "fat_g": 24.2,
+        "fiber_g": 3.9,
+        "sodium_mg": 221.0,
+        "potassium_mg": 306.8,
+        "calcium_mg": 50.9,
+        "iron_mg": 1.8
+      }
+    },
+    {
+      "slug": "sutar_feni",
+      "class_label": "Sutar Feni",
+      "food_name": "Sutar Feni (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-sutar_feni-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Fine vermicelli dessert approximated with maida strands, milk, ghee and nuts.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 10,
+          "grams_per_100g": 35
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 15
+        },
+        {
+          "food_id": 42,
+          "grams_per_100g": 10
+        },
+        {
+          "food_id": 35,
+          "grams_per_100g": 8
+        },
+        {
+          "food_id": 122,
+          "grams_per_100g": 8
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 3.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 311.4,
+        "protein_g": 5.1,
+        "carbs_g": 39.6,
+        "fat_g": 15.4,
+        "fiber_g": 1.8,
+        "sodium_mg": 217.3,
+        "potassium_mg": 212.4,
+        "calcium_mg": 84.0,
+        "iron_mg": 0.8
+      }
+    },
+    {
+      "slug": "unni_appam",
+      "class_label": "Unni Appam",
+      "food_name": "Unni Appam (prepared, recipe estimate)",
+      "recipe_id": "NC-MODEL-RCP-unni_appam-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Rice-banana-jaggery dumpling with coconut and frying oil.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 30
+        },
+        {
+          "food_id": 30,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 195,
+          "grams_per_100g": 20
+        },
+        {
+          "food_id": 170,
+          "grams_per_100g": 12
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 8
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.5
+        }
+      ],
+      "water_g_per_100g": 9.5,
+      "salt_g_per_100g": 0.5,
+      "computed_per_100g": {
+        "kcal": 246.6,
+        "protein_g": 1.5,
+        "carbs_g": 33.8,
+        "fat_g": 12.1,
+        "fiber_g": 1.7,
+        "sodium_mg": 201.2,
+        "potassium_mg": 334.8,
+        "calcium_mg": 21.7,
+        "iron_mg": 2.6
+      }
+    }
+  ]
+}
