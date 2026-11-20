@@ -141,10 +141,44 @@ def test_new_conversation_state_does_not_reuse_previous_answers():
     assert prior["duration"] == "yesterday"  # no mutation of saved prior state
 
 
-def test_non_health_prompt_is_refused_to_keep_chat_in_scope():
+def test_non_health_prompt_gets_professional_out_of_scope_redirect():
     reply = ask("Write a poem about a mountain")
     assert reply["triage"] == "out_of_scope"
-    assert "health and nutrition" in reply["message"].lower()
+    assert "can’t assist with unrelated requests" in reply["message"].lower()
+    assert "health education" in reply["message"].lower()
+    assert "rephrase" in reply["message"].lower()
+    assert reply["guidance"] == []
+    assert reply["food_recommendations"] == []
+
+
+def test_unrecognized_symptom_wording_gets_rephrase_prompt_without_guidance():
+    reply = ask("sar dard")
+    assert reply["guidance"] == []
+    assert reply["food_recommendations"] == []
+    assert "rephrase" in reply["message"].lower()
+    assert reply["triage"] == "out_of_scope"
+
+
+def test_unmatched_health_language_gets_default_clarification_not_a_guessed_answer():
+    reply = ask("My wellness energy feels unusual")
+    assert reply["triage"] == "clarification"
+    assert "not sure i understood" in reply["message"].lower()
+    assert "rephrase your question" in reply["message"].lower()
+    assert reply["guidance"] == []
+    assert reply["food_recommendations"] == []
+
+
+def test_unrelated_custom_message_during_follow_up_gets_scope_redirect_without_losing_state():
+    started = ask("I have a headache")
+    reply = ask("Write a poem about it", started["conversation"])
+
+    assert reply["triage"] == "out_of_scope"
+    assert "can’t assist with unrelated requests" in reply["message"].lower()
+    assert reply["conversation"] == started["conversation"]
+
+    resumed = ask("Since yesterday", reply["conversation"])
+    assert resumed["conversation"]["duration"] == "Since yesterday"
+    assert resumed["conversation"]["next_question"] == "severity"
 
 
 def test_severe_non_flagged_wording_gets_same_day_direction():

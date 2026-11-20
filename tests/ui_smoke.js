@@ -64,7 +64,9 @@ console.log("PASS  D3 global search removed, theme switch and meal chooser are w
 const HEALTH_CHAT_SOURCE = fs.readFileSync(path.join(JS_DIR, "health_chat.js"), "utf8");
 const STYLE_SOURCE = fs.readFileSync(path.join(__dirname, "..", "static", "css", "style.css"), "utf8");
 if (!INDEX_TEMPLATE.includes('id="health-chat-root"') || !HEALTH_CHAT_SOURCE.includes("Hi! How are you feeling today?")
-    || !HEALTH_CHAT_SOURCE.includes("/assistant/screen") || !HEALTH_CHAT_SOURCE.includes("/assistant/assess")
+    || !HEALTH_CHAT_SOURCE.includes("/assistant/screen")
+    || !HEALTH_CHAT_SOURCE.includes("/assistant/guided/answer")
+    || !HEALTH_CHAT_SOURCE.includes("/assistant/guided/complete")
     || !HEALTH_CHAT_SOURCE.includes("/health-chat/messages") || !HEALTH_CHAT_SOURCE.includes("pharmacist")) {
   throw new Error("The local bottom-left Health Chat must be wired into the shell with its safe API flow");
 }
@@ -443,16 +445,42 @@ const DRIVER = `
   const guidedBranches = {
     feeling_good: "conditions", fatigue: "fatigue_sleep", headache: "headache_duration",
     fever: "fever_temperature", dizziness: "dizziness_duration", nausea: "nausea_duration",
-    body_pain: "body_pain_location", stress_anxiety: "wellbeing_safety", low_mood: "wellbeing_safety", other: "conditions",
+    body_pain: "body_pain_location", stress_anxiety: "wellbeing_safety", low_mood: "wellbeing_safety",
   };
   for (const [symptom, expectedStep] of Object.entries(guidedBranches)) {
     startHealthAssessment();
-    HEALTH_ASSESSMENT.answers.symptoms = { values: [symptom], other: symptom === "other" ? "A concern in ordinary words" : "" };
+    HEALTH_ASSESSMENT.answers.symptoms = { values: [symptom], other: "" };
     await continueHealthAssessment();
     assert(HEALTH_ASSESSMENT.steps.some((step) => step.id === expectedStep),
       "G2d " + symptom + " follows its relevant option-based branch");
   }
+  startHealthAssessment();
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "I have a migraine" };
+  await continueHealthAssessment();
+  assert(HEALTH_ASSESSMENT.steps.some((step) => step.id === "headache_duration")
+    && !HEALTH_ASSESSMENT.answers.symptoms.values.includes("other"),
+  "G2e a free-text Other answer matching a supported symptom follows that symptom branch");
+
   startHealthAssessment(); renderHealthChat();
+  el("#health-assessment-other").value = "sar dard";
+  el("#health-assessment-other").oninput();
+  await el("#health-assessment-continue").onclick();
+  assert(HEALTH_ASSESSMENT.scopeFallback && assessmentCurrentStep().id === "symptoms"
+    && !HEALTH_ASSESSMENT.steps.some((step) => step.id === "conditions")
+    && el("#health-chat-root").innerHTML.includes("I couldn't recognize that symptom")
+    && el("#health-chat-root").innerHTML.includes("Try again")
+    && el("#health-chat-root").innerHTML.includes("Continue in Health Chat"),
+  "G2f an unsupported Other answer such as a food request does not proceed to medical questions");
+  el("#health-assessment-fallback-retry").onclick();
+  assert(HEALTH_ASSESSMENT.active && !HEALTH_ASSESSMENT.scopeFallback
+    && assessmentCurrentStep().id === "symptoms" && !HEALTH_ASSESSMENT.answers.symptoms,
+  "G2g the user can retry from the symptom question after an unrecognized answer");
+  HEALTH_ASSESSMENT.answers.symptoms = { values: ["other"], other: "i want ice cream" };
+  await continueHealthAssessment();
+  el("#health-assessment-fallback-chat").onclick();
+  assert(!HEALTH_ASSESSMENT.active && !HEALTH_ASSESSMENT.scopeFallback
+    && HEALTH_CHAT.draft === "i want ice cream",
+  "G2h the fallback preserves an out-of-scope food request in Health Chat");
 
   HEALTH_ASSESSMENT.answers.symptoms = { values: ["headache", "fever"], other: "" };
   await continueHealthAssessment();
@@ -463,7 +491,7 @@ const DRIVER = `
   HEALTH_ASSESSMENT.answers.safety = { values: ["none"], other: "" };
   await continueHealthAssessment();
   assert(assessmentCurrentStep().id === "headache_duration", "G4 guided flow advances to the headache duration question");
-  backHealthAssessment();
+  await backHealthAssessment();
   assert(assessmentCurrentStep().id === "safety", "G5 Back returns to the previous guided question");
 
   startHealthAssessment();
@@ -492,6 +520,26 @@ const DRIVER = `
   HEALTH_ASSESSMENT.answers.safety = { values: ["chest_pain"], other: "" }; await continueHealthAssessment();
   assert(HEALTH_ASSESSMENT.emergency && el("#health-chat-root").innerHTML.includes("112"),
     "G9 emergency choices stop the ordinary assessment and show the local protocol");
+
+  startHealthAssessment(); renderHealthChat();
+  if (HEALTH_ASSESSMENT.sessionReady) await HEALTH_ASSESSMENT.sessionReady;
+  let rejectedSymptom = null;
+  try {
+    await api("/assistant/guided/answer", { method: "POST", body: {
+      step_id: "symptoms", answer: { values: ["other"], other: "sar dard" },
+    } });
+  } catch (error) { rejectedSymptom = error; }
+  let bypassedStep = null;
+  try {
+    await api("/assistant/guided/answer", { method: "POST", body: {
+      step_id: "conditions", answer: { values: ["other"], other: "sar dard" },
+    } });
+  } catch (error) { bypassedStep = error; }
+  assert(rejectedSymptom?.status === 422 && bypassedStep?.status === 409
+    && assessmentCurrentStep().id === "symptoms"
+    && el("#health-chat-root").innerHTML.includes("How are you feeling today?")
+    && !el("#health-chat-root").innerHTML.includes("existing medical conditions"),
+  "G9a backend rejects sar dard and refuses a condition-step bypass without advancing UI or server state");
 
   startHealthAssessment(); renderHealthChat();
   assert(!el("#health-chat-root").innerHTML.includes("Free text"),
@@ -750,6 +798,39 @@ const DRIVER = `
   await click("#scan-final-save"); await sleep(400);
   assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore + 1,
     "M13 final confirmation saves the documented catalogue entry exactly once");
+
+  let customSelection = null;
+  openFoodSearchModal("lunch", null, scanSelectCatalogueFood, (customFood) => {
+    customSelection = customFood; scanSelectCustomFood(customFood);
+  });
+  set("#m-search", "zz-custom-food-not-in-catalogue"); await el("#m-search").oninput();
+  assert(el("#m-results").innerHTML.includes("No matches")
+    && el("#m-results").innerHTML.includes("Add a custom food"),
+  "M14 no catalogue match offers a custom food entry option");
+  await click("#m-add-custom");
+  set("#scan-custom-name", "Homemade masala dosa");
+  set("#scan-custom-grams", "180");
+  set("#scan-custom-kcal", "260");
+  set("#scan-custom-protein", "7");
+  set("#scan-custom-carbs", "38");
+  set("#scan-custom-fat", "8");
+  await click("#scan-custom-use");
+  assert(customSelection && SCAN.customFood.name === "Homemade masala dosa"
+    && SCAN.confirmed && el("#scan-nutrition").innerHTML.includes("Your entered nutrition"),
+  "M15 custom food details return to the scanner for review with entered nutrition");
+  assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore + 1,
+    "M16 choosing a custom food does not log it before final confirmation");
+  SCAN.meal = "lunch"; scanConfirmSave();
+  assert(el("#modal-root").innerHTML.includes("Confirm meal entry")
+    && el("#modal-root").innerHTML.includes("260 kcal from your entered values"),
+  "M17 custom food final review shows amount, meal category and entered calories");
+  await click("#scan-final-save"); await sleep(400);
+  const afterCustom = await (await fetch("BASE" + "/api/meals")).json();
+  assert(afterCustom.logged_count === scannerBefore + 2,
+    "M18 final confirmation saves the custom food exactly once");
+  const customLogged = afterCustom.meals.lunch.find((entry) => entry.display_name === "Homemade masala dosa");
+  assert(customLogged && customLogged.quantity === 180 && customLogged.nutrients.kcal === 260,
+    "M19 custom food name, portion and user-entered nutrition persist in the selected meal log");
 
   /* ---- N: missing nutrition must never render as 0 kcal ---- */
   const altNoData = scanAltNutrition({ label: "Paneer Butter Masala",

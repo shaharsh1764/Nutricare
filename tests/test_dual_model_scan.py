@@ -99,6 +99,7 @@ def test_normal_scan_calls_only_80_class_primary(policy):
         "confidence_calibrated": False,
         "confidence_note": vision.CONFIDENCE_NOTE,
         "low_confidence_triggers_fallback": False,
+        "minimum_accepted_confidence": 0.35,
     }
     assert "ensemble" not in result
 
@@ -172,6 +173,7 @@ def test_both_technical_failures_are_recognition_unavailable(policy):
 
 
 def test_policy_declares_no_confidence_based_fallback():
+    assert vision.MIN_FOOD_RECOGNITION_CONFIDENCE == 0.35
     assert vision.TECHNICAL_FALLBACK_CONDITIONS == (
         "the 80-class primary checkpoint is missing",
         "the 80-class primary checkpoint cannot be read",
@@ -182,6 +184,8 @@ def test_policy_declares_no_confidence_based_fallback():
     assert report["policy"]["primary_model"] == vision.PRIMARY_MODEL_NAME
     assert report["policy"]["technical_fallback_model"] == vision.FALLBACK_MODEL_NAME
     assert report["policy"]["low_confidence_triggers_fallback"] is False
+    assert report["policy"]["minimum_accepted_confidence"] == 0.35
+    assert report["policy"]["below_threshold_result"] == "food_not_recognized"
     assert report["policy"]["prediction_unconfirmed"] is True
     assert report["policy"]["confidence_calibrated"] is False
 
@@ -266,6 +270,57 @@ def test_api_normal_scan_runs_primary_only_and_attaches_nutrition(client, policy
     assert "ensemble" not in body
     assert [c["slug"] for c in body["candidates"]] == ["chana_masala", "jalebi"]
     assert body["candidates"][0]["nutrition"]["nutrition_available"] is True
+
+
+def test_api_abstains_below_35_percent_without_returning_a_food_label(client, policy):
+    primary, fallback = policy
+    primary._result = make_result(("pithe", 0.34999), ("rabri", 0.30))
+    image = make_png()
+
+    response = client.post("/api/vision/predict", data=image,
+                           content_type="application/octet-stream")
+
+    assert response.status_code == 422
+    body = response.get_json()
+    assert body["code"] == "food_not_recognized"
+    assert body["confidence"] == pytest.approx(0.34999)
+    assert body["confidence_threshold"] == 0.35
+    assert "predictions" not in body and "candidates" not in body and "top" not in body
+    assert "manual" in body["error"].lower()
+    assert primary.calls == [(image, 3)]
+    assert fallback.calls == []  # low confidence is abstention, not fallback
+
+
+def test_api_accepts_confidence_exactly_at_35_percent(client, policy):
+    primary, fallback = policy
+    primary._result = make_result(("chana_masala", 0.35))
+
+    response = client.post("/api/vision/predict", data=make_png(),
+                           content_type="application/octet-stream")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["top"]["confidence"] == 0.35
+    assert body["candidates"][0]["slug"] == "chana_masala"
+    assert body["low_confidence"] is True  # existing 0.40 warning remains separate
+    assert fallback.calls == []
+
+
+def test_api_also_applies_abstention_to_technical_fallback_result(client, policy):
+    primary, fallback = policy
+    primary._error = vision.ModelUnavailable("primary checkpoint missing")
+    fallback._result = make_result(("chole", 0.2))
+
+    response = client.post("/api/vision/predict", data=make_png(),
+                           content_type="application/octet-stream")
+
+    assert response.status_code == 422
+    body = response.get_json()
+    assert body["code"] == "food_not_recognized"
+    assert body["model"] == vision.FALLBACK_MODEL_NAME
+    assert body["recognition"]["fallback_used"] is True
+    assert "predictions" not in body
+    assert len(primary.calls) == 1 and len(fallback.calls) == 1
 
 
 def test_api_primary_failure_uses_fallback_and_keeps_nutrition_flow(client, policy):

@@ -13,7 +13,7 @@ const HEALTH_CHAT = {
 // it never calls an LLM or a third-party health service.
 const HEALTH_ASSESSMENT = {
   active: false, loading: false, steps: [], index: 0, answers: {}, turns: [],
-  emergency: null, result: null, error: null,
+  emergency: null, result: null, error: null, scopeFallback: false, sessionReady: null,
 };
 
 // The OTC flow is separate from assessment and free text. It accepts only
@@ -138,6 +138,7 @@ function hideHealthChat() {
 
 function resetHealthChatState(userId) {
   HEALTH_CHAT.userId = userId;
+  HEALTH_ASSESSMENT.sessionReady = null;
   HEALTH_CHAT.messages = [];
   HEALTH_CHAT.loading = false;
   HEALTH_CHAT.sending = false;
@@ -153,6 +154,8 @@ function resetHealthChatState(userId) {
   HEALTH_ASSESSMENT.emergency = null;
   HEALTH_ASSESSMENT.result = null;
   HEALTH_ASSESSMENT.error = null;
+  HEALTH_ASSESSMENT.scopeFallback = false;
+  HEALTH_ASSESSMENT.sessionReady = null;
   OTC_GUIDANCE.active = false;
   OTC_GUIDANCE.loading = false;
   OTC_GUIDANCE.steps = [];
@@ -273,6 +276,7 @@ function startHealthAssessment() {
   OTC_GUIDANCE.active = false;
   HEALTH_ASSESSMENT.active = true;
   HEALTH_ASSESSMENT.loading = false;
+  HEALTH_ASSESSMENT.scopeFallback = false;
   HEALTH_ASSESSMENT.steps = [assessmentStep(
     "symptoms", "Hi! How are you feeling today?", ASSESSMENT_SYMPTOMS,
     { multiple: true, otherLabel: "Describe any other symptom or concern" },
@@ -283,6 +287,12 @@ function startHealthAssessment() {
   HEALTH_ASSESSMENT.emergency = null;
   HEALTH_ASSESSMENT.result = null;
   HEALTH_ASSESSMENT.error = null;
+  HEALTH_ASSESSMENT.sessionReady = api("/assistant/guided/start", { method: "POST", body: {} })
+    .then(() => true)
+    .catch((error) => {
+      HEALTH_ASSESSMENT.error = error.message || "The assessment could not be started. Please try again.";
+      return false;
+    });
 }
 
 function stopHealthAssessment() {
@@ -796,6 +806,15 @@ function healthAssessmentReview() {
 
 function healthAssessmentConversation() {
   if (HEALTH_ASSESSMENT.emergency) return healthAssessmentEmergency();
+  if (HEALTH_ASSESSMENT.scopeFallback) {
+    return `<article class="health-chat-message assistant"><span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span>
+      <div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Assistant</b>
+        <p>I couldn't recognize that symptom. Please select a supported symptom or try describing it using different wording. I can't safely assess a symptom I don't understand. For food or nutrition ideas, continue in Health Chat and ask your question there.</p>
+        <button class="btn btn-primary btn-sm" id="health-assessment-fallback-retry" type="button">Try again</button>
+        <button class="btn btn-ghost btn-sm" id="health-assessment-fallback-chat" type="button">Continue in Health Chat</button>
+        <p class="health-chat-disclaimer">If you may be experiencing an emergency, call 112 in India or your local emergency number now.</p>
+      </div></article>`;
+  }
   const transcript = HEALTH_ASSESSMENT.turns.map((turn) => `<article class="health-chat-message assistant">
       <span class="health-chat-avatar" aria-hidden="true">${healthChatIcon(16)}</span><div class="health-chat-bubble"><b class="health-chat-speaker">NutriCare Health Assistant</b><p>${esc(turn.question)}</p></div></article>
       <article class="health-chat-message user"><div class="health-chat-bubble"><p>${esc(turn.answer)}</p></div></article>`).join("");
@@ -816,51 +835,6 @@ async function screenHealthAssessment() {
   return data;
 }
 
-function assessmentDuration() {
-  const durationStep = HEALTH_ASSESSMENT.steps.find((step) => step.id.endsWith("_duration"));
-  const value = durationStep ? assessmentAnswer(durationStep).values[0] : "";
-  return ({ just_started: "today", morning: "today", yesterday: "2-3d", two_three_days: "2-3d", more_three_days: "3-5d" })[value] || "today";
-}
-
-function assessmentSeverity() {
-  const severityStep = HEALTH_ASSESSMENT.steps.find((step) => step.id.endsWith("_severity"));
-  const value = severityStep ? Number(assessmentAnswer(severityStep).values[0]) : 3;
-  return Number.isInteger(value) && value >= 1 && value <= 10 ? value : 3;
-}
-
-function assessmentPayload() {
-  const symptomAnswer = assessmentAnswer(HEALTH_ASSESSMENT.steps[0]);
-  const symptomLabels = symptomAnswer.values.filter((value) => value !== "other")
-    .map((value) => (ASSESSMENT_SYMPTOMS.find((option) => option.value === value) || { label: value }).label);
-  const primary = [...symptomLabels, symptomAnswer.other.trim()].filter(Boolean).join("; ") || "Health concern";
-  const associated = [];
-  const notes = [];
-  const existingConditions = [];
-  for (const step of HEALTH_ASSESSMENT.steps) {
-    const answer = assessmentAnswer(step);
-    if (answer.other.trim()) notes.push(`${step.prompt}: ${answer.other.trim()}`);
-    if (step.id.includes("associated") || step.id.endsWith("_location") || step.id.endsWith("_sleep") || step.id.endsWith("_fluids") || step.id === "fever_temperature") {
-      for (const value of answer.values.filter((item) => item !== "none")) associated.push(assessmentOptionLabel(step, value));
-    }
-    if (step.id === "conditions") {
-      for (const value of answer.values.filter((item) => item !== "none" && item !== "other")) {
-        existingConditions.push(assessmentOptionLabel(step, value));
-      }
-      if (answer.other.trim()) existingConditions.push(answer.other.trim());
-    }
-  }
-  if (existingConditions.length) notes.push(`Reported existing conditions: ${existingConditions.join(", ")}`);
-  return {
-    primary,
-    duration: assessmentDuration(),
-    severity: assessmentSeverity(),
-    associated,
-    warning_signs: assessmentWarningIds(),
-    notes: notes.join(" | ").slice(0, 400),
-    existing_conditions: existingConditions,
-  };
-}
-
 async function continueHealthAssessment(skip = false) {
   const step = assessmentCurrentStep();
   if (!step || HEALTH_ASSESSMENT.loading) return;
@@ -870,17 +844,27 @@ async function continueHealthAssessment(skip = false) {
     renderHealthChat();
     return;
   }
-  const initialAnswer = assessmentAnswer(step);
-  if (step.id === "symptoms" && initialAnswer.other.trim() && !initialAnswer.values.includes("other")) {
-    HEALTH_ASSESSMENT.answers[step.id] = { ...initialAnswer, values: [...initialAnswer.values, "other"] };
-  }
   HEALTH_ASSESSMENT.error = null;
   HEALTH_ASSESSMENT.loading = true;
   renderHealthChat();
   try {
+    if (HEALTH_ASSESSMENT.sessionReady && !(await HEALTH_ASSESSMENT.sessionReady)) {
+      throw new Error(HEALTH_ASSESSMENT.error || "The guided assessment could not be started. Please restart and try again.");
+    }
     const screen = await screenHealthAssessment();
     if (screen.emergency) return;
     const current = assessmentCurrentStep();
+    const validation = await api("/assistant/guided/answer", {
+      method: "POST",
+      body: { step_id: current.id, answer: assessmentAnswer(current) },
+    });
+    if (validation.emergency) {
+      HEALTH_ASSESSMENT.emergency = validation;
+      return;
+    }
+    if (current.id === "symptoms") {
+      HEALTH_ASSESSMENT.answers.symptoms = { values: validation.symptoms || [], other: "" };
+    }
     HEALTH_ASSESSMENT.turns.push({ question: current.prompt, answer: assessmentAnswerText(current) });
     if (current.id === "symptoms") {
       HEALTH_ASSESSMENT.steps = buildAssessmentSteps(selectedAssessmentSymptoms());
@@ -888,19 +872,37 @@ async function continueHealthAssessment(skip = false) {
     } else {
       HEALTH_ASSESSMENT.index += 1;
     }
+    if (assessmentCurrentStep()?.id !== validation.next_step) {
+      HEALTH_ASSESSMENT.error = "The guided assessment steps became out of sync. Please restart this assessment.";
+      HEALTH_ASSESSMENT.active = false;
+    }
   } catch (error) {
-    HEALTH_ASSESSMENT.error = error.message || "The safety check could not be completed. Please try again.";
+    if (step.id === "symptoms" && error.status === 422) {
+      HEALTH_ASSESSMENT.scopeFallback = true;
+      HEALTH_ASSESSMENT.error = null;
+    } else {
+      HEALTH_ASSESSMENT.error = error.message || "The safety check could not be completed. Please try again.";
+    }
   } finally {
     HEALTH_ASSESSMENT.loading = false;
     renderHealthChat();
   }
 }
 
-function backHealthAssessment() {
+async function backHealthAssessment() {
   if (HEALTH_ASSESSMENT.loading || HEALTH_ASSESSMENT.index <= 0) return;
-  HEALTH_ASSESSMENT.index -= 1;
-  HEALTH_ASSESSMENT.turns.pop();
-  HEALTH_ASSESSMENT.error = null;
+  const previous = HEALTH_ASSESSMENT.steps[HEALTH_ASSESSMENT.index - 1];
+  try {
+    if (HEALTH_ASSESSMENT.sessionReady && !(await HEALTH_ASSESSMENT.sessionReady)) {
+      throw new Error(HEALTH_ASSESSMENT.error || "The guided assessment could not be restored. Please restart it.");
+    }
+    await api("/assistant/guided/back", { method: "POST", body: { step_id: previous.id } });
+    HEALTH_ASSESSMENT.index -= 1;
+    HEALTH_ASSESSMENT.turns.pop();
+    HEALTH_ASSESSMENT.error = null;
+  } catch (error) {
+    HEALTH_ASSESSMENT.error = error.message || "Could not return to the previous question. Please restart the assessment.";
+  }
   renderHealthChat();
 }
 
@@ -910,12 +912,19 @@ async function finishHealthAssessment() {
   HEALTH_ASSESSMENT.loading = true;
   renderHealthChat();
   try {
+    if (HEALTH_ASSESSMENT.sessionReady && !(await HEALTH_ASSESSMENT.sessionReady)) {
+      throw new Error(HEALTH_ASSESSMENT.error || "The guided assessment could not be started. Please restart and try again.");
+    }
     const screen = await screenHealthAssessment();
     if (screen.emergency) return;
-    const result = await api("/assistant/assess", { method: "POST", body: assessmentPayload() });
+    const result = await api("/assistant/guided/complete", { method: "POST", body: {} });
     if (result.triage === "emergency") HEALTH_ASSESSMENT.emergency = result;
     else HEALTH_ASSESSMENT.result = result;
   } catch (error) {
+    if (error.status === 422) {
+      HEALTH_ASSESSMENT.index = 0;
+      HEALTH_ASSESSMENT.turns = [];
+    }
     HEALTH_ASSESSMENT.error = error.message || "The assessment could not be completed. Please try again.";
   } finally {
     HEALTH_ASSESSMENT.loading = false;
@@ -924,6 +933,18 @@ async function finishHealthAssessment() {
 }
 
 function bindHealthAssessment() {
+  if (HEALTH_ASSESSMENT.scopeFallback) {
+    const retry = $("#health-assessment-fallback-retry");
+    if (retry) retry.onclick = () => { startHealthAssessment(); renderHealthChat(); };
+    const continueChat = $("#health-assessment-fallback-chat");
+    if (continueChat) continueChat.onclick = () => {
+      HEALTH_CHAT.draft = HEALTH_ASSESSMENT.answers.symptoms?.other?.trim() || "";
+      HEALTH_ASSESSMENT.active = false;
+      HEALTH_ASSESSMENT.scopeFallback = false;
+      renderHealthChat();
+    };
+    return;
+  }
   const step = assessmentCurrentStep();
   if (!step || HEALTH_ASSESSMENT.emergency || HEALTH_ASSESSMENT.result) return;
   $$("[data-assessment-option]").forEach((button) => button.onclick = () => updateAssessmentSelection(step, button.dataset.assessmentOption));

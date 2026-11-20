@@ -6,6 +6,7 @@ Two separate test clients == two separate browsers (separate cookie jars).
 
 import csv
 import io
+import json
 import sqlite3
 
 import pytest
@@ -300,6 +301,151 @@ def test_assistant_endpoint_emergency_and_logging(client):
     assert history[0]["emergency"] is True
     assert client.post("/api/assistant/assess",
                        json={"primary": "headache", "severity": 11}).status_code == 400
+
+
+def test_unrecognized_symptom_rejected_without_persisting_and_can_retry(client):
+    new_user(client, "Unrecognized symptom")
+    for phrase in ("zxqwv", "kidney pain", "sar dard"):
+        rejected = client.post("/api/assistant/assess", json={
+            "primary": phrase, "severity": 3, "duration": "today",
+        })
+        assert rejected.status_code == 422
+        payload = rejected.get_json()
+        assert set(payload) == {"error"}
+        error = payload["error"].lower()
+        assert "couldn't recognize that symptom" in error
+        assert "can't safely assess" in error
+        assert client.get("/api/assistant/history").get_json()["history"] == []
+
+    # The same assessment flow remains usable after the user retries with a
+    # supported symptom; the failed attempts did not create assessment records.
+    accepted = client.post("/api/assistant/assess", json={
+        "primary": "HEADACHE", "severity": 3, "duration": "today",
+    })
+    assert accepted.status_code == 200
+    assert accepted.get_json()["triage"] == "self_care"
+    history = client.get("/api/assistant/history").get_json()["history"]
+    assert len(history) == 1 and history[0]["primary"] == "HEADACHE"
+
+
+def test_guided_assessment_rejects_unrecognized_symptom_before_conditions_and_retries(client):
+    new_user(client, "Guided rejection")
+    assert client.post("/api/assistant/guided/start", json={}).status_code == 200
+
+    rejected = client.post("/api/assistant/guided/answer", json={
+        "step_id": "symptoms", "answer": {"values": ["other"], "other": "sar dard"},
+    })
+    assert rejected.status_code == 422
+    assert "couldn't recognize that symptom" in rejected.get_json()["error"].lower()
+
+    # The rejected input did not advance the server state or become conditions.
+    out_of_order = client.post("/api/assistant/guided/answer", json={
+        "step_id": "conditions", "answer": {"values": ["other"], "other": "sar dard"},
+    })
+    assert out_of_order.status_code == 409
+    assert client.post("/api/assistant/guided/complete", json={}).status_code == 409
+    assert client.get("/api/assistant/history").get_json()["history"] == []
+    with client.application.app_context():
+        saved_state = db.get_db().execute(
+            "SELECT state FROM guided_assessment_sessions WHERE user_id = (SELECT id FROM users WHERE name = ?)",
+            ("Guided rejection",),
+        ).fetchone()
+    persisted = json.loads(saved_state["state"])
+    assert persisted["index"] == 0 and persisted["answers"] == {} and persisted["symptoms"] == []
+    assert "sar dard" not in saved_state["state"].lower()
+
+    supported = client.post("/api/assistant/guided/answer", json={
+        "step_id": "symptoms", "answer": {"values": ["headache"], "other": ""},
+    })
+    assert supported.status_code == 200
+    assert supported.get_json()["next_step"] == "safety"
+
+
+def test_guided_assessment_validates_step_order_answers_and_condition_field(client):
+    new_user(client, "Guided valid flow")
+    client.post("/api/assistant/guided/start", json={})
+    symptoms = client.post("/api/assistant/guided/answer", json={
+        "step_id": "symptoms", "answer": {"values": ["headache"], "other": ""},
+    }).get_json()
+    assert symptoms["next_step"] == "safety"
+
+    # A conditions answer cannot skip the intervening, expected safety step.
+    assert client.post("/api/assistant/guided/answer", json={
+        "step_id": "conditions", "answer": {"values": ["diabetes"], "other": ""},
+    }).status_code == 409
+    assert client.post("/api/assistant/guided/answer", json={
+        "step_id": "safety", "answer": {"values": ["none"], "other": ""},
+    }).get_json()["next_step"] == "headache_duration"
+
+    invalid_duration = client.post("/api/assistant/guided/answer", json={
+        "step_id": "headache_duration", "answer": {"values": ["diabetes"], "other": ""},
+    })
+    assert invalid_duration.status_code == 422
+    user_id = client.get("/api/bootstrap").get_json()["user"]["id"]
+    with client.application.app_context():
+        saved_state = db.get_db().execute(
+            "SELECT state FROM guided_assessment_sessions WHERE user_id = ?", (user_id,),
+        ).fetchone()
+    persisted = json.loads(saved_state["state"])
+    assert persisted["step_ids"][persisted["index"]] == "headache_duration"
+    assert persisted["symptoms"] == ["headache"]
+    assert persisted["answers"]["safety"]["values"] == ["none"]
+    assert "headache_duration" not in persisted["answers"]
+    assert client.post("/api/assistant/guided/answer", json={
+        "step_id": "conditions", "answer": {"values": ["diabetes"], "other": ""},
+    }).status_code == 409
+
+    for step_id, values in [
+        ("headache_duration", ["yesterday"]),
+        ("headache_severity", ["5"]),
+        ("headache_location", ["temples"]),
+        ("headache_associated", ["none"]),
+        ("conditions", ["diabetes"]),
+    ]:
+        saved = client.post("/api/assistant/guided/answer", json={
+            "step_id": step_id, "answer": {"values": values, "other": ""},
+        })
+        assert saved.status_code == 200, (step_id, saved.get_json())
+    assert saved.get_json()["next_step"] == "review"
+    assert client.get("/api/assistant/history").get_json()["history"] == []
+
+    completed = client.post("/api/assistant/guided/complete", json={})
+    assert completed.status_code == 200
+    result = completed.get_json()
+    assert result["reported_facts"]["primary"] == "Headache"
+    assert result["reported_facts"]["existing_conditions"] == ["Diabetes"]
+    assert client.get("/api/assistant/history").get_json()["history"][0]["primary"] == "Headache"
+
+
+def test_guided_assessment_draft_is_scoped_to_active_profile(client):
+    first = client.post("/api/users", json={"name": "Guided first"}).get_json()
+    first_id = first["user"]["id"]
+    client.post("/api/assistant/guided/start", json={})
+
+    client.post("/api/users", json={"name": "Guided second"})
+    cross_profile = client.post("/api/assistant/guided/answer", json={
+        "step_id": "symptoms", "answer": {"values": ["headache"], "other": ""},
+    })
+    assert cross_profile.status_code == 409
+    assert client.get("/api/assistant/history").get_json()["history"] == []
+
+    assert client.post("/api/users/switch", json={"id": first_id}).status_code == 200
+    resumed = client.post("/api/assistant/guided/answer", json={
+        "step_id": "symptoms", "answer": {"values": ["headache"], "other": ""},
+    })
+    assert resumed.status_code == 200 and resumed.get_json()["next_step"] == "safety"
+
+
+def test_guided_emergency_screen_is_independent_of_step_validation(client):
+    new_user(client, "Guided emergency")
+    client.post("/api/assistant/guided/start", json={})
+    response = client.post("/api/assistant/guided/answer", json={
+        "step_id": "conditions", "answer": {"values": [], "other": "chest pain"},
+    })
+    assert response.status_code == 200
+    assert response.get_json()["emergency"] is True
+    assert any(flag["id"] == "chest_pain" for flag in response.get_json()["red_flags"])
+    assert client.get("/api/assistant/history").get_json()["history"] == []
 
 
 def test_warning_signs_endpoint_matches_engine_and_drives_triage(client):
