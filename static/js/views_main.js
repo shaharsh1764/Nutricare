@@ -523,7 +523,7 @@ function chooseMealForFood(food) {
 /* If `onSelect` is supplied this remains a documented-food picker: it never
    writes a meal. Callers (the scanner correction flow) receive the selected
    food and portion, then show their own final review before saving. */
-function openFoodSearchModal(meal, presetFood = null, onSelect = null) {
+function openFoodSearchModal(meal, presetFood = null, onSelect = null, onCustom = null) {
   S.lastMeal = meal;
   const pickerOnly = typeof onSelect === "function";
   openModal(`
@@ -549,14 +549,21 @@ function openFoodSearchModal(meal, presetFood = null, onSelect = null) {
   const search = $("#m-search");
   const showResults = async () => {
     const data = await api(`/foods?q=${encodeURIComponent(search.value)}&limit=6`);
-    $("#m-results").innerHTML = data.foods.map((f) => `
-      <div class="result-row" data-id="${f.id}"><div style="flex:1"><b class="small">${esc(f.name)}</b>
-      <div class="tiny muted">${esc(f.serving_desc)} · ${fmt(f.kcal)} kcal/100g</div></div>
-      <span class="pill pill-teal">select</span></div>`).join("") || `<div class="empty">no matches</div>`;
+    const customAction = pickerOnly && onCustom
+      ? `<div class="row mt12"><button class="btn btn-ghost btn-sm" id="m-add-custom">＋ Add a custom food</button></div>`
+      : "";
+    $("#m-results").innerHTML = data.foods.length
+      ? `<div class="results">${data.foods.map((f) => `
+          <div class="result-row" data-id="${f.id}"><div style="flex:1"><b class="small">${esc(f.name)}</b>
+          <div class="tiny muted">${esc(f.serving_desc)} · ${fmt(f.kcal)} kcal/100g</div></div>
+          <span class="pill pill-teal">select</span></div>`).join("")}</div>${customAction}`
+      : `<div class="empty">No matches. You can still enter this food yourself.</div>${customAction}`;
     $$("#m-results .result-row").forEach((r) => r.onclick = () => {
       food = data.foods.find((f) => f.id === Number(r.dataset.id));
       selectFood();
     });
+    const customButton = $("#m-add-custom");
+    if (customButton) customButton.onclick = () => openScannerCustomFoodModal(onCustom);
   };
   const preview = () => {
     if (!food) return;
@@ -590,6 +597,48 @@ function openFoodSearchModal(meal, presetFood = null, onSelect = null) {
         food_id: food.id, quantity: qty, unit: $("#m-unit").value } });
       closeModal(); toast("Added to log"); refreshView();
     } catch (e) { toast(e.message, true); }
+  };
+}
+
+function openScannerCustomFoodModal(onCustom) {
+  if (typeof onCustom !== "function") return;
+  openModal(`
+    <h3>Enter a custom food</h3>
+    <p class="tiny muted">Use values from your package, recipe, or another reliable source. These details are not verified. Nothing is logged until you confirm the meal in the scanner.</p>
+    <div class="grid cols-2 mt12">
+      <div class="field"><span class="label">Food name *</span><input class="input" id="scan-custom-name" maxlength="80" placeholder="e.g. Homemade masala dosa"></div>
+      <div class="field"><span class="label">Amount eaten (g) *</span><input class="input" id="scan-custom-grams" type="number" min="1" max="3000" value="100"></div>
+      <div class="field"><span class="label">Calories (kcal) *</span><input class="input" id="scan-custom-kcal" type="number" min="0" step="1" placeholder="Enter calories"></div>
+      <div class="field"><span class="label">Protein (g, optional)</span><input class="input" id="scan-custom-protein" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Carbohydrates (g, optional)</span><input class="input" id="scan-custom-carbs" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Fat (g, optional)</span><input class="input" id="scan-custom-fat" type="number" min="0" step="0.1"></div>
+    </div>
+    <div class="row mt16" style="justify-content:flex-end">
+      <button class="btn btn-ghost" data-close>Cancel</button>
+      <button class="btn btn-primary" id="scan-custom-use">Use this food</button></div>`);
+  $("#scan-custom-use").onclick = () => {
+    const name = $("#scan-custom-name").value.trim();
+    const grams = Number($("#scan-custom-grams").value);
+    const kcal = Number($("#scan-custom-kcal").value);
+    if (!name) { toast("Enter a name for this food", true); return; }
+    if (!(grams >= 1 && grams <= 3000)) { toast("Amount must be between 1 and 3000 grams", true); return; }
+    if (!Number.isFinite(kcal) || kcal < 0) { toast("Enter calories from your package or recipe", true); return; }
+    const optional = (selector) => {
+      const raw = $(selector).value.trim();
+      if (!raw) return null;
+      const value = Number(raw);
+      return Number.isFinite(value) && value >= 0 ? value : NaN;
+    };
+    const protein = optional("#scan-custom-protein");
+    const carbs = optional("#scan-custom-carbs");
+    const fat = optional("#scan-custom-fat");
+    if ([protein, carbs, fat].some((value) => Number.isNaN(value))) {
+      toast("Nutrition values must be zero or greater", true); return;
+    }
+    const customFood = { name, grams, custom_kcal: kcal,
+      custom_protein_g: protein, custom_carbs_g: carbs, custom_fat_g: fat };
+    closeModal();
+    onCustom(customFood);
   };
 }
 

@@ -799,6 +799,39 @@ const DRIVER = `
   assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore + 1,
     "M13 final confirmation saves the documented catalogue entry exactly once");
 
+  let customSelection = null;
+  openFoodSearchModal("lunch", null, scanSelectCatalogueFood, (customFood) => {
+    customSelection = customFood; scanSelectCustomFood(customFood);
+  });
+  set("#m-search", "zz-custom-food-not-in-catalogue"); await el("#m-search").oninput();
+  assert(el("#m-results").innerHTML.includes("No matches")
+    && el("#m-results").innerHTML.includes("Add a custom food"),
+  "M14 no catalogue match offers a custom food entry option");
+  await click("#m-add-custom");
+  set("#scan-custom-name", "Homemade masala dosa");
+  set("#scan-custom-grams", "180");
+  set("#scan-custom-kcal", "260");
+  set("#scan-custom-protein", "7");
+  set("#scan-custom-carbs", "38");
+  set("#scan-custom-fat", "8");
+  await click("#scan-custom-use");
+  assert(customSelection && SCAN.customFood.name === "Homemade masala dosa"
+    && SCAN.confirmed && el("#scan-nutrition").innerHTML.includes("Your entered nutrition"),
+  "M15 custom food details return to the scanner for review with entered nutrition");
+  assert((await (await fetch("BASE" + "/api/meals")).json()).logged_count === scannerBefore + 1,
+    "M16 choosing a custom food does not log it before final confirmation");
+  SCAN.meal = "lunch"; scanConfirmSave();
+  assert(el("#modal-root").innerHTML.includes("Confirm meal entry")
+    && el("#modal-root").innerHTML.includes("260 kcal from your entered values"),
+  "M17 custom food final review shows amount, meal category and entered calories");
+  await click("#scan-final-save"); await sleep(400);
+  const afterCustom = await (await fetch("BASE" + "/api/meals")).json();
+  assert(afterCustom.logged_count === scannerBefore + 2,
+    "M18 final confirmation saves the custom food exactly once");
+  const customLogged = afterCustom.meals.lunch.find((entry) => entry.display_name === "Homemade masala dosa");
+  assert(customLogged && customLogged.quantity === 180 && customLogged.nutrients.kcal === 260,
+    "M19 custom food name, portion and user-entered nutrition persist in the selected meal log");
+
   /* ---- N: missing nutrition must never render as 0 kcal ---- */
   const altNoData = scanAltNutrition({ label: "Paneer Butter Masala",
     confidence: 0.31, nutrition: { nutrition_available: false, nutrients: null } });
