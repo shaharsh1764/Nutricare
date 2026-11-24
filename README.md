@@ -70,6 +70,7 @@ node tests/ui_smoke.js            # browserless workflow checks against the runn
 | `nutricare/assistant.py` | Legacy rule engine retained for existing historical assessment records and shared emergency-screen rules |
 | `nutricare/db.py` | SQLite schema, seeding, local chat storage, purge |
 | `static/`, `templates/` | frontend (CSS design system, JS views, SVG charts) |
+| `docs/UI_DESIGN_SYSTEM.md` | colour, type, spacing, motion and component rules for the interface |
 | `data/foods.json` | food dataset (313 foods and drinks, per-100 g values; branded packets cite their label) |
 | `data/food_classes.json` | AI Food Scanner taxonomy and label-to-catalogue mappings (not every model label has nutrition) |
 | `nutricare/vision.py` | image validation + trained-model loading/inference |
