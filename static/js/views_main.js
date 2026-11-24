@@ -390,7 +390,7 @@ async function renderTracker() {
   <div class="grid cols-21" style="align-items:start">
     <div>
       <div class="card">
-        <div class="searchbox" style="max-width:none;border-radius:12px">
+        <div class="searchbox" style="max-width:none">
           ${ICONS.search}<input id="food-search" placeholder="Search foods: roti, dal, paneer, chips, cola, masala dosa…" autocomplete="off">
         </div>
         <div id="search-results"></div>
@@ -559,7 +559,7 @@ function openFoodSearchModal(meal, presetFood = null, onSelect = null, onCustom 
   openModal(`
     <h3>${pickerOnly ? "Search documented food catalogue" : `Add food to ${MEAL_META[meal].label}`}</h3>
     <p class="tiny muted">Pick a food, then set the portion. Nutrition is computed per-gram from the documented dataset.</p>
-    <div class="searchbox mt12" style="max-width:none;border-radius:12px">${ICONS.search}
+    <div class="searchbox mt12" style="max-width:none">${ICONS.search}
       <input id="m-search" placeholder="Search foods…" autocomplete="off"></div>
     <div id="m-results" style="max-height:220px;overflow:auto"></div>
     <div id="m-portion" class="mt12" style="display:${presetFood ? "block" : "none"}">
@@ -580,7 +580,7 @@ function openFoodSearchModal(meal, presetFood = null, onSelect = null, onCustom 
   const showResults = async () => {
     const data = await api(`/foods?q=${encodeURIComponent(search.value)}&limit=6`);
     const customAction = pickerOnly && onCustom
-      ? `<div class="row mt12"><button class="btn btn-ghost btn-sm" id="m-add-custom">＋ Add a custom food</button></div>`
+      ? `<div class="row mt12"><button class="btn btn-ghost btn-sm" id="m-add-custom">${ICONS.plus} Add a custom food</button></div>`
       : "";
     $("#m-results").innerHTML = data.foods.length
       ? `<div class="results">${data.foods.map((f) => `

@@ -375,6 +375,6 @@ function renderAssessment(r) {
       <div class="mt12"><span class="label">General references</span>
         <ul class="tight tiny muted">${r.references.map((ref) =>
           `<li>${esc(ref.name)} — <a href="${esc(ref.url)}" target="_blank" rel="noopener">${esc(ref.url)}</a></li>`).join("")}</ul></div>
-      <p class="tiny mt12" style="color:var(--amber);background:var(--amber-soft);padding:8px 10px;border-radius:8px">${esc(r.disclaimer)}</p>
+      <p class="tiny mt12" style="color:var(--amber-ink);background:var(--amber-soft);padding:8px 10px;border-radius:var(--r-sm)">${esc(r.disclaimer)}</p>
     </div>`;
 }
