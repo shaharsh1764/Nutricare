@@ -771,7 +771,7 @@ async function renderScanner() {
       </div>
       <div class="scan-actions mt16">
         <button class="btn btn-deep" id="scan-camera">${ICONS.scanner} Take a photo</button>
-        <button class="btn btn-primary" id="scan-upload">${ICONS.upload} Upload a photo</button>
+        <button class="btn btn-soft" id="scan-upload">${ICONS.upload} Upload a photo</button>
         <input type="file" id="scan-file" accept="image/jpeg,image/png,image/webp"
                capture="environment" hidden>
       </div>

@@ -221,7 +221,18 @@ button{font-family:inherit}
 .stat,.kcal,.table,.date-chip{font-variant-numeric:tabular-nums}
 .muted{color:var(--muted)} .faint{color:var(--faint)}
 .tiny{font-size:11px} .small{font-size:12px}
-.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+.mt4{margin-top:var(--s-1)}.mt8{margin-top:var(--s-2)}.mt12{margin-top:var(--s-3)}
+.mt16{margin-top:var(--s-4)}.mt20{margin-top:var(--s-5)}
+
+/* ---------------- view loading skeleton ----------------
+   Motion here is purely a loading indicator; the global reduced-motion rule
+   above reduces it to a static bar. */
+.view-loading-bar{display:flex;gap:var(--s-2);margin-top:var(--s-3);max-width:420px}
+.view-loading-bar i{display:block;height:8px;flex:1;border-radius:var(--r-pill);background:var(--surface-subtle);
+  animation:loading-pulse 1.4s var(--ease) infinite}
+.view-loading-bar i:nth-child(2){animation-delay:.16s;flex:1.4}
+.view-loading-bar i:nth-child(3){animation-delay:.32s}
+@keyframes loading-pulse{0%,100%{opacity:.45}50%{opacity:1}}
 
 /* ---------------- nutritional audit dashboard ---------------- */
 .audit-header{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s-7);align-items:end;
