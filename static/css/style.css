@@ -209,9 +209,10 @@ button{font-family:inherit}
 .icon-pill{width:32px;height:32px;border-radius:var(--r-sm);display:grid;place-items:center;flex:none}
 .icon-pill svg{width:16px;height:16px}
 .tint-teal{background:var(--accent-soft);color:var(--accent-ink)}
+.tint-mint{background:var(--success-soft);color:var(--success-ink)}
 .tint-sky{background:var(--sky-soft);color:var(--sky-ink)}
-.tint-amber{background:var(--amber-soft);color:var(--amber)}
-.tint-rose{background:var(--rose-soft);color:var(--rose)}
+.tint-amber{background:var(--amber-soft);color:var(--amber-ink)}
+.tint-rose{background:var(--rose-soft);color:var(--rose-ink)}
 .stat{font-size:28px;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:var(--ink)}
 .stat small{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0}
 .stat,.kcal,.table,.date-chip{font-variant-numeric:tabular-nums}
