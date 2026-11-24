@@ -464,7 +464,11 @@ svg text{font-family:var(--font)}
 
 /* ---------------- assistant ---------------- */
 .safety-banner{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--card);border-radius:var(--r-md);padding:var(--s-4) var(--s-5);display:flex;gap:var(--s-4);box-shadow:var(--shadow-sm)}
-.emergency-banner{border:1px solid var(--rose-border);border-left:4px solid var(--rose);background:var(--emergency-bg);border-radius:var(--r-md);padding:var(--s-4);box-shadow:var(--shadow-md)}
+/* Emergency guidance is the one place where urgency should be unmistakable;
+   it keeps the rose family and gains weight, never a glow or an animation. */
+.emergency-banner{border:1px solid var(--rose-border);border-left:4px solid var(--rose);background:var(--emergency-bg);
+  border-radius:var(--r-md);padding:var(--s-4);box-shadow:var(--shadow-sm)}
+.emergency-banner b{color:var(--rose-ink)}
 .poss-card{border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);padding:var(--s-4)}
 .selfcare-card{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface-muted);padding:var(--s-3);min-width:0}
 ul.tight{margin:6px 0 0;padding-left:18px}
