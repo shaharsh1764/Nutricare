@@ -53,6 +53,15 @@ measured 4.18:1 on the canvas, below AA for the 9–11px metadata it is used on.
 Newsreader is chosen over a neutral grotesque so headings read editorially;
 Plus Jakarta Sans keeps small text legible at 11–13px. Inter is not used.
 
+**Both families are self-hosted.** `static/fonts/` holds latin-subset woff2 for
+Newsreader 400/500/600 and Plus Jakarta Sans 400/500/600/700/800 (8 files,
+156 kB), with the SIL OFL 1.1 licence text beside them, and `style.css` opens
+with the matching `@font-face` rules. The page therefore makes **no external
+request**; the two most-used faces (PJS 400, Newsreader 500) are preloaded and
+everything else uses `font-display:swap`, so text paints immediately in the
+fallback and swaps when the face arrives. The static files carry no `opsz`
+axis, so `font-optical-sizing` has no effect — sizes are tuned by hand instead.
+
 Metadata labels (`.card-title`, `.nav-label`, `.audit-card-label`,
 `.audit-banner-label`, `.page-kicker`) are ALL-CAPS at 9.5–10px with
 `.1–.14em` tracking and `--faint`/`--accent-ink` colour — small, but never

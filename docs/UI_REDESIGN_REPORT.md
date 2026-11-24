@@ -235,10 +235,13 @@ shown as the live preview).
 1. **No screenshots.** See §5. A reviewer with a browser should open the live
    preview and check the two editorial photographs on the landing page, the
    dashboard header wash at 1440/1024/390 px, and the dark theme on the Scanner.
-2. **Google Fonts is still an external request.** In this sandbox it cannot
-   load, so the preview falls back to Georgia and the system sans. If the
-   project must work fully offline, self-hosting the two families is the next
-   step (it would add ~200 kB of font files).
+2. **Typography is self-hosted; the optical-size axis is not.** The page no
+   longer makes any external request: both families are served from
+   `static/fonts/` as latin-subset woff2 (8 files, 156 kB, SIL OFL 1.1, licences
+   kept alongside). `@fontsource` publishes static per-weight files only, so
+   Newsreader ships without its `opsz` axis and `font-optical-sizing` is a
+   no-op — the browser does not interpolate a true optical size. Non-latin
+   scripts fall back through the declared stacks.
 3. **Health-chat surfaces remain deliberately conservative.** That block is
    pinned by exact substrings and drives safety-critical UI, so it received the
    accent and the launcher/panel radius treatment but no structural restyling.
