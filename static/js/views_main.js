@@ -28,6 +28,22 @@ async function renderDashboard() {
     profile.weight_kg ? `${fmt(profile.weight_kg, 1)} kg` : null,
     profile.activity ? esc(profile.activity) : null,
   ].filter(Boolean).join(" · ");
+  /* Stat banner: four figures, all read straight from today's records. Any
+     figure without a documented value is shown as a dash, never as a zero. */
+  const statBanner = [
+    { key: "kcal", label: "CALORIES", value: fmt(consumed), unit: "kcal",
+      note: t ? `of ${fmt(t.kcal)} target` : "no target set" },
+    { key: "protein", label: "PROTEIN", value: fmt(summary.totals.protein_g, 1), unit: "g",
+      note: t ? `of ${fmt(t.protein_g)} g` : "target optional" },
+    { key: "carbs", label: "CARBS", value: fmt(summary.totals.carbs_g, 1), unit: "g",
+      note: t ? `of ${fmt(t.carbs_g)} g` : "target optional" },
+    { key: "fat", label: "FAT", value: fmt(summary.totals.fat_g, 1), unit: "g",
+      note: t ? `of ${fmt(t.fat_g)} g` : "target optional" },
+  ].map((item) => `<div class="audit-banner-stat audit-banner-${item.key}">
+      <span class="audit-banner-label">${item.label}</span>
+      <span class="audit-banner-value">${item.value}<small>${item.unit}</small></span>
+      <span class="audit-banner-note">${item.note}</span>
+    </div>`).join("");
 
   const macroCells = t ? [
     ["Protein", summary.totals.protein_g, t.protein_g, COLORS.protein],
@@ -52,12 +68,20 @@ async function renderDashboard() {
       <h2 id="audit-title">Daily Nutritional Audit <span>&amp; Dietary Intake</span></h2>
       <p class="audit-subject">${profileLine ? `For ${esc(name)} · ${profileLine}`
         : "Add your profile details to personalise daily targets and nutrition context."}</p>
+      <p class="audit-purpose">What you have recorded today, how it compares with your own targets,
+        and where the next meal can help.</p>
     </div>
     <div class="audit-actions" aria-label="Quick actions">
-      <button class="btn btn-soft" id="quick-water">${ICONS.drop} +250 ml water</button>
-      <button class="btn btn-ghost" id="quick-log">${ICONS.plus} Log meals</button>
+      <button class="btn btn-ghost" id="quick-water">${ICONS.drop} +250 ml water</button>
+      <button class="btn btn-soft" id="quick-log">${ICONS.plus} Log meals</button>
       <button class="btn btn-deep" id="quick-scan">${ICONS.scanner} Scan a meal</button>
     </div>
+  </section>
+
+  <section class="audit-stat-banner" aria-label="Today's energy and macronutrients">${statBanner}
+    <p class="audit-banner-foot">${summary.logged_count
+      ? `${summary.logged_count} ${summary.logged_count === 1 ? "entry" : "entries"} recorded today · figures are sums of documented food values`
+      : "No entries yet today — every figure stays at zero until you log something."}</p>
   </section>
 
   <section class="audit-stat-grid" aria-label="Daily nutrition summary">
@@ -110,7 +134,7 @@ async function renderDashboard() {
       <article class="card audit-today-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">TODAY'S TOTAL INTAKE</span>
           <h3>Calories &amp; macro distribution</h3>
-          <p class="tiny muted mt8">Your logged energy and macronutrients, grouped by meal.</p></div>
+          <p class="audit-section-purpose">Where today's energy came from, meal by meal.</p></div>
           <div class="audit-status-stack"><span class="pill pill-mint">${summary.logged_count} logged ${summary.logged_count === 1 ? "entry" : "entries"}</span>
             ${t ? `<span class="pill pill-slate">Target ${fmt(t.kcal)} kcal</span>` : ""}
             <div class="audit-section-actions" aria-label="Download today's nutrition record">
@@ -123,7 +147,8 @@ async function renderDashboard() {
 
       <article class="card audit-log-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">DAILY FOOD LOG</span>
-          <h3>Meals recorded today</h3></div>
+          <h3>Meals recorded today</h3>
+          <p class="audit-section-purpose">Every entry you saved today, grouped by meal.</p></div>
           <button class="btn btn-soft btn-sm" id="goto-tracker">Open tracker</button></div>
         <p class="tiny muted">Items are summed from the documented food dataset and stay editable in your tracker.</p>
         <div class="audit-meal-list mt12">${dashboardMealList(summary)}</div>
@@ -133,7 +158,8 @@ async function renderDashboard() {
     <aside class="audit-side-column">
       <article class="card audit-micro-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">NUTRIENT OVERVIEW</span>
-          <h3>Micronutrient snapshot</h3></div>
+          <h3>Micronutrient snapshot</h3>
+          <p class="audit-section-purpose">Five nutrients tracked against reference intakes.</p></div>
           <span class="pill pill-slate">tracked subset</span></div>
         ${nutritionSnapshot}
         <p class="tiny faint mt12">Fiber, sodium, potassium, calcium, and iron are shown when documented for your logged foods.</p>
@@ -141,7 +167,8 @@ async function renderDashboard() {
 
       <article class="card audit-insights-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">GENTLE GUIDANCE</span>
-          <h3>Today's nutrition notes</h3></div></div>
+          <h3>Today's nutrition notes</h3>
+          <p class="audit-section-purpose">General observations drawn from today's log.</p></div></div>
         <div class="grid" style="gap:10px">${insights}</div>
       </article>
 
@@ -149,7 +176,7 @@ async function renderDashboard() {
         <span class="audit-section-kicker">LOCAL HEALTH CHAT</span>
         <h3>Need help making sense of a symptom?</h3>
         <p class="small muted mt8">Open the local health chat for general education, documented food ideas, pharmacist handoff for medication questions, and emergency warning-sign screening.</p>
-        <button class="btn btn-ghost mt12" id="quick-health-chat">Open health chat →</button>
+        <button class="btn btn-accent mt12" id="quick-health-chat">Open health chat →</button>
       </article>
     </aside>
   </section>
@@ -200,7 +227,7 @@ function weeklyTrajectoryCard(report, targets, weekEmpty) {
   return `<article class="card audit-timeline-card">
     <div class="card-head audit-section-head"><div><span class="audit-section-kicker">7-DAY OVERVIEW</span>
       <h3>Intake trajectory &amp; macro balance</h3>
-      <p class="tiny muted mt8">Your recorded nutrition across the last seven days.</p></div>
+      <p class="audit-section-purpose">Your recorded nutrition across the last seven days.</p></div>
       <div class="audit-status-stack"><span class="pill pill-mint">${loggedDays} logged days</span>
         ${targets ? `<span class="pill pill-slate">Target ${fmt(targets.kcal)} kcal</span>` : ""}</div></div>
     <div class="audit-chart-shell">${weekEmpty ? `<div class="empty-state"><span class="audit-empty-icon" aria-hidden="true">${ICONS.reports}</span>

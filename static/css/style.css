@@ -226,6 +226,34 @@ button{font-family:inherit}
   -webkit-text-fill-color:transparent;color:var(--accent-ink)}
 .audit-subject{max-width:720px;margin-top:var(--s-3);color:var(--muted);font-size:13px}
 .audit-actions{display:flex;max-width:490px;flex-wrap:wrap;justify-content:flex-end;gap:var(--s-2)}
+/* Purpose line: one short sentence saying what the section is for. */
+.audit-purpose{margin-top:var(--s-3);max-width:560px;color:var(--ink-subtle);font-size:12.5px;line-height:1.6}
+.audit-section-purpose{margin-top:var(--s-1);color:var(--muted);font-size:11.5px;line-height:1.55;max-width:420px}
+
+/* ---- stat banner: calories, protein, carbs, fat from real records ------- */
+.audit-stat-banner{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s-3);
+  margin-top:var(--s-5);padding:var(--s-4) var(--s-5);border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--surface);box-shadow:var(--shadow-sm);overflow:hidden}
+.audit-stat-banner:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent-gradient)}
+.audit-banner-stat{display:grid;gap:2px;min-width:0;padding-left:var(--s-3)}
+.audit-banner-stat + .audit-banner-stat{border-left:1px solid var(--line)}
+.audit-banner-label{font-size:9.5px;font-weight:800;letter-spacing:.14em;color:var(--faint)}
+.audit-banner-value{font-family:var(--font-editorial);font-size:30px;font-weight:500;line-height:1.06;
+  letter-spacing:-.035em;color:var(--ink);font-variant-numeric:tabular-nums}
+.audit-banner-value small{margin-left:3px;font-family:var(--font);font-size:11px;font-weight:700;
+  letter-spacing:0;color:var(--muted)}
+.audit-banner-note{font-size:10.5px;color:var(--muted)}
+.audit-banner-kcal .audit-banner-value{background:var(--accent-text-gradient);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;color:var(--accent-ink)}
+.audit-banner-foot{grid-column:1/-1;margin-top:var(--s-1);padding-top:var(--s-2);border-top:1px solid var(--line);
+  color:var(--muted);font-size:10.5px}
+@media(max-width:960px){
+  .audit-stat-banner{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .audit-banner-stat + .audit-banner-stat{border-left:none}
+  .audit-banner-stat:nth-child(2n){border-left:1px solid var(--line)}
+}
+@media(max-width:520px){.audit-stat-banner{grid-template-columns:1fr}.audit-banner-stat:nth-child(2n){border-left:none}
+  .audit-banner-value{font-size:26px}}
 .audit-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s-3);margin-top:var(--s-5)}
 .audit-stat-card{min-width:0;padding:var(--s-4);background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);
   box-shadow:var(--shadow-sm);display:flex;flex-direction:column;justify-content:flex-start}
@@ -330,6 +358,9 @@ button{font-family:inherit}
 .btn-danger:hover{filter:brightness(.94)}
 .btn-danger-soft{background:var(--rose-soft);color:var(--rose-ink);border-color:var(--rose-border)}
 .btn-danger-soft:hover{background:var(--rose-soft);border-color:var(--rose)}
+/* primary action that sits on a dark forest surface */
+.btn-accent{background:var(--accent-bright);color:#12101C;border-color:var(--accent-bright);box-shadow:var(--glow-accent)}
+.btn-accent:hover{background:#8C6FFF;border-color:#8C6FFF;box-shadow:var(--glow-accent-strong)}
 .btn-sm{padding:6px var(--s-3);font-size:11.5px;border-radius:var(--r-sm)}
 .btn-sm svg{width:14px;height:14px}
 .btn:focus-visible,.input:focus-visible,.select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -446,21 +477,24 @@ ul.tight li{margin-bottom:6px}
 .choice:hover{border-color:var(--line-strong);box-shadow:var(--shadow-sm)}
 .choice:has(input:checked){border-color:var(--primary);background:var(--primary-soft);
   box-shadow:0 0 0 3px var(--primary-ring)}
-.choice:has(input:focus-visible){outline:2px solid var(--primary);outline-offset:2px}
+.choice:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.choice:has(input:checked){border-color:var(--accent);background:var(--surface-accent);box-shadow:0 0 0 3px var(--accent-ring)}
 .choice-warn input{accent-color:var(--rose)}
 .choice-warn:has(input:checked){border-color:var(--rose);background:var(--rose-soft);
   box-shadow:0 0 0 3px var(--warning-ring)}
 .choice-warn:has(input:focus-visible){outline:2px solid var(--rose);outline-offset:2px}
-.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
-.seg{display:flex;flex-wrap:wrap;gap:8px}
-.tile{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;
-  padding:8px 14px;cursor:pointer;font-size:12.5px;font-weight:700;background:var(--surface);transition:.12s}
-.tile input{accent-color:var(--primary);width:15px;height:15px;margin:0;flex:none}
-.tile:hover{border-color:var(--line-strong)}
-.tile:has(input:checked){border-color:var(--primary-deep);background:var(--primary-deep);color:var(--on-primary)}
-.tile:has(input:checked) input{accent-color:var(--on-primary)}
-.tile:has(input:focus-visible){outline:2px solid var(--primary);outline-offset:2px}
-.seg .tile{border-radius:12px}
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--s-2)}
+.seg{display:flex;flex-wrap:wrap;gap:var(--s-2)}
+.tile{display:flex;align-items:center;gap:var(--s-2);border:1.5px solid var(--line);border-radius:var(--r-pill);
+  padding:8px var(--s-3);cursor:pointer;font-size:12.5px;font-weight:700;background:var(--surface);
+  transition:border-color var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease)}
+.tile input{accent-color:var(--accent);width:15px;height:15px;margin:0;flex:none}
+.tile:hover{border-color:var(--line-strong);background:var(--surface-hover)}
+.tile:has(input:checked){border-color:var(--accent);background:var(--surface-accent);color:var(--accent-ink);
+  box-shadow:0 0 0 3px var(--accent-ring)}
+.tile:has(input:checked) input{accent-color:var(--accent)}
+.tile:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.seg .tile{border-radius:var(--r-sm)}
 
 /* ---------------- onboarding / no-shell mode ---------------- */
 body.no-shell #sidebar, body.no-shell #topbar, body.no-shell .sys-banner{display:none}
