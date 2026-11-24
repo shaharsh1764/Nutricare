@@ -236,13 +236,16 @@ button{font-family:inherit}
 
 /* ---------------- nutritional audit dashboard ---------------- */
 .audit-header{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s-7);align-items:end;
-  padding:var(--s-6) 0 var(--s-5);border-bottom:1px solid var(--line);isolation:isolate}
+  padding:var(--s-6) 0 var(--s-5);border-bottom:1px solid var(--line);isolation:isolate;overflow:hidden}
 /* Decorative layer: one soft violet wash plus a mint blob, both aria-less and
    purely atmospheric, so the page opens with a single bright focal moment. */
 .audit-header:before{content:"";position:absolute;z-index:-1;inset:-28px -36px 0;pointer-events:none;
   background:radial-gradient(680px 260px at 8% 0%,var(--blob-a),transparent 66%),
              radial-gradient(420px 220px at 78% 12%,var(--blob-b),transparent 70%);
   opacity:.9;border-radius:var(--r-lg)}
+/* On narrow screens the canvas padding is small, so the wash is re-inset to the
+   header box itself — the decoration must never widen the page. */
+@media(max-width:860px){.audit-header:before{inset:0;border-radius:var(--r-md)}}
 .audit-eyebrow,.audit-section-kicker{display:flex;align-items:center;gap:var(--s-2);color:var(--accent-ink);
   font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
 .audit-eyebrow:before{content:"";width:14px;height:2px;border-radius:2px;background:var(--accent);flex:none}
@@ -271,6 +274,12 @@ button{font-family:inherit}
 .audit-banner-note{font-size:10.5px;color:var(--muted)}
 .audit-banner-kcal .audit-banner-value{background:var(--accent-text-gradient);-webkit-background-clip:text;
   background-clip:text;-webkit-text-fill-color:transparent;color:var(--accent-ink)}
+/* Gradient text is decoration: in forced-colours mode it falls back to a solid
+   token colour so the figure can never disappear. */
+@media(forced-colors:active){
+  .audit-header h2 span,.audit-banner-kcal .audit-banner-value{-webkit-text-fill-color:currentColor;
+    background:none;color:CanvasText}
+}
 .audit-banner-foot{grid-column:1/-1;margin-top:var(--s-1);padding-top:var(--s-2);border-top:1px solid var(--line);
   color:var(--muted);font-size:10.5px}
 @media(max-width:960px){
@@ -330,7 +339,7 @@ button{font-family:inherit}
 .audit-care-card .muted{color:var(--on-primary);opacity:.8}
 .audit-care-card .btn-ghost{background:var(--on-primary);border-color:var(--on-primary);color:var(--primary-deep);font-weight:800}
 .audit-smart-root{margin-top:var(--s-4)}.audit-footer{display:flex;align-items:center;gap:var(--s-3);margin-top:var(--s-4);padding:var(--s-4);background:var(--surface-muted);border:1px solid var(--line);border-radius:var(--r-md);color:var(--ink-subtle);font-size:11px}.audit-footer > svg{color:var(--emerald);flex:none}.audit-footer b{font-size:12px}.audit-footer p{margin-top:2px;color:var(--muted)}.audit-footer > .tiny{margin-left:auto;color:var(--muted)}
-.onb-brand-mark{width:52px;height:52px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:var(--surface);flex:none}
+.onb-brand-mark{width:52px;height:52px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);flex:none}
 .onb-brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:1180px){.audit-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-workspace{grid-template-columns:1fr}.audit-side-column{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-care-card{grid-column:span 2}}
 @media(max-width:860px){.audit-header{grid-template-columns:1fr;gap:18px}.audit-actions{justify-content:flex-start;max-width:none}.audit-header h2{font-size:39px}.audit-side-column{grid-template-columns:1fr}.audit-care-card{grid-column:auto}}
@@ -526,7 +535,7 @@ ul.tight li{margin-bottom:6px}
 body.no-shell #sidebar, body.no-shell #topbar, body.no-shell .sys-banner{display:none}
 body.no-shell #app{grid-template-columns:1fr}
 body.no-shell #view{max-width:860px;margin:0 auto;padding:40px 20px 80px}
-.onb-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-md);
+.onb-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-md);
   padding:26px;margin-bottom:18px}
 .onb .form-section{background:var(--surface)}
 
