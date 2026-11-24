@@ -383,7 +383,7 @@ async function renderTracker() {
       <span class="date-chip">${date === S.boot.today ? "Today, " : ""}${prettyDate(date)}</span>
       <button class="btn btn-ghost btn-sm" id="day-next" aria-label="Next day">›</button>
       <a class="btn btn-ghost btn-sm" href="/api/report.csv?days=7" download>${ICONS.download} CSV</a>
-      <button class="btn btn-deep btn-sm" id="post-add-food">${ICONS.plus} Log food</button>
+      <button class="btn ${meals.logged_count === 0 ? "btn-soft" : "btn-deep"} btn-sm" id="post-add-food">${ICONS.plus} Log food</button>
     </div>
   </div>
 
