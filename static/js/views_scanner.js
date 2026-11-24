@@ -32,6 +32,9 @@ const SCAN = {
 };
 
 const SCAN_GROUPS = {
+  packaged_snacks: "Packaged snacks",
+  sweets: "Sweets & desserts",
+  beverages: "Drinks & beverages",
   indian_staple: "Indian staples",
   indian_breakfast: "Indian breakfast",
   indian_curry: "Indian curries & vegetables",

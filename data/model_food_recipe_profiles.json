@@ -441,6 +441,65 @@
       }
     },
     {
+      "slug": "bhel_puri",
+      "class_label": "Bhel Puri",
+      "food_name": "Bhel puri (prepared)",
+      "recipe_id": "NC-RCP-bhel_puri-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Puffed rice with sev, onion, tomato, tamarind-mint chutney.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 18.0
+        },
+        {
+          "food_id": 26,
+          "grams_per_100g": 15.0
+        },
+        {
+          "food_id": 87,
+          "grams_per_100g": 4.0
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 8.0
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 6.0
+        },
+        {
+          "food_id": 127,
+          "grams_per_100g": 5.0
+        },
+        {
+          "food_id": 169,
+          "grams_per_100g": 3.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 1.0
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.9
+        }
+      ],
+      "water_g_per_100g": 39.1,
+      "salt_g_per_100g": 0.9,
+      "computed_per_100g": {
+        "kcal": 84.18,
+        "protein_g": 1.85,
+        "carbs_g": 14.05,
+        "fat_g": 2.64,
+        "fiber_g": 1.24,
+        "sodium_mg": 357.89,
+        "potassium_mg": 152.35,
+        "calcium_mg": 44.92,
+        "iron_mg": 0.76
+      }
+    },
+    {
       "slug": "bhindi_masala",
       "class_label": "Bhindi Masala",
       "food_name": "Bhindi Masala (prepared, recipe estimate)",
@@ -630,6 +689,41 @@
         "potassium_mg": 156.6,
         "calcium_mg": 25.4,
         "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "chai",
+      "class_label": "Chai / Masala Chai",
+      "food_name": "Chai, milk tea with sugar (prepared)",
+      "recipe_id": "NC-RCP-chai-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Milk tea brewed with sugar; per 100 ml of the ready drink.",
+      "ingredients": [
+        {
+          "food_id": 10,
+          "grams_per_100g": 55.0
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 5.0
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.0
+        }
+      ],
+      "water_g_per_100g": 40.0,
+      "salt_g_per_100g": 0.0,
+      "computed_per_100g": {
+        "kcal": 52.55,
+        "protein_g": 1.76,
+        "carbs_g": 7.54,
+        "fat_g": 1.81,
+        "fiber_g": 0.0,
+        "sodium_mg": 25.05,
+        "potassium_mg": 89.15,
+        "calcium_mg": 71.8,
+        "iron_mg": 0.05
       }
     },
     {
@@ -927,6 +1021,53 @@
       }
     },
     {
+      "slug": "curd_rice",
+      "class_label": "Curd Rice",
+      "food_name": "Curd rice (prepared)",
+      "recipe_id": "NC-RCP-curd_rice-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Cooked rice folded into whisked curd with a mustard-curry-leaf tempering.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 62.0
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 30.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 2.0
+        },
+        {
+          "food_id": 88,
+          "grams_per_100g": 0.4
+        },
+        {
+          "food_id": 109,
+          "grams_per_100g": 0.1
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.6
+        }
+      ],
+      "water_g_per_100g": 4.9,
+      "salt_g_per_100g": 0.6,
+      "computed_per_100g": {
+        "kcal": 117.18,
+        "protein_g": 2.74,
+        "carbs_g": 19.02,
+        "fat_g": 3.2,
+        "fiber_g": 0.28,
+        "sodium_mg": 253.01,
+        "potassium_mg": 71.66,
+        "calcium_mg": 43.8,
+        "iron_mg": 0.16
+      }
+    },
+    {
       "slug": "daal_baati_churma",
       "class_label": "Dal Baati Churma",
       "food_name": "Dal Baati Churma (prepared, recipe estimate)",
@@ -1123,6 +1264,49 @@
       }
     },
     {
+      "slug": "dhokla",
+      "class_label": "Dhokla",
+      "food_name": "Dhokla (prepared)",
+      "recipe_id": "NC-RCP-dhokla-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Steamed fermented besan batter, tempered with oil and mustard.",
+      "ingredients": [
+        {
+          "food_id": 44,
+          "grams_per_100g": 30.0
+        },
+        {
+          "food_id": 8,
+          "grams_per_100g": 6.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 2.0
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 2.0
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 1.0
+        }
+      ],
+      "water_g_per_100g": 59.0,
+      "salt_g_per_100g": 1.0,
+      "computed_per_100g": {
+        "kcal": 138.24,
+        "protein_g": 6.83,
+        "carbs_g": 17.56,
+        "fat_g": 4.0,
+        "fiber_g": 3.33,
+        "sodium_mg": 415.44,
+        "potassium_mg": 266.02,
+        "calcium_mg": 21.46,
+        "iron_mg": 1.48
+      }
+    },
+    {
       "slug": "doodhpak",
       "class_label": "Doodhpak",
       "food_name": "Doodhpak (prepared, recipe estimate)",
@@ -1273,6 +1457,53 @@
         "potassium_mg": 300.7,
         "calcium_mg": 16.9,
         "iron_mg": 0.4
+      }
+    },
+    {
+      "slug": "fried_rice",
+      "class_label": "Fried Rice",
+      "food_name": "Veg fried rice (prepared)",
+      "recipe_id": "NC-RCP-fried_rice-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Cooked rice stir-fried with mixed vegetables in oil.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 68.0
+        },
+        {
+          "food_id": 27,
+          "grams_per_100g": 14.0
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 5.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4.0
+        },
+        {
+          "food_id": 87,
+          "grams_per_100g": 0.4
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 7.8,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 135.46,
+        "protein_g": 2.34,
+        "carbs_g": 21.58,
+        "fat_g": 4.27,
+        "fiber_g": 0.93,
+        "sodium_mg": 319.87,
+        "potassium_mg": 74.7,
+        "calcium_mg": 13.57,
+        "iron_mg": 0.29
       }
     },
     {
@@ -1508,6 +1739,53 @@
         "potassium_mg": 153.2,
         "calcium_mg": 32.8,
         "iron_mg": 1.0
+      }
+    },
+    {
+      "slug": "kaathi_rolls",
+      "class_label": "Kathi Roll / Frankie",
+      "food_name": "Kathi roll, paneer fill (prepared)",
+      "recipe_id": "NC-RCP-kaathi_rolls-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Maida roti rolled around a paneer-onion filling with chutney.",
+      "ingredients": [
+        {
+          "food_id": 46,
+          "grams_per_100g": 30.0
+        },
+        {
+          "food_id": 7,
+          "grams_per_100g": 22.0
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 12.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4.0
+        },
+        {
+          "food_id": 88,
+          "grams_per_100g": 0.5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 1.0
+        }
+      ],
+      "water_g_per_100g": 30.5,
+      "salt_g_per_100g": 1.0,
+      "computed_per_100g": {
+        "kcal": 208.06,
+        "protein_g": 7.26,
+        "carbs_g": 25.29,
+        "fat_g": 8.28,
+        "fiber_g": 1.02,
+        "sodium_mg": 438.54,
+        "potassium_mg": 78.09,
+        "calcium_mg": 112.94,
+        "iron_mg": 0.54
       }
     },
     {
@@ -1856,6 +2134,41 @@
       }
     },
     {
+      "slug": "kulfi",
+      "class_label": "Kulfi",
+      "food_name": "Kulfi (prepared)",
+      "recipe_id": "NC-RCP-kulfi-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Reduced whole milk with sugar and cardamom, frozen.",
+      "ingredients": [
+        {
+          "food_id": 10,
+          "grams_per_100g": 72.0
+        },
+        {
+          "food_id": 196,
+          "grams_per_100g": 12.0
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.1
+        }
+      ],
+      "water_g_per_100g": 15.9,
+      "salt_g_per_100g": 0.1,
+      "computed_per_100g": {
+        "kcal": 89.52,
+        "protein_g": 2.32,
+        "carbs_g": 15.22,
+        "fat_g": 2.38,
+        "fiber_g": 0.0,
+        "sodium_mg": 73.66,
+        "potassium_mg": 123.96,
+        "calcium_mg": 98.52,
+        "iron_mg": 0.11
+      }
+    },
+    {
       "slug": "kuzhi_paniyaram",
       "class_label": "Kuzhi Paniyaram",
       "food_name": "Kuzhi Paniyaram (prepared, recipe estimate)",
@@ -1978,6 +2291,45 @@
         "potassium_mg": 128.2,
         "calcium_mg": 299.8,
         "iron_mg": 0.7
+      }
+    },
+    {
+      "slug": "lemon_rice",
+      "class_label": "Lemon Rice",
+      "food_name": "Lemon rice (prepared)",
+      "recipe_id": "NC-RCP-lemon_rice-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Cooked rice with lemon juice, peanuts and a hot tempering.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 74.0
+        },
+        {
+          "food_id": 204,
+          "grams_per_100g": 3.5
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 3.5
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 18.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 147.69,
+        "protein_g": 2.85,
+        "carbs_g": 21.61,
+        "fat_g": 5.46,
+        "fiber_g": 0.59,
+        "sodium_mg": 315.67,
+        "potassium_mg": 48.09,
+        "calcium_mg": 9.43,
+        "iron_mg": 0.2
       }
     },
     {
@@ -2225,6 +2577,61 @@
         "potassium_mg": 116.3,
         "calcium_mg": 54.3,
         "iron_mg": 0.5
+      }
+    },
+    {
+      "slug": "masala_dosa",
+      "class_label": "Masala Dosa",
+      "food_name": "Masala dosa (prepared)",
+      "recipe_id": "NC-RCP-masala_dosa-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Plain dosa batter with a spiced potato-onion filling and a little oil.",
+      "ingredients": [
+        {
+          "food_id": 20,
+          "grams_per_100g": 43.0
+        },
+        {
+          "food_id": 26,
+          "grams_per_100g": 24.0
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 8.0
+        },
+        {
+          "food_id": 99,
+          "grams_per_100g": 2.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 3.0
+        },
+        {
+          "food_id": 88,
+          "grams_per_100g": 0.5
+        },
+        {
+          "food_id": 109,
+          "grams_per_100g": 0.2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.7
+        }
+      ],
+      "water_g_per_100g": 18.6,
+      "salt_g_per_100g": 0.7,
+      "computed_per_100g": {
+        "kcal": 124.78,
+        "protein_g": 2.6,
+        "carbs_g": 18.81,
+        "fat_g": 4.38,
+        "fiber_g": 1.5,
+        "sodium_mg": 377.84,
+        "potassium_mg": 153.63,
+        "calcium_mg": 21.85,
+        "iron_mg": 0.83
       }
     },
     {
@@ -3239,6 +3646,61 @@
       }
     },
     {
+      "slug": "tomato_rice",
+      "class_label": "Tomato Rice",
+      "food_name": "Tomato rice (prepared)",
+      "recipe_id": "NC-RCP-tomato_rice-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Cooked rice with tomato-onion masala and oil.",
+      "ingredients": [
+        {
+          "food_id": 2,
+          "grams_per_100g": 70.0
+        },
+        {
+          "food_id": 28,
+          "grams_per_100g": 15.0
+        },
+        {
+          "food_id": 86,
+          "grams_per_100g": 6.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 3.0
+        },
+        {
+          "food_id": 87,
+          "grams_per_100g": 0.5
+        },
+        {
+          "food_id": 88,
+          "grams_per_100g": 0.3
+        },
+        {
+          "food_id": 109,
+          "grams_per_100g": 0.2
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 0.8
+        }
+      ],
+      "water_g_per_100g": 4.2,
+      "salt_g_per_100g": 0.8,
+      "computed_per_100g": {
+        "kcal": 124.17,
+        "protein_g": 2.15,
+        "carbs_g": 21.18,
+        "fat_g": 3.28,
+        "fiber_g": 0.63,
+        "sodium_mg": 321.53,
+        "potassium_mg": 75.66,
+        "calcium_mg": 10.91,
+        "iron_mg": 0.22
+      }
+    },
+    {
       "slug": "unni_appam",
       "class_label": "Unni Appam",
       "food_name": "Unni Appam (prepared, recipe estimate)",
@@ -3283,6 +3745,49 @@
         "potassium_mg": 334.8,
         "calcium_mg": 21.7,
         "iron_mg": 2.6
+      }
+    },
+    {
+      "slug": "vada_pav",
+      "class_label": "Vada Pav",
+      "food_name": "Vada pav (prepared)",
+      "recipe_id": "NC-RCP-vada_pav-v1",
+      "basis": "representative household recipe, per 100 g finished dish",
+      "method": "Potato-besan vada in a pav (white bread roll) with green chutney.",
+      "ingredients": [
+        {
+          "food_id": 26,
+          "grams_per_100g": 30.0
+        },
+        {
+          "food_id": 44,
+          "grams_per_100g": 10.0
+        },
+        {
+          "food_id": 17,
+          "grams_per_100g": 20.0
+        },
+        {
+          "food_id": 193,
+          "grams_per_100g": 4.0
+        },
+        {
+          "ingredient": "salt",
+          "grams_per_100g": 1.0
+        }
+      ],
+      "water_g_per_100g": 35.0,
+      "salt_g_per_100g": 1.0,
+      "computed_per_100g": {
+        "kcal": 149.56,
+        "protein_g": 4.91,
+        "carbs_g": 19.93,
+        "fat_g": 5.31,
+        "fiber_g": 3.04,
+        "sodium_mg": 481.0,
+        "potassium_mg": 249.1,
+        "calcium_mg": 27.4,
+        "iron_mg": 1.08
       }
     }
   ]

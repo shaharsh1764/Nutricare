@@ -362,7 +362,7 @@ async function renderTracker() {
     <div>
       <div class="card">
         <div class="searchbox" style="max-width:none;border-radius:12px">
-          ${ICONS.search}<input id="food-search" placeholder="Search 40+ foods: roti, dal, paneer, rice, oats, banana…" autocomplete="off">
+          ${ICONS.search}<input id="food-search" placeholder="Search foods: roti, dal, paneer, chips, cola, masala dosa…" autocomplete="off">
         </div>
         <div id="search-results"></div>
         <button class="btn btn-soft btn-sm mt12" id="add-custom">${ICONS.plus} Add custom / manual item</button>
