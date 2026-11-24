@@ -26,11 +26,17 @@
 
   /* ---- violet: one accent, reserved for the dominant action + figures -- */
   --accent:#5B3BD6; --accent-strong:#4A26B8; --accent-bright:#7C5CFF;
+  /* ink for the one primary action placed on a dark forest card */
+  --on-accent-dark-fill:#12101C;
   --accent-ink:#4A26B8; --accent-soft:rgba(91,59,214,.08);
   --accent-soft-hover:rgba(91,59,214,.14); --accent-border:#D6CBF8;
   --accent-ring:rgba(91,59,214,.26); --on-accent:#FBFAFF;
   --accent-fill:#5B3BD6; --accent-fill-2:#4A26B8;
   --accent-gradient:linear-gradient(135deg,#6D4BE8 0%,#5B3BD6 52%,#4A26B8 100%);
+  /* Violet is the one colour that must not be inherited across themes: on the
+     dark canvas the mid-tone fill nearly vanishes, so accent RULES (stripe,
+     progress, markers) use this brighter tone that reads on dark surfaces. */
+  --accent-rule:#5B3BD6;
   --accent-gradient-soft:linear-gradient(135deg,#F4F0FF 0%,#FBF9F5 58%,#F5F1EA 100%);
   --accent-text-gradient:linear-gradient(96deg,#4A26B8 0%,#5B3BD6 48%,#6D4BE8 100%);
   --glow-accent:0 10px 24px -12px rgba(91,59,214,.50);
@@ -84,10 +90,16 @@ html[data-theme="dark"]{
   --on-primary:#13261C; --on-danger:#3A0710; --on-dark:#EEF5EF;
   --primary-soft:rgba(201,235,211,.11); --primary-soft-hover:rgba(201,235,211,.19);
   --primary-ring:rgba(201,235,211,.26); --primary-border:#4F6E5C;
-  --accent:#C4B2FF; --accent-strong:#D7CCFF; --accent-bright:#B9A4FF;
+  --accent:#C4B2FF; --accent-strong:#D7CCFF;
   --accent-ink:#D7CCFF; --accent-soft:rgba(196,178,255,.14);
   --accent-soft-hover:rgba(196,178,255,.22); --accent-border:#5C4B95;
-  --accent-ring:rgba(196,178,255,.32); --on-accent:#FBFAFF;
+  --accent-ring:rgba(196,178,255,.32);
+  /* A filled violet button on a dark page needs a mid-tone fill (so it is
+     visible against the canvas) with dark ink on top (so the label is legible).
+     Both were contrast-checked: fill 4.7:1 vs canvas, ink 5.2:1 on fill. */
+  --accent-fill:#8C6FFF; --accent-fill-2:#7C5CFF; --on-accent:#12101C;
+  --accent-bright:#9A82FF; --on-accent-dark-fill:#12101C;
+  --accent-rule:#B9A4FF;
   --accent-gradient-soft:linear-gradient(135deg,#251F40 0%,#17221C 58%,#1C2B24 100%);
   --accent-text-gradient:linear-gradient(96deg,#E7DEFF 0%,#C4B2FF 52%,#B9A4FF 100%);
   --glow-accent:0 10px 26px -12px rgba(124,92,255,.55);
@@ -232,7 +244,8 @@ button{font-family:inherit}
 .audit-stat-banner{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s-3);
   margin-top:var(--s-5);padding:var(--s-4) var(--s-5);border:1px solid var(--line);border-radius:var(--r-lg);
   background:var(--surface);box-shadow:var(--shadow-sm);overflow:hidden}
-.audit-stat-banner:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent-gradient)}
+.audit-stat-banner:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--accent-rule),var(--accent-rule) 55%,transparent)}
 .audit-banner-stat{display:grid;gap:2px;min-width:0;padding-left:var(--s-3)}
 .audit-banner-stat + .audit-banner-stat{border-left:1px solid var(--line)}
 .audit-banner-label{font-size:9.5px;font-weight:800;letter-spacing:.14em;color:var(--faint)}
@@ -255,7 +268,7 @@ button{font-family:inherit}
 .audit-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s-3);margin-top:var(--s-5)}
 .audit-stat-card{min-width:0;padding:var(--s-4);background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);
   box-shadow:var(--shadow-sm);display:flex;flex-direction:column;justify-content:flex-start}
-.audit-stat-card:first-child{border-top:2px solid var(--accent)}
+.audit-stat-card:first-child{border-top:2px solid var(--accent-rule)}
 .audit-card-label{display:flex;align-items:center;justify-content:space-between;gap:var(--s-2);color:var(--faint);
   font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
 .audit-card-label span{display:inline-flex;color:var(--accent-ink);opacity:.85}
@@ -357,8 +370,8 @@ button{font-family:inherit}
 .btn-danger-soft{background:var(--rose-soft);color:var(--rose-ink);border-color:var(--rose-border)}
 .btn-danger-soft:hover{background:var(--rose-soft);border-color:var(--rose)}
 /* primary action that sits on a dark forest surface */
-.btn-accent{background:var(--accent-bright);color:#12101C;border-color:var(--accent-bright);box-shadow:var(--glow-accent)}
-.btn-accent:hover{background:#8C6FFF;border-color:#8C6FFF;box-shadow:var(--glow-accent-strong)}
+.btn-accent{background:var(--accent-bright);color:var(--on-accent-dark-fill);border-color:var(--accent-bright);box-shadow:var(--glow-accent)}
+.btn-accent:hover{background:var(--accent);border-color:var(--accent);box-shadow:var(--glow-accent-strong)}
 .btn-sm{padding:6px var(--s-3);font-size:11.5px;border-radius:var(--r-sm)}
 .btn-sm svg{width:14px;height:14px}
 .btn:focus-visible,.input:focus-visible,.select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
