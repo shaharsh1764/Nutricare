@@ -148,7 +148,7 @@ async function renderAssistant() {
     <span class="icon-pill tint-teal" style="width:38px;height:38px">${ICONS.shield}</span>
     <div>
       <div class="row wrap" style="gap:8px">
-        <b class="small" style="color:var(--primary-deep)">MEDICAL SAFETY & EVIDENCE FRAMEWORK</b>
+        <b class="small" style="color:var(--accent-ink)">MEDICAL SAFETY &amp; EVIDENCE FRAMEWORK</b>
         <span class="pill pill-slate">${esc(S.boot.assistant.engine)}</span>
         <span class="pill pill-amber">Limited offline engine — no AI API call</span>
       </div>
@@ -353,7 +353,7 @@ function renderAssessment(r) {
           <p class="small muted mt8">${esc(p.detail)}</p></div>`).join("")}
       </div>
       ${r.context_notes.length ? `<div class="selfcare-card mt12">
-        <b class="tiny" style="color:var(--primary-deep)">FROM YOUR PROFILE (your own reported context)</b>
+        <b class="tiny" style="color:var(--accent-ink)">FROM YOUR PROFILE (your own reported context)</b>
         <ul class="tight small muted">${r.context_notes.map((c) => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
     </div>
     <div class="card mt16">

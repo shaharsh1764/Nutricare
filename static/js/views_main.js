@@ -481,7 +481,7 @@ function mealSection(meal, entries, t) {
         <span class="pill pill-slate" style="margin-left:6px">${entries.length} logged</span></div>
       <span class="small muted"><b style="color:var(--ink)">${fmt(kcal)}</b> kcal ·
         <span style="color:${COLORS.protein}">${fmt(p, 1)}g P</span> ·
-        <span style="color:var(--primary)">${fmt(c, 1)}g C</span> ·
+        <span style="color:var(--ink-subtle)">${fmt(c, 1)}g C</span> ·
         <span style="color:${COLORS.fat}">${fmt(f, 1)}g F</span></span>
     </div>
     <div class="meal-rows">

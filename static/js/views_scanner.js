@@ -609,10 +609,10 @@ function scanAskMeal() {
   openModal(`
     <h3>When did you have this meal?</h3>
     <p class="tiny muted mt8">Choose a meal category, then review the completed entry before it is saved.</p>
-    <div class="seg mt16">
+    <div class="tile-grid mt16 meal-choice-grid" role="group" aria-label="Choose meal category">
       ${Object.entries(MEAL_META).map(([key, m]) => `
-        <button class="tile tile-btn" data-meal="${key}">
-          <span style="font-size:20px">${m.icon}</span>
+        <button class="tile-btn" type="button" data-meal="${key}">
+          <span class="meal-choice-icon ${m.tint}" aria-hidden="true">${m.icon}</span>
           <b>${key === "snacks" ? "Snacks" : m.label}</b></button>`).join("")}
     </div>
     <div class="row mt20" style="justify-content:flex-end">
