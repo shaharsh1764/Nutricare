@@ -180,7 +180,13 @@ button{font-family:inherit}
 #view{padding:var(--s-7) var(--s-7) 72px;max-width:1520px}
 .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap;margin-bottom:var(--s-6)}
 .page-head h2{font-size:36px;line-height:1.06;letter-spacing:-.03em}
+/* Semantic pill label above a page heading ("YOUR DAILY NUTRITION"). */
+.page-kicker{display:inline-flex;align-items:center;gap:var(--s-2);margin-bottom:var(--s-2);
+  padding:4px var(--s-3);border:1px solid var(--accent-border);border-radius:var(--r-pill);
+  background:var(--accent-soft);color:var(--accent-ink);font-size:9.5px;font-weight:800;letter-spacing:.14em}
+.page-kicker:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none}
 .page-head .sub{color:var(--muted);font-size:13px;line-height:1.62;margin-top:var(--s-2);max-width:660px}
+.page-head > .row{align-items:center}
 .grid{display:grid;gap:var(--s-4)}
 .cols-4{grid-template-columns:repeat(4,1fr)}
 .cols-3{grid-template-columns:repeat(3,1fr)}

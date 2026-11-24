@@ -9,7 +9,7 @@ async function renderReports() {
   const macroKcal = { protein: avg.protein_g * 4, carbs: avg.carbs_g * 4, fat: avg.fat_g * 4 };
   const macroSum = macroKcal.protein + macroKcal.carbs + macroKcal.fat || 1;
   const rangeHead = `<div class="page-head">
-    <div><h2>Nutrition & Health Reports</h2>
+    <div><span class="page-kicker">REPORTS &amp; TRENDS</span><h2>Nutrition & Health Reports</h2>
       <p class="sub">Daily and weekly summaries compiled from your continuous logs. Charts are
       interactive summaries of your own data — exportable for the selected period as PDF, CSV, or JSON.</p></div>
     <div class="row">
@@ -115,7 +115,7 @@ async function renderSettings() {
   const set = S.boot.settings;
   const theme = currentTheme();
   $("#view").innerHTML = `
-  <div class="page-head"><div><h2>Account & Application Settings</h2>
+  <div class="page-head"><div><span class="page-kicker">PREFERENCES &amp; PRIVACY</span><h2>Account &amp; Application Settings</h2>
     <p class="sub">Appearance, units, calculation model, hydration goal, local health-chat privacy, and data controls.
     Secrets (if any) live in environment variables, never in the UI.</p></div></div>
 

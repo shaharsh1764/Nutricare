@@ -374,14 +374,16 @@ async function renderTracker() {
 
   $("#view").innerHTML = `
   <div class="page-head">
-    <div><h2>Nutrition Tracker</h2>
+    <div><span class="page-kicker">MEAL LOG &amp; FOOD ANALYSIS</span>
+      <h2>Nutrition Tracker</h2>
       <p class="sub">Search the documented food database (incl. common Indian foods), choose portions,
       and manage meals by category. Values come from <code>data/foods.json</code> (USDA FDC / IFCT 2017).</p></div>
-    <div class="row">
-      <button class="btn btn-ghost btn-sm" id="day-prev">‹</button>
+    <div class="row wrap">
+      <button class="btn btn-ghost btn-sm" id="day-prev" aria-label="Previous day">‹</button>
       <span class="date-chip">${date === S.boot.today ? "Today, " : ""}${prettyDate(date)}</span>
-      <button class="btn btn-ghost btn-sm" id="day-next">›</button>
+      <button class="btn btn-ghost btn-sm" id="day-next" aria-label="Next day">›</button>
       <a class="btn btn-ghost btn-sm" href="/api/report.csv?days=7" download>${ICONS.download} CSV</a>
+      <button class="btn btn-deep btn-sm" id="post-add-food">${ICONS.plus} Log food</button>
     </div>
   </div>
 
@@ -431,6 +433,7 @@ async function renderTracker() {
   $("#day-prev").onclick = () => { S.trackerDate = shiftDate(date, -1); renderTracker(); };
   $("#day-next").onclick = () => { S.trackerDate = shiftDate(date, 1); renderTracker(); };
   $("#add-custom").onclick = () => openCustomModal();
+  $("#post-add-food").onclick = () => openFoodSearchModal("breakfast");
   const eaf = $("#empty-add-food"); if (eaf) eaf.onclick = () => openFoodSearchModal("breakfast");
   const eac = $("#empty-add-custom"); if (eac) eac.onclick = () => openCustomModal();
   const eas = $("#empty-add-scan"); if (eas) eas.onclick = () => location.hash = "#/scanner";

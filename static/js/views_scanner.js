@@ -755,7 +755,7 @@ async function renderScanner() {
 
   $("#view").innerHTML = `
   <div class="page-head">
-    <div><h2>Food Scanner</h2>
+    <div><span class="page-kicker">PHOTO → CONFIRM → LOG</span><h2>Food Scanner</h2>
       <p class="sub">Take a photo of your meal and discover its nutritional information.</p></div>
     <div class="row">
       <a class="btn btn-ghost btn-sm" href="#/tracker">${ICONS.tracker} Open tracker</a>

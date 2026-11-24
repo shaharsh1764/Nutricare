@@ -8,7 +8,7 @@ async function renderProfile() {
   const t = data.targets;
   $("#view").innerHTML = `
   <div class="page-head">
-    <div><h2>Personal Health Profile</h2>
+    <div><span class="page-kicker">YOUR BIOMETRICS</span><h2>Personal Health Profile</h2>
       <p class="sub">Only what the app actually uses for calculations and safety context is collected.
       Everything stays in your local database and can be deleted at any time. <b>Nothing here is
       required to log food</b> — targets appear once age, sex, height, weight and activity are set,
@@ -162,8 +162,10 @@ async function renderAssistant() {
 
   <div class="grid cols-21 mt16" style="align-items:start">
     <form class="card" id="a-form" novalidate>
-      <div class="card-head"><div><span class="tiny muted" style="font-weight:700;letter-spacing:.08em">TRIAGE MODULE</span>
-        <h3 style="font-size:18px">Symptom Assessment</h3></div>
+      <div class="card-head"><div><span class="audit-section-kicker">TRIAGE MODULE</span>
+        <h3 style="font-size:19px;margin-top:2px">Symptom Assessment</h3>
+        <p class="audit-section-purpose">Answer what applies; every field is optional and nothing is
+        sent anywhere except your own device.</p></div>
         <span class="pill pill-slate">structured form</span></div>
 
       <fieldset class="form-section">
