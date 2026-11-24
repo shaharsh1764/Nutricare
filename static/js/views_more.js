@@ -138,12 +138,12 @@ async function renderSettings() {
         <div class="card-head"><span class="card-title">Units & measurement</span><span class="icon-pill tint-teal">${ICONS.settings}</span></div>
         <div class="grid cols-2">
           <div class="field"><span class="label">Unit system</span>
-            <select class="select" id="s-units">
+            <select class="select" id="s-units" aria-label="Unit system">
               <option value="metric" ${p.units === "metric" ? "selected" : ""}>Metric (kg, cm, ml)</option>
               <option value="imperial" ${p.units === "imperial" ? "selected" : ""}>Imperial (lb, ft, oz)</option>
             </select></div>
           <div class="field"><span class="label">Daily water goal (ml)</span>
-            <input class="input" id="s-water" type="number" min="500" max="6000" step="100" value="${set.water_goal_ml}"></div>
+            <input class="input" id="s-water" aria-label="Daily water goal (ml)" type="number" min="500" max="6000" step="100" value="${set.water_goal_ml}"></div>
         </div>
         <button class="btn btn-primary btn-sm" id="s-save-units">Save preferences</button>
       </div>

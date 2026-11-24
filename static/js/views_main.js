@@ -342,8 +342,10 @@ function dashboardMealList(summary) {
           <span class="pill pill-slate" style="margin-left:6px">${meta.label}</span></div>
           <div class="meta">P: ${fmt(e.nutrients.protein_g, 1)}g · C: ${fmt(e.nutrients.carbs_g, 1)}g · F: ${fmt(e.nutrients.fat_g, 1)}g · ${fmt(e.nutrients.grams)}g</div></div>
         <div class="kcal">${fmt(e.nutrients.kcal)} <small>kcal</small></div>
-        <button class="icon-btn" data-edit-entry="${e.id}" title="Edit">${ICONS.edit}</button>
-        <button class="icon-btn" data-del-entry="${e.id}" title="Delete">${ICONS.trash}</button>
+        <button class="icon-btn" data-edit-entry="${e.id}"
+          aria-label="Edit ${esc(e.display_name)}" title="Edit ${esc(e.display_name)}">${ICONS.edit}</button>
+        <button class="icon-btn" data-del-entry="${e.id}"
+          aria-label="Delete ${esc(e.display_name)}" title="Delete ${esc(e.display_name)}">${ICONS.trash}</button>
       </div>`).join("") +
       `<div class="meal-row" style="border-top:1px dashed var(--line)"><span></span>
         <div style="flex:1" class="tiny muted">${meta.label} subtotal</div>
@@ -391,7 +393,7 @@ async function renderTracker() {
     <div>
       <div class="card">
         <div class="searchbox" style="max-width:none">
-          ${ICONS.search}<input id="food-search" placeholder="Search foods: roti, dal, paneer, chips, cola, masala dosa…" autocomplete="off">
+          ${ICONS.search}<input id="food-search" aria-label="Search documented foods" placeholder="Search foods: roti, dal, paneer, chips, cola, masala dosa…" autocomplete="off">
         </div>
         <div id="search-results"></div>
         <button class="btn btn-soft btn-sm mt12" id="add-custom">${ICONS.plus} Add custom / manual item</button>
@@ -493,8 +495,10 @@ function mealSection(meal, entries, t) {
           <div class="row small muted" style="gap:12px">
             <span>P ${fmt(e.nutrients.protein_g, 1)}</span><span>C ${fmt(e.nutrients.carbs_g, 1)}</span><span>F ${fmt(e.nutrients.fat_g, 1)}</span></div>
           <div class="kcal">${fmt(e.nutrients.kcal)} <small>kcal</small></div>
-          <button class="icon-btn" data-edit-entry="${e.id}">${ICONS.edit}</button>
-          <button class="icon-btn" data-del-entry="${e.id}">${ICONS.trash}</button>
+          <button class="icon-btn" data-edit-entry="${e.id}"
+            aria-label="Edit ${esc(e.display_name)}" title="Edit ${esc(e.display_name)}">${ICONS.edit}</button>
+          <button class="icon-btn" data-del-entry="${e.id}"
+            aria-label="Delete ${esc(e.display_name)}" title="Delete ${esc(e.display_name)}">${ICONS.trash}</button>
         </div>`).join("")
       : `<div class="empty">Nothing logged for ${meta.label.toLowerCase()} yet.</div>`}
     </div>
@@ -560,14 +564,14 @@ function openFoodSearchModal(meal, presetFood = null, onSelect = null, onCustom 
     <h3>${pickerOnly ? "Search documented food catalogue" : `Add food to ${MEAL_META[meal].label}`}</h3>
     <p class="tiny muted">Pick a food, then set the portion. Nutrition is computed per-gram from the documented dataset.</p>
     <div class="searchbox mt12" style="max-width:none">${ICONS.search}
-      <input id="m-search" placeholder="Search foods…" autocomplete="off"></div>
+      <input id="m-search" aria-label="Search documented foods" placeholder="Search foods…" autocomplete="off"></div>
     <div id="m-results" style="max-height:220px;overflow:auto"></div>
     <div id="m-portion" class="mt12" style="display:${presetFood ? "block" : "none"}">
       <div class="field"><span class="label">Selected food</span><b id="m-food-name" class="small"></b></div>
       <div class="grid ${pickerOnly ? "cols-2" : "cols-3"}">
-        ${pickerOnly ? "" : `<div class="field"><span class="label">Meal</span><select class="select" id="m-meal">${mealOptions(meal)}</select></div>`}
-        <div class="field"><span class="label">Quantity</span><input class="input" id="m-qty" type="number" min="0.01" step="0.25" value="1"></div>
-        <div class="field"><span class="label">Unit</span><select class="select" id="m-unit">
+        ${pickerOnly ? "" : `<div class="field"><span class="label">Meal</span><select class="select" id="m-meal" aria-label="Meal">${mealOptions(meal)}</select></div>`}
+        <div class="field"><span class="label">Quantity</span><input class="input" id="m-qty" aria-label="Quantity" type="number" min="0.01" step="0.25" value="1"></div>
+        <div class="field"><span class="label">Unit</span><select class="select" id="m-unit" aria-label="Unit">
           <option value="serving">serving</option><option value="g">grams</option></select></div>
       </div>
       <p class="small muted" id="m-preview"></p>
@@ -636,12 +640,12 @@ function openScannerCustomFoodModal(onCustom) {
     <h3>Enter a custom food</h3>
     <p class="tiny muted">Use values from your package, recipe, or another reliable source. These details are not verified. Nothing is logged until you confirm the meal in the scanner.</p>
     <div class="grid cols-2 mt12">
-      <div class="field"><span class="label">Food name *</span><input class="input" id="scan-custom-name" maxlength="80" placeholder="e.g. Homemade masala dosa"></div>
-      <div class="field"><span class="label">Amount eaten (g) *</span><input class="input" id="scan-custom-grams" type="number" min="1" max="3000" value="100"></div>
-      <div class="field"><span class="label">Calories (kcal) *</span><input class="input" id="scan-custom-kcal" type="number" min="0" step="1" placeholder="Enter calories"></div>
-      <div class="field"><span class="label">Protein (g, optional)</span><input class="input" id="scan-custom-protein" type="number" min="0" step="0.1"></div>
-      <div class="field"><span class="label">Carbohydrates (g, optional)</span><input class="input" id="scan-custom-carbs" type="number" min="0" step="0.1"></div>
-      <div class="field"><span class="label">Fat (g, optional)</span><input class="input" id="scan-custom-fat" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Food name *</span><input class="input" id="scan-custom-name" aria-label="Food name *" maxlength="80" placeholder="e.g. Homemade masala dosa"></div>
+      <div class="field"><span class="label">Amount eaten (g) *</span><input class="input" id="scan-custom-grams" aria-label="Amount eaten (g) *" type="number" min="1" max="3000" value="100"></div>
+      <div class="field"><span class="label">Calories (kcal) *</span><input class="input" id="scan-custom-kcal" aria-label="Calories (kcal) *" type="number" min="0" step="1" placeholder="Enter calories"></div>
+      <div class="field"><span class="label">Protein (g, optional)</span><input class="input" id="scan-custom-protein" aria-label="Protein (g, optional)" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Carbohydrates (g, optional)</span><input class="input" id="scan-custom-carbs" aria-label="Carbohydrates (g, optional)" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Fat (g, optional)</span><input class="input" id="scan-custom-fat" aria-label="Fat (g, optional)" type="number" min="0" step="0.1"></div>
     </div>
     <div class="row mt16" style="justify-content:flex-end">
       <button class="btn btn-ghost" data-close>Cancel</button>
@@ -678,13 +682,13 @@ function openCustomModal() {
     <p class="tiny muted">For foods not in the database (e.g. home recipe with a label).
     Enter totals for the amount you ate.</p>
     <div class="grid cols-2 mt12">
-      <div class="field"><span class="label">Name</span><input class="input" id="c-name" maxlength="80" placeholder="e.g. Home-made upma"></div>
-      <div class="field"><span class="label">Meal</span><select class="select" id="c-meal">${mealOptions("snacks")}</select></div>
-      <div class="field"><span class="label">Amount eaten (g)</span><input class="input" id="c-grams" type="number" min="1" value="100"></div>
-      <div class="field"><span class="label">Calories (kcal)</span><input class="input" id="c-kcal" type="number" min="0" value="150"></div>
-      <div class="field"><span class="label">Protein (g)</span><input class="input" id="c-p" type="number" min="0" step="0.1" value="4"></div>
-      <div class="field"><span class="label">Carbs (g)</span><input class="input" id="c-c" type="number" min="0" step="0.1" value="25"></div>
-      <div class="field"><span class="label">Fat (g)</span><input class="input" id="c-f" type="number" min="0" step="0.1" value="3"></div>
+      <div class="field"><span class="label">Name</span><input class="input" id="c-name" aria-label="Name" maxlength="80" placeholder="e.g. Home-made upma"></div>
+      <div class="field"><span class="label">Meal</span><select class="select" id="c-meal" aria-label="Meal">${mealOptions("snacks")}</select></div>
+      <div class="field"><span class="label">Amount eaten (g)</span><input class="input" id="c-grams" aria-label="Amount eaten (g)" type="number" min="1" value="100"></div>
+      <div class="field"><span class="label">Calories (kcal)</span><input class="input" id="c-kcal" aria-label="Calories (kcal)" type="number" min="0" value="150"></div>
+      <div class="field"><span class="label">Protein (g)</span><input class="input" id="c-p" aria-label="Protein (g)" type="number" min="0" step="0.1" value="4"></div>
+      <div class="field"><span class="label">Carbs (g)</span><input class="input" id="c-c" aria-label="Carbs (g)" type="number" min="0" step="0.1" value="25"></div>
+      <div class="field"><span class="label">Fat (g)</span><input class="input" id="c-f" aria-label="Fat (g)" type="number" min="0" step="0.1" value="3"></div>
     </div>
     <div class="row mt8" style="justify-content:flex-end">
       <button class="btn btn-ghost" data-close>Cancel</button>
@@ -714,9 +718,9 @@ async function openEntryModal(_unused, entryId) {
   openModal(`
     <h3>Edit entry</h3><p class="tiny muted">${esc(entry.display_name)}</p>
     <div class="grid cols-3 mt12">
-      <div class="field"><span class="label">Meal</span><select class="select" id="e-meal">${mealOptions(entry.meal)}</select></div>
-      <div class="field"><span class="label">Quantity</span><input class="input" id="e-qty" type="number" min="0.01" step="0.25" value="${entry.quantity}"></div>
-      <div class="field"><span class="label">Unit</span><select class="select" id="e-unit">
+      <div class="field"><span class="label">Meal</span><select class="select" id="e-meal" aria-label="Meal">${mealOptions(entry.meal)}</select></div>
+      <div class="field"><span class="label">Quantity</span><input class="input" id="e-qty" aria-label="Quantity" type="number" min="0.01" step="0.25" value="${entry.quantity}"></div>
+      <div class="field"><span class="label">Unit</span><select class="select" id="e-unit" aria-label="Unit">
         <option value="serving" ${entry.unit === "serving" ? "selected" : ""} ${entry.food_id ? "" : "disabled"}>serving</option>
         <option value="g" ${entry.unit === "g" ? "selected" : ""}>grams</option></select></div>
     </div>

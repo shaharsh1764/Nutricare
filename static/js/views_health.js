@@ -24,33 +24,33 @@ async function renderProfile() {
       <div class="card-head"><span class="card-title">1 · Biometrics & energy</span>
         <span class="icon-pill tint-teal">${ICONS.profile}</span></div>
       <div class="grid cols-2">
-        <div class="field"><span class="label">Display name</span><input class="input" id="p-name" value="${esc(S.boot.user ? S.boot.user.name : "")}" maxlength="60">
+        <div class="field"><span class="label">Display name</span><input class="input" id="p-name" aria-label="Display name" value="${esc(S.boot.user ? S.boot.user.name : "")}" maxlength="60">
           <p class="form-hint">Stored only in this device's local database.</p></div>
-        <div class="field"><span class="label">Age (years)</span><input class="input" id="p-age" type="number" min="10" max="120" value="${p.age ?? ""}"></div>
+        <div class="field"><span class="label">Age (years)</span><input class="input" id="p-age" aria-label="Age (years)" type="number" min="10" max="120" value="${p.age ?? ""}"></div>
         <div class="field"><span class="label">Biological sex (for formulas)</span>
-          <select class="select" id="p-sex">
+          <select class="select" id="p-sex" aria-label="Biological sex (for formulas)">
             <option value="">—</option>
             <option value="female" ${p.sex === "female" ? "selected" : ""}>Female</option>
             <option value="male" ${p.sex === "male" ? "selected" : ""}>Male</option>
             <option value="other" ${p.sex === "other" ? "selected" : ""}>Other / prefer not to say</option>
           </select></div>
-        <div class="field"><span class="label">Height (cm)</span><input class="input" id="p-height" type="number" min="50" max="250" step="0.1" value="${p.height_cm ?? ""}"></div>
-        <div class="field"><span class="label">Weight (kg)</span><input class="input" id="p-weight" type="number" min="20" max="300" step="0.1" value="${p.weight_kg ?? ""}"></div>
+        <div class="field"><span class="label">Height (cm)</span><input class="input" id="p-height" aria-label="Height (cm)" type="number" min="50" max="250" step="0.1" value="${p.height_cm ?? ""}"></div>
+        <div class="field"><span class="label">Weight (kg)</span><input class="input" id="p-weight" aria-label="Weight (kg)" type="number" min="20" max="300" step="0.1" value="${p.weight_kg ?? ""}"></div>
         <div class="field"><span class="label">Activity level</span>
-          <select class="select" id="p-activity">
+          <select class="select" id="p-activity" aria-label="Activity level">
             ${Object.entries({ sedentary: "Sedentary (desk study)", light: "Light (1-3 d/wk)",
               moderate: "Moderate (3-5 d/wk)", active: "Active (6-7 d/wk)",
               very_active: "Very active (physical job)" })
               .map(([k, v]) => `<option value="${k}" ${p.activity === k ? "selected" : ""}>${v}</option>`).join("")}
           </select></div>
         <div class="field"><span class="label">Goal</span>
-          <select class="select" id="p-goal">
+          <select class="select" id="p-goal" aria-label="Goal">
             <option value="maintain" ${p.goal === "maintain" ? "selected" : ""}>Maintain weight</option>
             <option value="mild_loss" ${p.goal === "mild_loss" ? "selected" : ""}>Mild loss (−300 kcal)</option>
             <option value="mild_gain" ${p.goal === "mild_gain" ? "selected" : ""}>Mild gain (+300 kcal)</option>
           </select></div>
         <div class="field"><span class="label">Macro model</span>
-          <select class="select" id="p-macro">
+          <select class="select" id="p-macro" aria-label="Macro model">
             <option value="balanced" ${p.macro_model === "balanced" ? "selected" : ""}>Balanced 40/25/35</option>
             <option value="high_protein" ${p.macro_model === "high_protein" ? "selected" : ""}>High protein 30/35/35</option>
             <option value="low_carb" ${p.macro_model === "low_carb" ? "selected" : ""}>Lower carb 25/35/40</option>
@@ -71,18 +71,18 @@ async function renderProfile() {
         <div class="card-head"><span class="card-title">2 · Dietary preferences & allergies</span>
           <span class="icon-pill tint-amber">${ICONS.leaf}</span></div>
         <div class="field"><span class="label">Dietary preferences (comma separated)</span>
-          <input class="input" id="p-prefs" value="${esc((p.dietary_prefs || []).join(", "))}" placeholder="Vegetarian, nut-friendly…"></div>
+          <input class="input" id="p-prefs" aria-label="Dietary preferences (comma separated)" value="${esc((p.dietary_prefs || []).join(", "))}" placeholder="Vegetarian, nut-friendly…"></div>
         <div class="field"><span class="label">Allergies / intolerances (comma separated)</span>
-          <input class="input" id="p-allergies" value="${esc((p.allergies || []).join(", "))}" placeholder="Lactose intolerance, peanuts…"></div>
+          <input class="input" id="p-allergies" aria-label="Allergies / intolerances (comma separated)" value="${esc((p.allergies || []).join(", "))}" placeholder="Lactose intolerance, peanuts…"></div>
         <p class="tiny muted">Used for local food filtering and stored as your own profile notes. Never shared externally.</p>
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">3 · Medications & history</span>
           <span class="icon-pill tint-rose">${ICONS.capsule}</span></div>
         <div class="field"><span class="label">Current medications / supplements (comma separated)</span>
-          <input class="input" id="p-meds" value="${esc((p.medications || []).join(", "))}" placeholder="Vitamin D3…"></div>
+          <input class="input" id="p-meds" aria-label="Current medications / supplements (comma separated)" value="${esc((p.medications || []).join(", "))}" placeholder="Vitamin D3…"></div>
         <div class="field"><span class="label">Relevant medical history (optional, free text)</span>
-          <textarea class="input" id="p-history" rows="3" maxlength="500" placeholder="Optional — only what you choose to store in this local profile.">${esc(p.medical_history || "")}</textarea></div>
+          <textarea class="input" id="p-history" aria-label="Relevant medical history (optional, free text)" rows="3" maxlength="500" placeholder="Optional — only what you choose to store in this local profile.">${esc(p.medical_history || "")}</textarea></div>
         <p class="tiny muted">Optional fields. Leave blank if you prefer — the app works without them.</p>
       </div>
       <div class="card" style="border-color:var(--rose-border);background:var(--warning-bg)">
