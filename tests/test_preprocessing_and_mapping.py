@@ -25,12 +25,26 @@ from nutricare import vision
 
 # ---------------------------------------------------------------- helpers
 def make_png(width=64, height=64, colour=(180, 120, 60), mode="RGB"):
-    import struct
-    import zlib
-    from PIL import Image
+    """A small PNG with real local structure (not a flat fill).
 
+    predict() rejects undetailed images, so a solid colour would only test the
+    usability gate. A two-tone checker keeps these preprocessing tests pointed
+    at preprocessing.
+    """
+    from PIL import Image, ImageDraw
+
+    image = Image.new(mode, (width, height), colour)
+    draw = ImageDraw.Draw(image)
+    if mode in ("RGB", "RGBA"):
+        alt = tuple(max(0, min(255, c + 40)) for c in colour)
+    else:
+        alt = 255 if (colour if isinstance(colour, int) else 128) < 128 else 0
+    for y in range(0, height, 4):
+        for x in range(0, width, 4):
+            if ((x // 4) + (y // 4)) % 2:
+                draw.rectangle([x, y, x + 3, y + 3], fill=alt)
     buffer = io.BytesIO()
-    Image.new(mode, (width, height), colour).save(buffer, "PNG")
+    image.save(buffer, "PNG")
     return buffer.getvalue()
 
 
@@ -105,7 +119,16 @@ def test_grayscale_image_is_converted_to_rgb(predictor_app, monkeypatch):
         from PIL import Image
         import io as _io
         buffer = _io.BytesIO()
-        Image.new("L", (100, 100), 128).save(buffer, "PNG")
+        # Not a flat grey: the image must carry structure to pass the
+        # usability gate, or this becomes a test of that gate instead.
+        gray = Image.new("L", (100, 100), 128)
+        for gy in range(0, 100, 4):
+            for gx in range(0, 100, 4):
+                if ((gx // 4) + (gy // 4)) % 2:
+                    for py in range(gy, min(gy + 4, 100)):
+                        for px in range(gx, min(gx + 4, 100)):
+                            gray.putpixel((px, py), 200)
+        gray.save(buffer, "PNG")
         resp = client.post("/api/vision/predict",
                            data=buffer.getvalue(),
                            content_type="application/octet-stream")

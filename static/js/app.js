@@ -35,9 +35,26 @@ function currentRoute() {
 async function refreshView() {
   if (S.onboardingActive || !S.boot || !S.boot.user) { await renderOnboarding(); return; }
   const key = currentRoute();
+  /* A new page must start at its own heading. Views are re-rendered into the
+     same #view node, so the window keeps the previous scroll offset and the
+     sticky #topbar then covers the page title — most visibly on dense pages
+     when arriving from a long one. Only reset when the route actually changes,
+     so re-rendering the current view after logging food does not yank the
+     reader back to the top. */
+  if (key !== refreshView.lastKey) {
+    refreshView.lastKey = key;
+    if (typeof window.scrollTo === "function") {
+      try { window.scrollTo({ top: 0, left: 0, behavior: "auto" }); }
+      catch { window.scrollTo(0, 0); }
+    }
+  }
   $$(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.route === key));
   $("#crumb-page").textContent = ROUTES[key].title;
-  $("#view").innerHTML = `<div class="card"><p class="muted small">Loading ${ROUTES[key].title}…</p></div>`;
+  /* A quiet skeleton, not a spinner: the layout is already known, so reserve
+     its shape instead of flashing an empty card. */
+  $("#view").innerHTML = `<div class="card view-loading" role="status" aria-live="polite">
+    <p class="muted small">Loading ${ROUTES[key].title}…</p>
+    <div class="view-loading-bar"><i></i><i></i><i></i></div></div>`;
   try {
     await ROUTES[key].render();
   } catch (e) {
@@ -58,8 +75,8 @@ async function refreshSideGoal() {
   const pct = t ? Math.round(100 * summary.totals.kcal / t.kcal) : 0;
   $("#side-goal").innerHTML = `
     <div class="row spread"><span>Daily Goal</span><b>${t ? pct + "%" : "—"}</b></div>
-    <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:var(--primary-deep)"></i></div>
-    <p class="tiny mt8" style="color:var(--primary-deep)">${t
+    <div class="bar mt8"><i style="width:${Math.min(100, pct)}%;background:var(--accent-rule)"></i></div>
+    <p class="tiny mt8" style="color:var(--accent-ink)">${t
       ? `${fmt(summary.totals.kcal)} of ${fmt(t.kcal)} kcal recorded`
       : summary.logged_count ? "Recorded intake — target not set" : "Empty log · guest mode ok"}</p>`;
   const name = S.boot.user ? S.boot.user.name : "Guest";

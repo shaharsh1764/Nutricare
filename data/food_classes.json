@@ -142,7 +142,8 @@
         "rasgulla"
       ],
       "note": "Used only after a technical primary-model failure; every checkpoint class has a taxonomy row and documented food mapping. Not the normal scan model."
-    }
+    },
+    "packaged_food_note": "Packaged/beverage rows (data/foods.json grp='Packaged Snacks', 'Sweets & Desserts', 'Beverages') carry USDA FoodData Central label values for the generic product. Brands differ; the product label is the better source when it is available."
   },
   "classes": [
     {
@@ -329,10 +330,11 @@
         "masala dosa",
         "mysore masala dosa"
       ],
-      "food": "Dosa (plain, tawa)",
-      "default_grams": 60,
+      "food": "Masala dosa (prepared)",
+      "default_grams": 120,
       "nutrition_source": "dataset",
-      "approx_note": "Nutrition uses the plain-dosa entry from the dataset. Masala dosa adds a potato filling and is typically higher in carbohydrate and fat; treat this estimate as a lower bound."
+      "approx_note": "Estimated from a representative masala-dosa recipe (plain dosa plus potato filling and oil), not from a published masala-dosa analysis. Filling and oil vary widely between restaurants.",
+      "notes": "Estimated from a representative masala-dosa recipe (plain dosa plus potato filling and oil), not from a published masala-dosa analysis. Filling and oil vary widely between restaurants."
     },
     {
       "slug": "uttapam",
@@ -643,10 +645,11 @@
         "curd rice",
         "thayir sadam"
       ],
-      "food": null,
-      "default_grams": 200,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "food": "Curd rice (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "lemon_rice",
@@ -656,10 +659,11 @@
         "lemon rice",
         "chitranna"
       ],
-      "food": null,
-      "default_grams": 180,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "food": "Lemon rice (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "tomato_rice",
@@ -669,10 +673,11 @@
         "tomato rice",
         "thakkali sadam"
       ],
-      "food": null,
-      "default_grams": 180,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "food": "Tomato rice (prepared)",
+      "default_grams": 150,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "fried_rice",
@@ -682,10 +687,11 @@
         "fried rice",
         "veg fried rice"
       ],
-      "food": null,
-      "default_grams": 180,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "food": "Veg fried rice (prepared)",
+      "default_grams": 200,
+      "nutrition_source": "dataset",
+      "approx_note": "Vegetable fried rice is used as the reference. Restaurant versions with egg, meat or extra oil will differ; adjust the portion or add the extra item.",
+      "notes": "Vegetable fried rice is used as the reference. Restaurant versions with egg, meat or extra oil will differ; adjust the portion or add the extra item."
     },
     {
       "slug": "samosa",
@@ -737,10 +743,11 @@
       "aliases": [
         "dhokla"
       ],
-      "food": null,
+      "food": "Dhokla (prepared)",
       "default_grams": 100,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "kachori",
@@ -763,10 +770,11 @@
         "vada pav",
         "wada pav"
       ],
-      "food": null,
+      "food": "Vada pav (prepared)",
       "default_grams": 150,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "nutrition_source": "dataset",
+      "approx_note": "One vada pav with a white-bread pav and chutney. Fried-vada oil absorption and pav size vary by vendor; treat as an estimate.",
+      "notes": "One vada pav with a white-bread pav and chutney. Fried-vada oil absorption and pav size vary by vendor; treat as an estimate."
     },
     {
       "slug": "pani_puri",
@@ -791,10 +799,11 @@
         "bhel puri",
         "bhel"
       ],
-      "food": null,
-      "default_grams": 150,
-      "nutrition_source": "unavailable",
-      "approx_note": null
+      "food": "Bhel puri (prepared)",
+      "default_grams": 100,
+      "nutrition_source": "dataset",
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "notes": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "pizza",
@@ -808,7 +817,8 @@
       "food": null,
       "default_grams": 120,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "burger",
@@ -821,7 +831,8 @@
       "food": null,
       "default_grams": 150,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "sandwich",
@@ -833,7 +844,8 @@
       "food": null,
       "default_grams": 120,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "pasta",
@@ -847,7 +859,8 @@
       "food": null,
       "default_grams": 200,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "noodles",
@@ -862,7 +875,8 @@
       "food": null,
       "default_grams": 200,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "french_fries",
@@ -876,7 +890,8 @@
       "food": null,
       "default_grams": 100,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "fried_chicken",
@@ -889,7 +904,8 @@
       "food": null,
       "default_grams": 150,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "momos",
@@ -903,7 +919,8 @@
       "food": null,
       "default_grams": 150,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "spring_rolls",
@@ -916,7 +933,8 @@
       "food": null,
       "default_grams": 120,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "pancakes",
@@ -930,7 +948,8 @@
       "food": null,
       "default_grams": 120,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "salad",
@@ -943,7 +962,8 @@
       "food": null,
       "default_grams": 150,
       "nutrition_source": "unavailable",
-      "approx_note": null
+      "approx_note": null,
+      "notes": "Recognised by the experimental 80-class model, but this dataset has no documented nutrition row yet. The scanner asks you to enter values from the packaging, menu or your own recipe instead of inventing a figure."
     },
     {
       "slug": "dal_makhani",
@@ -982,10 +1002,11 @@
         "masala chai",
         "tea"
       ],
-      "food": null,
+      "food": "Chai, milk tea with sugar (prepared)",
       "default_grams": 150,
-      "approx_note": null,
-      "nutrition_source": "unavailable"
+      "approx_note": "Assumes tea made with whole milk and sugar. Reduce the portion or log a custom item for skimmed milk or unsweetened tea.",
+      "nutrition_source": "dataset",
+      "notes": "Assumes tea made with whole milk and sugar. Reduce the portion or log a custom item for skimmed milk or unsweetened tea."
     },
     {
       "slug": "jalebi",
@@ -1009,10 +1030,11 @@
         "kulfi",
         "matka kulfi"
       ],
-      "food": null,
+      "food": "Kulfi (prepared)",
       "default_grams": 80,
-      "approx_note": null,
-      "nutrition_source": "unavailable"
+      "approx_note": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json.",
+      "nutrition_source": "dataset",
+      "notes": "Recipe-derived approximate nutrition from a representative ingredient profile. Recipe and limitations: data/model_food_recipe_profiles.json."
     },
     {
       "slug": "kaathi_rolls",
@@ -1024,10 +1046,11 @@
         "frankie",
         "egg roll"
       ],
-      "food": null,
+      "food": "Kathi roll, paneer fill (prepared)",
       "default_grams": 180,
-      "approx_note": null,
-      "nutrition_source": "unavailable"
+      "approx_note": "Paneer filling is the reference. Chicken or egg kathi rolls differ; use a custom item for those.",
+      "nutrition_source": "dataset",
+      "notes": "Paneer filling is the reference. Chicken or egg kathi rolls differ; use a custom item for those."
     },
     {
       "slug": "kheer",

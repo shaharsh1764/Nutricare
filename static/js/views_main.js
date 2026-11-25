@@ -28,6 +28,22 @@ async function renderDashboard() {
     profile.weight_kg ? `${fmt(profile.weight_kg, 1)} kg` : null,
     profile.activity ? esc(profile.activity) : null,
   ].filter(Boolean).join(" · ");
+  /* Stat banner: four figures, all read straight from today's records. Any
+     figure without a documented value is shown as a dash, never as a zero. */
+  const statBanner = [
+    { key: "kcal", label: "CALORIES", value: fmt(consumed), unit: "kcal",
+      note: t ? `of ${fmt(t.kcal)} target` : "no target set" },
+    { key: "protein", label: "PROTEIN", value: fmt(summary.totals.protein_g, 1), unit: "g",
+      note: t ? `of ${fmt(t.protein_g)} g` : "target optional" },
+    { key: "carbs", label: "CARBS", value: fmt(summary.totals.carbs_g, 1), unit: "g",
+      note: t ? `of ${fmt(t.carbs_g)} g` : "target optional" },
+    { key: "fat", label: "FAT", value: fmt(summary.totals.fat_g, 1), unit: "g",
+      note: t ? `of ${fmt(t.fat_g)} g` : "target optional" },
+  ].map((item) => `<div class="audit-banner-stat audit-banner-${item.key}">
+      <span class="audit-banner-label">${item.label}</span>
+      <span class="audit-banner-value">${item.value}<small>${item.unit}</small></span>
+      <span class="audit-banner-note">${item.note}</span>
+    </div>`).join("");
 
   const macroCells = t ? [
     ["Protein", summary.totals.protein_g, t.protein_g, COLORS.protein],
@@ -52,12 +68,20 @@ async function renderDashboard() {
       <h2 id="audit-title">Daily Nutritional Audit <span>&amp; Dietary Intake</span></h2>
       <p class="audit-subject">${profileLine ? `For ${esc(name)} · ${profileLine}`
         : "Add your profile details to personalise daily targets and nutrition context."}</p>
+      <p class="audit-purpose">What you have recorded today, how it compares with your own targets,
+        and where the next meal can help.</p>
     </div>
     <div class="audit-actions" aria-label="Quick actions">
-      <button class="btn btn-soft" id="quick-water">${ICONS.drop} +250 ml water</button>
-      <button class="btn btn-ghost" id="quick-log">${ICONS.plus} Log meals</button>
+      <button class="btn btn-ghost" id="quick-water">${ICONS.drop} +250 ml water</button>
+      <button class="btn btn-soft" id="quick-log">${ICONS.plus} Log meals</button>
       <button class="btn btn-deep" id="quick-scan">${ICONS.scanner} Scan a meal</button>
     </div>
+  </section>
+
+  <section class="audit-stat-banner" aria-label="Today's energy and macronutrients">${statBanner}
+    <p class="audit-banner-foot">${summary.logged_count
+      ? `${summary.logged_count} ${summary.logged_count === 1 ? "entry" : "entries"} recorded today · figures are sums of documented food values`
+      : "No entries yet today — every figure stays at zero until you log something."}</p>
   </section>
 
   <section class="audit-stat-grid" aria-label="Daily nutrition summary">
@@ -110,7 +134,7 @@ async function renderDashboard() {
       <article class="card audit-today-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">TODAY'S TOTAL INTAKE</span>
           <h3>Calories &amp; macro distribution</h3>
-          <p class="tiny muted mt8">Your logged energy and macronutrients, grouped by meal.</p></div>
+          <p class="audit-section-purpose">Where today's energy came from, meal by meal.</p></div>
           <div class="audit-status-stack"><span class="pill pill-mint">${summary.logged_count} logged ${summary.logged_count === 1 ? "entry" : "entries"}</span>
             ${t ? `<span class="pill pill-slate">Target ${fmt(t.kcal)} kcal</span>` : ""}
             <div class="audit-section-actions" aria-label="Download today's nutrition record">
@@ -123,7 +147,8 @@ async function renderDashboard() {
 
       <article class="card audit-log-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">DAILY FOOD LOG</span>
-          <h3>Meals recorded today</h3></div>
+          <h3>Meals recorded today</h3>
+          <p class="audit-section-purpose">Every entry you saved today, grouped by meal.</p></div>
           <button class="btn btn-soft btn-sm" id="goto-tracker">Open tracker</button></div>
         <p class="tiny muted">Items are summed from the documented food dataset and stay editable in your tracker.</p>
         <div class="audit-meal-list mt12">${dashboardMealList(summary)}</div>
@@ -133,7 +158,8 @@ async function renderDashboard() {
     <aside class="audit-side-column">
       <article class="card audit-micro-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">NUTRIENT OVERVIEW</span>
-          <h3>Micronutrient snapshot</h3></div>
+          <h3>Micronutrient snapshot</h3>
+          <p class="audit-section-purpose">Five nutrients tracked against reference intakes.</p></div>
           <span class="pill pill-slate">tracked subset</span></div>
         ${nutritionSnapshot}
         <p class="tiny faint mt12">Fiber, sodium, potassium, calcium, and iron are shown when documented for your logged foods.</p>
@@ -141,7 +167,8 @@ async function renderDashboard() {
 
       <article class="card audit-insights-card">
         <div class="card-head audit-section-head"><div><span class="audit-section-kicker">GENTLE GUIDANCE</span>
-          <h3>Today's nutrition notes</h3></div></div>
+          <h3>Today's nutrition notes</h3>
+          <p class="audit-section-purpose">General observations drawn from today's log.</p></div></div>
         <div class="grid" style="gap:10px">${insights}</div>
       </article>
 
@@ -149,7 +176,7 @@ async function renderDashboard() {
         <span class="audit-section-kicker">LOCAL HEALTH CHAT</span>
         <h3>Need help making sense of a symptom?</h3>
         <p class="small muted mt8">Open the local health chat for general education, documented food ideas, pharmacist handoff for medication questions, and emergency warning-sign screening.</p>
-        <button class="btn btn-ghost mt12" id="quick-health-chat">Open health chat →</button>
+        <button class="btn btn-accent mt12" id="quick-health-chat">Open health chat →</button>
       </article>
     </aside>
   </section>
@@ -200,7 +227,7 @@ function weeklyTrajectoryCard(report, targets, weekEmpty) {
   return `<article class="card audit-timeline-card">
     <div class="card-head audit-section-head"><div><span class="audit-section-kicker">7-DAY OVERVIEW</span>
       <h3>Intake trajectory &amp; macro balance</h3>
-      <p class="tiny muted mt8">Your recorded nutrition across the last seven days.</p></div>
+      <p class="audit-section-purpose">Your recorded nutrition across the last seven days.</p></div>
       <div class="audit-status-stack"><span class="pill pill-mint">${loggedDays} logged days</span>
         ${targets ? `<span class="pill pill-slate">Target ${fmt(targets.kcal)} kcal</span>` : ""}</div></div>
     <div class="audit-chart-shell">${weekEmpty ? `<div class="empty-state"><span class="audit-empty-icon" aria-hidden="true">${ICONS.reports}</span>
@@ -315,8 +342,10 @@ function dashboardMealList(summary) {
           <span class="pill pill-slate" style="margin-left:6px">${meta.label}</span></div>
           <div class="meta">P: ${fmt(e.nutrients.protein_g, 1)}g · C: ${fmt(e.nutrients.carbs_g, 1)}g · F: ${fmt(e.nutrients.fat_g, 1)}g · ${fmt(e.nutrients.grams)}g</div></div>
         <div class="kcal">${fmt(e.nutrients.kcal)} <small>kcal</small></div>
-        <button class="icon-btn" data-edit-entry="${e.id}" title="Edit">${ICONS.edit}</button>
-        <button class="icon-btn" data-del-entry="${e.id}" title="Delete">${ICONS.trash}</button>
+        <button class="icon-btn" data-edit-entry="${e.id}"
+          aria-label="Edit ${esc(e.display_name)}" title="Edit ${esc(e.display_name)}">${ICONS.edit}</button>
+        <button class="icon-btn" data-del-entry="${e.id}"
+          aria-label="Delete ${esc(e.display_name)}" title="Delete ${esc(e.display_name)}">${ICONS.trash}</button>
       </div>`).join("") +
       `<div class="meal-row" style="border-top:1px dashed var(--line)"><span></span>
         <div style="flex:1" class="tiny muted">${meta.label} subtotal</div>
@@ -347,22 +376,24 @@ async function renderTracker() {
 
   $("#view").innerHTML = `
   <div class="page-head">
-    <div><h2>Nutrition Tracker</h2>
+    <div><span class="page-kicker">MEAL LOG &amp; FOOD ANALYSIS</span>
+      <h2>Nutrition Tracker</h2>
       <p class="sub">Search the documented food database (incl. common Indian foods), choose portions,
       and manage meals by category. Values come from <code>data/foods.json</code> (USDA FDC / IFCT 2017).</p></div>
-    <div class="row">
-      <button class="btn btn-ghost btn-sm" id="day-prev">‹</button>
+    <div class="row wrap">
+      <button class="btn btn-ghost btn-sm" id="day-prev" aria-label="Previous day">‹</button>
       <span class="date-chip">${date === S.boot.today ? "Today, " : ""}${prettyDate(date)}</span>
-      <button class="btn btn-ghost btn-sm" id="day-next">›</button>
+      <button class="btn btn-ghost btn-sm" id="day-next" aria-label="Next day">›</button>
       <a class="btn btn-ghost btn-sm" href="/api/report.csv?days=7" download>${ICONS.download} CSV</a>
+      <button class="btn ${meals.logged_count === 0 ? "btn-soft" : "btn-deep"} btn-sm" id="post-add-food">${ICONS.plus} Log food</button>
     </div>
   </div>
 
   <div class="grid cols-21" style="align-items:start">
     <div>
       <div class="card">
-        <div class="searchbox" style="max-width:none;border-radius:12px">
-          ${ICONS.search}<input id="food-search" placeholder="Search 40+ foods: roti, dal, paneer, rice, oats, banana…" autocomplete="off">
+        <div class="searchbox" style="max-width:none">
+          ${ICONS.search}<input id="food-search" aria-label="Search documented foods" placeholder="Search foods: roti, dal, paneer, chips, cola, masala dosa…" autocomplete="off">
         </div>
         <div id="search-results"></div>
         <button class="btn btn-soft btn-sm mt12" id="add-custom">${ICONS.plus} Add custom / manual item</button>
@@ -404,6 +435,7 @@ async function renderTracker() {
   $("#day-prev").onclick = () => { S.trackerDate = shiftDate(date, -1); renderTracker(); };
   $("#day-next").onclick = () => { S.trackerDate = shiftDate(date, 1); renderTracker(); };
   $("#add-custom").onclick = () => openCustomModal();
+  $("#post-add-food").onclick = () => openFoodSearchModal("breakfast");
   const eaf = $("#empty-add-food"); if (eaf) eaf.onclick = () => openFoodSearchModal("breakfast");
   const eac = $("#empty-add-custom"); if (eac) eac.onclick = () => openCustomModal();
   const eas = $("#empty-add-scan"); if (eas) eas.onclick = () => location.hash = "#/scanner";
@@ -451,7 +483,7 @@ function mealSection(meal, entries, t) {
         <span class="pill pill-slate" style="margin-left:6px">${entries.length} logged</span></div>
       <span class="small muted"><b style="color:var(--ink)">${fmt(kcal)}</b> kcal ·
         <span style="color:${COLORS.protein}">${fmt(p, 1)}g P</span> ·
-        <span style="color:var(--primary)">${fmt(c, 1)}g C</span> ·
+        <span style="color:var(--ink-subtle)">${fmt(c, 1)}g C</span> ·
         <span style="color:${COLORS.fat}">${fmt(f, 1)}g F</span></span>
     </div>
     <div class="meal-rows">
@@ -463,8 +495,10 @@ function mealSection(meal, entries, t) {
           <div class="row small muted" style="gap:12px">
             <span>P ${fmt(e.nutrients.protein_g, 1)}</span><span>C ${fmt(e.nutrients.carbs_g, 1)}</span><span>F ${fmt(e.nutrients.fat_g, 1)}</span></div>
           <div class="kcal">${fmt(e.nutrients.kcal)} <small>kcal</small></div>
-          <button class="icon-btn" data-edit-entry="${e.id}">${ICONS.edit}</button>
-          <button class="icon-btn" data-del-entry="${e.id}">${ICONS.trash}</button>
+          <button class="icon-btn" data-edit-entry="${e.id}"
+            aria-label="Edit ${esc(e.display_name)}" title="Edit ${esc(e.display_name)}">${ICONS.edit}</button>
+          <button class="icon-btn" data-del-entry="${e.id}"
+            aria-label="Delete ${esc(e.display_name)}" title="Delete ${esc(e.display_name)}">${ICONS.trash}</button>
         </div>`).join("")
       : `<div class="empty">Nothing logged for ${meta.label.toLowerCase()} yet.</div>`}
     </div>
@@ -529,15 +563,15 @@ function openFoodSearchModal(meal, presetFood = null, onSelect = null, onCustom 
   openModal(`
     <h3>${pickerOnly ? "Search documented food catalogue" : `Add food to ${MEAL_META[meal].label}`}</h3>
     <p class="tiny muted">Pick a food, then set the portion. Nutrition is computed per-gram from the documented dataset.</p>
-    <div class="searchbox mt12" style="max-width:none;border-radius:12px">${ICONS.search}
-      <input id="m-search" placeholder="Search foods…" autocomplete="off"></div>
+    <div class="searchbox mt12" style="max-width:none">${ICONS.search}
+      <input id="m-search" aria-label="Search documented foods" placeholder="Search foods…" autocomplete="off"></div>
     <div id="m-results" style="max-height:220px;overflow:auto"></div>
     <div id="m-portion" class="mt12" style="display:${presetFood ? "block" : "none"}">
       <div class="field"><span class="label">Selected food</span><b id="m-food-name" class="small"></b></div>
       <div class="grid ${pickerOnly ? "cols-2" : "cols-3"}">
-        ${pickerOnly ? "" : `<div class="field"><span class="label">Meal</span><select class="select" id="m-meal">${mealOptions(meal)}</select></div>`}
-        <div class="field"><span class="label">Quantity</span><input class="input" id="m-qty" type="number" min="0.01" step="0.25" value="1"></div>
-        <div class="field"><span class="label">Unit</span><select class="select" id="m-unit">
+        ${pickerOnly ? "" : `<div class="field"><span class="label">Meal</span><select class="select" id="m-meal" aria-label="Meal">${mealOptions(meal)}</select></div>`}
+        <div class="field"><span class="label">Quantity</span><input class="input" id="m-qty" aria-label="Quantity" type="number" min="0.01" step="0.25" value="1"></div>
+        <div class="field"><span class="label">Unit</span><select class="select" id="m-unit" aria-label="Unit">
           <option value="serving">serving</option><option value="g">grams</option></select></div>
       </div>
       <p class="small muted" id="m-preview"></p>
@@ -550,7 +584,7 @@ function openFoodSearchModal(meal, presetFood = null, onSelect = null, onCustom 
   const showResults = async () => {
     const data = await api(`/foods?q=${encodeURIComponent(search.value)}&limit=6`);
     const customAction = pickerOnly && onCustom
-      ? `<div class="row mt12"><button class="btn btn-ghost btn-sm" id="m-add-custom">＋ Add a custom food</button></div>`
+      ? `<div class="row mt12"><button class="btn btn-ghost btn-sm" id="m-add-custom">${ICONS.plus} Add a custom food</button></div>`
       : "";
     $("#m-results").innerHTML = data.foods.length
       ? `<div class="results">${data.foods.map((f) => `
@@ -606,12 +640,12 @@ function openScannerCustomFoodModal(onCustom) {
     <h3>Enter a custom food</h3>
     <p class="tiny muted">Use values from your package, recipe, or another reliable source. These details are not verified. Nothing is logged until you confirm the meal in the scanner.</p>
     <div class="grid cols-2 mt12">
-      <div class="field"><span class="label">Food name *</span><input class="input" id="scan-custom-name" maxlength="80" placeholder="e.g. Homemade masala dosa"></div>
-      <div class="field"><span class="label">Amount eaten (g) *</span><input class="input" id="scan-custom-grams" type="number" min="1" max="3000" value="100"></div>
-      <div class="field"><span class="label">Calories (kcal) *</span><input class="input" id="scan-custom-kcal" type="number" min="0" step="1" placeholder="Enter calories"></div>
-      <div class="field"><span class="label">Protein (g, optional)</span><input class="input" id="scan-custom-protein" type="number" min="0" step="0.1"></div>
-      <div class="field"><span class="label">Carbohydrates (g, optional)</span><input class="input" id="scan-custom-carbs" type="number" min="0" step="0.1"></div>
-      <div class="field"><span class="label">Fat (g, optional)</span><input class="input" id="scan-custom-fat" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Food name *</span><input class="input" id="scan-custom-name" aria-label="Food name *" maxlength="80" placeholder="e.g. Homemade masala dosa"></div>
+      <div class="field"><span class="label">Amount eaten (g) *</span><input class="input" id="scan-custom-grams" aria-label="Amount eaten (g) *" type="number" min="1" max="3000" value="100"></div>
+      <div class="field"><span class="label">Calories (kcal) *</span><input class="input" id="scan-custom-kcal" aria-label="Calories (kcal) *" type="number" min="0" step="1" placeholder="Enter calories"></div>
+      <div class="field"><span class="label">Protein (g, optional)</span><input class="input" id="scan-custom-protein" aria-label="Protein (g, optional)" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Carbohydrates (g, optional)</span><input class="input" id="scan-custom-carbs" aria-label="Carbohydrates (g, optional)" type="number" min="0" step="0.1"></div>
+      <div class="field"><span class="label">Fat (g, optional)</span><input class="input" id="scan-custom-fat" aria-label="Fat (g, optional)" type="number" min="0" step="0.1"></div>
     </div>
     <div class="row mt16" style="justify-content:flex-end">
       <button class="btn btn-ghost" data-close>Cancel</button>
@@ -648,13 +682,13 @@ function openCustomModal() {
     <p class="tiny muted">For foods not in the database (e.g. home recipe with a label).
     Enter totals for the amount you ate.</p>
     <div class="grid cols-2 mt12">
-      <div class="field"><span class="label">Name</span><input class="input" id="c-name" maxlength="80" placeholder="e.g. Home-made upma"></div>
-      <div class="field"><span class="label">Meal</span><select class="select" id="c-meal">${mealOptions("snacks")}</select></div>
-      <div class="field"><span class="label">Amount eaten (g)</span><input class="input" id="c-grams" type="number" min="1" value="100"></div>
-      <div class="field"><span class="label">Calories (kcal)</span><input class="input" id="c-kcal" type="number" min="0" value="150"></div>
-      <div class="field"><span class="label">Protein (g)</span><input class="input" id="c-p" type="number" min="0" step="0.1" value="4"></div>
-      <div class="field"><span class="label">Carbs (g)</span><input class="input" id="c-c" type="number" min="0" step="0.1" value="25"></div>
-      <div class="field"><span class="label">Fat (g)</span><input class="input" id="c-f" type="number" min="0" step="0.1" value="3"></div>
+      <div class="field"><span class="label">Name</span><input class="input" id="c-name" aria-label="Name" maxlength="80" placeholder="e.g. Home-made upma"></div>
+      <div class="field"><span class="label">Meal</span><select class="select" id="c-meal" aria-label="Meal">${mealOptions("snacks")}</select></div>
+      <div class="field"><span class="label">Amount eaten (g)</span><input class="input" id="c-grams" aria-label="Amount eaten (g)" type="number" min="1" value="100"></div>
+      <div class="field"><span class="label">Calories (kcal)</span><input class="input" id="c-kcal" aria-label="Calories (kcal)" type="number" min="0" value="150"></div>
+      <div class="field"><span class="label">Protein (g)</span><input class="input" id="c-p" aria-label="Protein (g)" type="number" min="0" step="0.1" value="4"></div>
+      <div class="field"><span class="label">Carbs (g)</span><input class="input" id="c-c" aria-label="Carbs (g)" type="number" min="0" step="0.1" value="25"></div>
+      <div class="field"><span class="label">Fat (g)</span><input class="input" id="c-f" aria-label="Fat (g)" type="number" min="0" step="0.1" value="3"></div>
     </div>
     <div class="row mt8" style="justify-content:flex-end">
       <button class="btn btn-ghost" data-close>Cancel</button>
@@ -684,9 +718,9 @@ async function openEntryModal(_unused, entryId) {
   openModal(`
     <h3>Edit entry</h3><p class="tiny muted">${esc(entry.display_name)}</p>
     <div class="grid cols-3 mt12">
-      <div class="field"><span class="label">Meal</span><select class="select" id="e-meal">${mealOptions(entry.meal)}</select></div>
-      <div class="field"><span class="label">Quantity</span><input class="input" id="e-qty" type="number" min="0.01" step="0.25" value="${entry.quantity}"></div>
-      <div class="field"><span class="label">Unit</span><select class="select" id="e-unit">
+      <div class="field"><span class="label">Meal</span><select class="select" id="e-meal" aria-label="Meal">${mealOptions(entry.meal)}</select></div>
+      <div class="field"><span class="label">Quantity</span><input class="input" id="e-qty" aria-label="Quantity" type="number" min="0.01" step="0.25" value="${entry.quantity}"></div>
+      <div class="field"><span class="label">Unit</span><select class="select" id="e-unit" aria-label="Unit">
         <option value="serving" ${entry.unit === "serving" ? "selected" : ""} ${entry.food_id ? "" : "disabled"}>serving</option>
         <option value="g" ${entry.unit === "g" ? "selected" : ""}>grams</option></select></div>
     </div>

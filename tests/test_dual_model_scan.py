@@ -99,7 +99,7 @@ def test_normal_scan_calls_only_80_class_primary(policy):
         "confidence_calibrated": False,
         "confidence_note": vision.CONFIDENCE_NOTE,
         "low_confidence_triggers_fallback": False,
-        "minimum_accepted_confidence": 0.35,
+        "minimum_accepted_confidence": 0.40,
     }
     assert "ensemble" not in result
 
@@ -173,7 +173,7 @@ def test_both_technical_failures_are_recognition_unavailable(policy):
 
 
 def test_policy_declares_no_confidence_based_fallback():
-    assert vision.MIN_FOOD_RECOGNITION_CONFIDENCE == 0.35
+    assert vision.MIN_FOOD_RECOGNITION_CONFIDENCE == 0.40
     assert vision.TECHNICAL_FALLBACK_CONDITIONS == (
         "the 80-class primary checkpoint is missing",
         "the 80-class primary checkpoint cannot be read",
@@ -184,7 +184,7 @@ def test_policy_declares_no_confidence_based_fallback():
     assert report["policy"]["primary_model"] == vision.PRIMARY_MODEL_NAME
     assert report["policy"]["technical_fallback_model"] == vision.FALLBACK_MODEL_NAME
     assert report["policy"]["low_confidence_triggers_fallback"] is False
-    assert report["policy"]["minimum_accepted_confidence"] == 0.35
+    assert report["policy"]["minimum_accepted_confidence"] == 0.40
     assert report["policy"]["below_threshold_result"] == "food_not_recognized"
     assert report["policy"]["prediction_unconfirmed"] is True
     assert report["policy"]["confidence_calibrated"] is False
@@ -272,9 +272,9 @@ def test_api_normal_scan_runs_primary_only_and_attaches_nutrition(client, policy
     assert body["candidates"][0]["nutrition"]["nutrition_available"] is True
 
 
-def test_api_abstains_below_35_percent_without_returning_a_food_label(client, policy):
+def test_api_abstains_below_40_percent_without_returning_a_food_label(client, policy):
     primary, fallback = policy
-    primary._result = make_result(("pithe", 0.34999), ("rabri", 0.30))
+    primary._result = make_result(("pithe", 0.39999), ("rabri", 0.30))
     image = make_png()
 
     response = client.post("/api/vision/predict", data=image,
@@ -283,26 +283,31 @@ def test_api_abstains_below_35_percent_without_returning_a_food_label(client, po
     assert response.status_code == 422
     body = response.get_json()
     assert body["code"] == "food_not_recognized"
-    assert body["confidence"] == pytest.approx(0.34999)
-    assert body["confidence_threshold"] == 0.35
+    assert body["confidence"] == pytest.approx(0.39999)
+    assert body["confidence_threshold"] == 0.40
+    # A 35-40% score is exactly the band that used to be returned as a
+    # suggestion; it must now abstain.
+    assert body["confidence_pct"] == 40
     assert "predictions" not in body and "candidates" not in body and "top" not in body
     assert "manual" in body["error"].lower()
     assert primary.calls == [(image, 3)]
     assert fallback.calls == []  # low confidence is abstention, not fallback
 
 
-def test_api_accepts_confidence_exactly_at_35_percent(client, policy):
+def test_api_accepts_confidence_exactly_at_40_percent(client, policy):
     primary, fallback = policy
-    primary._result = make_result(("chana_masala", 0.35))
+    primary._result = make_result(("chana_masala", 0.40))
 
     response = client.post("/api/vision/predict", data=make_png(),
                            content_type="application/octet-stream")
 
     assert response.status_code == 200
     body = response.get_json()
-    assert body["top"]["confidence"] == 0.35
+    assert body["top"]["confidence"] == 0.40
     assert body["candidates"][0]["slug"] == "chana_masala"
-    assert body["low_confidence"] is True  # existing 0.40 warning remains separate
+    # The gate and LOW_CONFIDENCE_THRESHOLD now coincide, so an accepted
+    # prediction is no longer flagged low-confidence on arrival.
+    assert body["low_confidence"] is False
     assert fallback.calls == []
 
 
@@ -416,3 +421,76 @@ def test_existing_meal_logging_flow_remains_intact(client, policy):
     })
     assert logged.status_code == 201
     assert logged.get_json()["entry"]["quantity"] == 100.0
+
+
+# ---------------------------------------------------------------------------
+# Abstention is a user-facing answer, not a silent failure.
+#
+# The 0.40 gate exists so the scanner never pre-selects a dish the model does
+# not really know. These tests pin the wording the person actually reads, so a
+# future refactor cannot quietly turn a refusal into a guess.
+# ---------------------------------------------------------------------------
+
+def test_abstention_message_says_it_did_not_guess(client, policy):
+    primary, _ = policy
+    primary._result = make_result(("pithe", 0.12), ("rabri", 0.09))
+
+    body = client.post("/api/vision/predict", data=make_png(),
+                       content_type="application/octet-stream").get_json()
+
+    message = body["error"].lower()
+    assert "couldn’t confidently recognize" in message
+    assert "haven’t guessed" in message          # never presents a label
+    assert "manually" in message                 # always offers the way out
+    assert body["code"] == "food_not_recognized"
+
+
+def test_abstention_reports_the_score_as_a_percentage(client, policy):
+    primary, _ = policy
+    primary._result = make_result(("pithe", 0.224))
+
+    body = client.post("/api/vision/predict", data=make_png(),
+                       content_type="application/octet-stream").get_json()
+
+    assert body["confidence"] == pytest.approx(0.224)
+    assert body["confidence_pct"] == 22
+    assert body["confidence_threshold"] == 0.40
+
+
+def test_abstention_pct_survives_a_missing_or_broken_score(client, policy):
+    """A missing/garbage score must not crash or invent a percentage."""
+    primary, _ = policy
+    result = make_result(("pithe", 0.10))
+    result["top"].pop("confidence", None)
+    primary._result = result
+
+    response = client.post("/api/vision/predict", data=make_png(),
+                           content_type="application/octet-stream")
+
+    assert response.status_code == 422
+    body = response.get_json()
+    assert body["code"] == "food_not_recognized"
+    assert body["confidence"] is None
+    assert body["confidence_pct"] is None
+
+
+def test_no_returned_prediction_is_flagged_low_confidence(client, policy):
+    """Gate and warning threshold coincide, so accepted results clear both."""
+    primary, _ = policy
+    primary._result = make_result(("chana_masala", 0.72), ("jalebi", 0.11))
+
+    body = client.post("/api/vision/predict", data=make_png(),
+                       content_type="application/octet-stream").get_json()
+
+    assert body["top"]["confidence"] >= vision.MIN_FOOD_RECOGNITION_CONFIDENCE
+    assert body["low_confidence"] is False
+
+
+def test_threshold_does_not_silently_drift():
+    """Both the gate and the warning threshold are product decisions at 0.40.
+
+    Raising one without the other would either re-open the 0.35-0.40 band or
+    flag every accepted suggestion as uncertain.
+    """
+    assert vision.MIN_FOOD_RECOGNITION_CONFIDENCE == 0.40
+    assert vision.LOW_CONFIDENCE_THRESHOLD == 0.40

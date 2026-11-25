@@ -19,7 +19,100 @@ The image classifier predicts a food label; it does **not** learn calories or nu
 - Updated `data/food_classes.json` to map every primary output to a named food row; corrected primary-model metadata to the actual 80-class checkpoint and recorded fallback coverage separately.
 - Added `data/model_food_recipe_profiles.json`, which records each representative ingredient composition, water/salt contribution, per-100-g results and the ingredient-row IDs used.
 
-After the update, **80/80 primary classes and 12/12 fallback classes resolve to rows containing all nine tracked nutrient fields**: energy, protein, carbohydrate, fat, fibre, sodium, potassium, calcium and iron. The food table contains 272 rows.
+After the update, **80/80 primary classes and 12/12 fallback classes resolve to rows containing all nine tracked nutrient fields**: energy, protein, carbohydrate, fat, fibre, sodium, potassium, calcium and iron. The food table contained 272 rows at that point; the packaged-food, prepared-dish and branded additions below bring it to 313.
+
+## Packaged foods, drinks and extra dishes (2026-11-15 follow-up)
+
+Two separate additions, kept deliberately distinct because their evidence differs.
+
+### 1. Packaged snacks and drinks — published values
+
+Eleven rows were added with `source: "USDA FDC"` and `quality: "verified"`. Each
+`source_id` names the exact USDA FoodData Central SR Legacy record, so any figure can be
+checked against the source table:
+
+| Dataset row | FDC record | Energy (per 100 g or 100 ml) |
+|---|---|---|
+| Potato chips, plain salted (packaged snack) | `USDA FDC: 169677` | 532 kcal |
+| Tortilla chips, plain salted (packaged snack) | `USDA FDC: 173143` | 497 kcal |
+| Pretzels, hard salted (packaged snack) | `USDA FDC: 167555` | 384 kcal |
+| Popcorn, air-popped (plain) | `USDA FDC: 167959` | 387 kcal |
+| Chocolate, milk (bar) | `USDA FDC: 167587` | 535 kcal |
+| Chocolate, dark 60-69% cocoa | `USDA FDC: 170272` | 579 kcal |
+| Sugar, white granulated | `USDA FDC: 169655` | 387 kcal |
+| Cola soft drink (regular) | `USDA FDC: 174852` | 42 kcal / 100 ml |
+| Lemon-lime soft drink (regular) | `USDA FDC: 173205` | 41 kcal / 100 ml |
+| Orange juice (ready to drink) | `USDA FDC: 169920` | 47 kcal / 100 ml |
+| Lemon juice (fresh) | `USDA FDC: 167747` | 22 kcal / 100 ml |
+
+Limits that are stated in the app rather than hidden: these are **generic product**
+values, not a specific brand's label. Salt, fat and sugar vary between brands and between
+markets, and the packaged-food group is broad on purpose. For beverages the reference is
+100 ml treated as ~100 g, which is accurate to a few percent for sugary soft drinks.
+
+### 2. Prepared dishes — recipe estimates, not measurements
+
+Eleven prepared dishes were added so that classes which previously had **no** row — or
+borrowed a less accurate one — resolve to their own row:
+
+`masala_dosa`, `curd_rice`, `lemon_rice`, `tomato_rice`, `fried_rice`, `dhokla`,
+`vada_pav`, `bhel_puri`, `chai`, `kulfi`, `kaathi_rolls` (kathi roll, paneer filling).
+
+Masala dosa previously reused the plain-dosa row with a note that it was a lower bound.
+It now has its own ingredient-based estimate (plain dosa, potato filling, oil), so the
+scanner no longer under-counts the filling. All eleven carry
+`source: "Recipe-derived (NutriCare)"`, `quality: "approximate"` and an `approx_note`,
+and each is recorded in `data/model_food_recipe_profiles.json` with ingredient grams per
+100 g, salt, water balance and the ingredient row IDs used.
+
+**These are not laboratory analyses.** They are home-style representative recipes; oil
+absorption, portion size and regional recipes change the real figure substantially.
+
+### 2b. Branded packets and drinks — label-cited values (ids 295–313)
+
+The generic pass above answers "what is a potato chip"; it does not answer "what is in
+the packet in my hand". Nineteen everyday Indian-market packets were added, each carrying
+the figures printed on a named label in `source_id`:
+
+* **Chips / namkeen / biscuits:** Lay's India's Magic Masala, Kurkure Masala Munch,
+  Too Yumm! Multigrain Chips, Bingo! Mad Angles Achaari Masti, Haldiram's Aloo Bhujia,
+  Parle-G glucose biscuits, Britannia Good Day Cashew, Maggi 2-Minute Masala noodles.
+* **Drinks:** Coca-Cola Original Taste, Diet Coke, Coca-Cola Zero Sugar, Pepsi,
+  Pepsi Zero Sugar, Thums Up, Sprite, Fanta Orange, Mirinda Orange, Frooti, Sting.
+
+These rows are `quality: "approximate"` on purpose, and the distinction matters:
+
+| Evidence class | Example | `quality` |
+|---|---|---|
+| Laboratory/table value for the generic food | USDA FDC 169677 potato chips | `verified` |
+| One brand's printed nutrition panel | Diet Coke 300 ml can | `approximate` |
+
+A packet panel is real published evidence, but it is the evidence for *that* pack. Salt,
+oil and sugar differ between flavours, pack sizes, batches and export/domestic recipes; the
+same product prints 548, 555 and 558 kcal on different Kurkure labels, 531–555 kcal for
+Lay's, and 38–55 kcal for Mirinda. The dataset stores one named label per row and repeats
+the ranges in the row's `notes`; it never averages them into a number no label prints.
+
+What the labels do **not** print is not invented. Fibre is absent from the Indian Parle-G,
+Britannia and Bingo panels; sodium is absent from the Indian Fanta panel. Bingo fibre is
+stored as 0 and said to be undeclared; Fanta sodium is held at the manufacturer's published
+"less than 15 mg" mid-value and flagged as approximate. Diet Coke, Coke Zero Sugar and
+Pepsi Zero Sugar carry genuine 0 kcal / 0 g carbohydrate label values — stored as `0`, not
+`null`, so the UI's "missing vs zero" distinction (already covered by the UI smoke test N7)
+keeps working.
+
+Potassium, calcium and iron are not required on Indian packet labels. Those three fields
+are stored as `0` for the branded rows rather than borrowed from a different product, and
+the rows say so. That keeps the columns honest: a zero here means "not declared on this
+label", which is why these rows stay out of the `verified` class used for micronutrient
+adequacy maths.
+
+### 3. Still unmapped
+
+The eleven international classes (`pizza`, `burger`, `sandwich`, `pasta`, `noodles`,
+`french_fries`, `fried_chicken`, `momos`, `spring_rolls`, `pancakes`, `salad`) still have
+no documented row. The scanner continues to ask the person for values instead of
+inventing a calorie count; that behaviour is covered by tests.
 
 ## Recipe-derived values and limitations
 

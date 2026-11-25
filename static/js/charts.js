@@ -6,7 +6,7 @@ const COLORS = { protein: "var(--success)", carbs: "var(--carb)", fat: "var(--fa
   goal: "var(--faint)", water: "var(--sky)" };
 
 /* Progress ring (0..1) */
-function ringChart(pct, { size = 108, stroke = 11, color = "var(--primary)", label = "", sub = "" } = {}) {
+function ringChart(pct, { size = 108, stroke = 11, color = "var(--accent)", label = "", sub = "" } = {}) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(1, pct));

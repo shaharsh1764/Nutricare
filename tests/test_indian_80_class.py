@@ -31,10 +31,25 @@ EXPERIMENTAL_CKPT = Path("models/v2/food_classifier_indian_80_224.pt")
 
 
 def make_png(width=64, height=64, colour=(180, 120, 60)):
+    """A small but *structured* PNG.
+
+    Deliberately not a flat fill: predict() now rejects images with no local
+    detail, because a blank frame is classified with confident nonsense (a
+    plain white image scored 89.9% "Lassi"). A deterministic checker of the
+    requested colour keeps these tests exercising the classifier itself rather
+    than tripping the usability gate.
+    """
     def chunk(tag, data):
         return (struct.pack(">I", len(data)) + tag + data
                 + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF))
-    raw = b"".join(b"\x00" + bytes(colour) * width for _ in range(height))
+    alt = tuple(max(0, min(255, c + 40)) for c in colour)
+    rows = []
+    for y in range(height):
+        row = bytearray()
+        for x in range(width):
+            row += bytes(colour if ((x // 4) + (y // 4)) % 2 == 0 else alt)
+        rows.append(b"\x00" + bytes(row))
+    raw = b"".join(rows)
     return (b"\x89PNG\r\n\x1a\n"
             + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
             + chunk(b"IDAT", zlib.compress(raw))

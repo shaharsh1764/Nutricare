@@ -9,7 +9,7 @@ async function renderReports() {
   const macroKcal = { protein: avg.protein_g * 4, carbs: avg.carbs_g * 4, fat: avg.fat_g * 4 };
   const macroSum = macroKcal.protein + macroKcal.carbs + macroKcal.fat || 1;
   const rangeHead = `<div class="page-head">
-    <div><h2>Nutrition & Health Reports</h2>
+    <div><span class="page-kicker">REPORTS &amp; TRENDS</span><h2>Nutrition & Health Reports</h2>
       <p class="sub">Daily and weekly summaries compiled from your continuous logs. Charts are
       interactive summaries of your own data — exportable for the selected period as PDF, CSV, or JSON.</p></div>
     <div class="row">
@@ -58,8 +58,8 @@ async function renderReports() {
     <div class="card"><div class="card-head"><span class="card-title">Avg daily intake</span><span class="icon-pill tint-teal">${ICONS.dashboard}</span></div>
       <div class="stat">${fmt(avg.kcal)}<small> kcal/day</small></div>
       <p class="tiny muted mt8">${t ? `${Math.round(100 * avg.kcal / t.kcal)}% of ${fmt(t.kcal)} kcal target` : "no target set"}</p>
-      <div class="bar mt8"><i style="width:${t ? Math.min(100, 100 * avg.kcal / t.kcal) : 0}%;background:var(--primary-deep)"></i></div></div>
-    <div class="card"><div class="card-head"><span class="card-title">Macro compliance</span><span class="icon-pill tint-mint" style="background:var(--success-soft);color:var(--success)">${ICONS.shield}</span></div>
+      <div class="bar mt8"><i style="width:${t ? Math.min(100, 100 * avg.kcal / t.kcal) : 0}%;background:var(--accent-rule)"></i></div></div>
+    <div class="card"><div class="card-head"><span class="card-title">Macro compliance</span><span class="icon-pill tint-mint">${ICONS.shield}</span></div>
       <div class="stat">${adherence ?? "—"}<small> /100</small></div>
       <p class="tiny muted mt8">Weighted attainment of protein / carb / fat gram targets</p></div>
     <div class="card"><div class="card-head"><span class="card-title">Average hydration</span><span class="icon-pill tint-sky">${ICONS.drop}</span></div>
@@ -72,8 +72,9 @@ async function renderReports() {
 
   <div class="grid cols-21 mt16">
     <div class="card">
-      <div class="card-head"><div><h3 style="font-size:16px">Calorie intake vs personalised target</h3>
-        <p class="tiny muted mt8">Daily energy variance against your metabolic maintenance target.</p></div></div>
+      <div class="card-head"><div><span class="audit-section-kicker">ENERGY TREND</span>
+        <h3 style="font-size:18px;margin-top:2px">Calorie intake vs personalised target</h3>
+        <p class="audit-section-purpose">Daily energy against your estimated maintenance target.</p></div></div>
       ${barsChart(r.per_day, t ? t.kcal : null)}
       <p class="tiny muted mt8">*Days with no logs count as 0 — log meals to make trends meaningful.</p>
     </div>
@@ -96,7 +97,8 @@ async function renderReports() {
   </div>
 
   <div class="grid cols-2 mt16">
-    <div class="card"><div class="card-head"><span class="card-title">Micronutrient adequacy (daily avg)</span>
+    <div class="card"><div class="card-head"><div><span class="card-title">Micronutrient adequacy (daily avg)</span>
+      <p class="audit-section-purpose">Five nutrients against reference intakes for the selected window.</p></div>
       <span class="tiny muted">tracked subset</span></div>${microRows}</div>
     <div class="card"><div class="card-head"><span class="card-title">Daily log table (last ${days} days)</span></div>
       <div style="max-height:340px;overflow:auto">
@@ -115,7 +117,7 @@ async function renderSettings() {
   const set = S.boot.settings;
   const theme = currentTheme();
   $("#view").innerHTML = `
-  <div class="page-head"><div><h2>Account & Application Settings</h2>
+  <div class="page-head"><div><span class="page-kicker">PREFERENCES &amp; PRIVACY</span><h2>Account &amp; Application Settings</h2>
     <p class="sub">Appearance, units, calculation model, hydration goal, local health-chat privacy, and data controls.
     Secrets (if any) live in environment variables, never in the UI.</p></div></div>
 
@@ -136,12 +138,12 @@ async function renderSettings() {
         <div class="card-head"><span class="card-title">Units & measurement</span><span class="icon-pill tint-teal">${ICONS.settings}</span></div>
         <div class="grid cols-2">
           <div class="field"><span class="label">Unit system</span>
-            <select class="select" id="s-units">
+            <select class="select" id="s-units" aria-label="Unit system">
               <option value="metric" ${p.units === "metric" ? "selected" : ""}>Metric (kg, cm, ml)</option>
               <option value="imperial" ${p.units === "imperial" ? "selected" : ""}>Imperial (lb, ft, oz)</option>
             </select></div>
           <div class="field"><span class="label">Daily water goal (ml)</span>
-            <input class="input" id="s-water" type="number" min="500" max="6000" step="100" value="${set.water_goal_ml}"></div>
+            <input class="input" id="s-water" aria-label="Daily water goal (ml)" type="number" min="500" max="6000" step="100" value="${set.water_goal_ml}"></div>
         </div>
         <button class="btn btn-primary btn-sm" id="s-save-units">Save preferences</button>
       </div>

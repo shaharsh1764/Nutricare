@@ -69,6 +69,26 @@ PRIMARY_MODEL_PATH = Path(
 # not mean this model is user-selectable in the scan API.
 EXPERIMENTAL_MODEL_PATH = PRIMARY_MODEL_PATH
 
+# A photograph needs *some* structure to be food at all. A blank wall, a solid
+# colour, a smooth gradient or a hopelessly out-of-focus frame carries almost no
+# local detail, and the classifier answers those with high confidence anyway
+# (measured: a plain white image scored 89.9% "Lassi", a grey one 81%). Softmax
+# confidence cannot detect that, because the model has never seen "not food" as
+# an answer — so a score gate alone would happily serve those guesses.
+#
+# MIN_IMAGE_TEXTURE is the mean absolute pixel gradient (0-255 scale, averaged
+# over both axes) below which an image is treated as having no recognisable
+# subject. Measured separation on this project's own assets:
+#     blank / solid colour / smooth gradient ... 0.00 - 0.29
+#     heavily defocused photograph ............ 0.63
+#     real photographs (landing art) .......... 8.17 - 9.47
+# 2.0 sits in that gap with wide margin on both sides. It is a coarse
+# "is there anything here to look at" test, not a food detector: a sharp photo
+# of a chair passes it and is left to the confidence gate and the user's
+# confirmation step. Tuned against two sample photographs only, so it favours
+# not rejecting genuine food over catching every non-food image.
+MIN_IMAGE_TEXTURE = float(os.environ.get("NUTRICARE_MIN_IMAGE_TEXTURE", 2.0))
+
 # The legacy 20-class checkpoint is NOT shipped. Its training images have no
 # licence anywhere in the chain (see docs/LICENSING_AUDIT.md), so it was removed
 # from this repository and from its git history rather than merely being made
@@ -88,7 +108,13 @@ LOW_CONFIDENCE_THRESHOLD = float(os.environ.get("NUTRICARE_LOW_CONFIDENCE", 0.40
 # API abstention gate requested for scanner predictions. This is a product
 # threshold on raw softmax output, not a calibrated probability of correctness.
 # Below it, the API returns food_not_recognized without exposing a food label.
-MIN_FOOD_RECOGNITION_CONFIDENCE = 0.35
+# Raised from 0.35 to 0.40: a 35-40% top score is a coin-toss-class guess, and
+# showing it pre-selected in the "Is this the correct food?" card invited people
+# to confirm a label the model did not really know. At 0.40 the abstention gate
+# and the long-standing LOW_CONFIDENCE_THRESHOLD now agree, so every returned
+# suggestion clears the same bar and no returned prediction is flagged
+# "low_confidence" on arrival.
+MIN_FOOD_RECOGNITION_CONFIDENCE = 0.40
 
 CONFIDENCE_NOTE = (
     "Confidence is the selected model's raw softmax output. It is not calibrated "
@@ -115,6 +141,21 @@ PORTION_NOTE = (
 
 class ImageError(ValueError):
     """Uploaded bytes are not an acceptable image."""
+
+
+class ImageNotUsable(ImageError):
+    """The image decodes but has no structure to recognise.
+
+    Subclasses ``ImageError`` so every existing caller that already handles bad
+    uploads keeps working; the uploaded ``texture`` lets the API explain why it
+    declined instead of guessing a dish.
+    """
+
+    def __init__(self, texture: float):
+        self.texture = texture
+        super().__init__(
+            "This image doesn’t look like a photo of food — there’s nothing "
+            "recognisable in it. Try a clear photo of one dish.")
 
 
 class ModelUnavailable(RuntimeError):
@@ -208,6 +249,35 @@ def _webp_size(data: bytes) -> tuple[int, int]:
 
 
 _DIMENSION_READERS = {"jpeg": _jpeg_size, "png": _png_size, "webp": _webp_size}
+
+
+def mean_gradient(image) -> float:
+    """Mean absolute pixel gradient of a PIL image, on a 0-255 scale.
+
+    A cheap "is there any structure here" measure used to reject images that
+    cannot meaningfully contain a dish. Deliberately uses only Pillow (a hard
+    dependency of the predictor already) and no numpy, so it is safe to call
+    before a model is loaded.
+    """
+    grey = image.convert("L").resize((224, 224))
+    # tobytes() rather than getdata(): getdata() is deprecated in Pillow 13 and
+    # removed in Pillow 14. A grayscale "L" image is one byte per pixel.
+    px = grey.tobytes()
+    width, height = grey.size
+    total = 0
+    count = 0
+    for y in range(height):
+        row = y * width
+        for x in range(width - 1):
+            total += abs(px[row + x + 1] - px[row + x])
+            count += 1
+    for y in range(height - 1):
+        row = y * width
+        nxt = row + width
+        for x in range(width):
+            total += abs(px[nxt + x] - px[row + x])
+            count += 1
+    return total / count if count else 0.0
 
 
 def validate_image(data: bytes | None) -> dict:
@@ -437,6 +507,10 @@ class Predictor:
         non-fabricated failures.
         """
         meta = validate_image(image_bytes)
+        # Load before inspecting content: if the checkpoint itself is missing or
+        # corrupt, that is the honest error. Telling someone their photo has
+        # "nothing recognisable" when the model is actually absent would blame
+        # the user for a deployment fault.
         self._load()
 
         import torch  # noqa: PLC0415
@@ -452,6 +526,14 @@ class Predictor:
 
         if image.mode != "RGB":
             image = image.convert("RGB")
+
+        # Reject images with no structure before spending a forward pass on
+        # them. Without this, a blank or smooth image is classified with high
+        # confidence and a confident nonsense label is worse than a refusal.
+        texture = mean_gradient(image)
+        if texture < MIN_IMAGE_TEXTURE:
+            raise ImageNotUsable(texture)
+
         tensor = self._transform(image).unsqueeze(0)
 
         with torch.no_grad():

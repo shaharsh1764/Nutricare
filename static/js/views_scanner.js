@@ -32,6 +32,9 @@ const SCAN = {
 };
 
 const SCAN_GROUPS = {
+  packaged_snacks: "Packaged snacks",
+  sweets: "Sweets & desserts",
+  beverages: "Drinks & beverages",
   indian_staple: "Indian staples",
   indian_breakfast: "Indian breakfast",
   indian_curry: "Indian curries & vegetables",
@@ -222,12 +225,42 @@ async function scanAnalyze() {
     if (r) r.onclick = () => { scanReset(); renderScanner(); };
     return;
   }
+  if (res.status === 422 && data && data.code === "image_not_usable") {
+    /* The upload decoded but has no structure to look at — a blank frame, a
+       wall, a pocket photo. Distinct from "I can see food but I'm not sure",
+       so say which one it is instead of a generic failure. */
+    box.innerHTML = `
+      <div class="scan-empty">
+        <span class="scan-empty-icon" aria-hidden="true">${ICONS.scanner}</span>
+        <b>This image doesn’t look like a photo of food.</b>
+        <p class="tiny muted mt8">There’s nothing recognisable in it — it may be blank, a flat surface, or too blurry to use.</p>
+        <p class="tiny muted mt8">Try a clear, well-lit photo of one dish, or choose the food yourself from the catalogue.</p>
+        <div class="row mt12" style="justify-content:center">
+          <button class="btn btn-deep btn-sm" id="scan-manual">Choose food manually</button>
+          <button class="btn btn-ghost btn-sm" id="scan-retry">Choose another photo</button>
+        </div>
+      </div>`;
+    const m = $("#scan-manual");
+    if (m) m.onclick = () => openFoodSearchModal(
+      SCAN.meal || "lunch", null, scanSelectCatalogueFood, scanSelectCustomFood);
+    const r = $("#scan-retry");
+    if (r) r.onclick = () => { scanReset(); renderScanner(); };
+    return;
+  }
   if (res.status === 422 && data && data.code === "food_not_recognized") {
+    /* Abstention is a real answer, not a failure to hide. Say plainly that no
+       food was guessed, show the score we actually got when the API reports
+       one, and always give the manual route out. */
+    const pct = typeof data.confidence_pct === "number" ? data.confidence_pct : null;
+    const margin = typeof data.confidence_threshold === "number"
+      ? Math.round(data.confidence_threshold * 100) : null;
     box.innerHTML = `
       <div class="scan-empty">
         <span class="scan-empty-icon" aria-hidden="true">${ICONS.meal}</span>
-        <b>We couldn’t recognize a food in this photo.</b>
-        <p class="tiny muted mt8">Try a clear photo of one dish, or choose the food yourself from the catalogue.</p>
+        <b>We couldn’t recognize this photo.</b>
+        <p class="tiny muted mt8">This image isn’t a clear enough photo of a single dish for us to name it, so we haven’t guessed.</p>
+        ${pct !== null ? `<p class="tiny muted mt8">Best match was only ${pct}% confident${margin !== null ? `, below the ${margin}% we need to suggest a food` : ""}.</p>` : ""}
+        <p class="tiny muted mt8">Try a clear photo of one dish in good light, or choose the food yourself from the catalogue.</p>
         <div class="row mt12" style="justify-content:center">
           <button class="btn btn-deep btn-sm" id="scan-manual">Choose food manually</button>
           <button class="btn btn-ghost btn-sm" id="scan-retry">Choose another photo</button>
@@ -606,10 +639,10 @@ function scanAskMeal() {
   openModal(`
     <h3>When did you have this meal?</h3>
     <p class="tiny muted mt8">Choose a meal category, then review the completed entry before it is saved.</p>
-    <div class="seg mt16">
+    <div class="tile-grid mt16 meal-choice-grid" role="group" aria-label="Choose meal category">
       ${Object.entries(MEAL_META).map(([key, m]) => `
-        <button class="tile tile-btn" data-meal="${key}">
-          <span style="font-size:20px">${m.icon}</span>
+        <button class="tile-btn" type="button" data-meal="${key}">
+          <span class="meal-choice-icon ${m.tint}" aria-hidden="true">${m.icon}</span>
           <b>${key === "snacks" ? "Snacks" : m.label}</b></button>`).join("")}
     </div>
     <div class="row mt20" style="justify-content:flex-end">
@@ -752,7 +785,7 @@ async function renderScanner() {
 
   $("#view").innerHTML = `
   <div class="page-head">
-    <div><h2>Food Scanner</h2>
+    <div><span class="page-kicker">PHOTO → CONFIRM → LOG</span><h2>Food Scanner</h2>
       <p class="sub">Take a photo of your meal and discover its nutritional information.</p></div>
     <div class="row">
       <a class="btn btn-ghost btn-sm" href="#/tracker">${ICONS.tracker} Open tracker</a>
@@ -768,7 +801,7 @@ async function renderScanner() {
       </div>
       <div class="scan-actions mt16">
         <button class="btn btn-deep" id="scan-camera">${ICONS.scanner} Take a photo</button>
-        <button class="btn btn-primary" id="scan-upload">${ICONS.upload} Upload a photo</button>
+        <button class="btn btn-soft" id="scan-upload">${ICONS.upload} Upload a photo</button>
         <input type="file" id="scan-file" accept="image/jpeg,image/png,image/webp"
                capture="environment" hidden>
       </div>

@@ -38,7 +38,7 @@ def new_user(client, name="Dataset Tester", **profile):
 def test_dataset_schema_validity(dataset):
     foods, meta = dataset
     assert len(foods) >= 180, f"expected ~200 foods, got {len(foods)}"
-    assert len(foods) <= 300, f"unexpectedly large dataset: {len(foods)}"
+    assert len(foods) <= 450, f"unexpectedly large dataset: {len(foods)}"
     required = {"id","name","grp","serving_desc","serving_g","kcal","protein_g","carbs_g","fat_g","fiber_g","sodium_mg","potassium_mg","calcium_mg","iron_mg","source","source_id","state","quality","dietary","allergens"}
     for f in foods:
         missing = required - set(f.keys())

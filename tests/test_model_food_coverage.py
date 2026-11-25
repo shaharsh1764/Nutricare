@@ -46,7 +46,9 @@ def test_recipe_derived_model_foods_are_reproducible_and_explicitly_approximate(
     profile_doc = _load("data/model_food_recipe_profiles.json")
     by_id = {row["id"]: row for row in foods}
     by_source = {row["source_id"]: row for row in foods if row.get("source_id")}
-    assert len(profile_doc["profiles"]) == 68
+    # 68 rows shipped with the 80-class coverage audit, plus the prepared dishes added
+    # later. Keep the shipped audit count as a floor so rows cannot silently disappear.
+    assert len(profile_doc["profiles"]) >= 68
     assert "not laboratory" in profile_doc["limitations"].lower()
 
     for profile in profile_doc["profiles"]:

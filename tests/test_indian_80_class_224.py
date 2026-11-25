@@ -50,11 +50,24 @@ LOW_CONFIDENCE_THRESHOLD = 0.40
 
 # ------------------------------------------------------------------ helpers
 def make_png(width=224, height=224, colour=(180, 120, 60)):
-    """Create a valid PNG in memory (no Pillow needed for construction)."""
+    """Create a valid, *structured* PNG in memory (no Pillow needed to build).
+
+    A deterministic two-tone checker rather than a flat fill: predict() now
+    rejects images with no local detail, because a blank frame is classified
+    with confident nonsense (a plain white image scored 89.9% "Lassi"). The
+    checker keeps these tests exercising the classifier, not the usability gate.
+    """
     def chunk(tag, data):
         return (struct.pack(">I", len(data)) + tag + data
                 + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF))
-    raw = b"".join(b"\x00" + bytes(colour) * width for _ in range(height))
+    alt = tuple(max(0, min(255, c + 40)) for c in colour)
+    rows = []
+    for y in range(height):
+        row = bytearray()
+        for x in range(width):
+            row += bytes(colour if ((x // 4) + (y // 4)) % 2 == 0 else alt)
+        rows.append(b"\x00" + bytes(row))
+    raw = b"".join(rows)
     return (b"\x89PNG\r\n\x1a\n"
             + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
             + chunk(b"IDAT", zlib.compress(raw))
