@@ -32,9 +32,35 @@ any branch you already have.
 
 ## 3. Switch to the PR branch
 
-```powershell
-git switch pr-21-scanner
+If you have **uncommitted changes** — the editor sidebar showing `81 +` or `M` on
+many files is a warning sign — `git switch` will refuse to move:
+
+```text
+error: Your local changes to the following files would be overwritten by checkout
 ```
+
+Pick one of these. **Option A is safest** — it puts your work in a drawer you can
+open again afterwards.
+
+**A. Stash your work, switch, and restore it later (recommended)**
+
+```powershell
+git stash push -u -m "my local work"
+git switch pr-21-scanner
+# ... test ...
+git switch main
+git stash pop
+```
+
+**B. Carry your changes across (quick)**
+
+```powershell
+git switch -m pr-21-scanner
+```
+
+`-m` means "merge my uncommitted changes into this checkout". Your edits come
+with you, which is fine if they are unrelated to the scanner — but it makes it
+harder to tell your changes apart from the branch's. Use A if in doubt.
 
 ## 4. Verify you are on the right code
 
@@ -45,7 +71,26 @@ git log --oneline -1
 You should see exactly:
 
 ```text
+d9266fd Add a verified local-testing guide for pull requests
+```
+
+This is the newest commit on the branch. The one below it is the scanner change
+itself (`e8b0088`). Check both are present:
+
+```powershell
+git log --oneline -3
+```
+
+```text
+d9266fd Add a verified local-testing guide for pull requests
 e8b0088 Scanner: refuse unusable images and raise the confidence gate to 40%
+cb8bec4 Start every page at its own heading instead of mid-scroll
+```
+
+Then confirm the scanner code is actually on disk — this prints `3`:
+
+```powershell
+Select-String -Path nutricare/vision.py -Pattern MIN_IMAGE_TEXTURE | Measure-Object | Select-Object -ExpandProperty Count
 ```
 
 If the hash is different, you are on the wrong ref — check step 2.
@@ -100,8 +145,21 @@ erroring because the ML extras are missing.
 python app.py
 ```
 
-Open <http://127.0.0.1:5055>, create a local profile on the welcome screen, then
-open **Food Scanner** in the sidebar.
+**Stop any copy of the app that is still running.** `app.py` binds port 5000 by
+default, so the URL is <http://127.0.0.1:5000> — not 5055. If an older server is
+still holding that port you will keep seeing the old code no matter which branch
+you are on. Close the old terminal, or run it on another port:
+
+```powershell
+$env:PORT=5055; python app.py     # → http://127.0.0.1:5055
+```
+
+Then open the app, create a local profile on the welcome screen, and open
+**Food Scanner** in the sidebar.
+
+**How to tell you are on the new branch.** The redesigned UI has violet primary
+buttons (`#5B3BD6`) and white cards. `main` still shows **green** buttons and
+beige cards, so if the buttons are green you are running `main` — see step 4.
 
 ## 8. Check the behaviour by hand
 
@@ -131,11 +189,12 @@ git switch main
 | --- | --- |
 | Fetch PR #21 | `git fetch origin pull/21/head:pr-21-scanner` |
 | Switch to it | `git switch pr-21-scanner` |
-| Confirm the commit | `git log --oneline -1` → `e8b0088` |
+| Confirm the commit | `git log --oneline -3` → `d9266fd`, `e8b0088` |
 | Run tests | `pytest -q` → `1209 passed` |
 | Run the app | `python app.py` → <http://127.0.0.1:5055> |
 | Return to main | `git switch main` |
 | Delete the test branch | `git branch -D pr-21-scanner` |
+| Run on a free port | `$env:PORT=5055; python app.py` |
 
 ## Troubleshooting
 
@@ -144,7 +203,8 @@ git switch main
 | `error: could not find remote ref pull/21/head` | Wrong PR number, or the PR was closed and deleted. Use `gh pr list` or check the PR page. |
 | Scanner says recognition is switched off | The ML extras from step 5 are missing. |
 | `No space left on device` during pip install | Re‑run step 5 with `--no-cache-dir`; on Windows also clear `%LOCALAPPDATA%\pip\Cache`. |
-| Tests pass but the UI looks green and old | You are on `main`, not `pr-21-scanner`. Check step 4. |
+| Tests pass but the UI looks green and old | You are on `main`, not `pr-21-scanner`, **or** an old server on port 5000 is still running. Check step 4 and step 7. |
+| `error: Your local changes … would be overwritten` | You have uncommitted edits. See step 3, option A. |
 | `1209 passed` but fewer than 1200 collected | Some tests are skipped because the model files or ML extras are absent. |
 
 ## Why not simply clone the branch?
