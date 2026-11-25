@@ -21,10 +21,24 @@ from nutricare import create_app, db, vision
 
 # ---------------------------------------------------------------- helpers
 def make_png(width=64, height=64, colour=(180, 120, 60)):
+    """A small but *structured* PNG.
+
+    A deterministic two-tone checker rather than a flat fill: predict() rejects
+    images with no local detail, because a blank frame is classified with
+    confident nonsense (a plain white image scored 89.9% "Lassi"). Tests here
+    are about the classifier, so they must not trip the usability gate.
+    """
     def chunk(tag, data):
         return (struct.pack(">I", len(data)) + tag + data
                 + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF))
-    raw = b"".join(b"\x00" + bytes(colour) * width for _ in range(height))
+    alt = tuple(max(0, min(255, c + 40)) for c in colour)
+    rows = []
+    for y in range(height):
+        row = bytearray()
+        for x in range(width):
+            row += bytes(colour if ((x // 4) + (y // 4)) % 2 == 0 else alt)
+        rows.append(b"\x00" + bytes(row))
+    raw = b"".join(rows)
     return (b"\x89PNG\r\n\x1a\n"
             + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
             + chunk(b"IDAT", zlib.compress(raw))
@@ -575,12 +589,30 @@ def test_real_model_predicts_a_known_class_with_confidence(real_model_app):
     assert len(checkpoint["classes"]) >= 2
     # Build a deterministic image (not synthetic training data — just input):
     # what matters is that the real network runs and returns calibrated output.
+    # It carries a coarse pattern because a flat colour has no detail and is
+    # refused by the usability gate before the network is ever called.
+    image = Image.new("RGB", (320, 240), (180, 140, 90))
+    for py in range(0, 240, 8):
+        for px in range(0, 320, 8):
+            if ((px // 8) + (py // 8)) % 2:
+                for yy in range(py, min(py + 8, 240)):
+                    for xx in range(px, min(px + 8, 320)):
+                        image.putpixel((xx, yy), (120, 80, 50))
     buffer = _io.BytesIO()
-    Image.new("RGB", (320, 240), (180, 140, 90)).save(buffer, "JPEG")
+    image.save(buffer, "JPEG")
     with real_model_app.test_client() as client:
         client.post("/api/users", json={"name": "Real"})
-        resp = client.post("/api/vision/predict?top_k=3", data=buffer.getvalue(),
-                           content_type="application/octet-stream")
+        # This test is about the network running and returning sane numbers,
+        # not about the product's confidence bar. Random-ish input can fall
+        # below the abstention gate, which would make the assertion below a
+        # test of the gate instead of the model, so the gate is relaxed here.
+        monkeypatch = __import__("pytest").MonkeyPatch()
+        monkeypatch.setattr(vision, "MIN_FOOD_RECOGNITION_CONFIDENCE", 0.0)
+        try:
+            resp = client.post("/api/vision/predict?top_k=3", data=buffer.getvalue(),
+                               content_type="application/octet-stream")
+        finally:
+            monkeypatch.undo()
     assert resp.status_code == 200
     body = resp.get_json()
     labels = [p["label"] for p in body["predictions"]]

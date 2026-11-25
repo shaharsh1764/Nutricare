@@ -8,8 +8,11 @@ NutriCare's scan endpoint uses one fixed policy:
    Indian-food model**, for every normal photo-recognition request.
 2. Run `models/food_classifier_cc0.pt`, the **12-class CC0-declared model**,
    only after a genuine technical failure of the primary model.
-3. After the selected model returns, accept the result only when its top raw
-   softmax score is at least **0.35**. Below 0.35, the API abstains with HTTP
+3. Before any forward pass, reject an image with no local structure — a blank
+   frame, a solid colour, a smooth wall/sky gradient or a hopelessly defocused
+   shot. This returns HTTP `422` with code `image_not_usable` and no label.
+4. After the selected model returns, accept the result only when its top raw
+   softmax score is at least **0.40**. Below 0.40, the API abstains with HTTP
    `422` and code `food_not_recognized`; it returns no food label or nutrition
    candidates. The scanner invites the user to try another clear photo or
    choose a food manually.
@@ -32,13 +35,48 @@ name.
 
 Any returned prediction is **unconfirmed**. The response's confidence is the
 selected model's raw softmax output, not a calibrated probability that the food
-is correct. The API now abstains below a fixed 0.35 raw-score gate and returns
+is correct. The API abstains below a fixed **0.40** raw-score gate and returns
 `food_not_recognized` rather than a guessed label. This is a conservative
-product cutoff, not a measured or calibrated correctness threshold. The existing
-`LOW_CONFIDENCE_THRESHOLD` (0.40 by default) remains a separate uncertainty
-signal for accepted results between 0.35 and 0.40; neither threshold invokes
-the technical fallback. The scanner still requires user confirmation before
-using any accepted food suggestion, and does not automatically add meals.
+product cutoff, not a measured or calibrated correctness threshold. It was
+raised from 0.35 because a 35-40% top score is a coin-toss-class guess and the
+scanner pre-selected it in the "Is this the correct food?" card, inviting
+confirmation of a label the model did not really know. `LOW_CONFIDENCE_THRESHOLD`
+is also 0.40 by default, so the two now agree and no accepted prediction is
+flagged low-confidence on arrival. Neither threshold invokes the technical
+fallback. The scanner still requires user confirmation before using any
+accepted food suggestion, and does not automatically add meals.
+
+### Images with nothing in them (`image_not_usable`)
+
+A confidence gate cannot catch "this is not food", because the classifier has no
+"not food" answer and scores out-of-distribution input **confidently**. Measured
+on the shipped 80-class checkpoint before this guard existed:
+
+| Input | Previous result |
+|---|---|
+| solid white | **89.9% "Lassi"** |
+| solid grey | **81.0% "Lassi"** |
+| smooth vertical gradient | **86.2% "Lassi"** |
+| solid black | 67.7% "Lassi" |
+| random noise | 12.0% (abstained correctly) |
+
+So the scanner now measures **image texture** — the mean absolute pixel gradient
+on a 0-255 scale, computed with Pillow before the model is called — and refuses
+anything below `MIN_IMAGE_TEXTURE = 2.0`. Measured separation:
+
+| Input | mean gradient |
+|---|---|
+| solid colours, smooth gradients | 0.00 – 0.29 |
+| heavily defocused photograph | 0.63 |
+| real photographs shipped with this app | 8.17 – 9.47 |
+
+The gap is wide on purpose: the check must never reject genuine food photos. It
+is a coarse "is there anything here to look at" test, **not** a food detector — a
+sharp photo of a chair passes it and is left to the confidence gate and the
+user's confirmation. Both constants are env-overridable
+(`NUTRICARE_MIN_IMAGE_TEXTURE`) for a deployment that needs a different
+balance. A missing or corrupt checkpoint is still reported as
+`model_unavailable` (503), never as an unusable image.
 
 ## Shipped artifacts
 
@@ -113,7 +151,7 @@ and is outside the scanner policy.
 
 `POST /api/vision/predict` exposes the selected runtime in its `model` field and
 adds `recognition` metadata including `fallback_used`,
-`prediction_unconfirmed`, `minimum_accepted_confidence: 0.35`, and
+`prediction_unconfirmed`, `minimum_accepted_confidence: 0.40`, and
 `low_confidence_triggers_fallback: false`. Below the minimum, it returns HTTP
 `422` with `code: food_not_recognized`, the raw top score and threshold, and no
 food-class predictions or nutrition candidates. The upload is still a valid

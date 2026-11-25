@@ -225,12 +225,42 @@ async function scanAnalyze() {
     if (r) r.onclick = () => { scanReset(); renderScanner(); };
     return;
   }
+  if (res.status === 422 && data && data.code === "image_not_usable") {
+    /* The upload decoded but has no structure to look at — a blank frame, a
+       wall, a pocket photo. Distinct from "I can see food but I'm not sure",
+       so say which one it is instead of a generic failure. */
+    box.innerHTML = `
+      <div class="scan-empty">
+        <span class="scan-empty-icon" aria-hidden="true">${ICONS.scanner}</span>
+        <b>This image doesn’t look like a photo of food.</b>
+        <p class="tiny muted mt8">There’s nothing recognisable in it — it may be blank, a flat surface, or too blurry to use.</p>
+        <p class="tiny muted mt8">Try a clear, well-lit photo of one dish, or choose the food yourself from the catalogue.</p>
+        <div class="row mt12" style="justify-content:center">
+          <button class="btn btn-deep btn-sm" id="scan-manual">Choose food manually</button>
+          <button class="btn btn-ghost btn-sm" id="scan-retry">Choose another photo</button>
+        </div>
+      </div>`;
+    const m = $("#scan-manual");
+    if (m) m.onclick = () => openFoodSearchModal(
+      SCAN.meal || "lunch", null, scanSelectCatalogueFood, scanSelectCustomFood);
+    const r = $("#scan-retry");
+    if (r) r.onclick = () => { scanReset(); renderScanner(); };
+    return;
+  }
   if (res.status === 422 && data && data.code === "food_not_recognized") {
+    /* Abstention is a real answer, not a failure to hide. Say plainly that no
+       food was guessed, show the score we actually got when the API reports
+       one, and always give the manual route out. */
+    const pct = typeof data.confidence_pct === "number" ? data.confidence_pct : null;
+    const margin = typeof data.confidence_threshold === "number"
+      ? Math.round(data.confidence_threshold * 100) : null;
     box.innerHTML = `
       <div class="scan-empty">
         <span class="scan-empty-icon" aria-hidden="true">${ICONS.meal}</span>
-        <b>We couldn’t recognize a food in this photo.</b>
-        <p class="tiny muted mt8">Try a clear photo of one dish, or choose the food yourself from the catalogue.</p>
+        <b>We couldn’t recognize this photo.</b>
+        <p class="tiny muted mt8">This image isn’t a clear enough photo of a single dish for us to name it, so we haven’t guessed.</p>
+        ${pct !== null ? `<p class="tiny muted mt8">Best match was only ${pct}% confident${margin !== null ? `, below the ${margin}% we need to suggest a food` : ""}.</p>` : ""}
+        <p class="tiny muted mt8">Try a clear photo of one dish in good light, or choose the food yourself from the catalogue.</p>
         <div class="row mt12" style="justify-content:center">
           <button class="btn btn-deep btn-sm" id="scan-manual">Choose food manually</button>
           <button class="btn btn-ghost btn-sm" id="scan-retry">Choose another photo</button>

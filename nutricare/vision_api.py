@@ -29,6 +29,20 @@ vision_api = Blueprint("vision", __name__, url_prefix="/api/vision")
 MAX_TOP_K = 5
 
 
+def _pct(value):
+    """Confidence as a rounded percentage, or None when it is not a real number.
+
+    Kept separate from the raw score so the UI can show "34%" without inventing
+    precision the uncalibrated softmax output does not have.
+    """
+    try:
+        if value is None or not math.isfinite(value):
+            return None
+        return round(float(value) * 100)
+    except (TypeError, ValueError):
+        return None
+
+
 def _err(message: str, status_code: int = 400, **extra):
     payload = {"error": message}
     payload.update(extra)
@@ -152,6 +166,17 @@ def predict():
     # invokes the 12-class checkpoint solely after a technical primary failure.
     try:
         result = vision.recognize(raw, top_k=top_k)
+    except vision.ImageNotUsable as exc:
+        # Decoded fine, but has no structure to recognise. Say so plainly and
+        # never proceed to a label: a confident "Lassi" for a blank wall is
+        # worse than an honest refusal.
+        return _err(
+            str(exc), 422,
+            code="image_not_usable",
+            texture=round(float(exc.texture), 2),
+            texture_threshold=vision.MIN_IMAGE_TEXTURE,
+            confidence_threshold=vision.MIN_FOOD_RECOGNITION_CONFIDENCE,
+        )
     except vision.ImageError as exc:
         return _err(str(exc))
     except vision.ModelUnavailable as exc:
@@ -168,12 +193,14 @@ def predict():
         confidence = None
     if confidence is None or confidence < vision.MIN_FOOD_RECOGNITION_CONFIDENCE:
         return _err(
-            "We couldn’t confidently recognize a food in this photo. Try a clear "
-            "photo of one dish, or choose a food manually.",
+            "We couldn’t confidently recognize a food in this photo, so we "
+            "haven’t guessed. Try a clear photo of one dish in good light, or "
+            "choose the food manually from the catalogue.",
             422,
             code="food_not_recognized",
             confidence=confidence,
             confidence_threshold=vision.MIN_FOOD_RECOGNITION_CONFIDENCE,
+            confidence_pct=_pct(confidence),
             confidence_note=vision.CONFIDENCE_NOTE,
             model=result.get("model"),
             recognition=result.get("recognition"),
