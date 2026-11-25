@@ -35,6 +35,19 @@ function currentRoute() {
 async function refreshView() {
   if (S.onboardingActive || !S.boot || !S.boot.user) { await renderOnboarding(); return; }
   const key = currentRoute();
+  /* A new page must start at its own heading. Views are re-rendered into the
+     same #view node, so the window keeps the previous scroll offset and the
+     sticky #topbar then covers the page title — most visibly on dense pages
+     when arriving from a long one. Only reset when the route actually changes,
+     so re-rendering the current view after logging food does not yank the
+     reader back to the top. */
+  if (key !== refreshView.lastKey) {
+    refreshView.lastKey = key;
+    if (typeof window.scrollTo === "function") {
+      try { window.scrollTo({ top: 0, left: 0, behavior: "auto" }); }
+      catch { window.scrollTo(0, 0); }
+    }
+  }
   $$(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.route === key));
   $("#crumb-page").textContent = ROUTES[key].title;
   /* A quiet skeleton, not a spinner: the layout is already known, so reserve
