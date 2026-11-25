@@ -24,6 +24,9 @@ def create_app(test_config: dict | None = None) -> Flask:
     # navigation (the default None is rejected by browsers without Secure).
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SECURE"] = os.environ.get(
+        "SESSION_COOKIE_SECURE", ""
+    ).strip().lower() in {"1", "true", "yes"}
     if test_config:
         app.config.update(test_config)
 

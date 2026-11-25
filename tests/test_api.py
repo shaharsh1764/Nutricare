@@ -51,6 +51,17 @@ def test_brand_new_client_has_no_user_and_locked_data(client):
     assert client.get("/api/foods?q=roti").status_code == 200
 
 
+def test_secure_session_cookie_can_be_enabled_from_environment(tmp_path, monkeypatch):
+    monkeypatch.setenv("NUTRICARE_DB", str(tmp_path / "secure-cookie.db"))
+    monkeypatch.setenv("SESSION_COOKIE_SECURE", "true")
+    app = create_app({"TESTING": True})
+
+    response = app.test_client().post("/api/users", json={"name": "Secure"})
+
+    assert response.status_code == 201
+    assert "Secure" in response.headers["Set-Cookie"]
+
+
 def test_onboarding_creates_genuinely_empty_account(client):
     new_user(client, "Fresh Start")
     summary = client.get("/api/summary").get_json()

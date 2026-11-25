@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: nutricare
+    runtime: python
+    plan: starter
+    buildCommand: >-
+      pip install -r requirements.txt &&
+      rm -f models/v2/food_classifier_indian_80_224.pt
+      models/food_classifier_cc0.pt
+      models/food_classifier_cc0_7class.pt
+    startCommand: gunicorn --workers 1 --threads 4 --bind 0.0.0.0:$PORT app:app
+    healthCheckPath: /healthz
+    disk:
+      name: nutricare-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: NUTRICARE_DB
+        value: /var/data/nutricare.db
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: NUTRICARE_PRIMARY_MODEL
+        value: /var/empty/nutricare-primary.pt
+      - key: NUTRICARE_FALLBACK_MODEL
+        value: /var/empty/nutricare-fallback.pt

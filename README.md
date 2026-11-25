@@ -46,6 +46,25 @@ NUTRICARE_DEMO=0 python app.py # start with an EMPTY profile (no sample day)
 
 Stop the server with `Ctrl+C`.
 
+## Deploy on Render
+
+1. Push this repository to GitHub and connect it to Render.
+2. Select **New → Blueprint**, choose the repository, and let Render read
+   `render.yaml`. The blueprint uses a paid Starter web service and a 1 GB
+   persistent disk so SQLite data survives deploys and restarts. Review Render's
+   current pricing before creating the service.
+3. Wait for the first deploy, then open the generated `onrender.com` URL.
+   Render sets a generated `SECRET_KEY`; HTTPS session cookies are enabled.
+
+The Render build installs only the web dependencies and removes the shipped
+scanner checkpoints because their redistribution rights are unresolved. The
+food scanner is therefore unavailable on Render; the local development setup
+is unchanged. Do not deploy real personal or health data: this app has no
+authentication, and local profiles are not accounts. A public deployment is
+for demos until proper authentication and access controls are implemented.
+The Render free plan does not provide persistent disks; using it for SQLite
+means user data can disappear after a restart or redeploy.
+
 ## 2. Run the tests
 
 ```bash
@@ -212,6 +231,8 @@ Endpoints: `GET /api/insights[?date=YYYY-MM-DD]`, `GET /api/insights/weekly` —
 * Profile form inputs are metric; imperial units apply to *displayed* values.
 * Micronutrient coverage is a 5-nutrient subset, clearly labelled in the UI.
 * Flask's built-in server is for development/demos, not public production hosting.
+  The Render Blueprint uses Gunicorn but is still demo-only until authentication
+  and access controls are added.
 * Automated test runs create extra local profiles (Guest/Priya/…) in the dev
   database by design — delete any you don't want via Settings → *Manage local
   profiles*; deleting one never touches another profile's records.
